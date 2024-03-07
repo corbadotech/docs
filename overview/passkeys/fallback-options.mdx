@@ -1,0 +1,30 @@
+---
+title: "Fallback Options"
+description: "Passkeys work in native apps (e.g. iOS or Android) seamlessly."
+---
+
+## Why do we need fallback options?
+
+Fallback options are crucial for a few key reasons:
+
+1. **Device compatibility**: Despite a growing number of devices being passkey-ready (as detailed in [our analysis](https://www.corbado.com/blog/september-2023-update-insights-passkey-readiness) and the [passkeys analyzer](https://www.corbado.com/passkeys/analyzer)), there will always be users with devices that do not support this technology.
+2. **User preference**: Some users might choose not to use passkeys, even on compatible devices, due to personal preferences or specific requirements.
+3. **Inclusivity**: Providing diverse login methods ensures that every user, regardless of their device or preference, has access to a secure and convenient way to log in.
+
+## What fallback options are supported by Corbado?
+
+Corbado offers a range of fallback options, catering to different user needs and technological capabilities:
+
+* **Corbado Complete**: For users of Corbado Complete, we focus exclusively on passwordless fallbacks. These include:
+  * Email magic links
+  * Email one-time passcodes (OTPs)
+  * Upcoming: Social logins, SMS OTPs, and more
+* **Corbado Connect**: If you opt for Corbado Connect, there's flexibility to fall back to traditional password-based authentication systems.
+
+## How does Corbado handle fallbacks?
+
+Corbado employs a 'passkey-first' principle, which prioritizes passkey logins whenever feasible:
+
+* **Promoting passkey logins**: When a user has the option, passkey login is presented as the primary authentication method.
+* **Sophisticated passkey intelligence and detection**: Our system intelligently detects the passkey-readiness of different users on various devices.
+* **Seamless transition to alternatives**: If our system determines that passkeys are not a viable option, it smoothly transitions to offering alternative methods.

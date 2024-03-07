@@ -5,10 +5,10 @@
     "dark": "/logo/corbado-logo-dark.svg",
     "light": "/logo/corbado-logo-light.svg"
   },
-  "favicon": "/logo/favicon.jpg",
+  "favicon": "/logo/favicon.png",
   "colors": {
     "primary": "#184aff",
-    "light": "#07C983",
+    "light": "#184aff",
     "dark": "#0D9373",
     "anchors": {
       "from": "#0D9373",
@@ -52,7 +52,18 @@
     {
       "group": "Overview",
       "pages": [
-        "overview/welcome"
+        "overview/welcome",
+        "overview/getting-started",
+        {
+          "group": "Passkeys",
+          "pages": [
+            "overview/passkeys/passkeys",
+            "overview/passkeys/relying-party-id",
+            "overview/passkeys/passkeys-in-web-apps",
+            "overview/passkeys/passkeys-in-native-apps",
+            "overview/passkeys/fallback-options"
+          ]
+        }
       ]
     },
     {

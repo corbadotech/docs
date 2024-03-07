@@ -1,0 +1,43 @@
+---
+title: "Passkeys in Web Apps"
+description: "Passkeys work seamless in every major browser with all modern web development technologies."
+---
+
+## Prerequisites
+
+It is crucial to verify the readiness of the underlying technology stack. Passkeys rely on a harmonious interplay between the device, operating system, and browser. Most modern combinations of these elements support passkeys, but verifying compatibility is a necessary step.
+
+* [Passkey adoption](https://www.corbado.com/passkeys/adoption): Gain insights into the general availability of passkeys across various operating systems and browsers. Understanding the landscape helps in anticipating user experiences and potential limitations.
+* [Analysis of passkey-readiness](https://www.corbado.com/blog/september-2023-update-insights-passkey-readiness): Review real-life data and case studies that provide a practical view of passkey adoption and performance across different platforms.
+* [Passkeys device support](https://passkeys.dev/device-support/): Ensure that the devices targeted by your application are capable of supporting passkeys.
+
+## Key components in web apps
+
+Implementing passkeys in web applications requires a multi-faceted approach, encompassing both frontend and backend considerations:
+
+1. **Frontend**: Your website or application must include a frontend that facilitates the use of passkeys. This involves integrating with WebAuthn APIs.&#x20;
+2. **Backend**: The backend must [implement a WebAuthn server](https://www.corbado.com/blog/webauthn-server-implementation) to manage the public keys involved in the authentication process. Additionally, a database is required to store and manage these keys securely.&#x20;
+3. **Compatibility**: Both the device and browser must support WebAuthn / passkeys for the system to function effectively.
+
+## Passkeys and domain binding
+
+Passkeys are inherently domain-bound, meaning they are restricted to the specific [relying party ID](/helpful-guides/url-overview#7-relying-party-id) for which they were created. This feature enhances security but also introduces considerations for developers.&#x20;
+
+For local and production environments, it is crucial to set the relying party ID (rpID) appropriately to ensure passkeys function correctly across different domains and subdomains. Please have a look at [this blog post](https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys) for further insights.
+
+## Recommendations for local development and production
+
+When configuring passkeys, pay close attention to the relying party ID settings. In local development environments, it might differ from the production setup.&#x20;
+
+<Info>
+Our recommendation is to use **localhost as rpID locally** and your **root domain as rpID for production**.
+</Info>
+
+
+## Common errors and pitfalls
+
+Several common issues can arise when implementing passkeys in web apps:
+
+1. **Relying party ID mismatch**: Passkeys created for one subdomain might not work on the main domain due to non-matching rpIDs.
+2. **Device compatibility**: If the device is not passkey-ready, users will be unable to utilize passkeys for authentication.
+3. **Incorrect rpID in Corbado**: Ensure that the [rpID in the Corbado developer panel](https://app.corbado.com/app/settings/general/urls) matches the browser URL to avoid authentication failures.
