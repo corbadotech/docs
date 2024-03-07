@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Corbado docs",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/corbado-logo-dark.svg",
+    "light": "/logo/corbado-logo-light.svg"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/favicon.jpg",
   "colors": {
-    "primary": "#0D9373",
+    "primary": "#184aff",
     "light": "#07C983",
     "dark": "#0D9373",
     "anchors": {
@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@corbado.com"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://app.corbado.com/"
   },
   "tabs": [
     {
@@ -40,15 +40,21 @@
     {
       "name": "Community",
       "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "url": "https://join.slack.com/t/corbado/shared_invite/zt-1b7867yz8-V~Xr~ngmSGbt7IA~g16ZsQ"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://www.corbado.com/blog"
     }
   ],
   "navigation": [
+    {
+      "group": "Overview",
+      "pages": [
+        "overview/welcome"
+      ]
+    },
     {
       "group": "Get Started",
       "pages": [
