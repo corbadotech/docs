@@ -1,0 +1,14 @@
+---
+title: "CSRF protection"
+description: "Learn about CSRF (cross-site request forgery) protection and how Corbado's session management uses it."
+---
+
+A **CSRF** (Cross-Site Request Forgery) attack, also known as a one-click attack or session riding, is a type of security exploit where an attacker tricks a victim into unknowingly executing unwanted actions on a web application in which the victim is authenticated. You can find more information on this type of attack at [OWASP](https://owasp.org/www-community/attacks/csrf).
+
+Corbado provides protection against **CSRF** attacks by setting the `sameSite` attribute of both cookies to `lax`. When the sameSite attribute is set to `lax`, the browser only sends cookies for requests originating from the same top-level domain (the domain visible in the browser's address bar). Consequently, if a user visits a malicious site, requests from that site will not include the session cookies.
+
+<Warning>
+It is important to note that you should protect your own application using additional techniques described in the [OWASP cheat sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site\_Request\_Forgery\_Prevention\_Cheat\_Sheet.html), for example.
+</Warning>
+
+

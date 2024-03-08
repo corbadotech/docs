@@ -1,0 +1,8 @@
+---
+title: "Session fixation protection"
+description: "Learn about session fixation protection and how Corbado's session management uses it."
+---
+
+In a session fixation attack, an attacker generates a session themselves and shares the session ID with a user. If the user logs in without the session ID being changed, the attacker gains access to the user's logged-in session, allowing them to exploit it. You can find more information on this type of attack at [OWASP](https://owasp.org/www-community/attacks/Session_fixation).
+
+Fortunately, Corbado has a simple protection mechanism against session fixation. Currently, Corbado only initiates a session after successful authentication, meaning there are no "guest sessions." As a result, Corbado is not susceptible to this type of attack.

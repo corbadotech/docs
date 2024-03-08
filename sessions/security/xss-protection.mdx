@@ -1,0 +1,10 @@
+---
+title: "XSS protection"
+description: "Learn about XSS (cross-site scripting) protection and how Corbado's session management uses it."
+---
+
+An **XSS** (Cross-Site Scripting) attack is a type of security vulnerability found in web applications. It occurs when an attacker injects malicious scripts or code into a trusted website, which is then executed by the victim's browser. You can find more information on this type of attack at [OWASP](https://owasp.org/www-community/attacks/xss/).
+
+While securing your application against **XSS** attacks is ultimately your responsibility, Corbado assists in mitigating their impact if they occur. It achieves this by setting the `httpOnly` flag on the **long-term** session (represented as session ID with database entry) cookie, thereby preventing it from being accessed by JavaScript.
+
+However, the **short-term** session (represented as **JWT**) cookie does not have the httpOnly flag. This is because, in order to enable Corbado to work with pure JavaScript applications and integrate with external services, the cookie needs to be accessible from JavaScript. Nevertheless, the short lifespan of the cookie helps to minimize its impact.

@@ -1,0 +1,16 @@
+---
+title: "JWT Security"
+description: "Learn about the security features of JWTs (JSON Web Tokens) and how Corbado's session management makes use of them."
+---
+
+Corbado utilizes **JWTs** (JSON Web Tokens) for its **short-term** sessions.
+
+Every **JWT** has a signature to ensure that its payload remains unchanged. There are several algorithms available for creating the signature, with **HS256** and **RS256** being the most popular ones.
+
+**HS256** (HMAC with SHA-256) is a symmetric keyed hashing algorithm that employs a single secret key for both generating and validating the signature. This secret key must be shared between you as the developer and Corbado.
+
+**RS256** (RSA Signature with SHA-256), on the other hand, is an asymmetric algorithm that employs a public/private key pair. The private key is used to generate the signature, while the public key is used for validation. As a developer, you receive the public key, while Corbado retains the private key.
+
+Corbado exclusively uses **RS256** due to its significant advantage: only Corbado possesses the private key, making it impossible for anyone else to generate signatures or **JWTs**. In contrast, if **HS256** were used and an ex-employee gained access to the shared secret, they could generate **JWTs** and log into your server as any user they desired.
+
+As an additional security measure, Corbado periodically rotates the private keys at fixed intervals. Existing logged in users are not logged out on private key rotation.

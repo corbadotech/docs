@@ -84,6 +84,33 @@
       ]
     },
     {
+      "group": "Sessions",
+      "pages": [
+        "sessions/overview",
+        "sessions/protecting-routes",
+        "sessions/session-data",
+        {
+          "group": "Security",
+          "pages": [
+            "sessions/security",
+            "sessions/security/jwt-security",
+            "sessions/security/cookie-security",
+            "sessions/security/xss-protection",
+            "sessions/security/csrf-protection",
+            "sessions/security/session-fixation-protection",
+            "sessions/security/session-timeouts"
+          ]
+        },
+        {
+          "group": "Other",
+          "pages": [
+            "sessions/other"
+          ]
+        },
+        "sessions/own-session-management"
+      ]
+    },
+    {
       "group": "Frontend Integration",
       "pages": [
         {

@@ -1,0 +1,45 @@
+---
+title: "Overview"
+description: "This page provides an overview of the different ways to add session management to your passkey-based app."
+---
+
+<Warning>
+The following documentation provides a detailed explanation of Corbado session management. If you already have a session management in place that you want to keep or want to use another session management solution, please check the "[Own session management](./own-session-management)" section.
+</Warning>
+
+After successful user authentication, Corbado creates a session. A session represents a logical connection between a user and the application, spanning multiple requests and responses.
+
+Corbado employs a combination of technologies for its session management, ensuring a highly secure and user-friendly solution.
+
+## Short-term session (represented as JWT)
+
+On the one hand, Corbado offers a **short-term** session, implemented through the usage of JSON Web Tokens (**JWTs**). This **short-term** session (represented as **JWT**) is passed within your application and serves as a means to verify user authentication (refer to the [Protecting routes](./protecting-routes) section for more details). As implied by its name, the **short-term** session (represented as **JWT**) has a limited lifespan ([configurable](https://app.corbado.com/app/settings/sessions)), ensuring enhanced security.
+
+The technical name of the **short-term** session (represented as JWT) cookie is `cbo_short_session`.
+
+## Long-term session (represented as session ID with database entry)
+
+On the other hand, Corbado provides a **long-term** session that utilizes an opaque string as a session ID. This session ID is associated with a corresponding entry in the Corbado database. The **long-term** session (represented as session ID with database entry) serves the purpose of refreshing the **short-term** session (represented as **JWT**) as needed (refer to the [Refresh](./other/refresh) section for more details).
+
+Both **short-term** session (represented as **JWT**) and **long-term** session (represented as session ID with database entry) are set as cookies (refer to the [Cookie security](./security/cookie-security) section for more details).
+
+The technical name of the **long-term** session (represented as session ID with database entry) cookie is `cbo_long_session`.
+
+## Advantages
+
+Implementing session management like this offers the following advantages:
+
+* **Short-term** sessions (represented as **JWT**) can be verified client-side in **less than 1ms** through standard **JWT** verification
+* **Short-term** sessions (represented as **JWT**) have the ability to carry additional user information through [claims](https://quadmeup.com/2022/06/29/jwt-claims-explained)
+* **Long-term** sessions (represented as session ID with database entry) can be listed and inspected in the [developer panel](https://app.corbado.com/app/sessions), providing a comprehensive overview of users currently logged in and the devices they are using
+* **Long-term** sessions (represented as session ID with database entry) can be revoked using the [developer panel](https://app.corbado.com/app/sessions) &#x20;
+
+## Security
+
+Please refer to our [security](./security) section for a comprehensive understanding of the security advantages offered by our session design.
+
+## Comparison to OAuth2
+
+If you're interested in understanding how Corbado compares to **OAuth2**, please refer to our [OAuth2 comparison](./other/oauth2-comparison) section.
+
+Next, it is essential to [protect your routes](./protecting-routes) (both frontend and backend) by checking if a user is authenticated and take appropriate actions accordingly.
