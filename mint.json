@@ -130,7 +130,19 @@
     },
     {
       "group": "Backend Integration",
-      "pages": ["backend-integration/introduction"]
+      "pages": [
+        {
+          "group": "Corbado API Structure",
+          "pages": [
+            "backend-integration/corbado-api-structure",
+            "backend-integration/corbado-api-structure/frontend-api",
+            "backend-integration/corbado-api-structure/backend-api"
+          ]
+        },
+        "backend-integration/node.js-sdk",
+        "backend-integration/php-sdk",
+        "backend-integration/go-sdk"
+      ]
     }
   ],
   "footerSocials": {
