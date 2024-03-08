@@ -9,8 +9,8 @@ The [**relying party ID**](https://www.w3.org/TR/webauthn-2/#relying-party-ident
 
 It's a crucial component of the [WebAuthn specification](https://www.w3.org/TR/webauthn-2/). The **relying party ID** can be&#x20;
 
-* the root domain (e.g. `corbado.com`) or&#x20;
-* a subdomain (e.g. `auth.corbado.com`)
+-   the root domain (e.g. `corbado.com`) or&#x20;
+-   a subdomain (e.g. `auth.corbado.com`)
 
 You cannot store the root domain as **relying party ID** if it is on the [public suffix list](https://publicsuffix.org/learn/).&#x20;
 
@@ -19,30 +19,32 @@ You cannot store the root domain as **relying party ID** if it is on the [public
 In theory, you can change the relying party ID in your implementation. However, once a passkey is created, you cannot change the stored relying party ID within the passkey.
 
 <Note>
-Changing the relying party ID for a deployed online service will break existing passkeys (the only exception: the new relying party ID is a subdomain of the old relying party ID).
+    Changing the relying party ID for a deployed online service will break
+    existing passkeys (the only exception: the new relying party ID is a
+    subdomain of the old relying party ID).
 </Note>
 
 ## How is the relying party ID validated?
 
 During the authentication process, the relying party ID is checked against the browser URL (user's origin) to ensure they match. Matching in this sense means that either:
 
-* The browser URL (user’s origin) matches precisely the relying party ID OR
-* The browser URL (user's origin) is a subdomain that matches the relying party ID and the parent domain is registrable (e.g. "com" or any domain on the [Public Suffix List](https://publicsuffix.org/learn/) don't work)
+-   The browser URL (user’s origin) matches precisely the relying party ID OR
+-   The browser URL (user's origin) is a subdomain that matches the relying party ID and the parent domain is registrable (e.g. "com" or any domain on the [Public Suffix List](https://publicsuffix.org/learn/) don't work)
 
 ## Which relying party ID should I use for native apps?
 
 Native apps (e.g. iOS or Android apps) present a challenge compared to web apps. Unlike web apps, there's no browser URL to match against the relying party ID. Nevertheless, to ensure the same level of security, domains are connected to native apps via association files (see [Passkeys in native apps](/overview/passkeys/passkeys-in-native-apps)), so that trust between a domain and a native app is established.
 
 <Note>
-This is particularly important if a passkey was created on a web app and should be used for the same relying party ID on a native app (and vice versa).
+    This is particularly important if a passkey was created on a web app and
+    should be used for the same relying party ID on a native app (and vice
+    versa).
 </Note>
 
 ## Details
 
 For further examples and detailed questions, we highly recommend to have a look at the following blog post:
 
-<a href="https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys">
-<Frame className="flex gap-x-4 items-center">
-<img src="/images/corbado.png" width={32} /> <p>WebAuthn Relying Party ID (rpID) & Passkeys: Domains & Native Apps</p>
-</Frame>
-</a>
+<Card href='https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys'>
+    <p>WebAuthn Relying Party ID (rpID) & Passkeys: Domains & Native Apps</p>
+</Card>

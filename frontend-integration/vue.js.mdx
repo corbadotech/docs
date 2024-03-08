@@ -1,0 +1,49 @@
+---
+title: "Vue.js"
+description: "Learn how to add the Corbado web-js package to your Vue.js Application."
+---
+
+import Blogpost from "/snippets/blogpost.mdx";
+import Prerequisites from "/snippets/web-js-prerequisites.mdx";
+
+## 1. Prerequisites
+
+<Prerequisites />
+
+## 2. Add web-js to Vue.js code
+
+```html App.vue
+<template>
+  <div id="corbado-auth"></div>
+</template>
+
+<script setup>
+  import Corbado from "@corbado/web-js";
+  import { onMounted } from "vue";
+  import { useRouter } from "vue-router";
+
+  const router = useRouter();
+
+  onMounted(async() => {
+    await Corbado.load({
+      projectId: import.meta.env.VITE_CORBADO_PROJECT_ID,
+      darkMode: 'off',
+    });
+    const authElement = document.getElementById("corbado-auth");
+    Corbado.mountAuthUI(authElement, {
+      onLoggedIn: () => {
+        router.push("/profile");
+      },
+      isDevMode: true,
+    });
+  });
+</script>
+```
+
+## 3. Read the blog post
+
+To find a step-by-step tutorial on how to integrate passkeys into Vue.js, please check out our blog post:
+
+<Card href="https://www.corbado.com/blog/vuejs-passkey">
+  <Blogpost title="Building a Vue.js Passkey Login" />
+</Card>

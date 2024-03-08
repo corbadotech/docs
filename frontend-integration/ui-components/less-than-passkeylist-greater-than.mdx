@@ -1,0 +1,39 @@
+---
+title: "<PasskeyList />"
+description: "&lt;PasskeyList/> lists all available passkeys from a user and lets him manage his passkeys."
+---
+
+## Introduction
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+The \<PasskeyList/> component lists all passkeys that a user has created and that are thus available to them. The user can delete these existing passkeys and add new ones.
+
+<CodeGroup>
+
+```tsx Typescript
+import { PasskeyList } from '@corbado/react';
+
+const PasskeyPage = () => {
+  return (
+    <PasskeyList />
+  );
+};
+
+```
+
+```html VanillaJS
+<script>
+  const passkeyListElement = document.getElementById('passkey-list');
+
+  if (Corbado.user) {
+    Corbado.mountPasskeyListUI(passkeyListElement);
+  }
+</script>
+
+<div id="passkey-list"></div>
+```
+
+</CodeGroup>
+
+You can embed this component somewhere in the user's profile page and thus give them control over their passkeys.&#x20;

@@ -1,0 +1,68 @@
+---
+title: "Vanilla JS"
+description: "Learn how to add the Corbado UI components to your Vanilla JavaScript application."
+sidebarTitle: "Overview"
+---
+
+import Blogpost from '/snippets/blogpost.mdx'
+
+
+## 1. Prerequisites
+
+Install the Corbado UI components via npm or add the JavaScript library via CDN.&#x20;
+
+You can include web-js in on of the following ways: 
+
+<CodeGroup>
+
+```bash NPM
+npm install @corbado/web-js
+```
+
+```html CDN
+<!-- Inlcude the following lines in the head section of your html -->
+<link rel="stylesheet" href="https://unpkg.com/@corbado/web-js@latest/dist/bundle/index.css"/>
+<script src="https://unpkg.com/@corbado/web-js@latest/dist/bundle/index.js"></script>
+```
+
+</CodeGroup>
+
+## 2. Load the global Corbado object and mount CorbadoAuth
+
+```html
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/@corbado/web-js@latest/dist/bundle/index.css"/>
+  <script src="https://unpkg.com/@corbado/web-js@latest/dist/bundle/index.js"></script>
+</head>
+
+<body>
+  <script>
+    await Corbado.load({
+      projectId: import.meta.env.VITE_CORBADO_PROJECT_ID,
+      darkMode: 'on',
+    });
+
+    const authElement = document.getElementById('corbado-auth');
+    Corbado.mountAuthUI(authElement, {
+      onLoggedIn: () => {
+        window.location.href = '/';
+      },
+      isDevMode: true,
+    });
+  </script>
+  <div id="corbado-auth"></div>
+</body>
+</html>
+```
+
+Find detailed documentation about the available configuration options for all UI components [here](/frontend-integration/ui-components/).
+
+## 3. Read the blog post
+
+To find a step-by-step tutorial on how to integrate passkeys into a Vanilla JS project, please check out our blog post.
+
+<Card href="https://www.corbado.com/blog/passkeys-javascript">
+<Blogpost title="Building a Passkey Login Page with JavaScript" />
+</Card>

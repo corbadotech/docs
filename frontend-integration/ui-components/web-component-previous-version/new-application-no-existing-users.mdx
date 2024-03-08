@@ -1,0 +1,49 @@
+---
+title: "New application (no existing users)"
+description: "Learn how to integrate via the web component in new applications without existing users."
+---
+
+## Authenticate the user
+
+<Note>
+This authentication part (steps 1-2) is the same to authentication with an existing user base.
+</Note>
+
+1. [Redirect user to Redirect URL](#1-redirect-user-to-redirect-url)
+2. [Session management](#2-session-management)
+
+### 1. Redirect user to Redirect URL
+
+On successful authentication (e.g. with passkeys or email magic link), the user is redirected to the [Redirect URL](/helpful-guides/url-overview#3-redirect-url) in the browser.
+
+### 2. Session management
+
+If the user has successfully authenticated and been redirected to the Redirect URL, you need to take care of session management for your application.&#x20;
+
+Here, you have two options:
+
+#### 2.1 Corbado session management
+
+<Note>
+We recommend to read through the general [Corbado session documentation](/sessions/overview) before implementation.
+</Note>
+
+Corbado offers secure and easy session management that you can use out-of-the-box.
+
+Depending on your application's setup, you have different choices for protecting routes with Corbado's session management. Please see [Sessions - Protecting routes](/sessions/protecting-routes) for details.
+
+<Card href="/sessions">
+Sessions
+</Card>
+
+#### 2.2 Own session management
+
+<Note>
+If you have **no existing user base**, we strongly recommend to use [Corbado's session management](/sessions/overview), as this will save you a lot of implementation time and is a proven solution.
+</Note>
+
+If you want to keep your existing session management, you can keep that of course and use Corbado only for authentication. Please see [Own session management](/sessions/own-session-management) for details.
+
+<Card href="/sessions/own-session-management">
+Own Session Management
+</Card>

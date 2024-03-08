@@ -1,0 +1,26 @@
+---
+title: "User Flow Configuration"
+description: "Each application has individual user requirements that can be configured with Corbado."
+---
+
+## Introduction
+
+Besides defining the [technical passkey settings in the previous section](passkey-configuration.md), we now take a look how the user flow and user experience can be adapted. These settings directly impact the user journey during sign-up and login.
+
+The following things can be adapted:
+
+1. [Identity verification](/overview/sign-up-and-login-with-passkeys/user-flow-configuration#1-identity-verification)
+2. [Public sign-ups](/overview/sign-up-and-login-with-passkeys/user-flow-configuration#2-public-sign-ups)
+
+## 1. Identity verification
+
+Define the stage at which your users need to verify their user identifier (e.g. email address, phone number or username). You can select only one option at a time.
+
+<table><thead><tr><th width="227">Value</th><th>Description</th></tr></thead><tbody><tr><td>No verification</td><td>Users do not have to verify their user identifier. They just sign up by creating a passkey and can immediately log in.</td></tr><tr><td>Verification at first-login (default)</td><td>Users that sign up with a passkey are logged in after sign-up. They need to verify their user identifier on their first login though.</td></tr><tr><td>Verification at sign-up</td><td>Users can only create a passkey after verifying their user identifier first. </td></tr></tbody></table>
+
+![Identitty verification setting](/images/overview/signup/user-flow-configuration/identity-verification-setting.webp)
+
+## 2. Public sign-ups
+
+* Allow users to self-sign-up for your project
+* Allow your users to sign-up without their name

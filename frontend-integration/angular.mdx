@@ -1,0 +1,87 @@
+---
+title: "Angular"
+description: "Learn how to add the Corbado web-js package to your Angular Application."
+---
+
+import Blogpost from "/snippets/blogpost.mdx";
+import Prerequisites from "/snippets/web-js-prerequisites.mdx"
+
+## 1. Prerequisites
+
+<Prerequisites />
+
+## 2. Define custom elements schema
+
+To prevent build failures due to unrecognized elements, Angular mandates the declaration of custom elements within your Angular modules. To achieve this, you should import the `CUSTOM_ELEMENTS_SCHEMA` and include it in the schemas section of your module:
+
+```javascript app.module.ts
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+
+import {AppComponent} from './app.component';
+import {ProfileComponent} from './profile/profile.component';
+import {AppRoutingModule} from './app-routing.module';
+import {LoginComponent} from './login/login.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    ProfileComponent,
+    LoginComponent,
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+})
+export class AppModule {
+}
+```
+
+## 3. Add the web-js package to Angular Code
+
+<CodeGroup>
+
+```html login.component.html
+<div id="corbado-auth"></div>
+```
+
+```ts login.component.ts
+import { Component, AfterViewInit } from '@angular/core';
+import { Router } from "@angular/router";
+import Corbado from '@corbado/web-js';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './auth.component.html',
+  styleUrls: ['./auth.component.css']
+})
+
+export class AuthComponent implements AfterViewInit {
+  constructor(private router: Router) {
+  }
+  async ngAfterViewInit() {
+    const authElement = document.getElementById("corbado-auth")
+    if (authElement) {
+      Corbado.mountAuthUI(authElement, {
+        onLoggedIn: () => {
+          this.router.navigate(['/profile'])
+        },
+        isDevMode: true
+      })
+    }
+  }
+}
+```
+</CodeGroup>
+
+## 4. Read the blog post
+
+To find a step-by-step tutorial on how to integrate passkeys into Angular, please check out our blog post:
+
+<Card href="https://www.corbado.com/blog/angular-passkeys">
+<Blogpost title="Building an Angular Passkey Login with TypeScript" />
+</Card>

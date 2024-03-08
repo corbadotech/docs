@@ -1,0 +1,50 @@
+---
+title: "Nuxt.js"
+description: "Learn how to add the Corbado React Package to your Nuxt.js Application."
+---
+
+import Blogpost from "/snippets/blogpost.mdx";
+import Prerequisites from "/snippets/web-js-prerequisites.mdx";
+
+## 1. Prerequisites
+
+<Prerequisites />
+
+## 2. Add web-js to Nuxt.js code
+
+```html App.vue
+<template>
+  <div id="corbado-auth"></div>
+</template>
+
+<script setup>
+  import Corbado from "@corbado/web-js";
+  import { onMounted } from "vue";
+  import { useRouter } from "vue-router";
+
+  const router = useRouter();
+
+  onMounted(() => {
+    if (Corbado.isAuthenticated) {
+      router.push("/profile");
+    }
+    const authElement = document.getElementById("corbado-auth");
+    Corbado.mountAuthUI(authElement, {
+      onLoggedIn: () => {
+        router.push("/profile");
+      },
+      isDevMode: true,
+    });
+  });
+</script>
+```
+
+If you need access to user data on the server, also take a look at our [Corbado Node.js SDK](/backend-integration/node.js-sdk).
+
+## 3. Read the blog post
+
+To find a step-by-step tutorial on how to integrate passkeys into Nuxt.js, please check out our blog post:
+
+<Card href="https://www.corbado.com/blog/passkeys-nuxtjs">
+  <Blogpost title="Building a Nuxt.js Passkey Login" />
+</Card>

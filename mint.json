@@ -8,8 +8,8 @@
   "favicon": "/logo/favicon.png",
   "colors": {
     "primary": "#184aff",
-    "light": "#184aff",
-    "dark": "#0D9373",
+    "light": "#629eff",
+    "dark": "#184aff",
     "anchors": {
       "from": "#0D9373",
       "to": "#07C983"
@@ -27,10 +27,19 @@
   },
   "tabs": [
     {
-      "name": "API Reference",
-      "url": "api-reference"
+      "name": "Frontend Integration",
+      "url": "frontend-integration"
+    },
+    {
+      "name": "Backend Integration",
+      "url": "backend-integration"
+    },
+    {
+      "name": "Api Reference",
+      "url": "https://api.corbado.com/docs/api/"
     }
   ],
+
   "anchors": [
     {
       "name": "Documentation",
@@ -57,47 +66,71 @@
         {
           "group": "Passkeys",
           "pages": [
-            "overview/passkeys/passkeys",
+            "overview/passkeys",
             "overview/passkeys/relying-party-id",
             "overview/passkeys/passkeys-in-web-apps",
             "overview/passkeys/passkeys-in-native-apps",
             "overview/passkeys/fallback-options"
           ]
+        },
+        {
+          "group": "Sign-up & Login with Passkeys",
+          "pages": [
+            "overview/sign-up-and-login-with-passkeys",
+            "overview/sign-up-and-login-with-passkeys/passkey-configuration",
+            "overview/sign-up-and-login-with-passkeys/user-flow-configuration"
+          ]
         }
       ]
     },
     {
-      "group": "Get Started",
+      "group": "Frontend Integration",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        {
+          "group": "UI Components",
+          "pages": [
+            "frontend-integration/ui-components",
+            "frontend-integration/ui-components/less-than-corbadoprovider-greater-than",
+            "frontend-integration/ui-components/less-than-signup-greater-than",
+            "frontend-integration/ui-components/less-than-login-greater-than",
+            "frontend-integration/ui-components/less-than-corbadoauth-greater-than",
+            "frontend-integration/ui-components/less-than-passkeylist-greater-than",
+            {
+              "group": "Web Component (deprecated)",
+              "pages": [
+                "frontend-integration/ui-components/web-component-previous-version",
+                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
+                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "React",
+          "pages": [
+            "frontend-integration/react",
+            "frontend-integration/react/usecorbado",
+            "frontend-integration/react/usecorbadosession"
+          ]
+        },
+        {
+          "group": "Vanilla JS",
+          "pages": [
+            "frontend-integration/vanilla-js",
+            "frontend-integration/vanilla-js/global-corbado-object"
+          ]
+        },
+        "frontend-integration/flutter",
+        "frontend-integration/vue.js",
+        "frontend-integration/angular",
+        "frontend-integration/next.js",
+        "frontend-integration/nuxt.js",
+        "frontend-integration/svelte"
       ]
     },
     {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
-      ]
+      "group": "Backend Integration",
+      "pages": ["backend-integration/introduction"]
     }
   ],
   "footerSocials": {

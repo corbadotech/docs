@@ -1,0 +1,180 @@
+---
+title: "<CorbadoProvider />"
+description: "Corbado helps you to easily add sign-up and logins with passkeys to your web or native app."
+---
+
+## Introduction
+
+This component is a wrapper that allows you do define global configurations. They will affect all Corbado UI components (given that they are wrapped with \<CorbadoProvider/>).
+
+### API reference
+
+| Name                 | Example values               | Description                                                                                                                                                                                                                                           |
+| -------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| projectId            | string (e.g. pro-1234567890) | The ID of your Corbado project.                                                                                                                                                                                                                       |
+| autoDetectLanguage   | boolean                      | If set to `true` the language used in UI components will be derived from the browser.                                                                                                                                                                 |
+| defaultLanguage      | string (en\|de\|fr)          | If set to a language other than "en" (the default) all wordings will be translated to that language. By default, Corbado supports "en", "de" and "fr". You can define your custom translations though.                                                |
+| customTranslations   | object                       | A map from language (e.g. "en") to an object containing your custom translation overrides.                                                                                                                                                            |
+| darkMode             | string (on\|off\|auto)       | Controls if your components are rendered in dark mode. If set to `auto` the darkMode setting will be derived from the browser.                                                                                                                        |
+| theme                | string                       | Controls the style of your components. Currently the only alternative theme that can be set here is `emerald-funk`. You can create your own custom theme though (find more details below).                                                            |
+| isDevMode            | boolean                      | Defaults to false. If set to true, the UI components will log debug messages to console. Some of them (`<CorbadoAuth>`, `<Login>`, `<SignUp>`) will also display more detailed error messages on their error screen (see error screen section below). |
+| customerSupportEmail | string                       | If defined, the error screens will include this email address (see error screen section below).                                                                                                                                                       |
+| frontendApiUrl       | string                       | Please set this value when you go live to your defined [CNAME](/helpful-guides/url-overview.md#5-cname). By default it is automatically set to your [Frontend API](/backend-integration/corbado-api-structure/frontend-api) URL.                      |
+
+### Custom translations
+
+You can configure our components to automatically detect a user's browser language and to change all wordings accordingly. If a language is not supported by Corbado yet, the component will default to "en". You can add your custom translation by creating your own translation file. You can use custom translations also in cases where you just want to override parts of the wording.
+
+For a definition of the current structure of our translation files, please take a look at our default translations for "en" [here](https://github.com/corbado/javascript/blob/main/packages/shared-ui/src/i18n/en.json).
+
+```typescript Custom Translations
+const en = {
+  authentication: {
+    signup: {
+      start: {
+        header: "Let's create an account to check Corbado Test App",
+        subheader: "Would you like to login? ",
+        button_login: "Log in",
+        button_submit: "Sign up",
+        textField_name: "Full name",
+        textField_email: "Username",
+      },
+    },
+    login: {
+      start: {
+        header: "Please login to check Corbado Test App",
+        subheader: "Would you like to create an account? ",
+        button_signup: "Sign up",
+        button_submit: "Login",
+        textField_email: "Username",
+      },
+    },
+  },
+};
+
+export default en;
+```
+
+To use this translation now, supply it to the \<CorbadoProvider/>.
+
+<CodeGroup>
+
+```tsx Typescript
+import { CorbadoProvider } from '@corbado/react';
+import englishTranslations from './translations/en';
+import { RouterProvider } from 'react-router-dom';
+
+const App = () => {
+  return (
+    <CorbadoProvider
+      projectId="pro-XXX"
+      customTranslations={{
+        en: englishTranslations,
+      }}
+    >
+      <RouteProvider />
+    </CorbadoProvider>
+  );
+```
+
+```html VanillaJS
+<script type="module">
+  Corbado.load({
+    projectId: "pro-XXX",
+    customTranslations: {
+      en: englishTranslations,
+    },
+  });
+</script>
+```
+
+</CodeGroup>
+
+### Custom themes
+
+Before we show how to create custom themes, let's take a step back first and take a look at what options you have in general to influence the styling of Corbado's UI components.
+
+This can be done in three different ways:
+
+#### 1) Switching the theme
+
+Currently, Corbado offers two themes out of the box:
+
+- default
+- emerald-funk
+
+#### 2) Configuring darkMode
+
+For every theme, there is styling for dark and for light mode. Which of these is applied depends on your configuration for the `darkMode` parameter.
+
+#### 3) Creating a custom theme
+
+If you need more customisation, you can create your own theme. To do this, create one parent CSS class named after your theme (e.g. "your-custom-theme).&#x20;
+
+Inside this class you can now overwrite all the corbado classes. Every Corbado class is prefixed with "cb-" so you can easily identify them.&#x20;
+
+**Note:** If you want to change the styling of a particular part of the UI components but you don't know the classname, just use your browser's "inspect" tool from the developer tools.
+
+```css Custome Theme
+.your-custom-theme {
+  .cb-container {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-color: var(--color-dark-brown);
+  }
+
+  .cb-header,
+  .cb-subheader,
+  .cb-body {
+    font-family: var(--font-eloquent);
+    color: var(--color-black);
+  }
+
+  .cb-link-primary {
+    color: var(--color-light-brown);
+  }
+
+  .cb-link-secondary {
+    color: var(--color-dark-brown);
+  }
+}
+```
+
+Finally, configure the \<CorbadoProvider/> component to use the theme.
+
+<CodeGroup>
+
+```tsx Typescript
+import { CorbadoProvider } from '@corbado/react';
+import englishTranslations from './translations/en';
+import { RouterProvider } from 'react-router-dom';
+
+const App = () => {
+  return (
+    <CorbadoProvider
+      projectId="pro-XXX"
+      theme='your-custom-theme'
+    >
+      <RouteProvider />
+    </CorbadoProvider>
+  );
+```
+
+```html VanillaJS
+<script type="module">
+  Corbado.load({
+    projectId: "pro-XXX",
+    theme: "your-custom-theme",
+  });
+</script>
+```
+
+</CodeGroup>
+
+### Error screen
+
+If an error occurs that can not be handled by the UI component (e.g. by making a retry or by offering the user a fallback option), it will show an error screen.&#x20;
+
+Depending on your setting of isDevMode, the error screen is rendered in two variants (left is in development mode, right is in production mode):
+
+![Error Screen](/images/frontend-integration/ui-components/corbado-provider/error-screen.webp)

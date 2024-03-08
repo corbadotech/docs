@@ -1,0 +1,46 @@
+---
+title: "Svelte"
+description: "Learn how to add the Corbado web-js package to your Svelte or SvelteKit Application."
+---
+
+import Blogpost from "/snippets/blogpost.mdx";
+import Prerequisites from "/snippets/web-js-prerequisites.mdx";
+
+## 1. Prerequisites
+
+<Prerequisites />
+
+## 2. Add web-js to Svelte code
+
+```html +page.svelte
+<script lang="ts">
+  import Corbado from "@corbado/web-js";
+  import { onMount } from "svelte";
+
+  onMount(async() => {
+    await Corbado.load({
+      projectId: import.meta.env.VITE_CORBADO_PROJECT_ID,
+      darkMode: "off",
+    });
+    const authElement = document.getElementById("corbado-auth");
+    Corbado.mountAuthUI(authElement!, {
+      onLoggedIn: () => {
+        window.location.href = "/profile";
+      },
+      isDevMode: true,
+    });
+  });
+</script>
+
+<div id="corbado-auth"></div>
+```
+
+If you need access to user data on the server, also take a look at our [Corbado Node.js SDK](/backend-integration/node.js-sdk).
+
+## 3. Read the blog post
+
+To find a step-by-step tutorial on how to integrate passkeys into Svelte, please check out our blog post:
+
+<Card href="https://www.corbado.com/blog/svelte-passkeys">
+  <Blogpost title="Building a Svelte Passkey Login" />
+</Card>

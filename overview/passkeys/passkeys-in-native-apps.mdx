@@ -12,10 +12,10 @@ The foundation for implementing passkeys in native apps involves setting up a cl
 The core of passkey implementation in native apps lies in establishing trust between the native device and the relying party server:
 
 1. **Trust establishment**: Before a passkey can be created, the native device (like an Android or iOS device) must verify if the relying party server trusts the app.
-2.  **Hosting essential files**: Your relying party server needs to host the following critical files for native apps:
+2. **Hosting essential files**: Your relying party server needs to host the following critical files for native apps:
 
-    * iOS: `.well-known/apple-app-site-association`
-    * Android: `.well-known/assetlinks.json`
+    - iOS: `.well-known/apple-app-site-association`
+    - Android: `.well-known/assetlinks.json`
 
     Corbado manages both files if you use our relying party server. Your task is to configure your native devices accordingly.
 
@@ -23,16 +23,16 @@ The core of passkey implementation in native apps lies in establishing trust bet
 
 Developers need to be mindful of several factors that can impact the implementation process:
 
-* **Cached files**: Particularly on iOS devices, the Apple system downloads the association file once every 24 hours and caches it. During development, you can bypass this by adding `?mode=development` to the file request. However, this feature is exclusive to Apple devices; Android does not support local server development.
-* **Content Delivery Networks (CDNs)**: Be aware of how CDNs might affect the availability and updating of the necessary association files.
-* **Localhost testing**: Testing on localhost presents additional challenges. Even locally, the association files must be accessible to Google. Utilize this [test tool ](https://developers.google.com/digital-asset-links/tools/generator)to verify if the association file is correctly set up and reachable.
+-   **Cached files**: Particularly on iOS devices, the Apple system downloads the association file once every 24 hours and caches it. During development, you can bypass this by adding `?mode=development` to the file request. However, this feature is exclusive to Apple devices; Android does not support local server development.
+-   **Content Delivery Networks (CDNs)**: Be aware of how CDNs might affect the availability and updating of the necessary association files.
+-   **Localhost testing**: Testing on localhost presents additional challenges. Even locally, the association files must be accessible to Google. Utilize this [test tool ](https://developers.google.com/digital-asset-links/tools/generator)to verify if the association file is correctly set up and reachable.
 
 ## Troubleshooting common errors
 
 When implementing passkeys in native apps, developers might encounter various issues:
 
-* **Relying party ID mismatches**: This is a common problem when switching environments (e.g. from DEV to PROD) or modifying configuration settings.
-* **Device compatibility and settings**: Ensure that the devices are properly configured to work with passkeys.
-* **Server configuration errors**: Mistakes in the server setup can lead to authentication failures.
+-   **Relying party ID mismatches**: This is a common problem when switching environments (e.g. from DEV to PROD) or modifying configuration settings.
+-   **Device compatibility and settings**: Ensure that the devices are properly configured to work with passkeys.
+-   **Server configuration errors**: Mistakes in the server setup can lead to authentication failures.
 
 For a detailed guide on troubleshooting these and other issues, please refer to our [Flutter troubleshooting guide](https://github.com/corbado/flutter-passkeys/tree/main/packages/passkeys/passkeys#troubleshooting).
