@@ -22,7 +22,7 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
+    "name": "Developer Panel",
     "url": "https://app.corbado.com/"
   },
   "tabs": [
@@ -33,18 +33,14 @@
     {
       "name": "Backend Integration",
       "url": "backend-integration"
-    },
-    {
-      "name": "Api Reference",
-      "url": "https://api.corbado.com/docs/api/"
     }
   ],
 
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "Api Reference",
+      "icon": "computer",
+      "url": "https://api.corbado.com/docs/api/"
     },
     {
       "name": "Community",
@@ -252,8 +248,9 @@
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "twitter": "https://twitter.com/corbadotech",
+    "github": "https://github.com/corbado",
+    "linkedin": "https://www.linkedin.com/company/corbado",
+    "substack": "https://google.com"
   }
 }
