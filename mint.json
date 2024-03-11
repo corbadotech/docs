@@ -104,10 +104,58 @@
         {
           "group": "Other",
           "pages": [
-            "sessions/other"
+            "sessions/other",
+            "sessions/other/refresh",
+            "sessions/other/revocation",
+            "sessions/other/oauth2-comparison",
+            "sessions/other/development-mode"
           ]
         },
         "sessions/own-session-management"
+      ]
+    },
+    {
+      "group": "Products",
+      "pages": [
+        "/products/corbado-complete",
+        {
+          "group": "Corbado Connect",
+          "pages": [
+            "products/corbado-connect",
+            "products/corbado-connect/connect-via-passkey-association",
+            {
+              "group": "Connect via Webhooks",
+              "pages": [
+                "products/corbado-connect/connect-via-webhooks",
+                "products/corbado-connect/connect-via-webhooks/web-component-login-flow-of-existing-users",
+                {
+                  "group": "Webhooks",
+                  "pages": [
+                    "products/corbado-connect/connect-via-webhooks/webhooks",
+                    "products/corbado-connect/connect-via-webhooks/webhooks/action-authmethods",
+                    "products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify"
+                  ]
+                },
+                {
+                  "group": "Corbado CLI",
+                  "pages": [
+                    "products/corbado-connect/connect-via-webhooks/corbado-cli",
+                    "products/corbado-connect/connect-via-webhooks/corbado-cli/command-login",
+                    "products/corbado-connect/connect-via-webhooks/corbado-cli/command-logout",
+                    "products/corbado-connect/connect-via-webhooks/corbado-cli/command-subscribe"
+                  ]
+                }
+              ]
+            },
+            "products/corbado-connect/seamless-user-transition"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Analytics",
+      "pages": [
+        "analytics/passkeys-analyzer"
       ]
     },
     {

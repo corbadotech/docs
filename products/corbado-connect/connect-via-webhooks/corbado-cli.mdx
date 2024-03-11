@@ -1,0 +1,101 @@
+---
+title: "Corbado CLI"
+description: "The Corbado CLI is used to receive webhook requests from Corbado on your local machine during testing and development."
+sidebarTitle: "Overview"
+---
+
+## Overview
+
+The Corbado CLI (command line interface) is a tool which you can run locally on your command line to interact with the Corbado platform. It provides multiple [commands ](./#commands)and runs on [Windows](./#windows), [MacOS ](./#macos)and [Linux](./#linux).
+
+The Corbado CLI is written in [Go](https://go.dev) and hosted on [GitHub](https://github.com/corbado/cli).
+
+1. [Installation](#installation)
+2. [Authentication](#authentication)
+3. [Commands](#commands)
+
+## Installation
+
+To install the Corbado CLI we provide (among the source code version) pre-compiled binaries on our [GitHub release page](https://github.com/corbado/cli/releases/latest).
+
+<AccordionGroup>
+
+<Accordion title="Windows">
+1. Download the file for `windows` from  [GitHub](https://github.com/corbado/cli/releases/latest)
+2. Extract the file: `unzip corbado_cli_[X.X.X]_windows_[Architecture].zip`
+3. Run the binary `corbado.exe`
+
+<Note>
+You might geht a warning by Microsoft Defender SmartScreen that the execution of an unknown app was stopped. You can ignore the message and run the .exe file.
+</Note>
+</Accordion>
+
+<Accordion title="macOS">
+1. Download the file for `macos` from  [GitHub](https://github.com/corbado/cli/releases/latest)
+2. Extract the file: `tar -xvf corbado_cli_[X.X.X]_macos_[Architecture].tar.gz`
+3. Run the binary `corbado`
+4. Optional: Install the binary in a global reachable directory like `/usr/local/bin`
+
+Because of security reasons the execution of external downloaded binaries from the internet is not allowed. The alert looks like the following:
+
+![macOS Alert](/images/products/corbado-connect/connect-via-webhooks/corbado-cli/macos-alert.webp)
+
+This must be overwritten for Corbado. Go to "System preferences":
+
+![macOS Alert](/images/products/corbado-connect/connect-via-webhooks/corbado-cli/macos-settings.webp)
+
+Click on "Security & Privacy". There you can see that the execution of the `corbado` binary was blocked:
+
+![macOS Alert](/images/products/corbado-connect/connect-via-webhooks/corbado-cli/macos-security-privacy.webp)
+
+Click on "Open Anyway". The following screen will appear:
+
+![macOS Alert](/images/products/corbado-connect/connect-via-webhooks/corbado-cli/macos-alert-2.webp)
+
+Click on "Open" and start the execution of the `corbado` binary. You only have to do it once.
+
+<Warning>
+If you update the binary by downloading a new version you have to do all steps again
+</Warning>
+</Accordion>
+
+<Accordion title="Linux">
+1. Download the file for `linux` from  [GitHub](https://github.com/corbado/cli/releases/latest)
+2. Extract the file: `tar -xvf corbado_cli_[X.X.X]_linux_[Architecture].tar.gz`
+3. Run the binary `corbado`
+4. Optional: Install the binary in a global reachable directory like `/usr/local/bin`
+</Accordion>
+
+<Accordion title="Go install">
+If you have a local go environment you can use go install:
+
+`go install github.com/corbado/cli/cmd/corbado@latest`
+</Accordion>
+
+</AccordionGroup>
+
+## Authentication
+
+The Corbado CLI needs to authenticate. For this you need to provide your **`projectID`** and a **`cliSecret`**. There is exactly one `cliSecret` per project and you can find it on our [developer panel](https://app.corbado.com/app/settings/credentials/cli-secret).
+
+There are multiple authentication methods. They are checked in order, first come first serve. So if you provide flags they overwrite environment variables and they overwrite the credential file.
+
+<Info>
+Of course, you only need to use one of the methods.
+</Info>
+
+| Method                | Description                                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Flags                 | You can provide the `projectID` and `cliSecret` via **`--projectID pro-XXX`** and **`--cliSecret XXX`**                                           |
+| Environment variables | You can set the `projectID` in the environment variable **`CORBADO_PROJECT_ID`** and the `cliSecret` in **`CORBADO_CLI_SECRET`**                  |
+| Credential file       | You can save the `projectID` and `cliSecret` to a credential file locally, see [login ](command-login.md)and [logout ](command-logout.md)commands |
+
+## Commands
+
+Currently the following commands are provided:
+
+| Command                           |                                                                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| [login](command-login.md)         | The `login` command asks for your `projectID` and `cliSecret` and saves them to a local credentials file              |
+| [logout](command-logout.md)       | The `logout` command just logs out by deleting the credentials file                                                   |
+| [subscribe](command-subscribe.md) | The `subscribe` command lets you receive [webhook ](../webhooks/)requests locally by subscribing to our tunnel server |

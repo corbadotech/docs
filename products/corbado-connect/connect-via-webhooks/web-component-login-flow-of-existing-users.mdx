@@ -1,0 +1,34 @@
+---
+title: "Web component login flow of existing users"
+description: "Use the web component to connect your existing users via webhooks."
+---
+
+Efficiently managing the login process for existing users is crucial for any online platform.The following flow shows the login process for already registered users and how to transition them to passwordless, passkey-first logins. The whole logic is included as our product intelligence in the standard web component and does not need to be customized.
+
+![Complete login flow](/images/products/corbado-connect/connect-via-webhooks/webcomponent-login-flow/webcomponent-login-flow.jpeg)
+
+## Prerequistes
+
+For the following process to work and be displayed, you must set up webhooks first as described [here](webhooks/).
+
+## 1. Simplified Login Process for Existing Users
+
+When it comes to existing users accessing your platform, simplifying the login procedure is of utmost importance. With Corbado’s solution, users are only required to enter their email address and click the "Continue" button to gain access to their accounts. It is explicitly checked whether the email address already exists in the customer's backend. Additionally, Corbado Product Intelligence checks which login methods exist for the user and whether they are technically possible.
+
+![Complete login flow](/images/products/corbado-connect/connect-via-webhooks/webcomponent-login-flow/login.webp)
+
+## 2. Login with Password or Email Magic Link
+
+For users who previously had a password but not a passkey, an option to log in with the password or via email magic link will be presented. Of course, if the user logs in with a password, it will be checked in the backend if it is correct. A passwordless login option (email magic links) can significantly enhance convenience and security, as this method eliminates the need for users to remember complex passwords, reducing the risk of forgotten passwords and thus login abundance rates. With a click on the magic link, users can securely access their accounts, enhancing their overall login experience.
+
+![Complete login flow](/images/products/corbado-connect/connect-via-webhooks/webcomponent-login-flow/login-fallback.webp)
+
+## 3. Enhancing Security with Passkeys
+
+After successfully logging in using either a password or an email magic link, Corbado's web component checks whether the user's device supports passkeys. If compatible, users are asked if they want to create a passkey. By introducing passkeys, your platform can provide an additional layer of security, mitigating the risks associated with password-based authentication methods, while tremendously simplifying the login experience.
+
+![Complete login flow](/images/products/corbado-connect/connect-via-webhooks/webcomponent-login-flow/passkey-create.webp)
+
+## 4. Passkeys as the Preferred Login Method
+
+Once a passkey has been created, it becomes the preferred method for user login (“passkey-first authentication”). Going forward, users will primarily use their passkeys, relegating passwords and email magic links to secondary fallback options. This shift to passkey-based login simplifies the login process and places an emphasis on security. Users can enjoy a seamless login experience, knowing that their accounts are protected by an advanced authentication mechanism.

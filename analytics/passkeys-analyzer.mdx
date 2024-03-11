@@ -1,0 +1,56 @@
+---
+title: "Passkeys Analyzer"
+description: "Corbado's free passkeys analyzer allows you to find out the passkey-readiness of your users based on data about the device, operating system and browser."
+---
+
+## Overview
+
+Passkeys support is constantly growing as Apple, Google and Microsoft establish passkeys as new login standard. To let you find out, how many of your users are "passkey-ready" and thus let you define your passkey transition strategy, we created a free passkeys analyzer.
+
+The passkeys analyzer gives you information about the following data:
+
+1. [User agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) (operating system, browser): lets you know which operating system and browser is used by your users
+2. [Platform authenticator](/other/glossary/platform-authenticators): tells you if your users' devices have built-in biometric scanners
+3. [Conditional UI](/other/glossary/conditional-ui): tells you if the users' browsers are able to display [Conditional UI](https://www.corbado.com/blog/webauthn-conditional-ui-passkeys-autofill), which allows to automatically fill in passkeys in login forms
+
+<Note>
+Corbado's passkeys analyzer does not store any personal data or uses cookies. All data is completely anonymized and stored in a German data center, thus making it fully GDPR compliant.
+</Note>
+
+## Configuration
+
+To use the passkeys analyzer, you need to create an account in the Corbado [developer panel](https://app.corbado.com/signin#register).
+
+If you sign up, a new project is automatically created. Every project in Corbado will get a unique `project ID` will be used to analyze the passkey-readiness of your user base.
+
+## 1. Integrate the JavaScript snippet
+
+Corbado will issue you with a JavaScript snippet. This code must appear on every page that you want Corbado to analyze. We recommend that you paste this code in your \<head> (or in a general file that is included in all your pages).
+
+```html
+<script>
+(function () {
+  var script=document.createElement('script');
+  script.src="https://analyze.corbado.com/assets/bundle.js";
+  script.defer=true
+  var head=document.getElementsByTagName('head')[0]
+  var done=false
+
+  script.onload=script.onreadystatechange = function(){
+    if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete') ) {
+      done=true;
+      tracking.visit({
+        projectID: 'pro-1',
+      })
+      script.onload = script.onreadystatechange = null;
+      head.removeChild(script);
+    }
+  };
+  head.appendChild(script);
+})()
+</script>
+```
+
+## 2. Start analyzing the passkey-readiness
+
+Once you have pushed your code to production, Corbado starts analyzing the passkey-readiness of your users. Take a look at the [charts in the developer panel](https://app.corbado.com/app/stats/passkeys-analyzer) to see details.

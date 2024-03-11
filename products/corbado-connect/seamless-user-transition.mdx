@@ -1,0 +1,40 @@
+---
+title: "Seamless User Transition"
+description: "Understand how you can seamlessly transition your existing password-based users to passkeys."
+---
+
+## General
+
+Transitioning existing users to passkeys in a very intelligent and seamless way is key to successfully benefiting from passkeys.
+
+The easiest way for achieving the seamless transition without defining own logic is to use [Corbado Connect via webhooks](/products/corbado-connect/connect-via-webhooks).
+
+Most importantly, no existing, running authentication system needs to be changed. The web component can be used in parallel to existing authentication systems and thus allows risk-free testing of Corbado.
+
+## No data duplication
+
+We try to avoid data duplication and have optimzed for a smart two-way synchronization between our solution and your databases. You don't need to worry about synchronization because we deliver all data we collect back is synced to your systems.
+
+Moreover, Corbado requires only very little information from your databases (as little as an identifier like UUID, email address or phone number). All other user-related data, like billing, addresses or preferences stays at your databases.
+
+## Risk-free testing of Corbado
+
+All data and public keys from passkeys can be synced back to your databases, which allows you to login the users who signed up with passkeys via Corbado's solution also via your alternative.
+
+## How to transition?
+
+To transition seamlessly to the passkey era, we suggest the following approach:
+
+<Steps>
+<Step title="Integrate Corbado with your system"/>
+<Step title="Run Corbado in parallel to your existing authentication"/>
+<Step title="Let test users authenticate via Corbado"/>
+<Step title="Gradually let more users authenticate via Corbado"/>
+</Steps>
+
+
+We have developed the web component to be used in parallel to your existing authentication solution. Beta customers can be forwarded towards Corbado's solution (group A) and the remainder (group B) uses the current authentication solution.
+
+Then, you can compare the sign-up rates, conversion rates, password resets etc. of the two groups.
+
+Once you see that our solution delivers the promised benefits, you can direct more and more users towards Corbado until eventually all users authenticate via Corbado.

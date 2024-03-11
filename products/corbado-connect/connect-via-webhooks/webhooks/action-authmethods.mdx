@@ -1,0 +1,32 @@
+---
+title: "Action: Authmethods"
+description: "The authMethods action lets you retrieve available authentication methods from existing users."
+---
+
+## Request
+
+In the following you find a sample request for **authMethods** webhook:
+
+```json
+{
+	"id": "who-1234567890", // Unique ID per webhook request
+	"projectID": "pro-1234567890", // Your project ID from the developer panel
+	"action": "authMethods",
+	"data": {
+		"username": "testUsername"
+	}
+}
+```
+
+## Response
+
+In the following you find a sample response for **authMethods** webhook:
+
+```json
+{
+	"responseID": "d5a80602-a771-4532-8cc8-6d4a9003d92a", // A response ID you can set in your backend for debugging 
+	"data": {
+		"status": "exists" // other values are "not_exists" and "blocked"
+	}
+}
+```

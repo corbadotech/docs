@@ -1,0 +1,8 @@
+---
+title: "OAuth2 comparison"
+description: "Understand how Corbado's session management approach compares to OAuth2."
+---
+
+It is important to understand that Corbado does neither operate as an **OAuth2** server nor does it strictly follow the **OAuth2** protocol. **OAuth2** primarily focuses on authorizing third-party access to resources. In contrast, Corbado offers a simpler yet highly secure authentication solution.
+
+However, if you are familiar with **OAuth2**, you will find some similarities. The **short-term** session (represented as **JWT**) serves a similar purpose as the access token in **OAuth2**. The **long-term** session (represented as session ID with database entry) functions similarly to the refresh token in **OAuth2**.

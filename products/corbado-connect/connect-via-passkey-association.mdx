@@ -1,0 +1,656 @@
+---
+title: "🔗 Connect via Passkey Association"
+description: "Passkey association is used to add passkeys to existing users who were authenticated via a legacy auth method."
+---
+
+## Overview
+
+For customers who already have an existing application and user base, Corbado provides a convenient way to offer these users passkeys as well - **without migrating and changing the entire existing authentication logic.** Via web components (`<corbado-passkey-associate/>` and `<corbado-passkey-associate-login/>`), users can add a passkey after they were authenticated with the existing, current authentication method.
+
+The general flow to associate a passkey with an account that has not been authenticated with Corbado, but with the existing authentication system looks as follows:
+
+1. [Create association token](#1-create-association-token)
+2. [Create passkey with association token](#2-create-passkey-with-association-token)
+3. [Login with passkey](#3-login-with-passkey)
+4. [Handle events](#4-handle-events)
+5. [Optional: Adapt styling](#5-optional-adapt-styling)
+6. [Session management](#6-session-management)
+
+<Info>
+An "association token" is a token that connects the authenticated user from your system with a passkey managed by Corbado. It's a cryptographic token that can only be used once.
+</Info>
+
+## Prerequisites
+
+* Create a Corbado account according to [Getting started](/overview/getting-started)
+* Obtain the project ID and API secret from the developer panel as you will need it for the Corbado Backend SDK
+* Install the Corbado Backend SDK (e.g. [Node.js](/backend-integration/node.js-sdk), [PHP](/backend-integration/php-sdk) or [Go](/backend-integration/go-sdk)) in your backend
+* Install the [Corbado web component](/frontend-integration/ui-components/web-component-previous-version/) in your frontend
+
+## 1. Create association token
+
+![Create Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-association-token.png)
+
+To start the passkey association process, you need to create an association token for a user that you have previously authenticated with your existing authentication system. This token can be created from your backend by calling the [Corbado Backend API](../../backend-integration/corbado-api-structure/backend-api). You need to send a POST request to [AssociationTokenCreate](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate) endpoint.
+
+Your backend receives an association token in the [Corbado Backend API's response](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate). You need the association token for the next step to consume it for a passkey.
+
+<Warning>
+Be aware that you should only create association tokens for users that you have successfully authenticated in your existing authentication system.
+</Warning>
+
+## 2. Create passkey with association token
+
+![Create Passkey with Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-passkey-with-association-token.png)
+
+After you've successfully created an association token in the previous step, you need to provide this association token to the `<corbado-passkey-associate/>` web component.
+
+Please make sure that you've [installed the Corbado web component](/frontend-integration/ui-components/web-component-previous-version/#1-embed-the-web-component-into-your-site) in your project (e.g. via `npm install @corbado/webcomponent`).
+
+Add the following code to your frontend and provide the `project-id` and `association-token` as parameters (`association-token` should be dynamically provided).&#x20;
+
+<CodeGroup>
+```jsx React
+import React from 'react';
+
+function App() {
+    return (
+        <corbado-passkey-associate 
+            project-id="<project ID>"
+            association-token="<assocation token>"/>
+    );
+}
+
+export default App;
+```
+
+```html Vue.js
+<template>
+  <corbado-passkey-associate 
+      project-id="<project ID>" 
+      association-token="<association token>">
+  </corbado-passkey-associate>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  components: {
+  },
+  methods: {
+},
+}
+</script>
+```
+
+```html Vanilla HTML / JS
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <corbado-passkey-associate 
+        project-id="<project ID>" 
+        association-token="<association token>"/>
+</body>
+</html>
+```
+
+</CodeGroup>
+
+## 3. Login with passkey
+
+![Create Passkey with Association Token](/images/products/corbado-connect/connect-via-passkey-association/login-with-passkey.png)
+
+
+Embed the `<corbado-passkey-associate-login/>` web component in your frontend in the location, where you would like to offer your users a passkey login.
+
+The web component comes with an input field for username (e.g. email address) that users have to fill. After they click on the "Passkey login" button, the passkey login flow starts and returns a success message, that you can react to, e.g. by redirecting the user to the authenticated area of your application.
+
+<CodeGroup>
+```jsx React
+import React from 'react';
+
+function App() {
+    return (
+        <corbado-passkey-associate-login 
+            project-id="<project ID>"/>
+    );
+}
+
+export default App;
+```
+
+```html Vue.js
+<template>
+  <corbado-passkey-associate-login 
+      project-id="<project ID>">
+  </corbado-passkey-associate-login>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  components: {
+  },
+  methods: {
+},
+}
+</script>
+```
+
+```html Vanilla HTML / JS
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <corbado-passkey-associate-login 
+        project-id="<project ID>"/>
+</body>
+</html>
+```
+
+</CodeGroup>
+
+## 4. Handle events
+
+If [Create Passkey with association token](#2-create-passkey-with-association-token) or [Login with Passkey](#3-login-with-passkey) fails for any reason or successfully finishs, an event is emitted. Corbado provides you with the following events, that you are free to handle in whatever fashion suits you best:
+
+### 4.1. Events for create passkey with association token
+
+* `PASSKEY_CREATION_SUCCESSFUL:` Passkey was created successfully, you can e.g. redirect the user or display a success message.
+* `PASSKEY_CREATION_FAILED:` For some reason, it was not possible to create the passkey or the user cancelled the passkey creation process.
+* `DEVICE_NOT_PASSKEY_READY:` The user's device is technically not able to create a passkey.
+
+<CodeGroup>
+
+```jsx React
+import React, {useCallback, useEffect, useState} from 'react';
+
+const PASSKEY_CREATION_SUCCESSFUL = "PASSKEY_CREATION_SUCCESSFUL"
+const PASSKEY_CREATION_FAILED = "PASSKEY_CREATION_FAILED"
+const DEVICE_NOT_PASSKEY_READY = "DEVICE_NOT_PASSKEY_READY"
+
+function App() {
+    const [ref, setRef] = useState(null)
+
+    const onPasskeyCreationSuccessful = useCallback((_event) => {
+        console.log(_event)
+    }, [])
+
+    const onPasskeyCreationFailed = useCallback((_event) => {
+        console.log(_event)
+    }, [])
+
+    const onDeviceNotPasskeyReady = useCallback((_event) => {
+        console.log(_event)
+    }, [])
+
+    useEffect(() => {
+        if (ref) {
+            ref.addEventListener(PASSKEY_CREATION_SUCCESSFUL, onPasskeyCreationSuccessful)
+            ref.addEventListener(PASSKEY_CREATION_FAILED,onPasskeyCreationFailed)
+            ref.addEventListener(DEVICE_NOT_PASSKEY_READY, onDeviceNotPasskeyReady)
+        }
+        // Cleanup function
+        return () => {
+            if (ref) {
+                ref.removeEventListener(PASSKEY_CREATION_SUCCESSFUL, onPasskeyCreationSuccessful)
+                ref.removeEventListener(PASSKEY_CREATION_FAILED,onPasskeyCreationFailed)
+                ref.removeEventListener(DEVICE_NOT_PASSKEY_READY", onDeviceNotPasskeyReady)
+            }
+        };
+    }, [ref, onPasskeyCreationSuccessful, onPasskeyCreationFailed, onDeviceNotPasskeyReady])
+
+
+    return (
+        <corbado-passkey-associate
+            project-id="<project ID>"
+            ref={setRef}
+            association-token="<association token>"/>
+    );
+}
+
+export default App;
+```
+
+```html Vue.js
+<template>
+  <corbado-passkey-associate 
+    project-id="<project ID>"
+    association-token="<association token>"
+    @DEVICE_NOT_PASSKEY_READY="onDeviceNotPasskeyReady" 
+    @PASSKEY_CREATION_SUCCESSFUL="onPasskeyCreationSuccessful" 
+    @PASSKEY_CREATION_FAILED="onPasskeyCreationFailed"/>
+</template>
+
+<script>
+const PASSKEY_CREATION_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL";
+const PASSKEY_CREATION_FAILED = "PASSKEY_LOGIN_FAILED";
+const DEVICE_NOT_PASSKEY_READY = "DEVICE_NOT_PASSKEY_READY";
+
+export default {
+  name: 'App',
+  components: {
+  },
+  methods: {
+  onDeviceNotPasskeyReady(_event) {
+    console.log(_event)
+  },
+  onPasskeyCreationSuccessful(_event) {
+    console.log(_event)
+  },
+  onPasskeyCreationFailed(_event) {
+    console.log(_event)
+  }
+}
+</script>
+```
+
+```html Vanilla HTML / JS
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <corbado-passkey-associate
+        id="corbado-passkey-associate" 
+        project-id="<project ID>" 
+        association-token="<association token>"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var corbadoPasskeyAssociate = document.getElementById('corbado-passkey-associate');
+
+        const PASSKEY_CREATION_SUCCESSFUL = "PASSKEY_CREATION_SUCCESSFUL";
+        const PASSKEY_CREATION_FAILED = "PASSKEY_CREATION_FAILED";
+        const DEVICE_NOT_PASSKEY_READY = "DEVICE_NOT_PASSKEY_READY";
+        
+        function onPasskeyCreationSuccessful(_event) {
+            console.log(_event);
+        }
+
+        function onPasskeyCreationFailed(_event) {
+            console.log(_event);
+        }
+
+        function onDeviceNotPasskeyReady(_event) {
+            console.log(_event);
+        }
+        
+        corbadoPasskeyAssociate.addEventListener(PASSKEY_CREATION_SUCCESSFUL, onPasskeyCreationSuccessful);
+        corbadoPasskeyAssociate.addEventListener(PASSKEY_CREATION_FAILED, onPasskeyCreationFailed);
+        corbadoPasskeyAssociate.addEventListener(DEVICE_NOT_PASSKEY_READY, onDeviceNotPasskeyReady);
+    });
+    </script>
+</body>
+</html>
+```
+
+</CodeGroup>
+
+### 4.2 Events for login with passkey
+
+* `PASSKEY_LOGIN_SUCCESSFUL:` Passkey login was successfully, you can e.g. redirect the user to the authenticated area or display a success message.
+* `PASSKEY_LOGIN_FAILED`: For some reason, it was not possible to login with the passkey or the user cancelled the passkey login process.
+* `PASSKEY_NOT_EXISTS`: There was no passkey found for this user on this device or the user did not create a passkey at all.
+
+<CodeGroup>
+```jsx React
+import React, {useCallback, useEffect, useRef} from 'react';
+
+const PASSKEY_LOGIN_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL"
+const PASSKEY_LOGIN_FAILED = "PASSKEY_LOGIN_FAILED"
+const PASSKEY_NOT_EXISTS = "PASSKEY_NOT_EXISTS"
+
+function App() {
+    const [ref, setRef] = useState(null)
+
+    const onPasskeyLoginSuccessful = useCallback((_event) => {
+        console.log(_event)
+    }, [])
+
+    const onPasskeyLoginFailed = useCallback((_event) => {
+        console.log(_event)
+    }, [])
+
+    const onPasskeyNotExists = useCallback((_event) => {
+        console.log(_event)
+    }, [])
+
+    useEffect(() => {
+        if (ref) {
+            ref.addEventListener(PASSKEY_LOGIN_SUCCESSFUL, onPasskeyLoginSuccessful)
+            ref.addEventListener(PASSKEY_LOGIN_FAILED,onPasskeyLoginFailed)
+            ref.addEventListener(PASSKEY_NOT_EXISTS, onPasskeyLoginSuccessful)
+        }
+        // Cleanup function
+        return () => {
+            if (ref) {
+                ref.removeEventListener(PASSKEY_LOGIN_SUCCESSFUL, onPasskeyLoginSuccessful)
+                ref.removeEventListener(PASSKEY_LOGIN_FAILED,onPasskeyLoginFailed)
+                ref.removeEventListener(PASSKEY_NOT_EXISTS", onPasskeyLoginSuccessful)
+            }
+        };
+
+
+    return (
+        <corbado-passkey-associate-login
+            project-id="<project ID>"
+            ref={setRef}/>
+    );
+}
+
+export default App;
+```
+
+```html Vue.js
+<template>
+  <corbado-passkey-associate-login 
+    project-id="<project ID>"
+    @PASSKEY_NOT_EXISTS="onPasskeyNotExists" 
+    @PASSKEY_LOGIN_SUCCESSFUL="onPasskeyLoginSuccessful" 
+    @PASSKEY_LOGIN_FAILED="onPasskeyLoginFailed"/>
+</template>
+
+<script>
+const PASSKEY_LOGIN_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL";
+const PASSKEY_LOGIN_FAILED = "PASSKEY_LOGIN_FAILED";
+const PASSKEY_NOT_EXISTS = "PASSKEY_NOT_EXISTS";
+
+export default {
+  name: 'App',
+  components: {
+  },
+  methods: {
+  onPasskeyNotExists(_event) {
+    console.log(_event)
+  },
+  onPasskeyLoginSuccessful(_event) {
+    console.log(_event)
+  },
+  onPasskeyLoginFailed(_event) {
+    console.log(_event)
+  }
+}
+</script>
+```
+
+```html Vanilla HTML / JS
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <corbado-passkey-associate-login
+        id="corbado-passkey-associate" 
+        project-id="<project ID>"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var corbadoPasskeyAssociateLogin = document.getElementById('corbado-passkey-associate-login');
+
+        const PASSKEY_LOGIN_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL";
+        const PASSKEY_LOGIN_FAILED = "PASSKEY_LOGIN_FAILED";
+        const PASSKEY_NOT_EXISTS = "PASSKEY_NOT_EXISTS";
+        
+        function onPasskeyLoginSuccessful(_event) {
+            console.log(_event);
+        }
+
+        function onPasskeyLoginFailed(_event) {
+            console.log(_event);
+        }
+
+        function onPasskeyNotExists(_event) {
+            console.log(_event);
+        }
+        
+        corbadoPasskeyAssociateLogin.addEventListener(PASSKEY_LOGIN_SUCCESSFUL, onPasskeyLoginSuccessful);
+        corbadoPasskeyAssociateLogin.addEventListener(PASSKEY_LOGIN_FAILED, onPasskeyLoginFailed);
+        corbadoPasskeyAssociateLogin.addEventListener(PASSKEY_NOT_EXISTS, onPasskeyNotExists);
+    });
+    </script>
+</body>
+</html>
+```
+</CodeGroup>
+
+
+### 4.3 Example: Handle events
+
+In the following, you find some example code on how to handle the events, e.g. redirecting the user or displaying a message.
+
+<CodeGroup>
+```jsx React
+import React, {useCallback, useEffect, useRef} from 'react';
+import { useHistory } from 'react-router-dom';
+
+const PASSKEY_LOGIN_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL"
+const PASSKEY_LOGIN_FAILED = "PASSKEY_LOGIN_FAILED"
+const PASSKEY_NOT_EXISTS = "PASSKEY_NOT_EXISTS"
+
+function App() {
+    const [ref, setRef] = useState(null)
+    const [loginFailed, setLoginFailed] = useState(false);
+
+    const onPasskeyLoginSuccessful = useCallback((_event) => {
+        setLoginFailed(false);
+    }, [])
+
+    const onPasskeyLoginFailed = useCallback((_event) => {
+        setLoginFailed(true);
+    }, [])
+
+    const onPasskeyNotExists = useCallback((_event) => {
+        history.push('/redirect');
+    }, [])
+
+    useEffect(() => {
+        if (ref) {
+            ref.addEventListener(PASSKEY_LOGIN_SUCCESSFUL, onPasskeyLoginSuccessful)
+            ref.addEventListener(PASSKEY_LOGIN_FAILED,onPasskeyLoginFailed)
+            ref.addEventListener(PASSKEY_NOT_EXISTS, onPasskeyLoginSuccessful)
+        }
+        // Cleanup function
+        return () => {
+            if (ref) {
+                ref.removeEventListener(PASSKEY_LOGIN_SUCCESSFUL, onPasskeyLoginSuccessful)
+                ref.removeEventListener(PASSKEY_LOGIN_FAILED,onPasskeyLoginFailed)
+                ref.removeEventListener(PASSKEY_NOT_EXISTS", onPasskeyLoginSuccessful)
+            }
+        };
+
+
+    return (
+        <div>
+            <corbado-passkey-associate-login
+                project-id="<project ID>"
+                ref={setRef}/>
+                
+            {loginFailed && <div>Failed Login</div>}
+        </div>
+    );
+}
+
+export default App;
+```
+
+```html Vue.js
+<template>
+  <corbado-passkey-associate-login 
+    project-id="<project ID>"
+    @PASSKEY_NOT_EXISTS="onPasskeyNotExists" 
+    @PASSKEY_LOGIN_SUCCESSFUL="onPasskeyLoginSuccessful" 
+    @PASSKEY_LOGIN_FAILED="onPasskeyLoginFailed"/>
+    
+    <div v-if="loginFailed">Failed Login</div>
+</template>
+
+<script>
+import { useRouter } from 'vue-router';
+
+const PASSKEY_LOGIN_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL";
+const PASSKEY_LOGIN_FAILED = "PASSKEY_LOGIN_FAILED";
+const PASSKEY_NOT_EXISTS = "PASSKEY_NOT_EXISTS";
+
+export default {
+  name: 'App',
+  data() {
+    return {
+      loginFailed: false,
+    };
+  },
+  components: {
+  },
+  methods: {
+  onPasskeyNotExists(_event) {
+    const router = useRouter();
+    router.push('/redirect');
+  },
+  onPasskeyLoginSuccessful(_event) {
+    this.loginFailed = false;
+  },
+  onPasskeyLoginFailed(_event) {
+    this.loginFailed = true;
+  }
+}
+</script>
+```
+
+```html Vanilla HTML / JS
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+    <style>
+        #failed-login {
+            display: none;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <corbado-passkey-associate-login
+        id="corbado-passkey-associate-login" 
+        project-id="<project ID>"/>
+    <div id="failed-login">Failed Login</div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var corbadoPasskeyAssociateLogin = document.getElementById('corbado-passkey-associate-login');
+        var failedLoginMessage = document.getElementById('failed-login');
+        
+        const PASSKEY_LOGIN_SUCCESSFUL = "PASSKEY_LOGIN_SUCCESSFUL";
+        const PASSKEY_LOGIN_FAILED = "PASSKEY_LOGIN_FAILED";
+        const PASSKEY_NOT_EXISTS = "PASSKEY_NOT_EXISTS";
+        
+        function onPasskeyLoginSuccessful(_event) {
+            failedLoginMessage.style.display = 'none';
+        }
+
+        function onPasskeyLoginFailed(_event) {
+            failedLoginMessage.style.display = 'block';
+        }
+
+        function onPasskeyNotExists(_event) {
+            window.location.href = '/redirect';
+        }
+        
+        corbadoPasskeyAssociateLogin.addEventListener(PASSKEY_LOGIN_SUCCESSFUL, onPasskeyLoginSuccessful);
+        corbadoPasskeyAssociateLogin.addEventListener(PASSKEY_LOGIN_FAILED, onPasskeyLoginFailed);
+        corbadoPasskeyAssociateLogin.addEventListener(PASSKEY_NOT_EXISTS, onPasskeyNotExists);
+    });
+    </script>
+</body>
+</html>
+```
+</CodeGroup>
+
+
+## 5. Optional: Adapt styling
+
+To adapt the web components to your UI, you can modify the following style properties. Do so by adding CSS for the `<corbado-passkey-associate/>` and `<corbado-passkey-associate-login/>` web components:
+
+```css
+<style>
+    corbado-passkey-associate {
+           --primary-color: #1953ff;
+           --primary-color-rgb: 25, 83, 255;
+           --primary-background-color: #1953ff;
+           --primary-hover-color: #1145df;
+
+           --secondary-font-color: #59acff;
+           --secondary-background-color: transparent;
+           --secondary-border-color: #59acff;
+
+
+           --secondary-background-hover-color: transparent;
+           --secondary-border-hover-color: #59acff;
+           --secondary-font-hover-color: #59acff;
+           --heading-color: #fff;
+           --text-color: #d0d9f5;
+           --text-disabled-color: #999;
+           --light-color: #59acff; //also used for link colors
+           --error-color: #FF4C51;
+           --primary-font: 'Space Grotesk', sans-serif;
+           --secondary-font: 'Inter', sans-serif;
+           --border-color: rgba(143, 155, 191, 0.5);
+           --email-provider-btn-color: rgba(143, 155, 191, 0.5);
+           
+           --border-radius: 25px;
+           --border-container-width: 0; // outer border container
+           --text-align: left;
+    }
+    
+    corbado-passkey-associate-login {
+           --primary-color: #1953ff;
+           --primary-color-rgb: 25, 83, 255;
+           --primary-background-color: #1953ff;
+           --primary-hover-color: #1145df;
+
+           --secondary-font-color: #59acff;
+           --secondary-background-color: transparent;
+           --secondary-border-color: #59acff;
+
+
+           --secondary-background-hover-color: transparent;
+           --secondary-border-hover-color: #59acff;
+           --secondary-font-hover-color: #59acff;
+           --heading-color: #fff;
+           --text-color: #d0d9f5;
+           --text-disabled-color: #999;
+           --light-color: #59acff; //also used for link colors
+           --error-color: #FF4C51;
+           --primary-font: 'Space Grotesk', sans-serif;
+           --secondary-font: 'Inter', sans-serif;
+           --border-color: rgba(143, 155, 191, 0.5);
+           --email-provider-btn-color: rgba(143, 155, 191, 0.5);
+           
+           --border-radius: 25px;
+           --border-container-width: 0; // outer border container
+           --text-align: left;
+    }
+</style>
+```
+<Info>
+To adjust the styling, you can use a service like [https://jsfiddle.net/](https://jsfiddle.net/) and see your results directly.
+</Info>
+
+## 6. Session management
+
+To use Corbado session management in combination with the `<corbado-passkey-associate-login/>` web component, you need to make sure that Corbado session management is switched on in the [developer panel](https://app.corbado.com/app/settings/sessions).
+
+Moreover, the [Redirect URL](/helpful-guides/url-overview#3-redirect-url) needs to be set to the URL where you want the Corbado **short-term** and **long-term** session cookie to be dropped at. You can set the Redirect URL [here in the developer panel](https://app.corbado.com/app/settings/general/urls).
+
+The integration into the frontend works the same ways as for the regular `<corbado-auth/>` web component.
+
+[Protecting the routes](/sessions/protecting-routes) work also the regular way.
