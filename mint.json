@@ -38,11 +38,6 @@
 
   "anchors": [
     {
-      "name": "Api Reference",
-      "icon": "computer",
-      "url": "https://api.corbado.com/docs/api/"
-    },
-    {
       "name": "Community",
       "icon": "slack",
       "url": "https://join.slack.com/t/corbado/shared_invite/zt-1b7867yz8-V~Xr~ngmSGbt7IA~g16ZsQ"
@@ -150,9 +145,7 @@
     },
     {
       "group": "Analytics",
-      "pages": [
-        "analytics/passkeys-analyzer"
-      ]
+      "pages": ["analytics/passkeys-analyzer"]
     },
     {
       "group": "Helpful Guides",
@@ -227,7 +220,8 @@
         "frontend-integration/angular",
         "frontend-integration/next.js",
         "frontend-integration/nuxt.js",
-        "frontend-integration/svelte"
+        "frontend-integration/svelte",
+        "frontend-integration/link-to-api-ref"
       ]
     },
     {
@@ -243,7 +237,8 @@
         },
         "backend-integration/node.js-sdk",
         "backend-integration/php-sdk",
-        "backend-integration/go-sdk"
+        "backend-integration/go-sdk",
+        "backend-integration/link-to-api-ref"
       ]
     }
   ],
