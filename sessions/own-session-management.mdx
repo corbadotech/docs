@@ -6,7 +6,7 @@ description: "Learn how to use your own session management while using Corbado's
 <Warning>
 The following documentation provides a detailed explanation how Corbado can be used with your own session management. If you build a new application without existing users, we strongly recommend to use [Corbado's session management](./overview), as this will save you a lot of implementation time and is a proven solution.
 
-To **use your own session management**, you have to **switch the toggle** in the Corbado developer panel ["Settings" - "Sessions"](https://app.corbado.com/app/settings/sessions). Otherwise, your [Redirect URL](/helpful-guides/url-overview.md#3-redirect-url) will not receive the `corbadoAuthToken`.&#x20;
+To **use your own session management**, you have to **switch the toggle** in the Corbado developer panel ["Settings" - "Sessions"](https://app.corbado.com/app/settings/sessions). Otherwise, your [Redirect URL](/helpful-guides/url-overview#3-redirect-url) will not receive the `corbadoAuthToken`.&#x20;
 
 </Warning>
 
@@ -16,9 +16,9 @@ To **use your own session management**, you have to **switch the toggle** in the
 
 ## 1. Get and validate corbadoAuthToken
 
-After successful authentication, e.g. passkeys or email magic link, Corbado redirects the user to the [Redirect URL](/helpful-guides/url-overview.md#3-redirect-url) that you have defined in the [developer panel](https://app.corbado.com/app/settings/general/urls).&#x20;
+After successful authentication, e.g. passkeys or email magic link, Corbado redirects the user to the [Redirect URL](/helpful-guides/url-overview#3-redirect-url) that you have defined in the [developer panel](https://app.corbado.com/app/settings/general/urls).&#x20;
 
-The [Redirect URL](/helpful-guides/url-overview.md#3-redirect-url) will be appended with a GET parameter (query string) called `corbadoAuthToken` (e.g. `https://www.acme.com/corbado?corbadoAuthToken=<tokenValue>`). This token is valid for five minutes and can only be used once.&#x20;
+The [Redirect URL](/helpful-guides/url-overview#3-redirect-url) will be appended with a GET parameter (query string) called `corbadoAuthToken` (e.g. `https://www.acme.com/corbado?corbadoAuthToken=<tokenValue>`). This token is valid for five minutes and can only be used once.&#x20;
 
 To proceed, you need to validate this token:
 

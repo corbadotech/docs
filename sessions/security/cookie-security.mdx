@@ -9,7 +9,7 @@ On successful authentication, the Corbado [Frontend API](/backend-integration/co
 
 | Type                   | Name              | Value                      | Path                                                                    | Attributes                         | Default duration |
 | ---------------------- | ----------------- | -------------------------- | ----------------------------------------------------------------------- | ---------------------------------- | ---------------- |
-| **Short-term** session | cbo_short_session | JWT                        | [Application URL](/helpful-guides/url-overview.md#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
+| **Short-term** session | cbo_short_session | JWT                        | [Application URL](/helpful-guides/url-overview#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
 | **Long-term** session  | cbo_long_session  | Session ID (opaque string) | [Frontend API](/backend-integration/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
 
 Both the **short-term** session (represented as **JWT**) and the **long-term** session (represented as session ID with database entry) cookies are set with the `secure` flag, which ensures that they can only be accessed on secure internet connections.
