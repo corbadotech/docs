@@ -159,6 +159,21 @@
       ]
     },
     {
+      "group": "Helpful Guides",
+      "pages": [
+        "helpful-guides/url-overview",
+        {
+          "group": "Go Live",
+          "pages": [
+            "helpful-guides/go-live",
+            "helpful-guides/go-live/troubleshooting"
+          ]
+        },
+        "helpful-guides/local-multi-device-testing-with-ngrok",
+        "helpful-guides/cross-origin-resource-sharing-cors"
+      ]
+    },
+    {
       "group": "Frontend Integration",
       "pages": [
         {
