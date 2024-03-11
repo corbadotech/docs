@@ -1,0 +1,55 @@
+---
+title: "Google Chrome Virtual Authenticator"
+description: "As a developer it might be helpful to use the Google Chrome WebAuthn emulator. It allows you to test the WebAuthn API with a virtual authenticator."
+---
+
+## How to activate the virtual authenticator
+
+1. Visit the Corbado [Demo Page ](https://passkeys.eu)with the Google Chrome browser
+2. Open the Google Chrome DevTool by right clicking anywhere on the webpage and click on 'inspect'
+3. Click **More Options** > **More tools** > **WebAuthn** to open the WebAuthn tab
+
+![Google Chrome Virtual Authenticator](/images/other/virtual-auth/virtual-auth.webp)
+
+## Enable the virtual authenticator environment
+
+1. On the WebAuthn tab, click the checkbox to **enable virtual authenticator environment**
+2. Once enabled, the **New authenticator** section appears
+
+![Google Chrome Virtual Authenticator](/images/other/virtual-auth/virtual-auth-2.webp)
+
+
+## Add a virtual authenticator
+
+1. In the New Authenticator section, configure the following options:
+   * Protocol: **ctap2** (client to Authenticator Protocol) or **u2f** (Universal 2nd factor)
+   * Transport: **usb**, **nfc**, **ble** (bluetooth low energy) or **internal** (platform authenticator)
+   * Support **resident keys** (client-side discoverable credentials)
+   * Support **user verification** (the technical process by which an authenticator locally authorizes the invocation of the authenticatorMakeCredential and authenticatorGetAssertion operations)
+   * Supports **large blob** (available only for ctap2 protocol)
+2. Click the **Add** button
+3. You can see a section with your newly-created authenticator
+
+![Google Chrome Virtual Authenticator](/images/other/virtual-auth/webauthn.webp)
+
+For the Corbado API, we recommend the use of the ctap2 protocol, active support of resident keys and user verification.
+
+The Authenticator section includes a credentials table. The table is empty until a credential is registered with the authenticator
+
+![Google Chrome Virtual Authenticator](/images/other/virtual-auth/webauthn-2.webp)
+
+## Register a new credential
+
+To register a new credential, go to the [Corbado Demo](https://demo.corbado.com/) page
+
+1. On the demo page, click **Sign up** on the right upper corner, select **Biometrics** and enter your personal information
+2. Click on Sign up at the bottom of the page
+3. A new credential is now added to the Credentials table in the WebAuthn tab
+
+![Google Chrome Virtual Authenticator](/images/other/virtual-auth/webauthn-3.webp)
+
+
+After successful registration by confirming the email magic link, you can login any number of times. The **Signature Count** will increase accordingly.
+
+![Google Chrome Virtual Authenticator](/images/other/virtual-auth/webauthn-4.webp)
+

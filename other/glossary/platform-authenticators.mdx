@@ -1,0 +1,30 @@
+---
+title: "Platform Authenticators"
+description: "Learn everything you need to know about Platform Authenticators."
+---
+
+## Definition
+
+Authenticators are cryptographically backed devices that are used to create and securely store credentials for an application on behalf of the user.&#x20;
+
+The main task of an authenticator is to manage the private key and use it for signing authentication requests.
+
+## Types of authenticators
+
+### Platform authenticator (internal authenticator)
+
+Platform authenticators are bound to a specific device:
+
+* Apple: Touch ID and Face ID
+* Microsoft: Windows Hello
+* Google: Android biometric features
+
+A built-in cryptographic element called trusted platform module (TPM) is used to manage the public and private keys. It typically used the device's biometric capability through built-in face or fingerprint scanners for authenticating users. Although biometrics are most prevalent, they are not required: Windows Hello  or Apple Face ID also allow a PIN or Android smartphones allow a lock-screen pattern.
+
+### Roaming authenticators (cross-platform authenticators)
+
+Roaming authenticators are external, portable devices which can be used with different client devices (e.g. laptops, smartphones, tablets). They can be attached to client devices using USB, NFC or Bluetooth. The most common form of roaming authenticators are security keys, which exist in great variety (e.g. YubiKeys). Some models have built-in fingerprint scanners while others only require a button press.
+
+Due to the technical complexity and low user adoption of roaming authenticators, Corbado does not support them to not overwhelm or confuse end users.
+
+Moreover, roaming authenticators should not be mixed up with the[ sharing capability of passkeys via QR code scanning / Bluetooth](https://www.corbado.com/blog/webauthn-passkey-qr-code) or [AirDrop](https://www.corbado.com/blog/share-passkeys-apple-devices).
