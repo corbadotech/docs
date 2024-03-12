@@ -1,14 +1,3 @@
 html {
   scroll-behavior: smooth !important;
 }
-
-/* Default value for light mode */
-:root {
-  --primary-custom: var(--primary);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-custom: var(--primary-light);
-  }
-}
