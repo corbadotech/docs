@@ -34,6 +34,11 @@
       "url": "https://join.slack.com/t/corbado/shared_invite/zt-1b7867yz8-V~Xr~ngmSGbt7IA~g16ZsQ"
     },
     {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/corbado"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.corbado.com/blog"
@@ -235,8 +240,6 @@
   ],
   "footerSocials": {
     "twitter": "https://twitter.com/corbadotech",
-    "github": "https://github.com/corbado",
     "linkedin": "https://www.linkedin.com/company/corbado",
-    "substack": "https://google.com"
   }
 }
