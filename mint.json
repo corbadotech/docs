@@ -25,16 +25,7 @@
     "name": "Developer Panel",
     "url": "https://app.corbado.com/"
   },
-  "tabs": [
-    {
-      "name": "Frontend Integration",
-      "url": "frontend-integration"
-    },
-    {
-      "name": "Backend Integration",
-      "url": "backend-integration"
-    }
-  ],
+
 
   "anchors": [
     {
@@ -72,6 +63,69 @@
             "overview/sign-up-and-login-with-passkeys/user-flow-configuration"
           ]
         }
+      ]
+    },
+    {
+      "group": "Frontend Integration",
+      "pages": [
+        {
+          "group": "UI Components",
+          "pages": [
+            "frontend-integration/ui-components",
+            "frontend-integration/ui-components/less-than-corbadoprovider-greater-than",
+            "frontend-integration/ui-components/less-than-signup-greater-than",
+            "frontend-integration/ui-components/less-than-login-greater-than",
+            "frontend-integration/ui-components/less-than-corbadoauth-greater-than",
+            "frontend-integration/ui-components/less-than-passkeylist-greater-than",
+            {
+              "group": "Web Component (deprecated)",
+              "pages": [
+                "frontend-integration/ui-components/web-component-previous-version",
+                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
+                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "React",
+          "pages": [
+            "frontend-integration/react",
+            "frontend-integration/react/usecorbado",
+            "frontend-integration/react/usecorbadosession"
+          ]
+        },
+        {
+          "group": "Vanilla JS",
+          "pages": [
+            "frontend-integration/vanilla-js",
+            "frontend-integration/vanilla-js/global-corbado-object"
+          ]
+        },
+        "frontend-integration/flutter",
+        "frontend-integration/vue.js",
+        "frontend-integration/angular",
+        "frontend-integration/next.js",
+        "frontend-integration/nuxt.js",
+        "frontend-integration/svelte",
+        "frontend-integration/link-to-api-ref"
+      ]
+    },
+    {
+      "group": "Backend Integration",
+      "pages": [
+        {
+          "group": "Corbado API Structure",
+          "pages": [
+            "backend-integration/corbado-api-structure",
+            "backend-integration/corbado-api-structure/frontend-api",
+            "backend-integration/corbado-api-structure/backend-api"
+          ]
+        },
+        "backend-integration/node.js-sdk",
+        "backend-integration/php-sdk",
+        "backend-integration/go-sdk",
+        "backend-integration/link-to-api-ref"
       ]
     },
     {
@@ -176,69 +230,6 @@
         },
         "other/security-and-privacy",
         "other/google-chrome-virtual-authenticator"
-      ]
-    },
-    {
-      "group": "Frontend Integration",
-      "pages": [
-        {
-          "group": "UI Components",
-          "pages": [
-            "frontend-integration/ui-components",
-            "frontend-integration/ui-components/less-than-corbadoprovider-greater-than",
-            "frontend-integration/ui-components/less-than-signup-greater-than",
-            "frontend-integration/ui-components/less-than-login-greater-than",
-            "frontend-integration/ui-components/less-than-corbadoauth-greater-than",
-            "frontend-integration/ui-components/less-than-passkeylist-greater-than",
-            {
-              "group": "Web Component (deprecated)",
-              "pages": [
-                "frontend-integration/ui-components/web-component-previous-version",
-                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
-                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
-              ]
-            }
-          ]
-        },
-        {
-          "group": "React",
-          "pages": [
-            "frontend-integration/react",
-            "frontend-integration/react/usecorbado",
-            "frontend-integration/react/usecorbadosession"
-          ]
-        },
-        {
-          "group": "Vanilla JS",
-          "pages": [
-            "frontend-integration/vanilla-js",
-            "frontend-integration/vanilla-js/global-corbado-object"
-          ]
-        },
-        "frontend-integration/flutter",
-        "frontend-integration/vue.js",
-        "frontend-integration/angular",
-        "frontend-integration/next.js",
-        "frontend-integration/nuxt.js",
-        "frontend-integration/svelte",
-        "frontend-integration/link-to-api-ref"
-      ]
-    },
-    {
-      "group": "Backend Integration",
-      "pages": [
-        {
-          "group": "Corbado API Structure",
-          "pages": [
-            "backend-integration/corbado-api-structure",
-            "backend-integration/corbado-api-structure/frontend-api",
-            "backend-integration/corbado-api-structure/backend-api"
-          ]
-        },
-        "backend-integration/node.js-sdk",
-        "backend-integration/php-sdk",
-        "backend-integration/go-sdk",
-        "backend-integration/link-to-api-ref"
       ]
     }
   ],
