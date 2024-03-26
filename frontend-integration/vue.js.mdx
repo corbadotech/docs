@@ -26,7 +26,7 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
   onMounted(async() => {
     await Corbado.load({
-      projectId: import.meta.env.VITE_CORBADO_PROJECT_ID,
+      projectId: <VITE_CORBADO_PROJECT_ID>,
       darkMode: 'off',
     });
     const authElement = document.getElementById("corbado-auth");
