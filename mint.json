@@ -174,7 +174,7 @@
             "products/corbado-connect",
             "products/corbado-connect/connect-via-passkey-association",
             {
-              "group": "Connect via Webhooks",
+              "group": "Connect via Webhooks (Outdated)",
               "pages": [
                 "products/corbado-connect/connect-via-webhooks",
                 "products/corbado-connect/connect-via-webhooks/web-component-login-flow-of-existing-users",
