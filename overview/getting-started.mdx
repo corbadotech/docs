@@ -18,16 +18,28 @@ After successful account creation, the Corbado developer panel opens and you can
 
 After clicking on "Create new project", a wizard appears that helps you to set up your project. After you've successfully set up your project, you should see the following screen:
 
-![Developer panel project overview](/images/overview/getting-started/dev-panel-project-overview.webp)
+![Developer panel project overview](/images/overview/getting-started/dev-panel-project-overview-2.webp)
 
 
-## 3. Get project ID
+## 3. Test your settings
 
-If you create an account in the Corbado developer panel, a project with corresponding project ID is automatically created.
+The default settings are set so that the components can be tested directly in the preview. Click on the "preview" button (at the top) and a new tab will open in which the components are already built into an example page.
 
-The project ID can be retrieved from the heading or in the tile for "Corbado API access" (see screenshot above).
+The following two configurations can be made that help you to implement passkeys smoothly.
 
-## 4. Choose your frontend
+- [User flow configuration](/overview/sign-up-and-login-with-passkeys/user-flow-configuration): this will impact the user authentication journey (which screens is the user going to see).
+- [Passkey configuration](/overview/sign-up-and-login-with-passkeys/passkey-configuration): this will impact which apps and websites your users' passkeys can be used.
+
+The settings changes can be seen in the preview tab. 
+
+
+## 4. Get project ID
+
+If you create a project in the Corbado developer panel, a corresponding project ID is automatically created.
+
+The project ID can be retrieved from the heading or in the tile for "Corbado API access" (see screenshot above) and is needed to implement the UI components in your application.
+
+## 5. Choose your frontend
 
 Choose your frontend technology to get customized instructions on how to add passkeys (this step is also described in the developer panel's project wizard that appears when you click on "Create new project"):
 
@@ -80,14 +92,6 @@ Choose your frontend technology to get customized instructions on how to add pas
 </CardGroup>
 
 <Note>
-    Not found your Framework? The [Vanilla JS](/frontend-integration/vanilla-js) login components are compatible with a variety of languages such as PHP, Python, and others.
+    **Not found your framework?** If your project supports Javascript, you can always use the [Vanilla JS](/frontend-integration/vanilla-js) login components, no matter what language or framework you use.
 </Note>
 
-{/*
-<Info>
-Google Chrome Virtual Authenticator
-
-As a developer, it might be helpful to use the [Google Chrome WebAuthn emulator](/other/google-chrome-virtual-authenticator). It allows you to test the WebAuthn API (the base for passkeys) with a virtual authenticator if your hardware does not offer any biometric scanners:
-
-</Info>
-*/}
