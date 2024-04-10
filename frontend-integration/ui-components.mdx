@@ -8,9 +8,23 @@ Corbado helps you to add passkeys to your sign-up and to your login. This involv
 As all of this involves a lot of complex UI, Corbado provides you with prebuilt and configurable **UI components**.
 
 
-Our latest components are available for the following frameworks / technologies:
+Our latest components are available for the following frameworks / technologies and are supported for multiple packages.
 
-* [React](/frontend-integration/react) and [Next.js](/frontend-integration/next.js)
-* [VanillaJS](/frontend-integration/vanilla-js)
+- [React](/frontend-integration/react)
+    - [Next.js](/frontend-integration/next.js)
+- [VanillaJS](/frontend-integration/vanilla-js)
+    - [Vue.js](/frontend-integration/vue.js)
+    - [Angular](/frontend-integration/angular)
+    - [Svelte](/frontend-integration/svelte)
+    - [Nuxt.js](/frontend-integration/nuxt.js)
 
-**Note:** You can still use Corbado with other frameworks (e.g. [Vue.js](/frontend-integration/vue.js), [Svelte](/frontend-integration/svelte), [Angular](/frontend-integration/angular)) by using our web js package. Find the related docs [here](/frontend-integration/vanilla-js).
+**Note:** You can use the Corbado [VanillaJS](/frontend-integration/vanilla-js) with other frameworks / technology that is using Javascript.
+
+
+| Component          | React                        | VanillaJS                         | Description                 |
+| ------------------ | ---------------------------- | --------------------------------- | --------------------------- |  
+| [Corbado Provider](/frontend-integration/ui-components/less-than-corbadoprovider-greater-than)   | ```<CorbadoProvider/>```     | ```Corbado.load()```              |**Necessary for adding ui components to an app.** This component is a wrapper that allows you do define global configurations.|
+| [Sign Up](/frontend-integration/ui-components/less-than-signup-greater-than)            | ```<SignUp/> ```             | ```Corbado.mountSignUpUI()```     |Component that allows users to create a new account.|
+| [Log In](/frontend-integration/ui-components/less-than-login-greater-than)             | ```<Login/>```               | ```Corbado.mountLoginUI()```      |Component that allows users to log in to their account.|
+| [Corbado Auth](/frontend-integration/ui-components/less-than-corbadoauth-greater-than)      | ```<CorbadoAuth/>```         | ```Corbado.mountAuthUI()```       |Combines Sign Up and Log In component and takes care of authentication-related navigation.|
+| [Passkey List](/frontend-integration/ui-components/less-than-passkeylist-greater-than)       | ```<PasskeyList/>```         | ```Corbado.mountPasskeyListUI()```|Can be embedded in user's profile page and lists all passkeys created by the user.|
