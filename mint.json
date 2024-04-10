@@ -51,21 +51,19 @@
         "overview/welcome",
         "overview/getting-started",
         {
-          "group": "Passkeys",
-          "pages": [
-            "overview/passkeys",
-            "overview/passkeys/relying-party-id",
-            "overview/passkeys/passkeys-in-web-apps",
-            "overview/passkeys/passkeys-in-native-apps",
-            "overview/passkeys/fallback-options"
-          ]
-        },
-        {
           "group": "Sign-up & Login with Passkeys",
           "pages": [
             "overview/sign-up-and-login-with-passkeys",
             "overview/sign-up-and-login-with-passkeys/passkey-configuration",
             "overview/sign-up-and-login-with-passkeys/user-flow-configuration"
+          ]
+        },
+        {
+          "group": "Corbado API Structure",
+          "pages": [
+            "overview/corbado-api-structure",
+            "overview/corbado-api-structure/frontend-api",
+            "overview/corbado-api-structure/backend-api"
           ]
         }
       ]
@@ -119,14 +117,6 @@
     {
       "group": "Backend Integration",
       "pages": [
-        {
-          "group": "Corbado API Structure",
-          "pages": [
-            "backend-integration/corbado-api-structure",
-            "backend-integration/corbado-api-structure/frontend-api",
-            "backend-integration/corbado-api-structure/backend-api"
-          ]
-        },
         "backend-integration/node.js-sdk",
         "backend-integration/php-sdk",
         "backend-integration/go-sdk",
@@ -211,6 +201,16 @@
       "pages": [
         "helpful-guides/url-overview",
         {
+          "group": "Passkeys",
+          "pages": [
+            "helpful-guides/passkeys",
+            "helpful-guides/passkeys/relying-party-id",
+            "helpful-guides/passkeys/passkeys-in-web-apps",
+            "helpful-guides/passkeys/passkeys-in-native-apps",
+            "helpful-guides/passkeys/fallback-options"
+          ]
+        },
+        {
           "group": "Go Live",
           "pages": [
             "helpful-guides/go-live",
@@ -224,15 +224,6 @@
     {
       "group": "Other",
       "pages": [
-        {
-          "group": "Glossary",
-          "pages": [
-            "other/glossary/conditional-ui",
-            "other/glossary/platform-authenticators",
-            "other/glossary/social-login-oauth",
-            "other/glossary/fido2-webauthn"
-          ]
-        },
         "other/security-and-privacy",
         "other/google-chrome-virtual-authenticator"
       ]
