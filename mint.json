@@ -22,7 +22,7 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Developer Panel",
+    "name": "Start for free",
     "url": "https://app.corbado.com/"
   },
 
@@ -55,8 +55,7 @@
           "pages": [
             "overview/configuration",
             "overview/configuration/user-flow-configuration",
-            "overview/configuration/passkey-configuration",
-            "overview/configuration/ui-component-configuration"
+            "overview/configuration/passkey-configuration"
 
           ]
         },

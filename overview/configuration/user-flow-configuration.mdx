@@ -9,13 +9,13 @@ Besides defining the [technical passkey settings in the previous section](/overv
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface) in the **Settings>Use interface** page:
 
-1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings)
-2. [Passkey pop-up frequency](/overview/configuration/user-flow-configuration#2-passkey-pop-up-frequency)
-3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks)
+1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Adjust the settings associated with the signup part of your user flow.
+2. [Passkey pop-up frequency](/overview/configuration/user-flow-configuration#2-passkey-pop-up-frequency): Set the frequency for prompting users without a passkey to add one.
+3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks): Configure your authentication path by specifying how users are authenticated.
 
 
-## 1. Sign-up settings
-
+## 1. Sign up settings
+This sectin allow you to adjust the settings that affect the signup part of user authentication. <br/>You can configure two settings:
 * Allow users to self-sign-up for your project.
 * Require users to set their name.
 
@@ -32,10 +32,10 @@ This setting allows adjusting the frequency at which a user without a passkey is
 
 Corbado's UI-Components support multiple login identifiers.
 
-<Note>
-  Login identifiers are unique and thus two user's can never use the same login identifier. 
+<Tip>
+  **Login identifiers** are unique and thus two user's can never use the same login identifier. 
   Login identifiers can be used for two different things: They can identify a user's account and they can act as a fallback when passkeys are not available.
-</Note>
+</Tip>
 
 Currently the following login identifier are supported:
 
@@ -71,7 +71,7 @@ To ensure a smooth signup and login process, even when no passkeys are supported
 If a verifiable identifier is activated, it automatically serves as the fallback option.
 
 <Note> 
-If **only username** is activated, no fallback option is available. In such cases, authentication or account recovery is not possible in the event of passkey loss, and login on a device without passkey support.
+Enabling **only the username** will provide no fallback option and may leave users unable to recover accounts or authenticate on devices that do not support passkeys. To address this, it's recommended to activate a secondary identifier, without allowing login, to serve as a fallback.
 
 </Note>
 
