@@ -5,13 +5,13 @@ description: "Each application has individual user requirements that can be conf
 
 ## Introduction
 
-Besides defining the [technical passkey settings in the previous section](/overview/sign-up-and-login-with-passkeys/passkey-configuration), we now take a look how the user flow and user experience can be adapted. These settings directly impact the user journey during sign-up and login.
+Besides defining the [technical passkey settings in the previous section](/overview/configuration/passkey-configuration), we now take a look how the user flow and user experience can be adapted. These settings directly impact the user journey during sign-up and login.
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface) in the **Settings>Use interface** page:
 
-1. [Sign-up settings](/overview/sign-up-and-login-with-passkeys/user-flow-configuration#1-sign-up-settings)
-2. [Passkey pop-up frequency](/overview/sign-up-and-login-with-passkeys/user-flow-configuration#2-passkey-pop-up-frequency)
-3. [Login identifiers and fallbacks](/overview/sign-up-and-login-with-passkeys/user-flow-configuration#3-login-identifiers-and-fallbacks)
+1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings)
+2. [Passkey pop-up frequency](/overview/configuration/user-flow-configuration#2-passkey-pop-up-frequency)
+3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks)
 
 
 ## 1. Sign-up settings
@@ -47,7 +47,7 @@ Currently the following login identifier are supported:
 
 There are two types of login identifier:
 
-- Verifiable by [one-time passcode](/overview/customization/user-flow-configuration#3-4-1-one-time-passcode) or [email magic link](/overview/customization/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
+- Verifiable by [one-time passcode](/overview/configuration/user-flow-configuration#3-4-1-one-time-passcode) or [email magic link](/overview/configuration/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
 - Not verifiable (username)"
 
 Depending on the desired authentication journey, one or more login identifiers can be activated. Each activated login identifier is requested during the signup process. 
@@ -55,7 +55,7 @@ Depending on the desired authentication journey, one or more login identifiers c
 An overview of the available login identifiers and their properties can be found below. 
 
 
-<table><thead><tr><th width="150">Login Identifier</th><th>[Allow Login](/overview/customization/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/customization/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/customization/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/customization/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>none<br/>At sign-up<br/>Before first login</td><td>One-time passcode<br/>Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>None<br/>At sign-up<br/>Before first login</td><td>One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No</td><td>None</td><td>None</td></tr></tbody></table>
+<table><thead><tr><th width="150">Login Identifier</th><th>[Allow Login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>none<br/>At sign-up<br/>Before first login</td><td>One-time passcode<br/>Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>None<br/>At sign-up<br/>Before first login</td><td>One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No</td><td>None</td><td>None</td></tr></tbody></table>
 
 *These properties will be explained in detail in the next sections.*
 

@@ -60,7 +60,7 @@ If you use your [**own session management**](/sessions/own-session-management), 
 
 Although not needed to be working correctly, we recommend to set a [CNAME](/helpful-guides/url-overview#5-cname) also for your native iOS or Android app, because then you can update the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) as well to your desires.
 
-This is mainly due to UX reasons, as without [CNAME](/helpful-guides/url-overview#id-5-cname), the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) by default would be `<project ID>.frontendapi.corbado.io` which might be confusing for users if they see this [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) in a Touch ID / Face ID / Android biometrics modal / popup. To update the [Relying Party ID](/overview/passkeys/relying-party-id) to your desired value, you would need a [CNAME ](/helpful-guides/url-overview#5-cname)which is a subdomain of your [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id).
+This is mainly due to UX reasons, as without [CNAME](/helpful-guides/url-overview#id-5-cname), the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) by default would be `<project ID>.frontendapi.corbado.io` which might be confusing for users if they see this [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) in a Touch ID / Face ID / Android biometrics modal / popup. To update the [Relying Party ID](/helpful-guides/passkeys/relying-party-id) to your desired value, you would need a [CNAME ](/helpful-guides/url-overview#5-cname)which is a subdomain of your [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id).
 
 ### 3.4 Which CNAME to set?
 
@@ -78,7 +78,7 @@ In the Corbado developer panel, you can enter the CNAME [here](https://app.corba
 
 ### 3.6 Set CNAME in UI components and Backend SDKs
 
-If you use our UI components or one of our Backend SDKs (e.g. for Corbado's session management), you need to update the [Frontend API](/backend-integration/corbado-api-structure/frontend-api) URL to be the same like the defined CNAME (otherwise you could get a JWT validation error because the `iss` JWT claim would not match anymore). See details here:
+If you use our UI components or one of our Backend SDKs (e.g. for Corbado's session management), you need to update the [Frontend API](/overview/corbado-api-structure/frontend-api) URL to be the same like the defined CNAME (otherwise you could get a JWT validation error because the `iss` JWT claim would not match anymore). See details here:
 
 **UI components**
 
