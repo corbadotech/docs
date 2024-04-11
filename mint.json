@@ -51,10 +51,11 @@
         "overview/welcome",
         "overview/getting-started",
         {
-          "group": "Setup Options",
+          "group": "Customization",
           "pages": [
-            "overview/sign-up-and-login-with-passkeys/user-flow-configuration",
-            "overview/sign-up-and-login-with-passkeys/passkey-configuration"
+            "overview/customization",
+            "overview/customization/user-flow-configuration",
+            "overview/customization/passkey-configuration"
           ]
         },
         {

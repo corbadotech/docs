@@ -3,45 +3,57 @@ title: "Getting Started"
 description: "Get started to implement passkeys with Corbado in your application by following these steps."
 ---
 
-## 1. Set up your Corbado account
-
-[Sign up](https://app.corbado.com/signin#register) for a free Corbado account.&#x20;
-
-![Developer panel Signup](/images/overview/getting-started/dev-panel-sign-up-2.webp)
-
-After successful account creation, the Corbado developer panel opens and you can create a new project.
+<Note>
+    **Already having an application and don't want to start from scratch?** <br />Head over to the [Corbado Connect solution](/products/corbado-connect) and learn how to integrate Corbado in an existing application.
+</Note>
 
 
-## 2. Create a new project
 
-![Developer panel project selection](/images/overview/getting-started/dev-panel-project-selection.webp)
+## Fast track 
 
-After clicking on "Create new project", a wizard appears that helps you to set up your project. After you've successfully set up your project, you should see the following screen:
+In less than 10 minutes to your first project setup.
 
-![Developer panel project overview](/images/overview/getting-started/dev-panel-project-overview-2.webp)
+<Steps>
+  <Step title="Sign up to Corbado">
+    [Sign up](https://app.corbado.com/signin#register) or [Log in](https://app.corbado.com/signin#login) to the Corbado Developer Panel. 
+   
+   
+    ![Developer panel signup](/images/overview/getting-started/dev-panel-sign-up.webp)
+    
+    
+    After successful account creation, the Corbado developer panel opens and you can create a new project.
+    
+  </Step>
+  <Step title="Create a new project">
+   To create a new project, click on "**Create new Project**". <br /> 
+   ![Developer panel project selection](images/overview/getting-started/dev-panel-project-selection.webp)
+   Next, a **wizard** will guide you step by step through the process of setting up the new project.
+  </Step>
+  <Step title="Set up the Project">
+   For integrating Corbado into a **new app**, it's recommended to use following settings:<br/>
+    ![Wizard settings](images/overview/getting-started/wizard_settings.webp)
+   Following you can configure the project type and the **framework** you use. 
+    <Note>
+    Depending on the **framework** you choose in the wizard, you can find detailed **integration guides** based on your choice [here](/overview/getting-started#choose-your-frontend).
+    </Note>
+    After you've successfully set up your project, you should see the following screen:
+    ![Developer panel project selection](images/overview/getting-started/dev-panel-project-overview.webp)
+  </Step>
+  <Step title="Test your setup">
+    The default settings allow you to **test your setup** directly in the **preview**. <br/> 
+    Click the "preview" button at the top, and a new tab will open with the [UI-components](/frontend-integration/ui-components) already built into an **example page**.
+
+  </Step>
+</Steps>
 
 
-## 3. Test your settings
 
-The default settings are set so that the components can be tested directly in the preview. Click on the "preview" button (at the top) and a new tab will open in which the components are already built into an example page.
+## Integration 
 
-The following two configurations can be made that help you to implement passkeys smoothly.
+You are now ready to integrate Corbado into your own application.
 
-- [User flow configuration](/overview/sign-up-and-login-with-passkeys/user-flow-configuration): this will impact the user authentication journey (which screens is the user going to see).
-- [Passkey configuration](/overview/sign-up-and-login-with-passkeys/passkey-configuration): this will impact which apps and websites your users' passkeys can be used.
-
-The settings changes can be seen in the preview tab. 
-
-
-## 4. Get project ID
-
-If you create a project in the Corbado developer panel, a corresponding project ID is automatically created.
-
-The project ID can be retrieved from the heading or in the tile for "Corbado API access" (see screenshot above) and is needed to implement the UI components in your application.
-
-## 5. Choose your frontend
-
-Choose your frontend technology to get customized instructions on how to add passkeys (this step is also described in the developer panel's project wizard that appears when you click on "Create new project"):
+Depending on the **settings you selected** in the wizard, you can get here customized instructions on how to integrate Corbado into your own application.
+<Info>This step is also described when setting up a new project in the developer panel.</Info>
 
 <CardGroup cols={3}>
     <Card title='React' icon='react' color='#5bd5fa' href='/frontend-integration/react' />
@@ -92,6 +104,49 @@ Choose your frontend technology to get customized instructions on how to add pas
 </CardGroup>
 
 <Note>
-    **Not found your framework?** If your project supports Javascript, you can always use the [Vanilla JS](/frontend-integration/vanilla-js) login components, no matter what language or framework you use.
+    **Didn't find your framework?**<br/> If your project supports JavaScript, you can always use the [Vanilla JS](/frontend-integration/vanilla-js) UI-Components, regardless of your tech stack.<br/>(E.g project based on **PHP, Python ecc.**)
 </Note>
+
+## Customization
+
+In order to provide an optimal user experience, Corbado offers a wide range of customizations that can be adjusted both within the developer panel and directly within the UI-components themselves.
+
+In the following chapter find all the information about [Customization](/overview/customization).
+
+{/*
+
+## 1. Set up your Corbado account
+
+[Sign up](https://app.corbado.com/signin#register) for a free Corbado account.&#x20;
+
+![Developer panel Signup](/images/overview/getting-started/dev-panel-sign-up-2.webp)
+
+After successful account creation, the Corbado developer panel opens and you can create a new project.
+
+
+
+## 2. Create a new project
+
+![Developer panel project selection](/images/overview/getting-started/dev-panel-project-selection.webp)
+
+After clicking on "Create new project", a wizard appears that helps you to set up your project. After you've successfully set up your project, you should see the following screen:
+
+![Developer panel project overview](/images/overview/getting-started/dev-panel-project-overview-2.webp)
+
+
+## 3. Test your settings
+
+The default settings are set so that the components can be tested directly in the preview. Click on the "preview" button (at the top) and a new tab will open in which the components are already built into an example page.
+
+The following two configurations can be made that help you to implement passkeys smoothly.
+
+- [User flow configuration](/overview/sign-up-and-login-with-passkeys/user-flow-configuration): this will impact the user authentication journey (which screens is the user going to see).
+- [Passkey configuration](/overview/sign-up-and-login-with-passkeys/passkey-configuration): this will impact which apps and websites your users' passkeys can be used.
+
+The settings changes can be seen in the preview tab. 
+
+
+d*/}
+
+
 
