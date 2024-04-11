@@ -51,11 +51,13 @@
         "overview/welcome",
         "overview/getting-started",
         {
-          "group": "Customization",
+          "group": "Configuration",
           "pages": [
-            "overview/customization",
-            "overview/customization/user-flow-configuration",
-            "overview/customization/passkey-configuration"
+            "overview/configuration",
+            "overview/configuration/user-flow-configuration",
+            "overview/configuration/passkey-configuration",
+            "overview/configuration/ui-component-configuration"
+
           ]
         },
         {
@@ -75,11 +77,12 @@
           "group": "UI Components",
           "pages": [
             "frontend-integration/ui-components",
-            "frontend-integration/ui-components/less-than-corbadoprovider-greater-than",
-            "frontend-integration/ui-components/less-than-signup-greater-than",
-            "frontend-integration/ui-components/less-than-login-greater-than",
-            "frontend-integration/ui-components/less-than-corbadoauth-greater-than",
-            "frontend-integration/ui-components/less-than-passkeylist-greater-than",
+            "frontend-integration/ui-components/corbadoprovider",
+            "frontend-integration/ui-components/signup",
+            "frontend-integration/ui-components/login",
+            "frontend-integration/ui-components/corbadoauth",
+            "frontend-integration/ui-components/passkeylist",
+            "frontend-integration/ui-components/customization",
             {
               "group": "Web Component (deprecated)",
               "pages": [

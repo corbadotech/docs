@@ -1,0 +1,56 @@
+---
+title: "Passkey Configuration"
+description: "In the developer panel, you can set some general passkey configurations."
+---
+
+## Introduction
+
+To get passkeys smoothly implemented, you need to adapt the following settings in the Corbado developer panel (not in your code):
+
+* [Relying party ID](#relying-party-id)
+* [Native app settings ](#native-app-settings)(only if you're using native apps)
+* [Authorized origins](#authorized-origins) (for production deployments)
+* [CNAME](#cname) (for production deployments)
+
+For each of these settings, we provide recommendations on the specific setting during development and for production (+ provide examples).
+
+## Relying party ID
+
+The relying party ID is a crucial setting when working with passkeys and ensures that the passkey can only be used on the intended domain.
+
+Please see also our [Relying Party ID page](/helpful-guides/passkeys/relying-party-id) to get more details or see our [URL Overview page](/helpful-guides/url-overview#7-relying-party-id) examples and recommendations.
+
+The relying party ID an be defined [Settings > General > Urls](https://app.corbado.com/app/settings/general/urls).
+
+![Relying Party ID](/images/overview/signup/passkey-configuration/relying-party-id.webp)
+
+
+## Native app settings
+
+Native app settings can be defined [Settings > Native apps](https://app.corbado.com/app/settings/native-apps).
+
+![Native App Settings](/images/overview/signup/passkey-configuration/native-app-settings.webp)
+
+## Authorized origins
+
+The full URL (incl. protocol & port, no path) that the user sees in the browser and from where JavaScript calls to Corbado are made.
+
+Please see also our [URL overview for authorized origins](/helpful-guides/url-overview#1-authorized-origin) to get more details, examples and recommendations.
+
+Authorized origins can be defined [Settings > General > Urls](https://app.corbado.com/app/settings/general/urls).
+
+![Authorized Origins Settings](/images/overview/signup/passkey-configuration/native-app-settings.webp)
+
+
+
+## CNAME
+
+THE CNAME DNS address (no protocol, port or path) that can be used instead of Corbado's default Frontend API URL. The CNAME needs to point to "\<Project-ID>.frontendapi.corbado.io".
+
+Please see also our [URL overview for CNAME](/helpful-guides/url-overview#5-cname) to get more details, examples and recommendations.
+
+The CNAME can be defined here [Setting > General > Go live](https://app.corbado.com/pro-7564790029695092989/app/settings/general/go-live)
+
+![CName Settings](/images/overview/signup/passkey-configuration/cname-settings.webp)
+
+
