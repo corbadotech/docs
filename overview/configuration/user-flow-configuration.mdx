@@ -5,17 +5,17 @@ description: "Each application has individual user requirements that can be conf
 
 ## Introduction
 
-Besides defining the [technical passkey settings in the previous section](/overview/configuration/passkey-configuration), we now take a look how the user flow and user experience can be adapted. These settings directly impact the user journey during sign-up and login.
+We can now take a look on how the user flow and user experience can be adapted. These settings directly impact the user journey during sign-up and login and defines what screens the user is going to see.
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface) in the **Settings>Use interface** page:
 
-1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Adjust the settings associated with the signup part of your user flow.
+1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Adjust the settings associated with the sign-up part of your user flow.
 2. [Passkey pop-up frequency](/overview/configuration/user-flow-configuration#2-passkey-pop-up-frequency): Set the frequency for prompting users without a passkey to add one.
-3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks): Configure your authentication path by specifying how users are authenticated.
+3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks): Configure the required user information for registration and authentication, as well as the authentication fallback options.
 
 
-## 1. Sign up settings
-This sectin allow you to adjust the settings that affect the signup part of user authentication. <br/>You can configure two settings:
+## 1. Sign-up settings
+This section allow you to adjust the settings that affect the sign-up part of user authentication. <br/>You can configure two settings:
 * Allow users to self-sign-up for your project.
 * Require users to set their name.
 
@@ -34,7 +34,9 @@ Corbado's UI-Components support multiple login identifiers.
 
 <Tip>
   **Login identifiers** are unique and thus two user's can never use the same login identifier. 
-  Login identifiers can be used for two different things: They can identify a user's account and they can act as a fallback when passkeys are not available.
+  Login identifiers can be used for two different things: 
+  * They can identify a user's account 
+  * They can act as a fallback when passkeys are not available.
 </Tip>
 
 Currently the following login identifier are supported:
@@ -45,17 +47,25 @@ Currently the following login identifier are supported:
 
 ![Login identifier](/images/overview/signup/user-flow-configuration/login-identifier.webp)
 
-There are two types of login identifier:
+There are two types of login identifiers:
 
 - Verifiable by [one-time passcode](/overview/configuration/user-flow-configuration#3-4-1-one-time-passcode) or [email magic link](/overview/configuration/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
-- Not verifiable (username)"
+- Not verifiable (username)
 
 Depending on the desired authentication journey, one or more login identifiers can be activated. Each activated login identifier is requested during the signup process. 
 
 An overview of the available login identifiers and their properties can be found below. 
 
 
-<table><thead><tr><th width="150">Login Identifier</th><th>[Allow Login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>none<br/>At sign-up<br/>Before first login</td><td>One-time passcode<br/>Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>None<br/>At sign-up<br/>Before first login</td><td>One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No</td><td>None</td><td>None</td></tr></tbody></table>
+<table><thead><tr><th width="150">Login Identifier</th><th>[Allow Login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode<br/>&bull; Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No &#42;</td><td>None</td><td>None</td></tr></tbody></table>
+<sup>&#42; In this case, it is recommended to include an additional login identifier, such as email address or phone number, to provide a fallback option for the users accounts.</sup>
+
+
+
+
+
+
+
 
 *These properties will be explained in detail in the next sections.*
 
@@ -80,9 +90,9 @@ Find more information in the [Fallback Options](/helpful-guides/passkeys/fallbac
 
 ### 3.3 Verification stage
 
-Define the stage at which your users need to verify their login identifier (e.g. email address, phone number or username). You can select only one option at a time.
+Define the stage at which your users need to verify their login identifier (email address or phone number). You can select only one option at a time.
 
-<table><thead><tr><th width="227">Setting</th><th>Description</th></tr></thead><tbody><tr><td>None</td><td>Users do not have to verify their user identifier. They just sign up by creating a passkey and can immediately log in.</td></tr><tr><td>Verification before first login (default)</td><td>Users that sign up with a passkey are logged in after sign-up. They need to verify their user identifier on their first login though.</td></tr><tr><td>Verification at sign-up</td><td>Users can only create a passkey after verifying their user identifier first. </td></tr></tbody></table>
+<table><thead><tr><th width="227">Setting</th><th>Description</th></tr></thead><tbody><tr><td>None</td><td>Users do not have to verify their login identifier. They just sign up by creating a passkey and can immediately log in.</td></tr><tr><td>Verification before first login (default)</td><td>Users that sign up with a passkey are logged in after sign-up. They need to verify their login identifier on their first login though.</td></tr><tr><td>Verification at sign-up</td><td>Users can only create a passkey after verifying their login identifier first. </td></tr></tbody></table>
 
 ### 3.4 Verification methods
 
