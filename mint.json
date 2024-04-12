@@ -31,7 +31,7 @@
     {
       "name": "Community",
       "icon": "slack",
-      "url": "https://join.slack.com/t/corbado/shared_invite/zt-1b7867yz8-V~Xr~ngmSGbt7IA~g16ZsQ"
+      "url": "https://join.slack.com/t/corbado/shared_invite/zt-2g4etyvxi-otKksMmhMHwWK19aCbhODQ"
     },
     {
       "name": "GitHub",
@@ -108,10 +108,10 @@
           ]
         },
         "frontend-integration/flutter",
-        "frontend-integration/vue.js",
+        "frontend-integration/vue-js",
         "frontend-integration/angular",
-        "frontend-integration/next.js",
-        "frontend-integration/nuxt.js",
+        "frontend-integration/next-js",
+        "frontend-integration/nuxt-js",
         "frontend-integration/svelte",
         "frontend-integration/link-to-api-ref"
       ]
@@ -119,7 +119,7 @@
     {
       "group": "Backend Integration",
       "pages": [
-        "backend-integration/node.js-sdk",
+        "backend-integration/node-js-sdk",
         "backend-integration/php-sdk",
         "backend-integration/go-sdk",
         "backend-integration/link-to-api-ref"

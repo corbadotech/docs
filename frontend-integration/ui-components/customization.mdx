@@ -3,7 +3,17 @@ title: "Customization"
 description: "Discover how you can customize your UI components to align with your preferences and needs."
 ---
 
-### Custom translations
+## Customization Options for UI Components
+
+Corbado provides a variety of customization options, allowing you to adapt your components to the specific needs of your use case.
+
+You can customize the following aspects:
+
+- [Custom translation](/frontend-integration/ui-components/customization#1-custom-translations)
+- [Custom themes](/frontend-integration/ui-components/customization#2-custom-themes)
+- [Error screens](/frontend-integration/ui-components/customization#3-error-screen)
+
+## 1. Custom translations
 
 You can configure our components to automatically detect a user's browser language and to change all wordings accordingly. If a language is not supported by Corbado yet, the component will default to "en". You can add your custom translation by creating your own translation file. You can use custom translations also in cases where you just want to override parts of the wording.
 
@@ -84,24 +94,24 @@ const App = () => {
 
 </CodeGroup>
 
-### Custom themes
+## 2. Custom themes
 
 Before we show how to create custom themes, let's take a step back first and take a look at what options you have in general to influence the styling of Corbado's UI components.
 
 This can be done in three different ways:
 
-#### 1. Switching the theme
+### 2.1 Switching the theme
 
 Currently, Corbado offers two themes out of the box:
 
 - default
 - emerald-funk
 
-#### 2. Configuring darkMode
+### 2.2 Configuring darkMode
 
 For every theme, there is styling for dark and for light mode. Which of these is applied depends on your configuration for the `darkMode` parameter.
 
-#### 3. Creating a custom theme
+### 2.3 Creating a custom theme
 
 If you need more customisation, you can create your own theme. To do this, create one parent CSS class named after your theme (e.g. "your-custom-theme).&#x20;
 
@@ -167,7 +177,7 @@ const App = () => {
 
 </CodeGroup>
 
-### Error screen
+## 3. Error screen
 
 If an error occurs that can not be handled by the UI component (e.g. by making a retry or by offering the user a fallback option), it will show an error screen.&#x20;
 
