@@ -1,35 +1,71 @@
 ---
-title: "Corbado Provider"
-description: "The Corbado Provider serves as the wrapper which stores all the global configurations."
+title: "CorbadoProvider"
+description: "The CorbadoProvider component provides global configuration for all your Corbado UI Components."
 ---
 
 ## Introduction
 
-This component is a wrapper that allows you do define global configurations. They will affect all Corbado UI components. {/* (given that they are wrapped with React \<CorbadoProvider/>, or set in the Glo).*/}
+This component is **required** for integrating any other UI Component (e.g., Signup, Login, etc.). Unlike other Components, it exclusively handles global configuration for all other UI components without rendering any UI elements. {/* (given that they are wrapped with React \<CorbadoProvider/>, or set in the Glo).*/}
+
+The `CorbadoProvider` component is defined
+- in **React** as `<CorbadoProvider />` 
+- in **VanillaJS** as `Corbado.load()`
+
+## Example
+
+Find here a small example how to implement the `CorbadoProvider` into your own application.
+
+<CodeGroup>
+
+```tsx React
+import { CorbadoProvider } from '@corbado/react';
+import { RouterProvider } from 'react-router-dom';
+
+const App = () => {
+  return (
+    <CorbadoProvider
+        projectId="pro-XXX"
+        /*Add here further optional configurations*/
+    >
+      <RouteProvider />
+    </CorbadoProvider>
+  );
+}
+```
+
+```html VanillaJS
+<script type="module">
+  Corbado.load({
+    projectId: "pro-XXX",
+    /*Add here further optional configurations*/
+  });
+</script>
+```
+
+</CodeGroup>
 
 
-<Tabs>
-<Tab title="React">
-### API reference
+
+## API reference
+Here are the API references for the CorbadoProvider in both **React** and **VanillaJS**.
+
+
 
 | Name                  | Type              | Description                                                                                                                                                                                                                                           |
 | --------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| projectId             | string (e.g. pro-1234567890) | The ID of your Corbado project.                                                                                                                                                                                                                       |
+| projectId             | string (e.g. pro-1234567890) | The ID of your Corbado project. This setting is **mandatory** and can be found in the Developer Panel.                                                                                                                                                |
 | autoDetectLanguage    | boolean                      | If set to `true` the language used in UI components will be derived from the browser.                                                                                                                                                                 |
 | defaultLanguage       | string (en\|de\|fr)          | If set to a language other than "en" (the default) all wordings will be translated to that language. By default, Corbado supports "en", "de" and "fr". You can define your custom translations though.                                                |
 | customTranslations    | object                       | A map from language (e.g. "en") to an object containing your custom translation overrides.                                                                                                                                                            |
 | darkMode              | string (on\|off\|auto)       | Controls if your components are rendered in dark mode. If set to `auto` the darkMode setting will be derived from the browser.                                                                                                                        |
-| theme                 | string                       | Controls the style of your components. Currently the only alternative theme that can be set here is `emerald-funk`. You can create your own custom theme though (find more details below).                                                            |
-| isDevMode             | boolean                      | Defaults to false. If set to true, the UI components will log debug messages to console. Some of them (`<CorbadoAuth>`, `<Login>`, `<SignUp>`) will also display more detailed error messages on their error screen (see error screen section below). |
-| customerSupportEmail  | string                       | If defined, the error screens will include this email address (see error screen section below).                                                                                                                                                       |
+| theme                 | string                       | Controls the style of your components. Currently the only alternative theme that can be set here is `emerald-funk`. To create your own custom theme find all information [here](/frontend-integration/ui-components/customization#2-custom-themes).                                                            |
+| isDevMode             | boolean                      | Defaults to false. If set to true, the UI components will log debug messages to console. Some of them (`CorbadoAuth`, `Login`, `SignUp`) will also display more detailed error messages on their error screen see [error screen](/frontend-integration/ui-components/customization#3-error-screen) section. |
 | frontendApiUrl        | string                       | Please set this value when you go live to your defined [CNAME](/helpful-guides/url-overview#5-cname). By default it is automatically set to your [Frontend API](/overview/corbado-api-structure/frontend-api) URL.                         |
 | setShortSessionCookie | boolean                      | If set to true, a cbo_short_session cookie will be set automatically be the Corbado component for the current domain. This makes sense if you are running a full stack application (e.g. NextJS) or a multi page application (e.g. PHP).              |
 
-</Tab>
 
-<Tab title="VanillaJS">
-### API reference
 
+{/*
 | Name                | Type                                       | Description                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | load                | Promise\<void>                             | Initializes the SDK. Takes your `projectId` as a mandatory parameter. For a list of additional optional parameters take a look at the [API reference of CorbadoProvider](/frontend-integration/ui-components/corbadoprovider#api-reference) (they share the same parameters). `Load` must be called before you can use any of the other methods. |
@@ -40,12 +76,9 @@ This component is a wrapper that allows you do define global configurations. The
 | userChanges         | BehaviourSubject \<SessionUser\|undefined> | Listen to userChanges to be informed about changes to the `user` object. As this object is derived from the shortSession, it changes every time the session is refreshed by the SDK.                                                                                                                                                                                    |
 | shortSessionChanges | BehaviourSubject \<string\|undefined>      | Listen to shortSessionChanges to be informed about changes to the `shortSession` object. It changes every time the session is refreshed by the SDK.                                                                                                                                                                                                                     |
 | logout              | void                                       | Logs the user out of your application and cleans all local authentication state.                                                                                                                                                                                                                                                                                        |
-| mountAuthUI         | void                                       | Mounts the [\<CorbadoAuth/>](/frontend-integration/ui-components/corbadoauth) component to your DOM.                                                                                                                                                                                                                                             |
-| mountSignUpUI       | void                                       | Mounts the [\<SignUp/>](/frontend-integration/ui-components/signup) component to your DOM.                                                                                                                                                                                                                                                       |
-| mountLoginUI        | void                                       | Mounts the [\<Login/>](/frontend-integration/ui-components/login) component to your DOM.                                                                                                                                                                                                                                                         |
-| mountPasskeyList    | void                                       | Mounts the [\<PasskeyList/>](/frontend-integration/ui-components/passkeylist) component to your DOM.                                                                                                                                                                                                                                             |
+| mountAuthUI         | void                                       | Mounts the [CorbadoAuth](/frontend-integration/ui-components/corbadoauth) component to your DOM.                                                                                                                                                                                                                                             |
+| mountSignUpUI       | void                                       | Mounts the [Signup](/frontend-integration/ui-components/signup) component to your DOM.                                                                                                                                                                                                                                                       |
+| mountLoginUI        | void                                       | Mounts the [Login](/frontend-integration/ui-components/login) component to your DOM.                                                                                                                                                                                                                                                         |
+| mountPasskeyList    | void                                       | Mounts the [PasskeyList](/frontend-integration/ui-components/passkeylist) component to your DOM.                                                                                                                                                                                                                                             |
 
-</Tab>
-
-
-</Tabs>
+*/}

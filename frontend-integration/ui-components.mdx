@@ -7,8 +7,8 @@ Corbado helps you to add a full passkey authentication process to your applicati
 
 Corbado provides the UI components in two different packages:
 
-- [React components](/frontend-integration/react)
-- [VanillaJS components](/frontend-integration/vanilla-js)
+- [React components](/frontend-integration/react): Can be used for React or React-based frameworks (e.g. [Next.js](/frontend-integration/next-js)). 
+- [VanillaJS components](/frontend-integration/vanilla-js): Can be used for any JavaScript project (e.g. [Angular](/frontend-integration/angular), [Vue.js](/frontend-integration/vue-js), [Svelte](/frontend-integration/svelte) ect.).
 
 {/*
 - [React](/frontend-integration/react)
@@ -20,13 +20,15 @@ Corbado provides the UI components in two different packages:
     - [Nuxt.js](/frontend-integration/nuxt-js)
 */}
 
-**Note:** You can use the Corbado [VanillaJS](/frontend-integration/vanilla-js) with other frameworks / technologies that are using Javascript.
+**Note:** You can use the Corbado [VanillaJS](/frontend-integration/vanilla-js) with other frameworks / technologies that are using JavaScript.
 
 
 | Component          | React                        | VanillaJS                         | Description                 |
 | ------------------ | ---------------------------- | --------------------------------- | --------------------------- |  
-| [Corbado Provider](/frontend-integration/ui-components/corbadoprovider)   | ```<CorbadoProvider/>```     | ```Corbado.load()```              |Necessary for **adding UI components** to an app. This component is a wrapper that allows you do define global configurations.|
+| [CorbadoProvider](/frontend-integration/ui-components/corbadoprovider)   | ```<CorbadoProvider/>```     | ```Corbado.load()```              |**Required** when adding UI components to an application. <br/>Applies global project configuration (e.g., projectID, themes, etc.) to all Corbado components. Before using any of the following components, ensure the CorbadoProvider is properly set up.|
 | [Signup](/frontend-integration/ui-components/signup)            | ```<SignUp/> ```             | ```Corbado.mountSignUpUI()```     |Component that allows users to create a new account.|
 | [Login](/frontend-integration/ui-components/login)             | ```<Login/>```               | ```Corbado.mountLoginUI()```      |Component that allows users to log in to their account.|
-| [Corbado Auth](/frontend-integration/ui-components/corbadoauth)      | ```<CorbadoAuth/>```         | ```Corbado.mountAuthUI()```       |Combines Sign Up and Log In component and takes care of authentication-related navigation.|
-| [Passkey List](/frontend-integration/ui-components/passkeylist)       | ```<PasskeyList/>```         | ```Corbado.mountPasskeyListUI()```|Can be embedded in user's profile page and lists all passkeys created by the user.|
+| [CorbadoAuth](/frontend-integration/ui-components/corbadoauth)      | ```<CorbadoAuth/>```         | ```Corbado.mountAuthUI()```       |Combines Sign Up and Log In component and takes care of authentication-related navigation.|
+| [PasskeyList](/frontend-integration/ui-components/passkeylist)       | ```<PasskeyList/>```         | ```Corbado.mountPasskeyListUI()```|Can be embedded in user's profile page and lists all passkeys created by the user.|
+
+For all UI components, you can customize translations, themes and error screens. Find detailed information in the [Customization](/frontend-integration/ui-components/customization) page.

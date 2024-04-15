@@ -5,19 +5,31 @@ description: "Discover how you can customize your UI components to align with yo
 
 ## Customization Options for UI Components
 
+
 Corbado provides a variety of customization options, allowing you to adapt your components to the specific needs of your use case.
 
 You can customize the following aspects:
 
-- [Custom translation](/frontend-integration/ui-components/customization#1-custom-translations)
-- [Custom themes](/frontend-integration/ui-components/customization#2-custom-themes)
-- [Error screens](/frontend-integration/ui-components/customization#3-error-screen)
+- [1. Custom translation](/frontend-integration/ui-components/customization#1-custom-translations)
+- [2. Custom styling](/frontend-integration/ui-components/customization#2-custom-themes)
+
+Customization options are configured in the [CorbadoProvider](/frontend-integration/ui-components/corbadoprovider).
 
 ## 1. Custom translations
 
-You can configure our components to automatically detect a user's browser language and to change all wordings accordingly. If a language is not supported by Corbado yet, the component will default to "en". You can add your custom translation by creating your own translation file. You can use custom translations also in cases where you just want to override parts of the wording.
+Custom translations can serve two main purposes:
 
-For a definition of the current structure of our translation files, please take a look at our default translations for "en" [here](https://github.com/corbado/javascript/blob/main/packages/shared-ui/src/i18n/en.json).
+- Support multiple languages
+- Customize the text of the components by overwriting them
+
+For both cases you can add your custom translation by creating your own translation file. 
+
+For a definition of the current structure of our translation files, please take a look at our default translations for "en" [here](https://github.com/corbado/javascript/blob/develop/packages/shared-ui/src/i18n/en.json).
+
+
+By setting the `autoDetectLanguage` to **true** in the CorbadoProvider component, the component can automatically detect a user's browser language and adjust all wordings accordingly.
+If a language is not supported by Corbado yet, the component will default to "en". 
+
 
 ```typescript Custom Translations
 const en = {
@@ -79,6 +91,7 @@ const App = () => {
       <RouteProvider />
     </CorbadoProvider>
   );
+}
 ```
 
 ```html VanillaJS
@@ -94,22 +107,29 @@ const App = () => {
 
 </CodeGroup>
 
-## 2. Custom themes
+## 2. Custom styling
 
-Before we show how to create custom themes, let's take a step back first and take a look at what options you have in general to influence the styling of Corbado's UI components.
+Corbado offers multiple ways to customize the styling of its components. You can adjust the styling through the following settings:
 
-This can be done in three different ways:
+- [2.1 Configuring dark-mode](/frontend-integration/ui-components/customization#2-1-configuring-darkmode)
+- [2.2 Switching the theme](/frontend-integration/ui-components/customization#2-2-switching-the-theme)
+- [2.3 Creating a custom theme](/frontend-integration/ui-components/customization#2-3-creating-a-custom-theme)
 
-### 2.1 Switching the theme
+
+### 2.1 Configuring dark-mode
+
+For every theme, there is styling for dark and for light mode. Which of these is applied depends on your configuration for the `darkMode` parameter in the CorbadoProvider.<br/> You can set the `darkMode` to `on|off|auto`. If set to `auto` the darkMode setting will be derived from the browser.
+
+
+### 2.2 Switching the theme
 
 Currently, Corbado offers two themes out of the box:
 
 - default
 - emerald-funk
 
-### 2.2 Configuring darkMode
-
-For every theme, there is styling for dark and for light mode. Which of these is applied depends on your configuration for the `darkMode` parameter.
+You can pass the theme to the CobradoAuth `theme` setting. If no setting is passed, the default theme is used.
+Currently the only alternative theme is `emerald-funk`.
 
 ### 2.3 Creating a custom theme
 
@@ -117,7 +137,7 @@ If you need more customisation, you can create your own theme. To do this, creat
 
 Inside this class you can now overwrite all the corbado classes. Every Corbado class is prefixed with "cb-" so you can easily identify them.&#x20;
 
-**Note:** If you want to change the styling of a particular part of the UI components but you don't know the classname, just use your browser's "inspect" tool from the developer tools.
+<Tip>If you want to change the styling of a particular part of the UI components but you don't know the classname, just use your browser's "inspect" tool from the developer tools.</Tip>
 
 
 
@@ -146,7 +166,7 @@ Inside this class you can now overwrite all the corbado classes. Every Corbado c
 }
 ```
 
-Finally, configure the [Corbado Provider](/frontend-integration/ui-components/corbadoprovider) component to use the theme.
+Finally, configure the [CorbadoProvider](/frontend-integration/ui-components/corbadoprovider) component to use the theme.
 
 <CodeGroup>
 
@@ -164,6 +184,7 @@ const App = () => {
       <RouteProvider />
     </CorbadoProvider>
   );
+}
 ```
 
 ```html VanillaJS
@@ -176,11 +197,3 @@ const App = () => {
 ```
 
 </CodeGroup>
-
-## 3. Error screen
-
-If an error occurs that can not be handled by the UI component (e.g. by making a retry or by offering the user a fallback option), it will show an error screen.&#x20;
-
-Depending on your setting of isDevMode, the error screen is rendered in two variants (left is in development mode, right is in production mode):
-
-![Error Screen](/images/frontend-integration/ui-components/corbado-provider/error-screen.webp)
