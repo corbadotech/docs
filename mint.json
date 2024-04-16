@@ -25,6 +25,11 @@
     "name": "Developer Panel",
     "url": "https://app.corbado.com/"
   },
+  "analytics": {
+    "koala": {
+      "publicApiKey": "pk_ca0e031974819fc6f69a82b884ff6f1cb661"
+    }
+  },
 
 
   "anchors": [
