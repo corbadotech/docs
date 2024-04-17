@@ -1,6 +1,6 @@
 ---
 title: "Next.js"
-description: "Learn how to add the Corbado React Package to your Next.js Application."
+description: "Learn how to add the Corbado React package to your Next.js application."
 ---
 
 import Blogpost from "/snippets/blogpost.mdx";
@@ -21,7 +21,7 @@ npm install @corbado/react
 
 ## 2. Add the React Package to Your Next.js Project
 
-First, create a wrapper around the CorbadoProvider, to render it on the client:
+First, create a wrapper around the `CorbadoProvider`, to render it on the client:
 
 ```tsx ProviderWrapper.tsx
 "use client";
@@ -44,7 +44,7 @@ export default function ProviderWrapper({
 }
 ```
 
-Now, integrate the Provider into your root layout:
+Now, integrate the `ProviderWrapper` into your root layout:
 
 ```tsx layout.tsx
 import ProviderWrapper from "./ProviderWrapper";
@@ -67,7 +67,7 @@ export default function RootLayout({
 
 ```
 
-Now you're ready to integrate the CorbadoAuth Component to allow your users to login and signup.
+Now you're ready to integrate the `CorbadoAuth` component to allow your users to login and sign up.
 
 ```tsx page.tsx
 "use client";

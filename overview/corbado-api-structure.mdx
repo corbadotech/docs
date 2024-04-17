@@ -4,7 +4,7 @@ description: "Corbado provides a Frontend API and Backend API depending on the w
 sidebarTitle: "Overview"
 ---
 
-# Corbado API structure
+# Overview
 
 Corbado offers several ways for integration and supports different applications (e.g. regular web applications, single page applications or native apps). As not all applications can access our APIs the same way securely, we created a [Frontend API](/overview/corbado-api-structure/frontend-api) and [Backend API.](/overview/corbado-api-structure/backend-api) Both APIs are RESTful APIs.
 
@@ -16,8 +16,8 @@ If you also want to use Corbado session management, your backend needs to talk t
 
 ## Frontend API
 
-The [Frontend API](/overview/corbado-api-structure/frontend-api) is used by applications that cannot store secrets securely (e.g. single page applications running in the browser or native apps) and by our Web and Native Packages.
+The [Frontend API](/overview/corbado-api-structure/frontend-api) is used by applications that **cannot store secrets securely** (e.g. single page applications running in the browser or native apps). It's also used by our web and native packages.
 
 ## Backend API
 
-The [Backend API](/overview/corbado-api-structure/backend-api) is used by applications that can store secrets securely (e.g. regular web applications with a private server side backend). Never use the backend API from native apps or single page applications.
+The [Backend API](/overview/corbado-api-structure/backend-api) is used by applications that **can store secrets securely** (e.g. regular web applications with a private server-side backend). Never use the Backend API from native apps or single page applications.

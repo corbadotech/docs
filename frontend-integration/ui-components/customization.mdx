@@ -6,9 +6,7 @@ description: "Discover how you can customize your UI components to align with yo
 ## Customization Options for UI Components
 
 
-Corbado provides a variety of customization options, allowing you to adapt your components to the specific needs of your use case.
-
-You can customize the following aspects:
+Corbado provides the following customization options:
 
 - [1. Custom translation](/frontend-integration/ui-components/customization#1-custom-translations)
 - [2. Custom styling](/frontend-integration/ui-components/customization#2-custom-themes)
@@ -19,15 +17,13 @@ Customization options are configured in the [CorbadoProvider](/frontend-integrat
 
 Custom translations can serve two main purposes:
 
-- Support multiple languages
-- Customize the text of the components by overwriting them
+- Support other languages
+- Customize the standard texts of the components
 
-For both cases you can add your custom translation by creating your own translation file. 
-
-For a definition of the current structure of our translation files, please take a look at our default translations for "en" [here](https://github.com/corbado/javascript/blob/develop/packages/shared-ui/src/i18n/en.json).
+For both cases, you add your custom translation by creating your own translation file. To see the structure of a translation file, please take a look at our default translations for "en" [here](https://github.com/corbado/javascript/blob/develop/packages/shared-ui/src/i18n/en.json).
 
 
-By setting the `autoDetectLanguage` to **true** in the CorbadoProvider component, the component can automatically detect a user's browser language and adjust all wordings accordingly.
+By setting the `autoDetectLanguage` to **true** in the `CorbadoProvider` component, the component can automatically detect a user's browser language and adjust all wordings accordingly.
 If a language is not supported by Corbado yet, the component will default to "en". 
 
 
@@ -71,7 +67,7 @@ const en = {
 export default en;
 ```
 
-To use this translation now, supply it to the [Corbado Provider](/frontend-integration/ui-components/corbadoprovider).
+To use this translation now, supply it to the [CorbadoProvider](/frontend-integration/ui-components/corbadoprovider).
 
 <CodeGroup>
 
@@ -109,7 +105,7 @@ const App = () => {
 
 ## 2. Custom styling
 
-Corbado offers multiple ways to customize the styling of its components. You can adjust the styling through the following settings:
+Corbado offers multiple ways to customize the styling of the UI components. You can adjust the styling through the following settings:
 
 - [2.1 Configuring dark-mode](/frontend-integration/ui-components/customization#2-1-configuring-darkmode)
 - [2.2 Switching the theme](/frontend-integration/ui-components/customization#2-2-switching-the-theme)
@@ -118,7 +114,7 @@ Corbado offers multiple ways to customize the styling of its components. You can
 
 ### 2.1 Configuring dark-mode
 
-For every theme, there is styling for dark and for light mode. Which of these is applied depends on your configuration for the `darkMode` parameter in the CorbadoProvider.<br/> You can set the `darkMode` to `on|off|auto`. If set to `auto` the darkMode setting will be derived from the browser.
+For every theme, there is styling for dark and for light mode. Which of these themes is applied depends on your configuration for the `darkMode` parameter in the `CorbadoProvider`.<br/> You can set the `darkMode` to `on|off|auto`. If set to `auto` the darkMode setting will be derived from the browser.
 
 
 ### 2.2 Switching the theme
@@ -128,14 +124,14 @@ Currently, Corbado offers two themes out of the box:
 - default
 - emerald-funk
 
-You can pass the theme to the CobradoAuth `theme` setting. If no setting is passed, the default theme is used.
+You can pass the theme to the CorbadoAuth `theme` setting. If no setting is passed, the default theme is used.
 Currently the only alternative theme is `emerald-funk`.
 
 ### 2.3 Creating a custom theme
 
-If you need more customisation, you can create your own theme. To do this, create one parent CSS class named after your theme (e.g. "your-custom-theme).&#x20;
+If you need more customization, you can create your own theme. To do so, create one parent CSS class named after your theme (e.g. "your-custom-theme").
 
-Inside this class you can now overwrite all the corbado classes. Every Corbado class is prefixed with "cb-" so you can easily identify them.&#x20;
+Inside this class you can now overwrite all the Corbado classes. Every Corbado class is prefixed with "cb-" so you can easily identify them.
 
 <Tip>If you want to change the styling of a particular part of the UI components but you don't know the classname, just use your browser's "inspect" tool from the developer tools.</Tip>
 
