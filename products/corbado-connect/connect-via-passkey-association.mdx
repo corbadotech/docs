@@ -24,14 +24,14 @@ An "association token" is a token that connects the authenticated user from your
 
 * Create a Corbado account according to [Getting started](/overview/getting-started)
 * Obtain the project ID and API secret from the developer panel as you will need it for the Corbado Backend SDK
-* Install the Corbado Backend SDK (e.g. [Node.js](/backend-integration/node.js-sdk), [PHP](/backend-integration/php-sdk) or [Go](/backend-integration/go-sdk)) in your backend
+* Install the Corbado Backend SDK (e.g. [Node.js](/backend-integration/node-js-sdk), [PHP](/backend-integration/php-sdk) or [Go](/backend-integration/go-sdk)) in your backend
 * Install the [Corbado web component](/frontend-integration/ui-components/web-component-previous-version/) in your frontend
 
 ## 1. Create association token
 
 ![Create Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-association-token.png)
 
-To start the passkey association process, you need to create an association token for a user that you have previously authenticated with your existing authentication system. This token can be created from your backend by calling the [Corbado Backend API](../../backend-integration/corbado-api-structure/backend-api). You need to send a POST request to [AssociationTokenCreate](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate) endpoint.
+To start the passkey association process, you need to create an association token for a user that you have previously authenticated with your existing authentication system. This token can be created from your backend by calling the [Corbado Backend API](/overview/corbado-api-structure/backend-api). You need to send a POST request to [AssociationTokenCreate](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate) endpoint.
 
 Your backend receives an association token in the [Corbado Backend API's response](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate). You need the association token for the next step to consume it for a passkey.
 

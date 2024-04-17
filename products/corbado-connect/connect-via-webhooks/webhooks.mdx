@@ -38,7 +38,7 @@ Webhook requests from Corbado sent to your backend follow this payload structure
 {
   "id": "who-1234567890", // Unique ID per webhook request
   "projectID": "pro-1234567890", // Your project ID from the developer panel
-  "action": "authMethods", // The specific action of the webhook request, see table below
+  "action": "authMethods", // The specific action of the webhook request, see table belowf
   "data": {
     // Data object dependent on action
   }
@@ -74,5 +74,5 @@ The following webhooks actions exist:
 To make the implementation of the webhook endpoint in your backend as smooth as possible we provide webhook functionality in our SDKs. Plus, they come with entities / models for request and response (dependent on action) and ease authentication handling for you. We highly encourage you to use them.
 
 - [PHP SDK](/backend-integration/php-sdk)
-- [Node.js SDK](/backend-integration/node.js-sdk)
+- [Node.js SDK](/backend-integration/node-js-sdk)
 - [Go SDK](/backend-integration/go-sdk)

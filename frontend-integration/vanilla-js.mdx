@@ -1,6 +1,6 @@
 ---
-title: "Vanilla JS"
-description: "Learn how to add the Corbado UI components to your Vanilla JavaScript application."
+title: "VanillaJS"
+description: "Learn how to add the Corbado UI components to your JavaScript application."
 sidebarTitle: "Setup"
 ---
 
@@ -9,9 +9,7 @@ import Blogpost from '/snippets/blogpost.mdx'
 
 ## 1. Prerequisites
 
-Install the Corbado UI components via npm or add the JavaScript library via CDN.&#x20;
-
-You can include web-js in on of the following ways: 
+Install the Corbado UI components via npm or add the JavaScript library via CDN:
 
 <CodeGroup>
 
@@ -31,7 +29,11 @@ npm install @corbado/web-js
 Note: UI components added via **CDN** do currently not support icon coloring.
 </Note>
 
-## 2. Load the global Corbado object and mount CorbadoAuth
+## 2. Add UI Components to your JavaScript Code
+
+This example show how to load the global Corbado object and mount the `CorbadoAuth` component.
+
+Find a list and description of all the Corbado [UI Components](/frontend-integration/ui-components) here.
 
 ```html
 <!doctype html>
@@ -55,6 +57,7 @@ Note: UI components added via **CDN** do currently not support icon coloring.
       },
       isDevMode: true,
     });
+
   </script>
   <div id="corbado-auth"></div>
 </body>
@@ -65,7 +68,7 @@ Find detailed documentation about the available configuration options for all UI
 
 ## 3. Read the blog post
 
-To find a step-by-step tutorial on how to integrate passkeys into a Vanilla JS project, please check out our blog post.
+To find a step-by-step tutorial on how to integrate passkeys into a VanillaJS project, please check out our blog post.
 
 <Card href="https://www.corbado.com/blog/passkeys-javascript">
 <Blogpost title="Building a Passkey Login Page with JavaScript" />

@@ -3,29 +3,55 @@ title: "Getting Started"
 description: "Get started to implement passkeys with Corbado in your application by following these steps."
 ---
 
-## 1. Set up your Corbado account
+<Note>
+    **Already having an application and don't want to start from scratch?** <br />Head over to the [Corbado Connect](/products/corbado-connect) solution and learn how to integrate Corbado in an existing application.
+</Note>
 
-[Sign up](https://app.corbado.com/signin#register) for a free Corbado account.&#x20;
 
-![Developer panel Signup](/images/overview/getting-started/dev-panel-sign-up.webp)
 
-After successful account creation, the Corbado developer panel opens and you can create a new project.
+## Fast Track in &lt; 10 Minutes
 
-![Developer panel project selection](/images/overview/getting-started/dev-panel-project-selection.webp)
+In 4 simple steps to your first project setup.
 
-After clicking on "Create new project", a wizard appears that helps you to set up your project. After you've successfully set up your project, you should see the following screen:
+<Steps>
+  <Step title="Sign up to Corbado">
+    [Sign up](https://app.corbado.com/signin#register) to the Corbado developer panel.
+   
+   
+    ![Developer panel signup](/images/overview/getting-started/dev-panel-sign-up.webp)
+    
+    
+    After successful account creation, the Corbado developer panel opens and you can create a new project.
+    
+  </Step>
+  <Step title="Create a new project">
+   To create a new project, click on "**Create new Project**". <br /> 
+   ![Developer panel project selection](images/overview/getting-started/dev-panel-project-selection.webp)
+   Next, a **project setup wizard** will guide you step by step through the process of setting up the new project.
+  </Step>
+  <Step title="Set up the Project">
+   For integrating Corbado into a **new app**, it's recommended to use following settings:<br/>
+    ![Wizard settings](images/overview/getting-started/wizard_settings.webp)
+   Next, you can configure the **project type** and the **framework** you use.
+    <Note>
+    Depending on the **framework** you choose in the project setup wizard, you can find detailed **integration guides** based on your choice [here](/overview/getting-started#framework-specific-integration-guides).
+    </Note>
+    After you've successfully set up your project, you should see the following screen:
+    ![Developer panel project selection](images/overview/getting-started/dev-panel-project-overview.webp)
+  </Step>
+  <Step title="Test your setup">
+    The default settings allow you to **test your setup** directly in the **preview**. <br/> 
+    Click the "Preview" button at the top or navigate to ```<project ID>.preview.corbado.io```, and a new tab will open with the [UI components](/frontend-integration/ui-components) already built into an **example page** applying your configuration.
+    ![Dev panel preview](/images/overview/getting-started/dev-panel-preview.webp)
+  </Step>
+</Steps>
 
-![Developer panel project overview](/images/overview/getting-started/dev-panel-project-overview.webp)
 
-## 2. Get project ID
 
-If you create an account in the Corbado developer panel, a project with corresponding project ID is automatically created.
+## Framework-specific Integration Guides
 
-The project ID can be retrieved from the heading or in the tile for "Corbado API access" (see screenshot above).
-
-## 3. Choose your frontend
-
-Choose your frontend technology to get customized instructions on how to add passkeys (this step is also described in the developer panel's project wizard that appears when you click on "Create new project"):
+Here, you can find instructions for integrating Corbado into your application based on your **chosen framework** during the project setup.
+<Info>This step is also described when setting up a new project in the developer panel.</Info>
 
 <CardGroup cols={3}>
     <Card title='React' icon='react' color='#5bd5fa' href='/frontend-integration/react' />
@@ -36,11 +62,11 @@ Choose your frontend technology to get customized instructions on how to add pas
             <path d="M7 14l-3 -3l8 -8h6z" />
             <path d="M14 21l-5 -5l5 -5h5l-5 5l5 5z" />
         </svg>} />
-    <Card title='Vue.js' icon='vuejs' color='#37a974' href='/frontend-integration/vue.js' />
+    <Card title='Vue.js' icon='vuejs' color='#37a974' href='/frontend-integration/vue-js' />
     <Card title='Angular' icon='angular' color="#d72b2e" href='/frontend-integration/angular' />
     <Card
         title='Next.js'
-        href='/frontend-integration/next.js'
+        href='/frontend-integration/next-js'
         icon={
             <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -59,7 +85,7 @@ Choose your frontend technology to get customized instructions on how to add pas
             </svg>
         }
     />
-    <Card title='Nuxt.js' href='/frontend-integration/nuxt.js' icon={
+    <Card title='Nuxt.js' href='/frontend-integration/nuxt-js' icon={
         <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-brand-nuxt" width="1.5rem" height="1.5rem" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#08d87b" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <path d="M12.146 8.583l-1.3 -2.09a1.046 1.046 0 0 0 -1.786 .017l-5.91 9.908a1.046 1.046 0 0 0 .897 1.582h3.913" />
@@ -75,9 +101,12 @@ Choose your frontend technology to get customized instructions on how to add pas
 
 </CardGroup>
 
-<Info>
-Google Chrome Virtual Authenticator
+<Note>
+    **Didn't find your framework?**<br/> If your project supports JavaScript, you can always use the [VanillaJS](/frontend-integration/vanilla-js) UI components, regardless of your tech stack (e.g. in projects based on **PHP, Python, etc.**).
+</Note>
 
-As a developer, it might be helpful to use the [Google Chrome WebAuthn emulator](/other/google-chrome-virtual-authenticator). It allows you to test the WebAuthn API (the base for passkeys) with a virtual authenticator if your hardware does not offer any biometric scanners:
+## Configuration
 
-</Info>
+In order to provide an optimal user experience, Corbado offers a wide range of configurations that can be adjusted both within the developer panel and directly within the code of the UI components.
+
+In the following chapter, you find all the information about the project [configuration](/overview/configuration).

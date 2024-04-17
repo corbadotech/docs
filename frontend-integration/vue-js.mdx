@@ -1,6 +1,6 @@
 ---
-title: "Nuxt.js"
-description: "Learn how to add the Corbado web-js Package to your Nuxt.js Application."
+title: "Vue.js"
+description: "Learn how to add the Corbado web-js package to your Vue.js application."
 ---
 
 import Blogpost from "/snippets/blogpost.mdx";
@@ -10,7 +10,7 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
 <Prerequisites />
 
-## 2. Add web-js to Nuxt.js code
+## 2. Add web-js to Vue.js code
 
 ```html App.vue
 <template>
@@ -24,10 +24,11 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
   const router = useRouter();
 
-  onMounted(() => {
-    if (Corbado.isAuthenticated) {
-      router.push("/profile");
-    }
+  onMounted(async() => {
+    await Corbado.load({
+      projectId: <VITE_CORBADO_PROJECT_ID>,
+      darkMode: 'off',
+    });
     const authElement = document.getElementById("corbado-auth");
     Corbado.mountAuthUI(authElement, {
       onLoggedIn: () => {
@@ -39,12 +40,10 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 </script>
 ```
 
-If you need access to user data on the server, also take a look at our [Corbado Node.js SDK](/backend-integration/node.js-sdk).
-
 ## 3. Read the blog post
 
-To find a step-by-step tutorial on how to integrate passkeys into Nuxt.js, please check out our blog post:
+To find a step-by-step tutorial on how to integrate passkeys into Vue.js, please check out our blog post:
 
-<Card href="https://www.corbado.com/blog/passkeys-nuxtjs">
-  <Blogpost title="Building a Nuxt.js Passkey Login" />
+<Card href="https://www.corbado.com/blog/vuejs-passkeys">
+  <Blogpost title="Building a Vue.js Passkey Login" />
 </Card>

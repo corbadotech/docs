@@ -5,7 +5,7 @@ description: "Passkeys work in native apps (e.g. iOS or Android) seamlessly."
 
 ## Prerequisites
 
-The foundation for implementing passkeys in native apps involves setting up a cloud accountthat will manage these keys: Users must have an active cloud account, such as an enabled iCloud Keychain on Apple devices or a Google account with Google Password Manager for Android devices. This is essential for storing and managing passkeys.
+The foundation for implementing passkeys in native apps involves setting up a cloud account that will manage these keys: Users must have an active cloud account, such as an enabled iCloud Keychain on Apple devices or a Google account with Google Password Manager for Android devices. This is essential for storing and managing passkeys.
 
 ## Associating a native app with a relying party ID
 
@@ -25,7 +25,7 @@ Developers need to be mindful of several factors that can impact the implementat
 
 -   **Cached files**: Particularly on iOS devices, the Apple system downloads the association file once every 24 hours and caches it. During development, you can bypass this by adding `?mode=development` to the file request. However, this feature is exclusive to Apple devices; Android does not support local server development.
 -   **Content Delivery Networks (CDNs)**: Be aware of how CDNs might affect the availability and updating of the necessary association files.
--   **Localhost testing**: Testing on localhost presents additional challenges. Even locally, the association files must be accessible to Google. Utilize this [test tool ](https://developers.google.com/digital-asset-links/tools/generator)to verify if the association file is correctly set up and reachable.
+-   **Localhost testing**: Testing on localhost presents additional challenges. Even locally, the association files must be accessible to Google. Utilize this [test tool](https://developers.google.com/digital-asset-links/tools/generator) to verify if the association file is correctly set up and reachable.
 
 ## Troubleshooting common errors
 

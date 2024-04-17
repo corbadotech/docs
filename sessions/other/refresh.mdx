@@ -13,6 +13,6 @@ If there is no **short-term** session (represented as **JWT**) cookie present, t
 
 ## Refresh routine
 
-In order to refresh the **short-term** session (represented as **JWT**), a JavaScript timeout is initialized  that runs out ten seconds before the **JWT** expires. This timeout fetches a new **JWT** from the [Frontend API](/backend-integration/corbado-api-structure/frontend-api). On this fetch, the **long-term** session (represented as session ID with database entry) cookie gets transferred and the refresh routine issues a new **short-term** session (represented as **JWT)** for you.&#x20;
+In order to refresh the **short-term** session (represented as **JWT**), a JavaScript timeout is initialized  that runs out ten seconds before the **JWT** expires. This timeout fetches a new **JWT** from the [Frontend API](/overview/corbado-api-structure/frontend-api). On this fetch, the **long-term** session (represented as session ID with database entry) cookie gets transferred and the refresh routine issues a new **short-term** session (represented as **JWT)** for you.&#x20;
 
 Based on the new expiration time point, the refresh routine starts once again. In case there is no internet connection, it tries every ten seconds to refresh the **short-term** session (represented as **JWT**).

@@ -1,17 +1,19 @@
 ---
-title: "<CorbadoAuth />"
-description: "The &lt;CorbadoAuth/> component combines both the &lt;SignUp/> and &lt;Login/> component."
+title: "CorbadoAuth"
+description: "The CorbadoAuth component combines both the Signup and Login component."
 ---
+
+![CorbadoAuth Component](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
 
 ## Introduction
 
-![CorbadoAuth Component](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component.webp)
+`CorbadoAuth`combines the `Signup` and the `Login` components and wires them together. Use this UI component if you don't want to take care of authentication-related navigation inside your application.&#x20;
 
-\<CorbadoAuth/> combines the \<SignUp/> and the \<Login/> components and wires them together. Use this UI component if you don't want to take care of authentication-related navigation inside your application.&#x20;
 
+## Example
 <CodeGroup>
 
-```tsx Typescript
+```tsx React
 import { CorbadoAuth } from "@corbado/react";
 
 const AuthPage = () => {
@@ -41,10 +43,10 @@ const AuthPage = () => {
 
 </CodeGroup>
 
-### API reference
+## API reference
 
 | Name       | Type              | Description                                                                                                                                                                                                               |
 | ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | onLoggedIn | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a signUp). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
 
-**Note:** This component must be wrapped inside a \<CorbadoProvider/> component. Most configuration settings will be applied there so make sure to check out the available settings [here](./less-than-corbadoprovider-greater-than).
+<Note> This component requires the `CorbadoProvider` component. Most configuration settings will be applied there so make sure to check out the available settings of the [Corbado Provider](/frontend-integration/ui-components/corbadoprovider). </Note>
