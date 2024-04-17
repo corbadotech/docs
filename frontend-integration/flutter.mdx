@@ -1,31 +1,17 @@
 ---
 title: "Flutter"
-description: "Corbado provides 3 open source Flutter packages to support different use cases that you might have when you build your native app."
+description: "Corbado provides you with a open source Flutter packages to support you to build your native app."
 ---
 
-## Package 1: passkeys
+## Flutter Package
 
-Passkeys integrate deeply with the two mayor native operating systems (iOS and Android) as well as web apps. To save you from writing native code (Kotlin, Java, Swift or Objective-C), we created the passkeys package. It contains all the required native code and offers you a clean and easy to use dart interface.
-
-Find more details about to integrate this package on its [docs page](https://pub.dev/packages/passkeys).
-
-**Supported platforms:** Android, iOS, web
-
-**Working example:** [GitHub](https://github.com/corbado/flutter-passkeys/tree/main/packages/passkeys/passkeys/example)
-
-**Use case:**
-
-This is the package with the least functionality. You should use it only when you want to build your own relying party server. If you want to go with Corbado's relying party server, you should use one of the other two packages (they both internally make use of the passkeys package).
-
-## Package 2: corbado\_auth
-
-This package provides you with an authentication SDK that fully integrates with Corbado's relying party server. Therefore, corbado\_auth is the easiest way to bring passkeys to your Flutter app. All you need to do is to set up your Corbado project and install corbado\_auth.&#x20;
+The [corbado_auth](https://github.com/corbado/flutter-passkeys/tree/main/packages/corbado_auth) package provides you with an authentication SDK that fully integrates with Corbado's relying party server. Therefore, corbado\_auth is the easiest way to bring passkeys to your Flutter app. All you need to do is to set up your Corbado project and install corbado\_auth.&#x20;
 
 With corbado\_auth you can:
 
-* sign up and login users with passkeys
-* login users with conditional UI
-* use email one-time passcodes (OTP) as a fallback mechanism for cases when passkeys can not be used
+* sign up and login users with [passkeys](https://www.corbado.com/glossary/passkey)
+* login users with [conditional UI](https://www.corbado.com/glossary/conditional-ui)
+* use email one-time passcodes (OTP) as a [fallback](/helpful-guides/passkeys/fallback-options) mechanism for cases when passkeys can not be used
 
 Find more details about to integrate this package on its [docs page](https://pub.dev/packages/corbado\_auth).
 
@@ -39,6 +25,15 @@ Use this package if you want to build a native app that makes use of passkeys fo
 
 If you want to use your own relying party server, then you should use the passkeys package. If you use Firebase already, then you should use corbado\_auth\_firebase.
 
+
+<Note> 
+### Looking for **Firebase integration**?
+Check out our [corbado_auth_firebase](https://github.com/corbado/flutter-passkeys/tree/main/packages/corbado_auth_firebase) package, to seamlessly combine Firebase capabilities with passkey authentication. Use it alongside our [Firebase extension](https://extensions.dev/extensions/corbado/authentication-corbado) for optimized functionality. Find integration details on the package's [documentation page](https://pub.dev/packages/corbado\_auth\_firebase).
+</Note>
+
+
+
+{/*
 ## Package 3: corbado\_auth\_firebase &#x20;
 
 Firebase can support a lot when building your native app. As it doesn't come with support for passkeys though, we have created this package. It allows you to combine the solutions of Firebase and Corbado to still have all the benefits of Firebase while bringing passkeys into your app.
@@ -52,3 +47,4 @@ This package should be used together with our [Firebase extension](https://exten
 **Use case:**
 
 Use this package if you want to build a native app that uses Firebase services (e.g. Firestore, Authentication, Storage, ...) but you also want to offer passkey authentication to yours users (this is not possible with Firebase out-of-the box).
+*/}

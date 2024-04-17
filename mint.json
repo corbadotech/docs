@@ -55,7 +55,7 @@
           "pages": [
             "overview/configuration",
             "overview/configuration/user-flow-configuration",
-            "overview/configuration/passkey-configuration"
+            "overview/configuration/url-id-configuration"
 
           ]
         },
