@@ -5,38 +5,38 @@ description: "Each application has individual user requirements that can be conf
 
 ## Introduction
 
-We can now take a look on how the user flow and user experience can be adapted. These settings directly impact the user journey during sign-up and login and defines what screens the user is going to see.
+These settings directly impact the user journey during sign-up and login and define what screens the user is going to see.
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface) in the **Settings>Use interface** page:
 
-1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Adjust the settings associated with the sign-up part of your user flow.
-2. [Passkey pop-up frequency](/overview/configuration/user-flow-configuration#2-passkey-pop-up-frequency): Set the frequency for prompting users without a passkey to add one.
-3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks): Configure the required user information for registration and authentication, as well as the authentication fallback options.
+1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Settings associated with the sign-up part of your user flow
+2. [Passkey pop-up frequency](/overview/configuration/user-flow-configuration#2-passkey-pop-up-frequency): Frequency for prompting users without a passkey to add one
+3. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#3-login-identifiers-and-fallbacks): Configure the required user information for sign-up and login, as well as the authentication fallback options.
 
 
 ## 1. Sign-up settings
-This section allow you to adjust the settings that affect the sign-up part of user authentication. <br/>You can configure two settings:
+This section allows you to adjust the sign-up settings. You can configure two settings:
 * Allow users to self-sign-up for your project.
-* Require users to set their name.
+* Require users to provide their name during sign-up.
 
 ![Sign-up setting](/images/overview/signup/user-flow-configuration/sign-up-settings.webp)
 
 ## 2. Passkey pop-up frequency
 
-If a passkey is not created during the registration process, the user can be offered the option to append a passkey during login using a fallback method. 
+If a passkey is not created during the sign-up process, the user can be offered the option to append a passkey after logging using a fallback method.
 This setting allows adjusting the frequency at which a user without a passkey is prompted to append one. The options range from every login to once every 3 months.
 
 ![Passkey setting](/images/overview/signup/user-flow-configuration/passkey-settings.webp)
 
 ## 3. Login identifiers and fallbacks
 
-Corbado's UI-Components support multiple login identifiers.
+Corbado's UI components support multiple login identifiers.
 
 <Tip>
-  **Login identifiers** are unique and thus two user's can never use the same login identifier. 
-  Login identifiers can be used for two different things: 
-  * They can identify a user's account 
-  * They can act as a fallback when passkeys are not available.
+  **Login identifiers** are unique and thus two users can never use the same login identifier.
+  Login identifiers are used for two different things:
+  * They identify a user's account
+  * They act as a fallback when passkeys are not available.
 </Tip>
 
 Currently the following login identifier are supported:
@@ -49,16 +49,16 @@ Currently the following login identifier are supported:
 
 There are two types of login identifiers:
 
-- Verifiable by [one-time passcode](/overview/configuration/user-flow-configuration#3-4-1-one-time-passcode) or [email magic link](/overview/configuration/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
+- Verifiable by [one-time passcodes](/overview/configuration/user-flow-configuration#3-4-1-one-time-passcode) or [email magic links](/overview/configuration/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
 - Not verifiable (username)
 
-Depending on the desired authentication journey, one or more login identifiers can be activated. Each activated login identifier is requested during the signup process. 
+Depending on the desired authentication journey, one or more login identifiers can be activated. Each activated login identifier is requested during the sign-up process.
 
 An overview of the available login identifiers and their properties can be found below. 
 
 
-<table><thead><tr><th width="150">Login Identifier</th><th>[Allow Login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode<br/>&bull; Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No &#42;</td><td>None</td><td>None</td></tr></tbody></table>
-<sup>&#42; In this case, it is recommended to include an additional login identifier, such as email address or phone number, to provide a fallback option for the users accounts.</sup>
+<table><thead><tr><th width="150">Login identifier</th><th>[Allow login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode<br/>&bull; Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No &#42;</td><td>&bull; None</td><td>&bull; None</td></tr></tbody></table>
+<sup>&#42; In this case, it is recommended to include an additional login identifier, such as email address or phone number, to provide a fallback option.</sup>
 
 
 
@@ -66,22 +66,20 @@ An overview of the available login identifiers and their properties can be found
 
 
 
-
-*These properties will be explained in detail in the next sections.*
 
 ### 3.1 Allow login
-For each activated login identifier, an additional setting can be adjusted to determine whether it's allowed for login. If this setting isn't enabled, the activated login identifier serves after successful signup only as a fallback option.
+For each activated login identifier, an additional setting can be adjusted to determine whether it's allowed for login. If this setting isn't enabled, the activated login identifier serves after successful sign-up only as a fallback option.
 
 ![Login identifier](/images/overview/signup/user-flow-configuration/allow-login.webp)
 
 ### 3.2 Fallback
 
-To ensure a smooth signup and login process, even when no passkeys are supported or available, a fallback option is always offered whenever possible.
+To ensure a smooth sign-up and login process, even when no passkeys are supported or available, a fallback option is offered.
 
-If a verifiable identifier is activated, it automatically serves as the fallback option.
+If a verifiable login identifier is activated, it automatically serves as the fallback option.
 
 <Note> 
-Enabling **only the username** will provide no fallback option and may leave users unable to recover accounts or authenticate on devices that do not support passkeys. To address this, it's recommended to activate a secondary identifier, without allowing login, to serve as a fallback.
+Enabling **only the username** as login identifier will provide no fallback option and may leave users unable to recover accounts or authenticate on devices that do not support passkeys. To address this, it's recommended to activate a secondary login identifier, without allowing login, to serve as a fallback.
 
 </Note>
 
@@ -100,17 +98,17 @@ Corbado supports the following two types of verification methods.
 
 - **One-time passcode**
 
-  The one-time passcode (OTP) method entails sending a unique, time-sensitive 6-digit code to the user's registered email address or phone number. Once received, the user manually inputs this code into the login interface. Upon successful verification, the user gains access to the desired service or platform.
+  The one-time passcode (OTP) method entails sending a unique, time-sensitive 6-digit code to the user's registered email address or phone number. Once received, the user manually inputs this code into the login interface. Upon successful verification, the user gains access to the app or website.
   <Note>
-    In case you use Phone number as a login identifier:
+    In case you use phone numbers as a login identifier:
 
-    Corbado offers 10 SMS per account for testing purpose in the development environment. 
+    Corbado offers 10 free SMS per account for testing purposes in development projects.
     To upper the limit or to integrate SMS verification in a production project,
     please [contact us](https://www.corbado.com/contact).
   </Note>
 
 - **Email magic link**
 
-  This method involves sending a unique, time-sensitive link to the user's registered email address. Upon clicking the link, the user is directed to a secure webpage where their identity is confirmed, granting access to the desired service or platform. 
+  This method involves sending a unique, time-sensitive link to the user's registered email address. Upon clicking the link, the user is directed to a secure webpage where their identity is confirmed, granting access to the desired app or website.
 
-  Currently, this method is only supported for email address. 
+  Currently, email magic links are only supported for email address login identifiers.

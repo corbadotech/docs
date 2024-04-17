@@ -8,12 +8,12 @@ description: "Use ngrok to develop and test with multiple devices locally on you
 [ngrok](https://ngrok.com/) makes local web applications reachable over the internet with a single command. The following steps show the setup and usage of ngrok for testing your Corbado setup locally with multiple devices.
 
 <Note>
-  This guide assumes that you've setup your account in the Corbado developer
+  This guide assumes that you've set up your account in the Corbado developer
   panel. If you haven't done so, please check [Getting
-  started](/overview/getting-started).
+  Started](/overview/getting-started).
 </Note>
 
-Testing your local setup with ngrok allows Corbado to communicate with your local system, e.g. to access the application from different devices. In production or staging mode, system are often accessible over the internet anyways but for local developing and testing ngrok saves a ton of work.
+Testing your local setup with ngrok allows Corbado to communicate with your local system, e.g. to access the application from different devices. In production or staging mode, systems are often accessible over the Internet anyways but for local developing and testing, ngrok saves a ton of work.
 
 1. [ngrok setup](#1-ngrok-setup)
 2. [Run your application](#2-run-your-application)
@@ -24,7 +24,7 @@ Testing your local setup with ngrok allows Corbado to communicate with your loca
 
 1. Sign up for a free ngrok account at [https://dashboard.ngrok.com/signup](https://dashboard.ngrok.com/signup) and follow the instructions.
 2. Install ngrok from [https://dashboard.ngrok.com/get-started/setup](https://dashboard.ngrok.com/get-started/setup)[.](https://ngrok.com/download)
-3. Go to the "[Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)" section in the ngrok dashboard. There copy your token and add it to your ngrok installation by executing:
+3. Go to the "[Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)" section in the ngrok dashboard. There, copy your token and add it to your ngrok installation by executing:
 
 ```sh
 ngrok config add-authtoken <your-authtoken>
@@ -67,8 +67,7 @@ Please use the ngrok URL as testing URL (instead of localhost) in your browser!
 ## 3. Set the ngrok URL in the Corbado developer panel
 
 <Note>
-  Note that this step is **only required** if you project is in **environment
-  PROD**. If you are in environment DEV you can skip this.
+  Note that this step is **only required** if your project is in **PROD environment**. If you are in DEV environment, you can skip this.
 </Note>
 
 Add a new authorized origin with the ngrok URL and add localhost, including protocol (http) and port in ["Settings" - "General" - "Authorized origins"](https://app.corbado.com/app/settings/general/authorized-origins):

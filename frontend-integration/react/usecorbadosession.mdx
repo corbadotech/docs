@@ -1,15 +1,15 @@
 ---
 title: "useCorbadoSession()"
-description: "Get access to additional user and user-session data."
+description: "Get access to additional user and session data."
 ---
 
 | State        | Type                     | Description                                                                                                                                                                                                                                               |
 | ------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| shortSession | string \| undefined      | A JWT that proves that the user is authenticated. It can be used to make calls to your backend and thus should be included as an Authorization Header in the requests to such a backend. A value of `undefined` indicates that the user is not logged in. |
+| shortSession | string \| undefined      | A JWT that proves that the user is authenticated. It can be used to make calls to your backend and thus should be included as an authorization header in the requests to such a backend. A value of `undefined` indicates that the user is not logged in. |
 | user         | SessionUser \| undefined | An object that holds basic information about the user. A value of `undefined` indicates that the user is not logged in.                                                                                                                                   |
 | loading      | boolean                  | If true, the SDK is still in a loading state. You should then not yet make use of the other states but wait until `loading = false`.                                                                                                                      |
 
-This is a very simple example that shows how you can use this hook to render a page that depends on the user's authentication state.
+This is a very simple example that shows how you can use the `useCorbadoSession` hook to render a page that depends on the user's authentication state.
 
 ```tsx HomePage.tsx
 import { useCorbado } from "@corbado/react";

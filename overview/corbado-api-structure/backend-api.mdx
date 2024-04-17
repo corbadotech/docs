@@ -7,22 +7,22 @@ import Blogpost from "/snippets/blogpost.mdx";
 
 ## 1. Introduction
 
-The Backend API is designed for integration with your secure backend (e.g. regular web app running on PHP or Node.js), meaning that your application can securely store secrets without exposing them to user clients. It handles all server-side operations and acts with databases, executes business logic and more. Via our Backend API, you can invidually modify and read user, session and authentication data. If you require individual solutions for your application, then this API is for you.
+The Backend API is designed for integration with your secure backend (e.g. regular web app running on PHP or Node.js), meaning that your application can securely store secrets without exposing them to user clients. It handles all server-side operations and acts with databases, executes business logic and more. Via the Backend API, you can individually modify and read user, session and authentication data.
 
 <Warning>
-Do never use the Backend API with API secrets in “insecure” frontend applications like native apps or single page applications running entirely in the browser.
+Never use the Backend API with API secrets in “insecure” frontend applications like native apps or single page applications running entirely in the browser.
 </Warning>
 
-Our API adheres to a commonly recognized RESTful structure, which should make its usage fairly intuitive. However, should you require any assistance, you are always welcome to [contact us](https://www.corbado.com/contact).
+The Backend API adheres to a commonly recognized RESTful structure, which should make its usage fairly intuitive. However, should you require any assistance, you are always welcome to [contact us](https://www.corbado.com/contact).
 
 ## 2. Configuration
 
-To call our Backend API, you only need the Backend API URL, the Corbado project ID and the API secret (both are user for HTTP basic authentication) which you can find in the [developer panel](https://app.corbado.com/app/settings/general/project-info).
+To call our Backend API, you need the Backend API URL, the Corbado project ID and the API secret (both are used for HTTP basic authentication) which you can find in the [developer panel](https://app.corbado.com/app/settings/general/project-info).
 
 All requests accept form-encoded request bodies, and respond with a JSON-encoded body.
 
 <Note>
-Your Backend API can be accessed at the following format (default value):
+Your Backend API can be accessed at the following URL (default value):
 
 **https://backendapi.corbado.io**
 </Note>
@@ -30,7 +30,7 @@ Your Backend API can be accessed at the following format (default value):
 You can generate an API secret from the developer panel at any time at ["Settings" - "Credentials" - "API secrets"](https://app.corbado.com/app/settings/credentials/api-keys).
 
 <Note>
-Be aware that API secrets are only visible once and afterwards masked due to security reasons. If you lost an API secret, you need to create a new one.
+Be aware that API secrets are only visible once and afterwards masked due to security reasons. If you lose an API secret, you will need to create a new one.
 </Note>
 
 ![Corbado API Secrets](/images/backend-integration/backend-api/api-secrets.webp)
@@ -44,14 +44,14 @@ API secrets are sensitive information that must be protected at all costs to avo
 
 ## 3. Authorization
 
-The Backend API uses HTTP Basic Authentication to authenticate requests. You can use your Corbado project ID as the username and the API secret as the password.
+The Backend API uses basic authentication to authenticate requests. You can use your Corbado project ID as the username and the API secret as the password.
 
-Include an Authorization header with the value `Basic <base64-encoded-credentials>` in each request.
+Include an authorization header with the value `Basic <base64-encoded-credentials>` in each request.
 
-The input for base64 encoding should look like this: `<Corbado Project ID>:<Corbado API Secret>`
+The input for the base64 encoding should be: `<Corbado Project ID>:<Corbado API Secret>`
 
 ## 4. API Reference
 
-<Card href="https://api.corbado.com/docs/api/?">
+<Card href="https://api.corbado.com/docs/api/">
     <Blogpost title="Corbado Backend API Reference" />
 </Card>
