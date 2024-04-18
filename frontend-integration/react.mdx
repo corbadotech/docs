@@ -25,16 +25,15 @@ This example shows how the `CorbadoProvider` and the `CorbadoAuth` component can
 
 Find a list and description of all the Corbado [UI Components](/frontend-integration/ui-components) here.
 
-```typescript App.tsx
+```tsx App.tsx
 import {CorbadoAuth, CorbadoProvider} from '@corbado/react';
-import englishTranslations from './translations/en';
 import HomePage from "./pages/HomePage";
 import {createBrowserRouter, RouterProvider, useNavigate} from "react-router-dom";
 
 const App = () => {
   return (
     <CorbadoProvider
-      projectId={<VITE_CORBADO_PROJECT_ID>}
+      projectId='your-project-id'
       darkMode='on'
     >
       <RouteProvider />
@@ -81,10 +80,8 @@ export default App;
 
 Find detailed documentation about the available configuration options for all UI components [here](/frontend-integration/ui-components).
 
-After integration Corbado into your application you can now take a look at the hooks that make authentication state available throughout your application:
-
-* [useCorbado](/frontend-integration/react/usecorbado)
-* [useCorbadoSession](/frontend-integration/react/usecorbadosession)
+After integration Corbado into your application you can now take a look at the [useCorbado](/frontend-integration/react/usecorbado) hook
+that makes authentication functionalities available throughout your application.
 
 ## 3. Read the blog post
 
