@@ -101,8 +101,7 @@
           "group": "React",
           "pages": [
             "frontend-integration/react",
-            "frontend-integration/react/usecorbado",
-            "frontend-integration/react/usecorbadosession"
+            "frontend-integration/react/usecorbado"
           ]
         },
         {
