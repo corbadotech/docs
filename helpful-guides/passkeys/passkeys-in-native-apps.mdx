@@ -23,7 +23,9 @@ The core of passkey implementation in native apps lies in establishing trust bet
 
 Developers need to be mindful of several factors that can impact the implementation process:
 
--   **Cached files**: Particularly on iOS devices, the Apple system downloads the association file once every 24 hours and caches it. During development, you can bypass this by adding `?mode=development` to the file request. However, this feature is exclusive to Apple devices; Android does not support local server development.
+-   **Cached files**: Particularly on iOS devices, the Apple system downloads the association file once every 24 hours and caches it. This means that frequent updates to the apple-app-site-association file may not be immediately available for your app. During development, you can bypass this by adding `?mode=development` to the file request. This means you need to change the following two things (note that this feature is exclusive to Apple devices; Android does not support local server development): 
+     - **Update your relying party ID** by appending `?mode=development` (e.g. `acme.com?mode=development`). If you use Corbado's relying party server, you do not need to change the relying party ID in Corbado's developer panel, as we handle this for you dynamically during the file request. If you use your own relying party server, you need to change that though.
+     - **Update your webcredentials in Xcode** by appending `?mode=development` to the associated domains (e.g. `webcredentials:acme.com?mode=development`)
 -   **Content Delivery Networks (CDNs)**: Be aware of how CDNs might affect the availability and updating of the necessary association files.
 -   **Localhost testing**: Testing on localhost presents additional challenges. Even locally, the association files must be accessible to Google. Utilize this [test tool](https://developers.google.com/digital-asset-links/tools/generator) to verify if the association file is correctly set up and reachable.
 
