@@ -60,8 +60,16 @@
           "pages": [
             "overview/configuration",
             "overview/configuration/user-flow-configuration",
-            "overview/configuration/url-id-configuration"
-
+            "overview/configuration/url-id-configuration",
+            {
+              "group": "Social Logins",
+              "pages": [
+                "overview/configuration/social-logins/overview",
+                "overview/configuration/social-logins/github",
+                "overview/configuration/social-logins/google",
+                "overview/configuration/social-logins/microsoft"
+              ]
+            }
           ]
         },
         {

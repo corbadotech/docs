@@ -1,0 +1,36 @@
+---
+title: "GitHub"
+description: "Learn how to set up social logins with GitHub as authentication provider."
+---
+
+# Integrating GitHub Social Connection with Corbado
+
+## Overview
+Integrate GitHub social connections into your application using Corbado by setting up the Client ID, Client Secret, and Authorized Redirect URI in your instance settings.
+
+Corbado simplifies the development process by providing pre-configured OAuth credentials and redirect URIs for development environments, meaning no additional configuration is necessary.
+
+For production environments, you'll need to create your own Client ID and Client Secret through your GitHub account.
+
+This guide will assist you in creating a GitHub account and setting up a GitHub OAuth app. For detailed steps on integrating OAuth using Corbado, please refer to the Social Connection (OAuth) guide.
+
+## Prerequisites
+- **Create a Corbado Application**: Access your Corbado developer panel to create an application. More details are available in the [Set up your application](#) guide.
+- **GitHub Account**: You must have a GitHub account. [Create one here](#).
+
+## Configuring GitHub Social Connection
+### Registering a GitHub OAuth App
+1. Navigate to **User & Authentication > Social Connections** in the Corbado developer panel and enable GitHub.
+2. In the opened modal, ensure **Use Custom Credentials** is selected and copy the Authorized Redirect URI.
+3. Visit the GitHub panel, enter the copied URI into the Authorization Callback URL field, and complete the app registration.
+
+### Obtaining the Client ID and Client Secret
+After registering:
+1. You'll be redirected to the project's admin panel on GitHub.
+2. Click **Generate a New Client Secret**.
+3. Copy the provided Client ID and Client Secret.
+4. Return to the Corbado developer panel and input these credentials in the designated fields.
+
+Remember to click **Apply** in the Corbado developer panel to finalize the setup.
+
+Congratulations, your instance is now configured for social connections with GitHub!
