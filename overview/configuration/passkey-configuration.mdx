@@ -1,6 +1,6 @@
 ---
 title: "Passkey Configuration"
-description: "To provide a smooth passkey experience various settings can be configured with Corbado."
+description: "To provide a smooth passkey experience, various settings can be configured with Corbado."
 ---
 
 ## Introduction
@@ -9,20 +9,21 @@ These settings directly impact the passkey experience during sign-up and login a
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface/passkeys) in the **Settings>Use interface>Passkeys** page:
 
-1. [Cross-Device Authentication strategy](/overview/configuration/passkey-configuration#1-cross-device-authentication-strategy): What strategy should be used for Cross-Device Authentication
+1. [Cross-Device Authentication Strategy](/overview/configuration/passkey-configuration#1-cross-device-authentication-strategy): What strategy should be used for Cross-Device Authentication
 
-## 1. Cross-Device Authentication strategy
+## 1. Cross-Device Authentication Strategy
 
-Cross-Device Authentication (CDA) allows users to use a passkey from one device for authentication on another, facilitating seamless access across diverse platforms.
+[Cross-Device Authentication (CDA)](https://www.corbado.com/glossary/cda) allows users to use a passkey from one device (CDA authenticator) for authentication on another device (CDA client), facilitating seamless access across diverse platforms.
 
-While the two involved devices can come in a lot of different combinations the most popular one is a desktop computer opening a website for example and a smartphone holding the passkey and processing the actual authentication.
+While the two involved devices can come in a lot of different combinations, the most popular one is a desktop computer accessing a website and a smartphone holding the passkey, and processing the actual authentication.
 
-Read our blog posts if you need more details and background information:
+Read our glossary entry and blog posts if you need more details and background information:
 
-- [What is CDA (Cross-Device Authentication) in WebAuthn?](https://www.corbado.com/glossary/cda)
-- [WebAuthn Passkey QR Codes & Bluetooth: Hybrid Transport](https://www.corbado.com/blog/webauthn-passkey-qr-code)
+- [Glossary entry: What is CDA (Cross-Device Authentication) in WebAuthn?](https://www.corbado.com/glossary/cda)
+- [Blog post: WebAuthn Passkey QR Codes & Bluetooth: Hybrid Transport](https://www.corbado.com/blog/webauthn-passkey-qr-code)
+- [Blog post: WebAuthn Cross-Device-Authentication: Passkeys via Mobile-First Strategy](https://www.corbado.com/blog/webauthn-cross-device-authentication-passkeys-mobile-first)
 
-The strategy setting defines how Corbado behaves during sign-up and login:
+The Cross-Device Authentication strategy setting defines how Corbado's UI component behaves during sign-up and login:
 
 <table>
 <thead>
@@ -36,22 +37,22 @@ The strategy setting defines how Corbado behaves during sign-up and login:
 <tr>
 <td>Minimize</td>
 <td>CDA is not offered during sign-up</td>
-<td>CDA can not be used for login</td>
+<td>CDA cannot be used for login</td>
 </tr>
 <tr>
 <td>Standard (default)</td>
 <td>CDA is not offered during sign-up</td>
-<td>CDA can be used for login (using a passkey created directly on your smartphone for example)</td>
+<td>CDA can be used for login (e.g. using a passkey created directly on your smartphone)</td>
 </tr>
 <tr>
 <td>Maximize</td>
-<td>CDA is the only option shown (QR code & security key)</td>
-<td>CDA can be used for login (using a passkey created directly on your smartphone for example)</td>
+<td>CDA is the only shown option (e.g. via QR code & hardware security key)</td>
+<td>CDA can be used for login (e.g. using a passkey created directly on your smartphone)</td>
 </tr>
 </tbody>
 </table>
 
 <Note>
-Since the CDA strategy is an advanced setting we recommend leaving it at the default setting (**standard**). If you need help or have questions please do not hesitate to [contact](https://www.corbado.com/contact) us.
+Since the CDA strategy is an advanced setting, we recommend leaving it at the default setting (**standard**). If you need help or have questions, please do not hesitate to [contact](https://www.corbado.com/contact) us.
 </Note>
 
