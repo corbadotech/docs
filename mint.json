@@ -60,8 +60,8 @@
           "pages": [
             "overview/configuration",
             "overview/configuration/user-flow-configuration",
-            "overview/configuration/url-id-configuration"
-
+            "overview/configuration/url-id-configuration",
+            "overview/configuration/passkey-configuration"
           ]
         },
         {
