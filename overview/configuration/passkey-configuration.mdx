@@ -9,9 +9,17 @@ These settings directly impact the passkey experience during sign-up and login a
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface/passkeys) in the **Settings>Use interface>Passkeys** page:
 
-1. [Cross-Device Authentication Strategy](/overview/configuration/passkey-configuration#1-cross-device-authentication-strategy): What strategy should be used for Cross-Device Authentication
+1. [Passkey pop-up frequency](/overview/configuration/passkey-configuration#1-passkey-pop-up-frequency): Frequency for prompting users without a passkey to add one
+2. [Cross-Device Authentication Strategy](/overview/configuration/passkey-configuration#2-cross-device-authentication-strategy): What strategy should be used for Cross-Device Authentication
 
-## 1. Cross-Device Authentication Strategy
+## 1. Passkey pop-up frequency
+
+If a passkey is not created during the sign-up process, the user can be offered the option to append a passkey after logging using a fallback method.
+This setting allows adjusting the frequency at which a user without a passkey is prompted to append one. The options range from every login to once every 3 months.
+
+![Passkey setting](/images/overview/signup/user-flow-configuration/passkey-settings.webp)
+
+## 2. Cross-Device Authentication Strategy
 
 [Cross-Device Authentication (CDA)](https://www.corbado.com/glossary/cda) allows users to use a passkey from one device (CDA authenticator) for authentication on another device (CDA client), facilitating seamless access across diverse platforms.
 
