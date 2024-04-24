@@ -65,9 +65,9 @@
               "group": "Social Logins",
               "pages": [
                 "overview/configuration/social-logins/overview",
-                "overview/configuration/social-logins/github",
                 "overview/configuration/social-logins/google",
-                "overview/configuration/social-logins/microsoft"
+                "overview/configuration/social-logins/microsoft",
+                "overview/configuration/social-logins/github"
               ]
             }
           ]
