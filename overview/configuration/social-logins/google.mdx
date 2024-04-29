@@ -4,7 +4,7 @@ description: "Learn how to set up social logins with Google as authentication pr
 ---
 
 ## Overview
-Integrate Google's social connection with your app using Corbado by configuring the **Client ID**, **Client Secret**, and **Authorized Redirect URI** in your Corbado project's settings.
+Integrate Google's social connection with your app using Corbado by configuring the **Client ID** and **Client Secret** in your Corbado project's settings.
 
 For a streamlined development experience, Corbado provides preconfigured shared OAuth credentials and redirect URIs for development instances, which require no further setup.
 
@@ -16,7 +16,7 @@ However, for production environments, it is necessary to establish your own Goog
 - Create a Google Developer account by visiting the [Google Cloud console](https://console.developers.google.com/).
 
 ## Configuration Steps for Google Social Connection
-1. In the [Corbado developer panel](https://app.corbado.com/signin#register), navigate to **Settings > User Interface > Social**. Activate the Google option and ensure "Use custom credentials" is selected. Copy the Authorized Redirect URI for later use.
+1. In the [Corbado developer panel](https://app.corbado.com), navigate to **Settings > User Interface > Social**. Activate the Google option and ensure "Use custom credentials" is selected. Copy the Authorized Redirect URI for later use.
 
 ![Developer Panel Google](/images/overview/configuration/social-logins/google/dev-panel-google.webp)
 
@@ -32,10 +32,6 @@ However, for production environments, it is necessary to establish your own Goog
 
 ![Developer Panel Google Filled](/images/overview/configuration/social-logins/google/dev-panel-google-filled.webp)
 
-5. Optionally, set additional OAuth scopes as needed. Lists of available scopes and further information are accessible via the provided links.
-
-{/* add screenshot */}
-
 
 ## Recap
 By following this guide, you should have:
@@ -46,4 +42,6 @@ By following this guide, you should have:
 After configuring, click "Save" to apply your settings. Congratulations, the Google Social Connection is now active for your instance.
 
 ## Transitioning to Production
-Be aware that Google OAuth apps start in "Testing" status, which is suitable for internal testing and limits to 100 test users. Before transitioning to production, adjust the publishing status to "In Production" on the OAuth consent screen in the Google Cloud Platform console. This change necessitates a verification process concerning your application's name, logo, and requested scopes.
+Be aware that Google OAuth apps start in "Testing" status, which is suitable for internal testing and limits to 100 test users.
+Before transitioning to production, adjust the publishing status to "In Production" on the OAuth consent screen in the Google Cloud Platform console.
+This change necessitates a verification process concerning your application's name, logo, and requested scopes.

@@ -10,7 +10,7 @@ Integrate Microsoft Azure social connection into your app using Corbado by filli
 ## Before You Start
 
 - **Create a Corbado Application**: Set up a new application via your Corbado developer panel. Refer to the "Set up your application" guide for detailed instructions.
-- **Microsoft Azure Account**: If you don't have one, [sign up for an account](#).
+- **Microsoft Azure Account**: If you don't have one, [sign up for an account](https://portal.azure.com).
 
 ## Limitations
 
@@ -28,15 +28,4 @@ Corbado currently only supports the common tenant type. This setup is suitable f
 
 4. **Enable OpenID Mode**: In the Authentication settings of your Azure app, ensure OpenID connect is enabled to allow Corbado to receive an id_token.
 
-## Security Update: nOAuth Vulnerability
-
-A recent discovery of the nOAuth vulnerability in Azure AD OAuth applications can lead to account takeovers. To mitigate this, Corbado has enhanced the security measures for Microsoft OAuth integrations, particularly focusing on verified email addresses.
-
-### Enabling Additional Email Verification Claims
-
-1. **Add Optional Claims**: Navigate to your Azure app's Token configuration page and add 'email' and 'xms_pdl' claims.
-2. **Update Manifest**: Adjust the manifest to replace 'xms_pdl' with 'xms_edov' to ensure accurate email verification status reporting.
-3. **Verify Claim Configuration**: Confirm the inclusion of the 'xms_edov' claim in both ID and Access tokens.
-
-By following these steps, you can secure your Corbado instance against vulnerabilities and ensure that your Microsoft Azure social connection is configured correctly.
 
