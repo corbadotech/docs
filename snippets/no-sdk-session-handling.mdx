@@ -1,10 +1,14 @@
-<Note>To fully understand the following section make yourself familiar with the [Corbado session management](/sessions/overview)!</Note>
+<Note>To fully understand the following section, make yourself familiar with the [Corbado session management](/sessions/overview)!</Note>
 
 To verify if a user is logged in your {language} application needs to verify the short-term session (represented as JWT). Corbado utilizes the **RS256** algorithm (see [JWT security](/sessions/security/jwt-security) for more details) for its JWTs.
 
-To obtain the public keys required for verifying the JWT signature, you need to retrieve the **JWKS** (JSON Web Key Set). The JWKS is located at the Frontend API URL, for example:
+To obtain the public keys required for verifying the JWT signature, you need to retrieve the **JWKS** (JSON Web Key Set). The JWKS is located at the Frontend API URL:
 
-https://pro-771306541694234650.frontendapi.corbado.io/.well-known/jwks
+`https://<projectID>.frontendapi.corbado.io/.well-known/jwks`
+
+For example for project ID `pro-771306541694234650`:
+
+`https://pro-771306541694234650.frontendapi.corbado.io/.well-known/jwks`
 
 Besides verifying the signature you need to check the following JWT claims:
 
