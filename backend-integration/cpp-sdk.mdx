@@ -1,7 +1,33 @@
 ---
 title: "C++ SDK"
-description: "TODO"
+description: "Learn how to use Corbado in your C++ application even without an official C++ SDK."
 ---
 
+import NoSdkSupportIntro from "/snippets/no-sdk-support-intro.mdx"
+import NoSdkOpenapiClientGeneration from "/snippets/no-sdk-openapi-client-generation.mdx"
+import NoSdkSessionHandling from "/snippets/no-sdk-session-handling.mdx"
+
+<NoSdkSupportIntro language="C++"></NoSdkSupportIntro>
+
+You need to take care of the following steps:
+
+- [OpenAPI client generation](#openapi-client-generation)
+- [Session handling](#session-handling)
+
+# OpenAPI client generation
+
+<NoSdkOpenapiClientGeneration language="C++"></NoSdkOpenapiClientGeneration>
+
+# Session handling
+
+<NoSdkSessionHandling language="C++"></NoSdkSessionHandling>
+
+## JWT libraries
+
+There are multiple JWT libraries available for C++. Here is one of them:
+
 https://github.com/Thalhammer/jwt-cpp
+
+Help for JWKS:
+
 https://github.com/search?q=repo%3AThalhammer%2Fjwt-cpp%20parse_jwks&type=code
