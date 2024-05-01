@@ -126,6 +126,13 @@
         "backend-integration/node-js-sdk",
         "backend-integration/php-sdk",
         "backend-integration/go-sdk",
+        "backend-integration/java-sdk",
+        "backend-integration/python-sdk",
+        "backend-integration/csharp-sdk",
+        "backend-integration/ruby-sdk",
+        "backend-integration/cpp-sdk",
+        "backend-integration/rust-sdk",
+        "backend-integration/perl-sdk",
         "backend-integration/link-to-api-ref"
       ]
     },
