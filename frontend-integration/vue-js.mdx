@@ -20,21 +20,19 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 <script setup>
   import Corbado from "@corbado/web-js";
   import { onMounted } from "vue";
-  import { useRouter } from "vue-router";
 
-  const router = useRouter();
-
-  onMounted(async() => {
+  onMounted(async () => {
     await Corbado.load({
-      projectId: <VITE_CORBADO_PROJECT_ID>,
-      darkMode: 'off',
+      projectId: "your-project-id",
     });
-    const authElement = document.getElementById("corbado-auth");
+
+    const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
+
     Corbado.mountAuthUI(authElement, {
       onLoggedIn: () => {
-        router.push("/profile");
+        //post login actions can be performed here.
+        //router.push("/profile");
       },
-      isDevMode: true,
     });
   });
 </script>

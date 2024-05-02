@@ -1,26 +1,24 @@
 ---
 title: "CorbadoAuth"
-description: "The CorbadoAuth component combines both the Signup and Login component."
+description: "The CorbadoAuth component allows users to create a new account or login."
 ---
 
 ![CorbadoAuth Component](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
 
 ## Introduction
 
-`CorbadoAuth`combines the `Signup` and the `Login` components and wires them together. Use this UI component if you don't want to take care of authentication-related navigation inside your application.&#x20;
-
+`CorbadoAuth` serves as a comprehensive solution for user authentication, combining both account creation and login functionalities into a single, streamlined interface.
 
 ## Example
+
 <CodeGroup>
 
 ```tsx React
 import { CorbadoAuth } from "@corbado/react";
 
 const AuthPage = () => {
-  const navigate = useNavigate();
-
   const onLoggedIn = () => {
-    navigate("/");
+    //post login actions can be performed here.
   };
 
   return <CorbadoAuth onLoggedIn={onLoggedIn} />;
@@ -29,11 +27,11 @@ const AuthPage = () => {
 
 ```html VanillaJS
 <script>
-  const authElement = document.getElementById("corbado-auth");
+  const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
 
   Corbado.mountAuthUI(authElement, {
     onLoggedIn: () => {
-      window.location.href = "/";
+      //post login actions can be performed here.
     },
   });
 </script>
@@ -49,4 +47,9 @@ const AuthPage = () => {
 | ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | onLoggedIn | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a signUp). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
 
-<Note> This component requires the `CorbadoProvider` component. Most configuration settings will be applied there so make sure to check out the available settings of the [Corbado Provider](/frontend-integration/ui-components/corbadoprovider). </Note>
+<Note>
+  {" "}
+  This component requires the `CorbadoProvider` component. Most configuration settings
+  will be applied there so make sure to check out the available settings of the [Corbado
+  Provider](/frontend-integration/ui-components/corbadoprovider).{" "}
+</Note>

@@ -4,20 +4,18 @@ description: "Learn how to add the Corbado UI components to your React applicati
 sidebarTitle: "Setup"
 ---
 
-import Blogpost from '/snippets/blogpost.mdx'
-
+import Blogpost from "/snippets/blogpost.mdx";
 
 ## 1. Prerequisites
 
-* Make sure that React (v18+) is installed in your project.&#x20;
-* Install Corbado's React package:
+- First, you need to [set up a Corbado project](/overview/getting-started).
+- Now, Install Corbado's React package:
 
 ```sh
 npm install @corbado/react
 ```
 
-* Set up your Corbado project in the [developer panel](/overview/getting-started)
-
+**Note:** Corbado supports React v18+
 
 ## 2. Add UI Components to your React code
 
@@ -26,34 +24,33 @@ This example shows how the `CorbadoProvider` and the `CorbadoAuth` component can
 Find a list and description of all the Corbado [UI Components](/frontend-integration/ui-components) here.
 
 ```tsx App.tsx
-import {CorbadoAuth, CorbadoProvider} from '@corbado/react';
+import { CorbadoAuth, CorbadoProvider } from "@corbado/react";
 import HomePage from "./pages/HomePage";
-import {createBrowserRouter, RouterProvider, useNavigate} from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 
 const App = () => {
   return (
-    <CorbadoProvider
-      projectId='your-project-id'
-      darkMode='on'
-    >
+    <CorbadoProvider projectId="your-project-id">
       <RouteProvider />
     </CorbadoProvider>
   );
-}
+};
 
 const AuthPage = () => {
   const navigate = useNavigate();
 
   const onLoggedIn = () => {
-    navigate('/');
+    //post login actions can be performed here.
+    //navigate("/");
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-lightBrown'>
-      <CorbadoAuth
-        onLoggedIn={onLoggedIn}
-        customerSupportEmail='support@company.com'
-      />
+    <div>
+      <CorbadoAuth onLoggedIn={onLoggedIn} />
     </div>
   );
 };
@@ -61,13 +58,10 @@ const AuthPage = () => {
 const RouteProvider = () => {
   const routes = [
     {
-      path: '/auth',
+      path: "/auth",
       element: <AuthPage />,
     },
-    {
-      path: '/',
-      element: <HomePage />,
-    },
+    // other public and protected routes
   ];
 
   return <RouterProvider router={createBrowserRouter(routes)} />;
@@ -76,17 +70,13 @@ const RouteProvider = () => {
 export default App;
 ```
 
-**Note:** Instead of `<CorbadoAuth/>` you can also use `<Signup/>` and `<Login/>` component. This makes sense when you want to make them available under separate routes.
-
-Find detailed documentation about the available configuration options for all UI components [here](/frontend-integration/ui-components).
-
-After integration Corbado into your application you can now take a look at the [useCorbado](/frontend-integration/react/usecorbado) hook
-that makes authentication functionalities available throughout your application.
+After integrating Corbado into your application, you can now make use of the [useCorbado](/frontend-integration/react/usecorbado) hook
+that makes user's authentication state available throughout your application.
 
 ## 3. Read the blog post
 
 To find a step-by-step tutorial on how to integrate passkeys into React, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/react-passkeys">
-<Blogpost title="Building a React Passkey Login" />
+  <Blogpost title="Building a React Passkey Login" />
 </Card>

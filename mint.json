@@ -31,7 +31,6 @@
     }
   },
 
-
   "anchors": [
     {
       "name": "Community",
@@ -90,8 +89,6 @@
           "pages": [
             "frontend-integration/ui-components",
             "frontend-integration/ui-components/corbadoprovider",
-            "frontend-integration/ui-components/signup",
-            "frontend-integration/ui-components/login",
             "frontend-integration/ui-components/corbadoauth",
             "frontend-integration/ui-components/passkeylist",
             "frontend-integration/ui-components/customization",
@@ -245,9 +242,7 @@
     },
     {
       "group": "Other",
-      "pages": [
-        "other/security-and-privacy"
-      ]
+      "pages": ["other/security-and-privacy"]
     }
   ],
   "footerSocials": {
