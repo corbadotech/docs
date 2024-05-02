@@ -14,29 +14,27 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
 ```html App.vue
 <template>
-  <div id="corbado-auth"></div>
+    <div id="corbado-auth"></div>
 </template>
 
 <script setup>
-  import Corbado from "@corbado/web-js";
-  import { onMounted } from "vue";
-  import { useRouter } from "vue-router";
+    import Corbado from "@corbado/web-js";
+    import { onMounted } from "vue";
 
-  const router = useRouter();
+    onMounted(async () => {
+        await Corbado.load({
+            projectId: "your-project-id"
+        });
 
-  onMounted(async() => {
-    await Corbado.load({
-      projectId: <VITE_CORBADO_PROJECT_ID>,
-      darkMode: 'off',
+        const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
+
+        Corbado.mountAuthUI(authElement, {
+            onLoggedIn: () => {
+                //post login actions can be performed here.
+                //router.push("/profile");
+            }
+        });
     });
-    const authElement = document.getElementById("corbado-auth");
-    Corbado.mountAuthUI(authElement, {
-      onLoggedIn: () => {
-        router.push("/profile");
-      },
-      isDevMode: true,
-    });
-  });
 </script>
 ```
 
@@ -45,5 +43,5 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 To find a step-by-step tutorial on how to integrate passkeys into Vue.js, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/vuejs-passkeys">
-  <Blogpost title="Building a Vue.js Passkey Login" />
+    <Blogpost title="Building a Vue.js Passkey Login" />
 </Card>

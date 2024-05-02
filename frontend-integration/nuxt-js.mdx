@@ -14,28 +14,27 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
 ```html App.vue
 <template>
-  <div id="corbado-auth"></div>
+    <div id="corbado-auth"></div>
 </template>
 
 <script setup>
-  import Corbado from "@corbado/web-js";
-  import { onMounted } from "vue";
-  import { useRouter } from "vue-router";
+    import Corbado from "@corbado/web-js";
+    import { onMounted } from "vue";
 
-  const router = useRouter();
+    onMounted(() => {
+        //if user is authenticated you can navigate to a protected route
+        if (Corbado.isAuthenticated) {
+            return;
+        }
 
-  onMounted(() => {
-    if (Corbado.isAuthenticated) {
-      router.push("/profile");
-    }
-    const authElement = document.getElementById("corbado-auth");
-    Corbado.mountAuthUI(authElement, {
-      onLoggedIn: () => {
-        router.push("/profile");
-      },
-      isDevMode: true,
+        const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
+
+        Corbado.mountAuthUI(authElement, {
+            onLoggedIn: () => {
+                //post login actions can be performed here.
+            }
+        });
     });
-  });
 </script>
 ```
 
@@ -46,5 +45,5 @@ If you need access to user data on the server, also take a look at our [Corbado 
 To find a step-by-step tutorial on how to integrate passkeys into Nuxt.js, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/passkeys-nuxtjs">
-  <Blogpost title="Building a Nuxt.js Passkey Login" />
+    <Blogpost title="Building a Nuxt.js Passkey Login" />
 </Card>
