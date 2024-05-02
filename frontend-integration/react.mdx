@@ -8,8 +8,8 @@ import Blogpost from "/snippets/blogpost.mdx";
 
 ## 1. Prerequisites
 
-- First, you need to [set up a Corbado project](/overview/getting-started).
-- Now, Install Corbado's React package:
+-   First, you need to [set up a Corbado project](/overview/getting-started).
+-   Now, Install Corbado's React package:
 
 ```sh
 npm install @corbado/react
@@ -27,44 +27,44 @@ Find a list and description of all the Corbado [UI Components](/frontend-integra
 import { CorbadoAuth, CorbadoProvider } from "@corbado/react";
 import HomePage from "./pages/HomePage";
 import {
-  createBrowserRouter,
-  RouterProvider,
-  useNavigate,
+    createBrowserRouter,
+    RouterProvider,
+    useNavigate
 } from "react-router-dom";
 
 const App = () => {
-  return (
-    <CorbadoProvider projectId="your-project-id">
-      <RouteProvider />
-    </CorbadoProvider>
-  );
+    return (
+        <CorbadoProvider projectId="your-project-id">
+            <RouteProvider />
+        </CorbadoProvider>
+    );
 };
 
 const AuthPage = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const onLoggedIn = () => {
-    //post login actions can be performed here.
-    //navigate("/");
-  };
+    const onLoggedIn = () => {
+        //post login actions can be performed here.
+        //navigate("/");
+    };
 
-  return (
-    <div>
-      <CorbadoAuth onLoggedIn={onLoggedIn} />
-    </div>
-  );
+    return (
+        <div>
+            <CorbadoAuth onLoggedIn={onLoggedIn} />
+        </div>
+    );
 };
 
 const RouteProvider = () => {
-  const routes = [
-    {
-      path: "/auth",
-      element: <AuthPage />,
-    },
-    // other public and protected routes
-  ];
+    const routes = [
+        {
+            path: "/auth",
+            element: <AuthPage />
+        }
+        // other public and protected routes
+    ];
 
-  return <RouterProvider router={createBrowserRouter(routes)} />;
+    return <RouterProvider router={createBrowserRouter(routes)} />;
 };
 
 export default App;
@@ -78,5 +78,5 @@ that makes user's authentication state available throughout your application.
 To find a step-by-step tutorial on how to integrate passkeys into React, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/react-passkeys">
-  <Blogpost title="Building a React Passkey Login" />
+    <Blogpost title="Building a React Passkey Login" />
 </Card>

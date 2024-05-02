@@ -19,18 +19,18 @@ The `PasskeyList` component allows an application to add only one passkey per de
 import { PasskeyList } from "@corbado/react";
 
 const PasskeyPage = () => {
-  return <PasskeyList />;
+    return <PasskeyList />;
 };
 ```
 
 ```html VanillaJS
 <script>
-  const passkeyListElement = document.getElementById("passkey-list"); //Element where you want to render PasskeyList UI
+    const passkeyListElement = document.getElementById("passkey-list"); //Element where you want to render PasskeyList UI
 
-  //Check if the user is authenticated
-  if (Corbado.isAuthenticated) {
-    Corbado.mountPasskeyListUI(passkeyListElement);
-  }
+    //Check if the user is authenticated
+    if (Corbado.isAuthenticated) {
+        Corbado.mountPasskeyListUI(passkeyListElement);
+    }
 </script>
 
 <div id="passkey-list"></div>
@@ -41,8 +41,8 @@ const PasskeyPage = () => {
 You can embed this component in the user's profile page and thus give them control over their passkeys.
 
 <Note>
-  {" "}
-  This component requires the `CorbadoProvider` component. Most configuration settings
-  will be applied there so make sure to check out the available settings of the [Corbado
-  Provider](/frontend-integration/ui-components/corbadoprovider).{" "}
+    {" "}
+    This component requires the `CorbadoProvider` component. Most configuration settings
+    will be applied there so make sure to check out the available settings of the
+    [Corbado Provider](/frontend-integration/ui-components/corbadoprovider).{" "}
 </Note>

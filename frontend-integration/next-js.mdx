@@ -16,8 +16,8 @@ npm install @corbado/react
 ```
 
 <Note>
-  Further information on the React package can be found
-  [here](/frontend-integration/react)
+    Further information on the React package can be found
+    [here](/frontend-integration/react)
 </Note>
 
 ## 2. Add the React Package to Your Next.js Project
@@ -30,13 +30,15 @@ First, create a wrapper around the `CorbadoProvider`, to render it on the client
 import { CorbadoProvider } from "@corbado/react";
 
 export default function ProviderWrapper({
-  children,
+    children
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <CorbadoProvider projectId="your-project-id">{children}</CorbadoProvider>
-  );
+    return (
+        <CorbadoProvider projectId="your-project-id">
+            {children}
+        </CorbadoProvider>
+    );
 }
 ```
 
@@ -46,17 +48,17 @@ Now, integrate the `ProviderWrapper` into your root layout:
 import ProviderWrapper from "./ProviderWrapper";
 
 export default function RootLayout({
-  children,
+    children
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <ProviderWrapper>
-        <body>{children}</body>
-      </ProviderWrapper>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <ProviderWrapper>
+                <body>{children}</body>
+            </ProviderWrapper>
+        </html>
+    );
 }
 ```
 
@@ -69,14 +71,14 @@ import { CorbadoAuth } from "@corbado/react";
 import { useRouter } from "next/navigation";
 
 export default function Auth() {
-  const router = useRouter();
+    const router = useRouter();
 
-  const onLoggedIn = () => {
-    //post login actions can be performed here.
-    //router.push("/profile");
-  };
+    const onLoggedIn = () => {
+        //post login actions can be performed here.
+        //router.push("/profile");
+    };
 
-  return <CorbadoAuth onLoggedIn={onLoggedIn} />;
+    return <CorbadoAuth onLoggedIn={onLoggedIn} />;
 }
 ```
 
@@ -87,5 +89,5 @@ If you need access to user data on the server, also take a look at our [Corbado 
 To find a step-by-step tutorial on how to integrate passkeys into Next.js, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/nextjs-passkeys">
-  <Blogpost title="Fullstack Next.js Passkey Authentication with Corbado" />
+    <Blogpost title="Fullstack Next.js Passkey Authentication with Corbado" />
 </Card>

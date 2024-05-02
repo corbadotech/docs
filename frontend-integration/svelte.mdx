@@ -14,22 +14,22 @@ import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
 ```html +page.svelte
 <script lang="ts">
-  import Corbado from "@corbado/web-js";
-  import { onMount } from "svelte";
+    import Corbado from "@corbado/web-js";
+    import { onMount } from "svelte";
 
-  onMount(async () => {
-    await Corbado.load({
-      projectId: "your-project-id",
+    onMount(async () => {
+        await Corbado.load({
+            projectId: "your-project-id"
+        });
+
+        const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
+
+        Corbado.mountAuthUI(authElement!, {
+            onLoggedIn: () => {
+                //post login actions can be performed here.
+            }
+        });
     });
-
-    const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
-
-    Corbado.mountAuthUI(authElement!, {
-      onLoggedIn: () => {
-        //post login actions can be performed here.
-      },
-    });
-  });
 </script>
 
 <div id="corbado-auth"></div>
@@ -42,5 +42,5 @@ If you need access to user data on the server, also take a look at our [Corbado 
 To find a step-by-step tutorial on how to integrate passkeys into Svelte, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/svelte-passkeys">
-  <Blogpost title="Building a Svelte Passkey Login" />
+    <Blogpost title="Building a Svelte Passkey Login" />
 </Card>

@@ -20,26 +20,26 @@ This is a very simple example that shows how you can use this hook to render a p
 ```tsx HomePage.tsx
 import { useCorbado } from "@corbado/react";
 function HomePage() {
-  const { loading, isAuthenticated, logout } = useCorbado();
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+    const { loading, isAuthenticated, logout } = useCorbado();
+    if (loading) {
+        return <p>Loading...</p>;
+    }
 
-  if (!isAuthenticated) {
-    return <p>You are not logged in.</p>;
-  }
+    if (!isAuthenticated) {
+        return <p>You are not logged in.</p>;
+    }
 
-  const onLogout = async () => {
-    await logout();
-    //post logout functionalities can be performed here
-  };
+    const onLogout = async () => {
+        await logout();
+        //post logout functionalities can be performed here
+    };
 
-  return (
-    <>
-      <p>You are logged in.</p>
-      <button onClick={() => void onLogout()}>Logout</button>
-    </>
-  );
+    return (
+        <>
+            <p>You are logged in.</p>
+            <button onClick={() => void onLogout()}>Logout</button>
+        </>
+    );
 }
 ```
 
@@ -55,5 +55,5 @@ Additionally, you can use it to trigger the following operations:
 
 **Note:**
 
-- [PasskeyList UI](/frontend-integration/ui-components/passkeylist) already makes use of `getPasskeys`, `appendPasskey` and `deletePasskey` to provide a passkey management interface.
-- Only if you want to build your custom UI components there is a need to make use of these operations yourself.
+-   [PasskeyList UI](/frontend-integration/ui-components/passkeylist) already makes use of `getPasskeys`, `appendPasskey` and `deletePasskey` to provide a passkey management interface.
+-   Only if you want to build your custom UI components there is a need to make use of these operations yourself.

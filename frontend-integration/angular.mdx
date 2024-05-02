@@ -24,11 +24,11 @@ import { AppRoutingModule } from "./app-routing.module";
 import { LoginComponent } from "./login/login.component";
 
 @NgModule({
-  declarations: [AppComponent, ProfileComponent, LoginComponent],
-  imports: [BrowserModule, AppRoutingModule],
-  providers: [],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    declarations: [AppComponent, ProfileComponent, LoginComponent],
+    imports: [BrowserModule, AppRoutingModule],
+    providers: [],
+    bootstrap: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}
 ```
@@ -47,23 +47,23 @@ import { Router } from "@angular/router";
 import Corbado from "@corbado/web-js";
 
 @Component({
-  selector: "app-login",
-  templateUrl: "./auth.component.html",
-  styleUrls: ["./auth.component.css"],
+    selector: "app-login",
+    templateUrl: "./auth.component.html",
+    styleUrls: ["./auth.component.css"]
 })
 export class AuthComponent implements AfterViewInit {
-  constructor(private router: Router) {}
-  async ngAfterViewInit() {
-    const authElement = document.getElementById("corbado-auth");
-    if (authElement) {
-      Corbado.mountAuthUI(authElement, {
-        onLoggedIn: () => {
-          //post login actions can be performed here.
-          this.router.navigate(["/profile"]);
-        },
-      });
+    constructor(private router: Router) {}
+    async ngAfterViewInit() {
+        const authElement = document.getElementById("corbado-auth");
+        if (authElement) {
+            Corbado.mountAuthUI(authElement, {
+                onLoggedIn: () => {
+                    //post login actions can be performed here.
+                    this.router.navigate(["/profile"]);
+                }
+            });
+        }
     }
-  }
 }
 ```
 
@@ -74,5 +74,5 @@ export class AuthComponent implements AfterViewInit {
 To find a step-by-step tutorial on how to integrate passkeys into Angular, please check out our blog post:
 
 <Card href="https://www.corbado.com/blog/angular-passkeys">
-  <Blogpost title="Building an Angular Passkey Login with TypeScript" />
+    <Blogpost title="Building an Angular Passkey Login with TypeScript" />
 </Card>
