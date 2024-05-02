@@ -1,0 +1,31 @@
+---
+title: "Microsoft"
+description: "Learn how to set up social logins with Microsoft as authentication provider."
+---
+
+# Overview
+
+Integrate Microsoft Azure social connection into your app using Corbado by filling in the Client ID, Client Secret, and Authorized Redirect URI in your instance settings. For development instances, Corbado provides preconfigured OAuth credentials and redirect URIs, requiring no additional setup. However, for production environments, you'll need to generate these credentials yourself through your Microsoft Azure account.
+
+## Before You Start
+
+- **Create a Corbado Application**: Set up a new application via your Corbado developer panel. Refer to the "Set up your application" guide for detailed instructions.
+- **Microsoft Azure Account**: If you don't have one, [sign up for an account](https://portal.azure.com).
+
+## Limitations
+
+Corbado currently only supports the common tenant type. This setup is suitable for accounts from both organizational members and the general Microsoft user base. Note that only secret type credentials are supported at this moment. The option to choose from different tenant types will be added in a future release.
+
+## Configuring Microsoft Social Connection
+
+1. **Register a New App**: After setting up your Microsoft Azure account, proceed to app registrations and select "New Registration".
+
+2. **Complete the Registration Form**: Ensure all required fields are correctly filled out to facilitate a smooth registration process.
+
+3. **Client ID and Client Secret**:
+   - After registration, the Application (client) ID will be displayed. Copy this ID and paste it into the Corbado setting for Client ID.
+   - To generate a client secret, navigate to the "Certificates & secrets" section and click on "New client secret". Provide a name and set the expiration for the secret. Remember, this is the only opportunity to copy the secret, so do it immediately.
+
+4. **Enable OpenID Mode**: In the Authentication settings of your Azure app, ensure OpenID connect is enabled to allow Corbado to receive an id_token.
+
+
