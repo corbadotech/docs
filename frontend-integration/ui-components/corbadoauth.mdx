@@ -43,9 +43,10 @@ const AuthPage = () => {
 
 ## API reference
 
-| Name       | Type              | Description                                                                                                                                                                                                               |
-| ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| onLoggedIn | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a signUp). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
+| Name                   | Type              | Description                                                                                                                                                                                                               |
+| ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| onLoggedIn             | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a signUp). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
+| handleNavigationEvents | boolean           | Can be use to enable and disable hash-based urls. Defaults to `true`. Hash-Based URL navigation is used manage the signup flow state but can be disabled if it interferes with the user's application's functionalities.  |
 
 <Note>
   {" "}
