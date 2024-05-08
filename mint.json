@@ -1,242 +1,253 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "Corbado docs",
-  "logo": {
-    "dark": "/logo/corbado-logo-dark.svg",
-    "light": "/logo/corbado-logo-light.svg"
-  },
-  "favicon": "/logo/favicon.svg",
-  "colors": {
-    "primary": "#184aff",
-    "light": "#629eff",
-    "dark": "#184aff",
-    "anchors": {
-      "from": "#629eff",
-      "to": "#184aff"
-    }
-  },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:support@corbado.com"
-    }
-  ],
-  "topbarCtaButton": {
-    "name": "Start for free",
-    "url": "https://app.corbado.com/"
-  },
-  "analytics": {
-    "koala": {
-      "publicApiKey": "pk_ca0e031974819fc6f69a82b884ff6f1cb661"
-    }
-  },
-
-
-  "anchors": [
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://join.slack.com/t/corbado/shared_invite/zt-2g4etyvxi-otKksMmhMHwWK19aCbhODQ"
+    "$schema": "https://mintlify.com/schema.json",
+    "name": "Corbado docs",
+    "logo": {
+        "dark": "/logo/corbado-logo-dark.svg",
+        "light": "/logo/corbado-logo-light.svg"
     },
-    {
-      "name": "GitHub",
-      "icon": "github",
-      "url": "https://github.com/corbado"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://www.corbado.com/blog"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Overview",
-      "pages": [
-        "overview/welcome",
-        "overview/getting-started",
-        {
-          "group": "Configuration",
-          "pages": [
-            "overview/configuration",
-            "overview/configuration/user-flow-configuration",
-            "overview/configuration/url-id-configuration",
-            "overview/configuration/passkey-configuration"
-          ]
-        },
-        {
-          "group": "Corbado API Structure",
-          "pages": [
-            "overview/corbado-api-structure",
-            "overview/corbado-api-structure/frontend-api",
-            "overview/corbado-api-structure/backend-api"
-          ]
+    "favicon": "/logo/favicon.svg",
+    "colors": {
+        "primary": "#184aff",
+        "light": "#629eff",
+        "dark": "#184aff",
+        "anchors": {
+            "from": "#629eff",
+            "to": "#184aff"
         }
-      ]
     },
-    {
-      "group": "Frontend Integration",
-      "pages": [
+    "topbarLinks": [
         {
-          "group": "UI Components",
-          "pages": [
-            "frontend-integration/ui-components",
-            "frontend-integration/ui-components/corbadoprovider",
-            "frontend-integration/ui-components/signup",
-            "frontend-integration/ui-components/login",
-            "frontend-integration/ui-components/corbadoauth",
-            "frontend-integration/ui-components/passkeylist",
-            "frontend-integration/ui-components/customization",
-            {
-              "group": "Web Component (deprecated)",
-              "pages": [
-                "frontend-integration/ui-components/web-component-previous-version",
-                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
-                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
-              ]
-            }
-          ]
-        },
-        {
-          "group": "React",
-          "pages": [
-            "frontend-integration/react",
-            "frontend-integration/react/usecorbado"
-          ]
-        },
-        {
-          "group": "VanillaJS",
-          "pages": [
-            "frontend-integration/vanilla-js",
-            "frontend-integration/vanilla-js/global-corbado-object"
-          ]
-        },
-        "frontend-integration/flutter",
-        "frontend-integration/vue-js",
-        "frontend-integration/angular",
-        "frontend-integration/next-js",
-        "frontend-integration/nuxt-js",
-        "frontend-integration/svelte",
-        "frontend-integration/link-to-api-ref"
-      ]
+            "name": "Support",
+            "url": "mailto:support@corbado.com"
+        }
+    ],
+    "topbarCtaButton": {
+        "name": "Start for free",
+        "url": "https://app.corbado.com/"
     },
-    {
-      "group": "Backend Integration",
-      "pages": [
-        "backend-integration/node-js-sdk",
-        "backend-integration/php-sdk",
-        "backend-integration/go-sdk",
-        "backend-integration/link-to-api-ref"
-      ]
+    "analytics": {
+        "koala": {
+            "publicApiKey": "pk_ca0e031974819fc6f69a82b884ff6f1cb661"
+        }
     },
-    {
-      "group": "Sessions",
-      "pages": [
-        "sessions/overview",
-        "sessions/protecting-routes",
-        "sessions/session-data",
+
+    "anchors": [
         {
-          "group": "Security",
-          "pages": [
-            "sessions/security",
-            "sessions/security/jwt-security",
-            "sessions/security/cookie-security",
-            "sessions/security/xss-protection",
-            "sessions/security/csrf-protection",
-            "sessions/security/session-fixation-protection",
-            "sessions/security/session-timeouts"
-          ]
+            "name": "Community",
+            "icon": "slack",
+            "url": "https://join.slack.com/t/corbado/shared_invite/zt-2g4etyvxi-otKksMmhMHwWK19aCbhODQ"
         },
         {
-          "group": "Other",
-          "pages": [
-            "sessions/other",
-            "sessions/other/refresh",
-            "sessions/other/revocation",
-            "sessions/other/oauth2-comparison",
-            "sessions/other/development-mode"
-          ]
+            "name": "GitHub",
+            "icon": "github",
+            "url": "https://github.com/corbado"
         },
-        "sessions/own-session-management"
-      ]
-    },
-    {
-      "group": "Products",
-      "pages": [
-        "products/corbado-complete",
         {
-          "group": "🧩Corbado Connect",
-          "pages": [
-            "products/corbado-connect",
-            "products/corbado-connect/connect-via-passkey-association",
-            {
-              "group": "Connect via Webhooks (Outdated)",
-              "pages": [
-                "products/corbado-connect/connect-via-webhooks",
-                "products/corbado-connect/connect-via-webhooks/web-component-login-flow-of-existing-users",
+            "name": "Blog",
+            "icon": "newspaper",
+            "url": "https://www.corbado.com/blog"
+        }
+    ],
+    "navigation": [
+        {
+            "group": "Overview",
+            "pages": [
+                "overview/welcome",
+                "overview/getting-started",
                 {
-                  "group": "Webhooks",
-                  "pages": [
-                    "products/corbado-connect/connect-via-webhooks/webhooks",
-                    "products/corbado-connect/connect-via-webhooks/webhooks/action-authmethods",
-                    "products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify"
-                  ]
+                    "group": "Configuration",
+                    "pages": [
+                        "overview/configuration",
+                        "overview/configuration/user-flow-configuration",
+                        "overview/configuration/url-id-configuration",
+                        "overview/configuration/passkey-configuration",
+                        {
+                            "group": "Social Logins",
+                            "pages": [
+                                "overview/configuration/social-logins/overview",
+                                "overview/configuration/social-logins/google",
+                                "overview/configuration/social-logins/microsoft",
+                                "overview/configuration/social-logins/github"
+                            ]
+                        }
+                    ]
                 },
                 {
-                  "group": "Corbado CLI",
-                  "pages": [
-                    "products/corbado-connect/connect-via-webhooks/corbado-cli",
-                    "products/corbado-connect/connect-via-webhooks/corbado-cli/command-login",
-                    "products/corbado-connect/connect-via-webhooks/corbado-cli/command-logout",
-                    "products/corbado-connect/connect-via-webhooks/corbado-cli/command-subscribe"
-                  ]
+                    "group": "Corbado API Structure",
+                    "pages": [
+                        "overview/corbado-api-structure",
+                        "overview/corbado-api-structure/frontend-api",
+                        "overview/corbado-api-structure/backend-api"
+                    ]
                 }
-              ]
-            },
-            "products/corbado-connect/seamless-user-transition"
-          ]
+            ]
+        },
+        {
+            "group": "Frontend Integration",
+            "pages": [
+                {
+                    "group": "UI Components",
+                    "pages": [
+                        "frontend-integration/ui-components",
+                        "frontend-integration/ui-components/corbadoprovider",
+                        "frontend-integration/ui-components/corbadoauth",
+                        "frontend-integration/ui-components/passkeylist",
+                        "frontend-integration/ui-components/customization",
+                        {
+                            "group": "Web Component (deprecated)",
+                            "pages": [
+                                "frontend-integration/ui-components/web-component-previous-version",
+                                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
+                                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "group": "React",
+                    "pages": [
+                        "frontend-integration/react",
+                        "frontend-integration/react/usecorbado"
+                    ]
+                },
+                {
+                    "group": "VanillaJS",
+                    "pages": [
+                        "frontend-integration/vanilla-js",
+                        "frontend-integration/vanilla-js/global-corbado-object"
+                    ]
+                },
+                "frontend-integration/flutter",
+                "frontend-integration/vue-js",
+                "frontend-integration/angular",
+                "frontend-integration/next-js",
+                "frontend-integration/nuxt-js",
+                "frontend-integration/svelte",
+                "frontend-integration/link-to-api-ref"
+            ]
+        },
+        {
+            "group": "Backend Integration",
+            "pages": [
+                "backend-integration/node-js-sdk",
+                "backend-integration/php-sdk",
+                "backend-integration/go-sdk",
+                "backend-integration/java-sdk",
+                "backend-integration/python-sdk",
+                "backend-integration/csharp-sdk",
+                "backend-integration/ruby-sdk",
+                "backend-integration/cpp-sdk",
+                "backend-integration/rust-sdk",
+                "backend-integration/perl-sdk",
+                "backend-integration/link-to-api-ref"
+            ]
+        },
+        {
+            "group": "Sessions",
+            "pages": [
+                "sessions/overview",
+                "sessions/protecting-routes",
+                "sessions/session-data",
+                {
+                    "group": "Security",
+                    "pages": [
+                        "sessions/security",
+                        "sessions/security/jwt-security",
+                        "sessions/security/cookie-security",
+                        "sessions/security/xss-protection",
+                        "sessions/security/csrf-protection",
+                        "sessions/security/session-fixation-protection",
+                        "sessions/security/session-timeouts"
+                    ]
+                },
+                {
+                    "group": "Other",
+                    "pages": [
+                        "sessions/other",
+                        "sessions/other/refresh",
+                        "sessions/other/revocation",
+                        "sessions/other/oauth2-comparison",
+                        "sessions/other/development-mode"
+                    ]
+                },
+                "sessions/own-session-management"
+            ]
+        },
+        {
+            "group": "Products",
+            "pages": [
+                "products/corbado-complete",
+                {
+                    "group": "🧩Corbado Connect",
+                    "pages": [
+                        "products/corbado-connect",
+                        "products/corbado-connect/connect-via-passkey-association",
+                        {
+                            "group": "Connect via Webhooks (Outdated)",
+                            "pages": [
+                                "products/corbado-connect/connect-via-webhooks",
+                                "products/corbado-connect/connect-via-webhooks/web-component-login-flow-of-existing-users",
+                                {
+                                    "group": "Webhooks",
+                                    "pages": [
+                                        "products/corbado-connect/connect-via-webhooks/webhooks",
+                                        "products/corbado-connect/connect-via-webhooks/webhooks/action-authmethods",
+                                        "products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify"
+                                    ]
+                                },
+                                {
+                                    "group": "Corbado CLI",
+                                    "pages": [
+                                        "products/corbado-connect/connect-via-webhooks/corbado-cli",
+                                        "products/corbado-connect/connect-via-webhooks/corbado-cli/command-login",
+                                        "products/corbado-connect/connect-via-webhooks/corbado-cli/command-logout",
+                                        "products/corbado-connect/connect-via-webhooks/corbado-cli/command-subscribe"
+                                    ]
+                                }
+                            ]
+                        },
+                        "products/corbado-connect/seamless-user-transition"
+                    ]
+                }
+            ]
+        },
+        {
+            "group": "Analytics",
+            "pages": ["analytics/passkeys-analyzer"]
+        },
+        {
+            "group": "Helpful Guides",
+            "pages": [
+                "helpful-guides/url-overview",
+                {
+                    "group": "Passkeys",
+                    "pages": [
+                        "helpful-guides/passkeys",
+                        "helpful-guides/passkeys/relying-party-id",
+                        "helpful-guides/passkeys/passkeys-in-web-apps",
+                        "helpful-guides/passkeys/passkeys-in-native-apps",
+                        "helpful-guides/passkeys/fallback-options"
+                    ]
+                },
+                {
+                    "group": "Go Live",
+                    "pages": [
+                        "helpful-guides/go-live",
+                        "helpful-guides/go-live/troubleshooting"
+                    ]
+                },
+                "helpful-guides/local-multi-device-testing-with-ngrok",
+                "helpful-guides/cross-origin-resource-sharing-cors",
+                "helpful-guides/google-chrome-virtual-authenticator"
+            ]
+        },
+        {
+            "group": "Other",
+            "pages": ["other/security-and-privacy"]
         }
-      ]
-    },
-    {
-      "group": "Analytics",
-      "pages": ["analytics/passkeys-analyzer"]
-    },
-    {
-      "group": "Helpful Guides",
-      "pages": [
-        "helpful-guides/url-overview",
-        {
-          "group": "Passkeys",
-          "pages": [
-            "helpful-guides/passkeys",
-            "helpful-guides/passkeys/relying-party-id",
-            "helpful-guides/passkeys/passkeys-in-web-apps",
-            "helpful-guides/passkeys/passkeys-in-native-apps",
-            "helpful-guides/passkeys/fallback-options"
-          ]
-        },
-        {
-          "group": "Go Live",
-          "pages": [
-            "helpful-guides/go-live",
-            "helpful-guides/go-live/troubleshooting"
-          ]
-        },
-        "helpful-guides/local-multi-device-testing-with-ngrok",
-        "helpful-guides/cross-origin-resource-sharing-cors",
-        "other/google-chrome-virtual-authenticator"
-      ]
-    },
-    {
-      "group": "Other",
-      "pages": [
-        "other/security-and-privacy"
-      ]
+    ],
+    "footerSocials": {
+        "twitter": "https://twitter.com/corbadotech",
+        "linkedin": "https://www.linkedin.com/company/corbado"
     }
-  ],
-  "footerSocials": {
-    "twitter": "https://twitter.com/corbadotech",
-    "linkedin": "https://www.linkedin.com/company/corbado"
-  }
 }

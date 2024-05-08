@@ -1,0 +1,30 @@
+---
+title: "GitHub"
+description: "Learn how to set up social logins with GitHub as authentication provider."
+---
+
+# Integrating GitHub Social Connection with Corbado
+
+## Overview
+Integrate GitHub social connections into your application using Corbado by setting up the Client ID and Client Secret in your instance settings.
+
+Corbado simplifies the development process by providing pre-configured OAuth credentials and redirect URIs for development environments, meaning no additional configuration is necessary.
+
+For production environments, you'll need to create your own Client ID and Client Secret through your GitHub account.
+
+This guide will assist you in creating a GitHub account and setting up a GitHub OAuth app. For detailed steps on integrating OAuth using Corbado, please refer to the Social Connection (OAuth) guide.
+
+## Prerequisites
+- **Create a Corbado Application**: Access your Corbado developer panel to create an application. More details are available in the [Set up your application](#) guide.
+- **GitHub Account**: You must have a GitHub account. [Create one here](#).
+
+## Configuring GitHub Social Connection
+### Registering a GitHub OAuth App
+1. In the [Corbado developer panel](https://app.corbado.com), navigate to **Settings > User Interface > Social**. Activate the GitHub option and ensure "Use custom credentials" is selected. Copy the Authorized Redirect URI for later use.
+2. Visit the [GitHub panel](https://github.com/settings/developers) and create a new OAuth application. Enter the copied URI into the Authorization Callback URL field, and complete the app registration.
+3. In the newly created GitHub OAuth app, click **Generate a New Client Secret**.
+4. Copy the provided Client ID and Client Secret and paste both to the GitHub settings page in Corbado's developer panel.
+
+Remember to click **Apply** in the Corbado developer panel to finalize the setup.
+
+Congratulations, your instance is now configured for social connections with GitHub!

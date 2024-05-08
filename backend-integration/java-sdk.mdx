@@ -1,0 +1,33 @@
+---
+title: "Java SDK"
+description: "Learn how to use Corbado in your Java application (Java Spring/Spring Boot) even without an official Java SDK."
+---
+
+import NoSdkSupportIntro from "/snippets/no-sdk-support-intro.mdx"
+import NoSdkOpenapiClientGeneration from "/snippets/no-sdk-openapi-client-generation.mdx"
+import NoSdkSessionHandling from "/snippets/no-sdk-session-handling.mdx"
+
+<NoSdkSupportIntro language="Java"></NoSdkSupportIntro>
+
+You need to take care of the following steps:
+
+- [OpenAPI client generation](#openapi-client-generation)
+- [Session handling](#session-handling)
+
+# OpenAPI client generation
+
+<NoSdkOpenapiClientGeneration language="Java"></NoSdkOpenapiClientGeneration>
+
+# Session handling
+
+<NoSdkSessionHandling language="Java"></NoSdkSessionHandling>
+
+## JWT libraries
+
+There are multiple JWT libraries available for Java. Here is one of them:
+
+https://bitbucket.org/b_c/jose4j/wiki/Home
+
+Help for JWKS:
+
+https://bitbucket.org/b_c/jose4j/src/756257eb92352600d5dde08c2b8ed25db13a8952/src/test/java/org/jose4j/examples/ExamplesTest.java#lines-455
