@@ -187,7 +187,8 @@
                   "pages": [
                     "products/corbado-connect/connect-via-webhooks/webhooks",
                     "products/corbado-connect/connect-via-webhooks/webhooks/action-authmethods",
-                    "products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify"
+                    "products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify",
+                    "products/corbado-connect/connect-via-webhooks/webhooks/webhooks-testing"
                   ]
                 },
                 {
