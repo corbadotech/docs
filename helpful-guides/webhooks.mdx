@@ -10,14 +10,14 @@ Webhooks are user-defined HTTP callbacks that trigger automated messages or upda
 
 Find information on following topics:
 
-1. [Corbado webhooks actions](#1-webhooks-actions)
+1. [Corbado webhooks actions](#1-corbado-webhooks-actions)
 2. [Webhooks requests](#2-webhooks-requests)
 3. [Webhooks responses](#3-webhooks-responses)
 4. [Backend implementation](#4-backend-implementation)
 
 
 <Note>
- Already have webhooks in place? Find out how test them [here](/products/corbado-connect/connect-via-webhooks/webhooks/webhooks-testing).
+ Already have webhooks in place? Find out how to [test webhooks](/helpful-guides/webhooks/webhooks-testing).
 </Note>
 
 
@@ -27,9 +27,9 @@ Corbado offers the following webhooks actions:
 
 | Action                                                                                          | Description                                                                                                         |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| [authMethods](/products/corbado-connect/connect-via-webhooks/webhooks/action-authmethods)       | This action returns if the user already exists in the user database and which authentication methods already exist. |
-| [passwordVerify](/products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify) | This action verifies if the provided username and password combination of the existing authentication is valid.     |
-| [events](/products/corbado-connect/connect-via-webhooks/webhooks/action-events) | This action triggers webhooks for specific user-related events such as creation, deletion, and updates.|
+| [authMethods](/helpful-guides/webhooks/action-authmethods)       | This action returns if the user already exists in the user database and which authentication methods already exist. |
+| [passwordVerify](/helpful-guides/webhooks/action-passwordverify) | This action verifies if the provided username and password combination of the existing authentication is valid.     |
+| [events](/helpful-guides/webhooks/action-events) | This action triggers webhooks for specific user-related events such as creation, deletion, and updates.|
 
 
 
@@ -64,7 +64,7 @@ Webhook responses from your backend sent to Corbado follow this payload structur
 ```
 
 
-## 5. Backend implementation
+## 4. Backend implementation
 
 To make the implementation of the webhook endpoint in your backend as smooth as possible we provide webhook functionality in our SDKs. Plus, they come with entities / models for request and response (dependent on action) and ease authentication handling for you. We highly encourage you to use them.
 

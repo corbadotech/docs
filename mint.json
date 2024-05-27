@@ -183,15 +183,6 @@
                 "products/corbado-connect/connect-via-webhooks",
                 "products/corbado-connect/connect-via-webhooks/web-component-login-flow-of-existing-users",
                 {
-                  "group": "Webhooks",
-                  "pages": [
-                    "products/corbado-connect/connect-via-webhooks/webhooks",
-                    "products/corbado-connect/connect-via-webhooks/webhooks/action-authmethods",
-                    "products/corbado-connect/connect-via-webhooks/webhooks/action-passwordverify",
-                    "products/corbado-connect/connect-via-webhooks/webhooks/webhooks-testing"
-                  ]
-                },
-                {
                   "group": "Corbado CLI",
                   "pages": [
                     "products/corbado-connect/connect-via-webhooks/corbado-cli",
@@ -223,6 +214,16 @@
             "helpful-guides/passkeys/passkeys-in-web-apps",
             "helpful-guides/passkeys/passkeys-in-native-apps",
             "helpful-guides/passkeys/fallback-options"
+          ]
+        },
+        {
+          "group": "Webhooks",
+          "pages": [
+            "helpful-guides/webhooks",
+            "helpful-guides/webhooks/action-authmethods",
+            "helpful-guides/webhooks/action-passwordverify",
+            "helpful-guides/webhooks/action-events",
+            "helpful-guides/webhooks/webhooks-testing"
           ]
         },
         {

@@ -1,0 +1,40 @@
+---
+title: "Action: Events"
+description: "The events action allows you to trigger webhooks for specific user-related actions such as creation, deletion, and updates."
+---
+
+<Warning>
+Not completed yet!
+</Warning>
+
+<Note>
+To be able to receive actions of the type events, the action authMethods / passwordVerify must also be activated. 
+</Note>
+
+## Request ?
+
+In the following you find a sample request for **events** webhook:
+
+```json
+{
+	"id": "who-1234567890", // Unique ID per webhook request
+	"projectID": "pro-1234567890", // Your project ID from the developer panel
+	"action": "events",
+	"data": {
+		
+	}
+}
+```
+
+## Response ?
+
+In the following you find a sample response for **event** webhook:
+
+```json
+{
+	"responseID": "d5a80602-a771-4532-8cc8-6d4a9003d92a", // A response ID you can set in your backend for debugging 
+	"data": {
+		"success": true	// else false
+	}
+}
+```
