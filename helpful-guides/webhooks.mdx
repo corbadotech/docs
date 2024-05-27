@@ -27,7 +27,7 @@ Corbado offers the following webhooks actions:
 
 | Action                                                                                          | Description                                                                                                         |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| [authMethods](/helpful-guides/webhooks/action-authmethods)       | This action returns if the user already exists in the user database and which authentication methods already exist. |
+| [authMethods](/helpful-guides/webhooks/action-authmethods)       | This action returns whether the user already exists in the user database and which authentication methods are already in place. |
 | [passwordVerify](/helpful-guides/webhooks/action-passwordverify) | This action verifies if the provided username and password combination of the existing authentication is valid.     |
 | [events](/helpful-guides/webhooks/action-events) | This action sends out messages for specific user-related events such as creation, deletion, and updates.|
 
@@ -48,7 +48,7 @@ Webhook requests from Corbado sent to your backend follow this payload structure
 }
 ```
 
-The action is sent as a header (`X-Corbado-Action`) as well. This makes it easier for you to unserialize the payload into an action dependent entity / model by taking the action from the header instead of taking it from the payload itself.
+The action is sent as a header (`X-Corbado-Action`) as well. This makes it easier for you to deserialize the payload into an action-dependent entity / model by taking the action from the header instead of from the payload itself."
 
 ## 3. Webhooks responses
 
@@ -66,7 +66,7 @@ Webhook responses from your backend sent to Corbado follow this payload structur
 
 ## 4. Backend implementation
 
-To make the implementation of the webhook endpoint in your backend as smooth as possible we provide webhook functionality in our SDKs. Plus, they come with entities / models for request and response (dependent on action) and ease authentication handling for you. We highly encourage you to use them.
+To make the implementation of the webhook endpoint in your backend as smooth as possible, we provide webhook functionality in our SDKs. Plus, they come with entities / models for request and response (dependent on action) and ease authentication handling for you. We highly encourage you to use them.
 
 - [PHP SDK](/backend-integration/php-sdk)
 - [Node.js SDK](/backend-integration/node-js-sdk)
