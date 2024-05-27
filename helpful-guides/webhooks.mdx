@@ -1,6 +1,6 @@
 ---
 title: "Webhooks"
-description: "This page provides an overview of webhooks that Corbado uses to talk to your system and existing user base."
+description: "This page provides an overview of webhooks that Corbado uses to talk to your system."
 sidebarTitle: "Overview"
 ---
 
@@ -29,7 +29,7 @@ Corbado offers the following webhooks actions:
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | [authMethods](/helpful-guides/webhooks/action-authmethods)       | This action returns if the user already exists in the user database and which authentication methods already exist. |
 | [passwordVerify](/helpful-guides/webhooks/action-passwordverify) | This action verifies if the provided username and password combination of the existing authentication is valid.     |
-| [events](/helpful-guides/webhooks/action-events) | This action triggers webhooks for specific user-related events such as creation, deletion, and updates.|
+| [events](/helpful-guides/webhooks/action-events) | This action sends out messages for specific user-related events such as creation, deletion, and updates.|
 
 
 
@@ -48,7 +48,7 @@ Webhook requests from Corbado sent to your backend follow this payload structure
 }
 ```
 
-The action is sent as a header (X-Corbado-Action) as well. This makes it easier for you to unserialize the payload into an action dependent entity / model by taking the action from the header instead of taking it from the payload itself.
+The action is sent as a header (`X-Corbado-Action`) as well. This makes it easier for you to unserialize the payload into an action dependent entity / model by taking the action from the header instead of taking it from the payload itself.
 
 ## 3. Webhooks responses
 
