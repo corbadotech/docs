@@ -3,38 +3,58 @@ title: "Action: Events"
 description: "The events action allows you to trigger webhooks for specific user-related actions such as creation, deletion, and updates."
 ---
 
-<Warning>
-Not completed yet!
-</Warning>
-
 <Note>
-To be able to receive actions of the type events, the action authMethods / passwordVerify must also be activated. 
+To be able to receive actions of the type events, the action `authMethods / passwordVerify` must also be activated. 
 </Note>
 
-## Request ?
+There are 3 types of events:
 
-In the following you find a sample request for **events** webhook:
+- `user.created`
+- `user.updated`
+- `user.deleted`
+
+
+## user.created & user.updated
+
+In the following you can find a sample callback for the events webhook, triggered by the `user.created` or `user.updated` events.
 
 ```json
 {
-	"id": "who-1234567890", // Unique ID per webhook request
-	"projectID": "pro-1234567890", // Your project ID from the developer panel
-	"action": "events",
-	"data": {
-		
-	}
+  "id": "who-12345678", // Unique ID per webhook request
+  "projectID": "pro-12345678", // Your project ID from the developer panel
+  "action": "event", 
+  "type": "user.created", // Type of event, user.created or user.updated
+  "data": {
+    "id": "usr-12345678", // Unique ID of created or edited user
+    "projectID": "pro-12345678", 
+    "fullName": "Full Name",
+    "identifiers": [  //List of identifiers. Can contain username, multiple email addresses and phone numbers
+      {
+        "id": "ide-12345678",
+        "type": "email",
+        "value": "email@foobar.com",
+        "status": "verified"
+      }
+    ],
+    "created": "2024-05-28T07:30:42Z",
+    "updated": "2024-05-28T07:30:42Z",
+    "status": "active"
+  }
 }
 ```
 
-## Response ?
+## user.deleted
 
-In the following you find a sample response for **event** webhook:
+In the following you can find a sample callback for the events webhook, triggered by the `user.deleted` event.
 
 ```json
 {
-	"responseID": "d5a80602-a771-4532-8cc8-6d4a9003d92a", // A response ID you can set in your backend for debugging 
-	"data": {
-		"success": true	// else false
-	}
+  "id": "who-12345678", 
+  "projectID": "pro-12345678",
+  "action": "event",
+  "type": "user.deleted",
+  "data": {
+    "id": "usr-12345678"
+  }
 }
 ```
