@@ -1,37 +1,230 @@
 ---
 title: "Webhooks"
-description: "This page provides an overview of webhooks that Corbado uses to talk to your system."
-sidebarTitle: "Overview"
+description: "Real-time event notifications from Corbado to your system. "
+sidebarTitle: "Webhooks"
 ---
 
 ## Overview
 
-Webhooks are user-defined HTTP callbacks that trigger automated messages or updates to external systems based on specific events or conditions in a web service. They enable real-time communication between applications by sending data payloads to a configured URL when an event occurs, facilitating seamless integration and automation.
+Corbado Webhooks allow your system to receive real-time notifications about specific events within the Corbado system. 
 
-Find information on following topics:
+This documentation provides detailed information on:
 
-1. [Corbado webhooks actions](#1-corbado-webhooks-actions)
-2. [Webhooks requests](#2-webhooks-requests)
-3. [Webhooks responses](#3-webhooks-responses)
-4. [Backend implementation](#4-backend-implementation)
-
-
-<Note>
- Already have webhooks in place? Find out how to [test webhooks](/helpful-guides/webhooks/webhooks-testing).
-</Note>
+1. [Corbado Webhooks](#1-corbado-webhooks) 
+2. [Webhooks Setup](#2-webhooks-setup) 
+3. [Webhooks Payload Structure](#3-webhooks-payload-structure) 
+4. [Bi-directional Webhooks (Deprecated)](#4-bi-directional-webhooks-deprecated)
 
 
-## 1. Corbado webhooks actions
+## 1. Corbado webhooks
 
-Corbado offers the following webhooks actions:
+Corbado offers webhooks to notify your systems about important events, enabling real-time integration and automation. The supported event types are:
+
+| Event                                                                                           | Description                                                                                                         |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [user.created](#3-webhooks-payload-structure)       | Triggered when a new user is created. |
+| [user.updated](#3-webhooks-payload-structure) | Triggered when an existing user's information is updated. |
+| [user.deleted](#3-webhooks-payload-structure) | Triggered when a user is deleted. |
+
+## 2. Webhooks setup
+
+By following this steps, you can effectively set up and manage webhooks in Corbado, enabling real-time notifications and seamless integration with your system.
+
+<Steps>
+  <Step title="Navigate to webhook settings">
+    In the Developer Panel navigate to [Settings > Webhooks](https://app.corbado.com/app/settings/webhooks/configuration)
+    ![Webhooks Settings](/images/helpful-guides/webhooks/webhooks-settings.webp)
+
+    <Note>
+      By entering a valid URL in the webhooks URL field, webhooks will be activated automatically. 
+    </Note>
+  
+  </Step>
+
+  <Step title="Enter webhook endpoint">
+    
+    Provide the URL in the Webhooks URL where your application will receive webhook data via HTTP POST:
+
+    - Remote: Enter the URL (e.g., http://yourapplication.com/webhooks).
+    - Local: Use http://localhost:8080/v1/webhooks and set up the Corbado CLI (see CLI documentation).
+    
+    For secure communication, use HTTP basic auth with a username and password.
+
+  </Step>
+
+  <Step title="Test your webhook">
+  In the Test tab on the Webhooks settings page, you can test events like User.created, User.updated, and User.deleted. This helps with implementing and debugging your webhooks.
+
+  <Info>
+    Image to be changed.
+  </Info>
+
+  ![Webhooks Testing](/images/helpful-guides/webhooks/webhooks-testing.webp)
+
+    
+  </Step>
+
+</Steps>
+
+
+## 3. Webhooks Payload Structure
+Each webhook sends a POST request to your specified endpoint with a JSON payload. The structure of the payload depends on the event type:
+
+- `id`: Unique ID for every webhooks call
+- `action`: For normal webhook usage, this is always set to **"event"**
+- `type`: Defines the type of event. Find all events on the [event list](#1-corbado-webhooks)
+- `data`: Contains the actual payload about the user
+
+<CodeGroup>
+
+    ```json user.created
+    {
+      "id": "who-12345678", //Unique payload ID
+      "projectID": "pro-12345678",
+      "action": "event",
+      "type": "user.created",
+      "data": {
+        "id": "usr-12345678",
+        "projectID": "pro-12345678",
+        "fullName": "Full Name",
+        "identifiers": [
+          {
+            "id": "ide-12345678",
+            "type": "email",
+            "value": "email@foobar.com",
+            "status": "verified"
+          }
+        ],
+        "created": "2024-05-28T07:30:42Z",
+        "updated": "2024-05-28T07:30:42Z",
+        "status": "active"
+      }
+    }
+    ```
+
+    ```json user.updated
+    {
+      "id": "who-12345678", //Unique payload ID
+      "projectID": "pro-12345678",
+      "action": "event",
+      "type": "user.updated",
+      "data": {
+        "id": "usr-12345678",
+        "projectID": "pro-12345678",
+        "fullName": "Full Name",
+        "identifiers": [
+          {
+            "id": "ide-12345678",
+            "type": "email",
+            "value": "email@foobar.com",
+            "status": "verified"
+          }
+        ],
+        "created": "2024-05-28T07:30:42Z",
+        "updated": "2024-06-03T02:12:14Z",
+        "status": "active"
+      }
+    }
+    ```
+
+    ```json user.deleted
+    {
+    "id": "who-12345678",
+    "projectID": "pro-12345678",
+    "action": "event",
+    "type": "user.deleted",
+    "data": {
+      "id": "usr-12345678"
+      }
+    }
+    ```
+
+</CodeGroup>
+
+
+# 4. Bi-directional Webhooks (Deprecated)
+
+
+Corbado also offers bi-directional webhooks for convenient integration of additional functions into existing projects. 
+
+The functions that are supported are as follows and can be identified by the `actions` field.
 
 | Action                                                                                          | Description                                                                                                         |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | [authMethods](/helpful-guides/webhooks/action-authmethods)       | This action returns whether the user already exists in the user database and which authentication methods are already in place. |
 | [passwordVerify](/helpful-guides/webhooks/action-passwordverify) | This action verifies if the provided username and password combination of the existing authentication is valid.     |
-| [events](/helpful-guides/webhooks/action-events) | This action sends out messages for specific user-related events such as creation, deletion, and updates.|
 
 
+## 4.1 Structure
+
+Webhook requests from Corbado to your backend and responses from your backend to Corbado follow this payload structure:
+
+<Tabs>
+  <Tab title="authMethods">
+    The `authMethods` action lets you retrieve available authentication methods from existing users.
+
+    <CodeGroup>
+    ```json Request
+    {
+      "id": "who-1234567890", // Unique ID per webhook request
+      "projectID": "pro-1234567890", // Your project ID from the developer panel
+      "action": "authMethods", // The specific action of the webhook request, see table above
+      "data": {
+        "username": "testUsername"
+      }
+    }
+    ```
+
+    ```json Response
+    {
+      "responseID": "d5a80602-a771-4532-8cc8-6d4a9003d92a", // A response ID you can set in your backend for debugging
+      "data": {
+        "status": "exists" // other values are "not_exists" and "blocked"
+      }
+    }
+    ```
+    </CodeGroup>
+  
+  </Tab>
+  <Tab title="PasswordVerify">
+    The `passwordVerify` action lets you check the password of an existing password-based user.
+
+    <CodeGroup>
+    ```json Request
+    {
+      "id": "who-1234567890", // Unique ID per webhook request
+      "projectID": "pro-1234567890", // Your project ID from the developer panel
+      "action": "authMethods", // The specific action of the webhook request, see table above
+      "data": {
+        "username": "testUsername",
+        "password": "testPassword"
+      }
+    }
+    ```
+
+    ```json Response
+    {
+      "responseID": "d5a80602-a771-4532-8cc8-6d4a9003d92a", // A response ID you can set in your backend for debugging
+      "data": {
+        "success": true	// else false
+      }
+    }
+    ```
+    </CodeGroup>
+
+  </Tab>
+</Tabs>
+
+## 4.2 Backend implementation
+
+To make the implementation of the webhook endpoint in your backend as smooth as possible, we provide webhook functionality in our SDKs. Plus, they come with entities / models for request and response (dependent on action) and ease authentication handling for you. We highly encourage you to use them.
+
+- [PHP SDK](/backend-integration/php-sdk)
+- [Node.js SDK](/backend-integration/node-js-sdk)
+- [Go SDK](/backend-integration/go-sdk)
+
+
+{/*
 
 ## 2. Webhooks requests
 
@@ -71,3 +264,5 @@ To make the implementation of the webhook endpoint in your backend as smooth as 
 - [PHP SDK](/backend-integration/php-sdk)
 - [Node.js SDK](/backend-integration/node-js-sdk)
 - [Go SDK](/backend-integration/go-sdk)
+
+*/}

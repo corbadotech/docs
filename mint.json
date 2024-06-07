@@ -216,16 +216,8 @@
             "helpful-guides/passkeys/fallback-options"
           ]
         },
-        {
-          "group": "Webhooks",
-          "pages": [
-            "helpful-guides/webhooks",
-            "helpful-guides/webhooks/action-authmethods",
-            "helpful-guides/webhooks/action-passwordverify",
-            "helpful-guides/webhooks/action-events",
-            "helpful-guides/webhooks/webhooks-testing"
-          ]
-        },
+        "helpful-guides/webhooks",
+        
         {
           "group": "Go Live",
           "pages": [
