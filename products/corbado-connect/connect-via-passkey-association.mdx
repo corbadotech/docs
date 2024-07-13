@@ -31,9 +31,9 @@ An "association token" is a token that connects the authenticated user from your
 
 ![Create Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-association-token.png)
 
-To start the passkey association process, you need to create an association token for a user that you have previously authenticated with your existing authentication system. This token can be created from your backend by calling the [Corbado Backend API](/overview/corbado-api-structure/backend-api). You need to send a POST request to [AssociationTokenCreate](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate) endpoint.
+To start the passkey association process, you need to create an association token for a user that you have previously authenticated with your existing authentication system. This token can be created from your backend by calling the [Corbado Backend API](/overview/corbado-api-structure/backend-api). You need to send a POST request to [AssociationTokenCreate](https://apireference.cloud.corbado.io/backendapi/#tag/Association-Tokens/operation/AssociationTokenCreate) endpoint.
 
-Your backend receives an association token in the [Corbado Backend API's response](https://api.corbado.com/docs/api/#tag/Association-Tokens/operation/AssociationTokenCreate). You need the association token for the next step to consume it for a passkey.
+Your backend receives an association token in the [Corbado Backend API's response](https://apireference.cloud.corbado.io/backendapi/#tag/Association-Tokens/operation/AssociationTokenCreate). You need the association token for the next step to consume it for a passkey.
 
 <Warning>
 Be aware that you should only create association tokens for users that you have successfully authenticated in your existing authentication system.
@@ -90,7 +90,7 @@ export default {
     <title>My App</title>
 </head>
 <body>
-    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <script src="https://<project ID>.frontendapi.cloud.corbado.io/auth.js"></script>
     <corbado-passkey-associate 
         project-id="<project ID>" 
         association-token="<association token>"/>
@@ -148,7 +148,7 @@ export default {
     <title>My App</title>
 </head>
 <body>
-    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <script src="https://<project ID>.frontendapi.cloud.corbado.io/auth.js"></script>
     <corbado-passkey-associate-login 
         project-id="<project ID>"/>
 </body>
@@ -259,7 +259,7 @@ export default {
     <title>My App</title>
 </head>
 <body>
-    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <script src="https://<project ID>.frontendapi.cloud.corbado.io/auth.js"></script>
     <corbado-passkey-associate
         id="corbado-passkey-associate" 
         project-id="<project ID>" 
@@ -389,7 +389,7 @@ export default {
     <title>My App</title>
 </head>
 <body>
-    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <script src="https://<project ID>.frontendapi.cloud.corbado.io/auth.js"></script>
     <corbado-passkey-associate-login
         id="corbado-passkey-associate" 
         project-id="<project ID>"/>
@@ -538,7 +538,7 @@ export default {
     </style>
 </head>
 <body>
-    <script src="https://<project ID>.frontendapi.corbado.io/auth.js"></script>
+    <script src="https://<project ID>.frontendapi.cloud.corbado.io/auth.js"></script>
     <corbado-passkey-associate-login
         id="corbado-passkey-associate-login" 
         project-id="<project ID>"/>
