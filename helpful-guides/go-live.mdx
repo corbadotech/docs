@@ -42,11 +42,11 @@ Please also check this [guide ](https://www.corbado.com/blog/webauthn-relying-pa
 
 ### 3.1 What is a CNAME?
 
-A [CNAME](/helpful-guides/url-overview#5-cname), or Canonical Name record, is a type of DNS record that maps one domain name (an alias, e.g. `pro-123456789.frontendapi.corbado.io`) to another (the canonical name, e.g. `auth.acme.com`).
+A [CNAME](/helpful-guides/url-overview#5-cname), or Canonical Name record, is a type of DNS record that maps one domain name (an alias, e.g. `pro-123456789.frontendapi.cloud.corbado.io`) to another (the canonical name, e.g. `auth.acme.com`).
 
 ### 3.2 Why is a CNAME needed for go live?
 
-A [CNAME](/helpful-guides/url-overview#5-cname) is crucial when using Corbado's session management in live environments because it enables you to use a custom subdomain that points to `<project ID>.frontendapi.corbado.io` ensuring [SameSite](https://web.dev/i18n/de/samesite-cookies-explained/) cookies work properly, which enhances the security. Moreover, it improves UX as users see a familiar URL in the browser.
+A [CNAME](/helpful-guides/url-overview#5-cname) is crucial when using Corbado's session management in live environments because it enables you to use a custom subdomain that points to `<project ID>.frontendapi.cloud.corbado.io` ensuring [SameSite](https://web.dev/i18n/de/samesite-cookies-explained/) cookies work properly, which enhances the security. Moreover, it improves UX as users see a familiar URL in the browser.
 
 ### 3.3 When is a CNAME needed for go live?
 
@@ -60,7 +60,7 @@ If you use your [**own session management**](/sessions/own-session-management), 
 
 Although not needed to be working correctly, we recommend to set a [CNAME](/helpful-guides/url-overview#5-cname) also for your native iOS or Android app, because then you can update the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) as well to your desires.
 
-This is mainly due to UX reasons, as without [CNAME](/helpful-guides/url-overview#id-5-cname), the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) by default would be `<project ID>.frontendapi.corbado.io` which might be confusing for users if they see this [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) in a Touch ID / Face ID / Android biometrics modal / popup. To update the [Relying Party ID](/helpful-guides/passkeys/relying-party-id) to your desired value, you would need a [CNAME ](/helpful-guides/url-overview#5-cname)which is a subdomain of your [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id).
+This is mainly due to UX reasons, as without [CNAME](/helpful-guides/url-overview#id-5-cname), the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) by default would be `<project ID>.frontendapi.cloud.corbado.io` which might be confusing for users if they see this [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) in a Touch ID / Face ID / Android biometrics modal / popup. To update the [Relying Party ID](/helpful-guides/passkeys/relying-party-id) to your desired value, you would need a [CNAME ](/helpful-guides/url-overview#5-cname)which is a subdomain of your [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id).
 
 ### 3.4 Which CNAME to set?
 
@@ -71,7 +71,7 @@ The CNAME must be a **subdomain** (e.g. auth.acme.com) **of your domain** (e.g. 
 Setting up the CNAME depends on your domain provider. In general, the steps are the following
 
 1. **Login**: Go to your domain provider and find DNS settings.
-2. **Add CNAME**: Input a **sub**domain of your domain in "Name" (e.g. auth.acme.com). Set "Type" to CNAME. In "Value", use `<project ID>.frontendapi.corbado.io`. Choose an approriate "TTL", often default is fine.
+2. **Add CNAME**: Input a **sub**domain of your domain in "Name" (e.g. auth.acme.com). Set "Type" to CNAME. In "Value", use `<project ID>.frontendapi.cloud.corbado.io`. Choose an approriate "TTL", often default is fine.
 3. **Save**: Apply/save changes
 
 In the Corbado developer panel, you can enter the CNAME [here](https://app.corbado.com/app/settings/general/go-live).
@@ -145,14 +145,14 @@ dig cname <CNAME>
 The result should be:
 
 ```
-<CNAME>:        43200   IN      CNAME   <project ID>.frontendapi.corbado.io
+<CNAME>:        43200   IN      CNAME   <project ID>.frontendapi.cloud.corbado.io
 ```
 
 <Note>
 It can take up to 5 minutes until Corbado has registered your CNAME.
 </Note>
 
-Alternatively, you can use an online DNS lookup tool (e.g. [MxToolbox](https://mxtoolbox.com/DNSLookup.aspx) or [NsLookup.io](https://www.nslookup.io/)) and search for your configured subdomain, which should point to `<project ID>.frontendapi.corbado.io`.
+Alternatively, you can use an online DNS lookup tool (e.g. [MxToolbox](https://mxtoolbox.com/DNSLookup.aspx) or [NsLookup.io](https://www.nslookup.io/)) and search for your configured subdomain, which should point to `<project ID>.frontendapi.cloud.corbado.io`.
 
 ## 4. Update relevant URLs
 

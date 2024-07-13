@@ -11,6 +11,6 @@ In development mode, there is no cookie dropped for the **long-term** session (r
 
 The reason behind is that some modern browsers (e.g. Safari) have stricter policies against third-party cookies in order to avoid tracking across the web (e.g. with Safari's Intelligent Tracking Prevention (ITP)).
 
-When developing locally the host (e.g. on `http://localhost`) differs from the one of the Frontend API (e.g. `https://<project ID>.frontendapi.corbado.io`). The browser sees this as third-party and does not send any cookies (e.g. in [session refresh](/sessions/other/refresh) process).
+When developing locally the host (e.g. on `http://localhost`) differs from the one of the Frontend API (e.g. `https://<project ID>.frontendapi.cloud.corbado.io`). The browser sees this as third-party and does not send any cookies (e.g. in [session refresh](/sessions/other/refresh) process).
 
 However, when you set up a [CNAME](/helpful-guides/url-overview#5-cname) on production, you're aliasing your host to another host, making cookies appear as first-party rather than third-party.
