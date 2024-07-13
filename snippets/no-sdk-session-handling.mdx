@@ -19,3 +19,4 @@ Besides verifying the signature you need to check the following JWT claims:
 | **iss**   | Issuer          | Must be Frontend API URL (or CNAME if set) |
 
 <Warning>Make sure your JWT library supports JWKS caching, otherwise each JWT verification will result in an HTTP request to fetch the JWKS!</Warning>
+
