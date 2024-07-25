@@ -103,3 +103,6 @@ Corbado supports the following two types of verification methods.
   This method involves sending a unique, time-sensitive link to the user's registered email address. Upon clicking the link, the user is directed to a secure webpage where their identity is confirmed, granting access to the desired app or website.
 
   Currently, email magic links are only supported for email address login identifiers.
+    <Warning>
+    Please be aware that email magic links may be sub-optimal in some scenarios. If an attacker convinces a user to click on an email magic link instead of using a passkey, the original tab, which might be controlled by the attacker, could also become authenticated. Therefore, we recommend using OTPs (One-Time Passcodes) instead. In the future, we'll improve  the security of email magic links in such cases.
+    </Warning>
