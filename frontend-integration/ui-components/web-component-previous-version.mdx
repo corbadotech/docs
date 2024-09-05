@@ -97,6 +97,8 @@ The following attributes for `<corbado-auth/>` exist:
 | user-full-name          | Pre-fill the userFullName input field with a value of your choice.                                                                                                                                                                                                     | -                                                |
 | passkey-append-text     | Change the text of the passkey-append-screen                                                                                                                                                                                                                           | Login event faster with Touch ID, Face ID or PIN |
 | disable-input-animation | Remove the animation of the labels for input fields                                                                                                                                                                                                                    | no                                               |
+| email-button-title | Change the title of the email magic link button fields                                                                                                                                                                                                                    | null                                               |
+| resend-email-text | Change the text of resend email fields                                                                                                                                                                                                                    | null                                               |
 
 <Info>
   The inner `<input />` element is needed to make [Conditional
@@ -146,6 +148,10 @@ To adapt Corbado web component to your UI, you can modify the following style pr
     --text-align: left;
 
     --email-link-resend-margin: 0px; // change margin of button at resend page
+
+    --email-btn-background-color: #1953ff;
+    --min-height-container:200px;
+    --padding-container: 2.5rem 2rem;
   }
 </style>
 ```
