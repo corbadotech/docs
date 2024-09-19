@@ -29,7 +29,7 @@ An "association token" is a token that connects the authenticated user from your
 
 ## 1. Create association token
 
-![Create Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-association-token.png)
+![Create Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-association-token.webp)
 
 To start the passkey association process, you need to create an association token for a user that you have previously authenticated with your existing authentication system. This token can be created from your backend by calling the [Corbado Backend API](/overview/corbado-api-structure/backend-api). You need to send a POST request to [AssociationTokenCreate](https://apireference.cloud.corbado.io/backendapi-v1/#tag/Association-Tokens/operation/AssociationTokenCreate) endpoint.
 
@@ -41,7 +41,7 @@ Be aware that you should only create association tokens for users that you have 
 
 ## 2. Create passkey with association token
 
-![Create Passkey with Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-passkey-with-association-token.png)
+![Create Passkey with Association Token](/images/products/corbado-connect/connect-via-passkey-association/create-passkey-with-association-token.webp)
 
 After you've successfully created an association token in the previous step, you need to provide this association token to the `<corbado-passkey-associate/>` web component.
 
@@ -102,7 +102,7 @@ export default {
 
 ## 3. Login with passkey
 
-![Create Passkey with Association Token](/images/products/corbado-connect/connect-via-passkey-association/login-with-passkey.png)
+![Create Passkey with Association Token](/images/products/corbado-connect/connect-via-passkey-association/login-with-passkey.webp)
 
 
 Embed the `<corbado-passkey-associate-login/>` web component in your frontend in the location, where you would like to offer your users a passkey login.
