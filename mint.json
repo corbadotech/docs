@@ -1,6 +1,9 @@
 {
     "$schema": "https://mintlify.com/schema.json",
     "name": "Corbado docs",
+    "feedback": {
+        "thumbsRating": true
+    },
     "logo": {
         "dark": "/logo/corbado-logo-dark.svg",
         "light": "/logo/corbado-logo-light.svg"
@@ -30,7 +33,6 @@
             "publicApiKey": "pk_ca0e031974819fc6f69a82b884ff6f1cb661"
         }
     },
-
     "anchors": [
         {
             "name": "Community",
@@ -213,7 +215,9 @@
         },
         {
             "group": "Analytics",
-            "pages": ["analytics/passkeys-analyzer"]
+            "pages": [
+                "analytics/passkeys-analyzer"
+            ]
         },
         {
             "group": "Helpful Guides",
@@ -243,7 +247,9 @@
         },
         {
             "group": "Other",
-            "pages": ["other/security-and-privacy"]
+            "pages": [
+                "other/security-and-privacy"
+            ]
         }
     ],
     "footerSocials": {
