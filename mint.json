@@ -31,6 +31,10 @@
     "analytics": {
         "koala": {
             "publicApiKey": "pk_ca0e031974819fc6f69a82b884ff6f1cb661"
+        },
+        "hotjar": {
+            "hjid": "5145374",
+            "hjsv": "6"
         }
     },
     "anchors": [
