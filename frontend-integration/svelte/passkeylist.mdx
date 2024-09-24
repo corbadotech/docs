@@ -1,0 +1,32 @@
+---
+title: "Passkey Management UI"
+description: "Learn how to integrate the Corbado Passkeylist into your Svelte or SvelteKit application."
+---
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+## Prerequisites
+
+Before we can begin to render the Corbado Authentication UI, the `Corbado.load` call has to resolve.
+
+## Passkeylist
+
+```html routes/+page.svelte
+<script lang="ts">
+    import Corbado from '@corbado/web-js';
+    import { onMount } from 'svelte';
+
+    let passkeyListElement: HTMLDivElement;
+
+    onMount(() => {
+        Corbado.mountPasskeyListUI(passkeyListElement);
+    });
+</script>
+
+<div bind:this={passkeyListElement}></div>
+```
+
+<Note>
+    You customize the appearance of the Passkeylist UI in the `Corbado.load` function.
+    Find more info [here](/frontend-integration/ui-components/corbadoprovider).
+</Note>

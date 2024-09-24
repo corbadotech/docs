@@ -1,0 +1,74 @@
+---
+title: "Clientside Authentication State"
+description: "Learn how to access and manage the user authentication state on the clientside in your Svelte or SvelteKit application."
+---
+
+## Prerequisites
+
+Before we can use the users authentication state, the `Corbado.load` call has to resolve.
+
+## Subscribing to Authentication State
+
+```html routes/+page.svelte
+<script lang="ts">
+    import Corbado from '@corbado/web-js';
+    import { onMount } from 'svelte';
+    import type { SessionUser } from '@corbado/types';
+
+    let loggedIn = false;
+    let user: SessionUser | undefined;
+
+    onMount(() => {
+        const authStateSubscription = Corbado.authStateChanges.subscribe(next => loggedIn = next === 1);
+        const userSubscription = Corbado.userChanges.subscribe(next => user = next);
+        return () => {
+            authStateSubscription.unsubscribe();
+            userSubscription.unsubscribe();
+        };
+    });
+</script>
+
+<div>
+    {#if loggedIn}
+        <h1>Welcome, {user?.email}!</h1>
+    {:else}
+        <h1>Log in to see your profile</h1>
+    {/if}
+</div>
+```
+
+## Onetime access to Authentication State
+
+```html routes/+page.svelte
+<script lang="ts">
+    import Corbado from '@corbado/web-js';
+    import { onMount } from 'svelte';
+
+    onMount(async () => {
+        const resp = await fetch("https://acme.com/api", {
+            headers: {
+                // access the users session token once
+                Authorization: `Bearer ${Corbado.shortSession}`
+            }
+        })
+        // process result
+    });
+</script>
+
+<div>
+<!--Content-->
+</div>
+```
+
+## Logout
+
+```html routes/+page.svelte
+<script lang="ts">
+    import Corbado from '@corbado/web-js';
+</script>
+
+<button on:click={Corbado.logout}>
+    Logout
+</button>
+
+```

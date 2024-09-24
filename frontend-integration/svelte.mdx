@@ -1,46 +1,58 @@
 ---
-title: "Svelte"
+title: "Setup"
 description: "Learn how to add the Corbado web-js package to your Svelte or SvelteKit application."
 ---
 
-import Blogpost from "/snippets/blogpost.mdx";
-import Prerequisites from "/snippets/web-js-prerequisites.mdx";
 
-## 1. Prerequisites
 
-<Prerequisites />
+import Installation from "/snippets/web-js-prerequisites.mdx";
 
-## 2. Add web-js to Svelte code
+## Installation
 
-```html +page.svelte
+<Installation />
+
+## Setup Corbado
+
+Disable SSR for pages importing Corbado as it is not yet supported.
+We are working on SSR support and will update this guide once it is available.
+
+```ts routes/+layout.server.ts
+export const ssr = false;
+```
+
+Initialize Corbado in your root layout to make it available throughout your application.
+
+```html routes/+layout.svelte
 <script lang="ts">
     import Corbado from "@corbado/web-js";
     import { onMount } from "svelte";
+    import { PUBLIC_CORBADO_PROJECT_ID } from '$env/static/public';
 
+    let isInitialized = false;
     onMount(async () => {
         await Corbado.load({
-            projectId: "your-project-id"
+            projectId: PUBLIC_CORBADO_PROJECT_ID,
+            darkMode: 'off',
+            setShortSessionCookie: true
         });
-
-        const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
-
-        Corbado.mountAuthUI(authElement!, {
-            onLoggedIn: () => {
-                //post login actions can be performed here.
-            }
-        });
+        isInitialized = true; // Set to true once Corbado is initialized
     });
 </script>
 
-<div id="corbado-auth"></div>
+<div>
+    {#if isInitialized}
+        <slot></slot>
+    {/if}
+</div>
 ```
+<Note>
+    Most customization is done in the `Corbado.load` function.
+    See a full list of options for the `Corbado.load` function in the [web-js
+    documentation](/frontend-integration/ui-components/corbadoprovider).
+</Note>
 
-If you need access to user data on the server, also take a look at our [Corbado Node.js SDK](/backend-integration/node-js-sdk).
 
-## 3. Read the blog post
+## Next
 
-To find a step-by-step tutorial on how to integrate passkeys into Svelte, please check out our blog post:
-
-<Card href="https://www.corbado.com/blog/svelte-passkeys">
-    <Blogpost title="Building a Svelte Passkey Login" />
-</Card>
+Learn how to [render the Corbado Authentication UI](/frontend-integration/svelte/authentication-ui) in your
+Svelte or SvelteKit application.

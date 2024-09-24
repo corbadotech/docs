@@ -1,0 +1,36 @@
+---
+title: "Authentication UI"
+description: "Learn how to integrate Corbado Authentication into your Svelte or SvelteKit application."
+---
+
+![Svelte Authentication UI](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
+
+## Prerequisites
+
+Before we can begin to render the Corbado Authentication UI, the `Corbado.load` call has to resolve.
+
+## Authentication UI
+
+```html routes/+page.svelte
+<script lang="ts">
+    import Corbado from '@corbado/web-js';
+    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
+
+    let authElement: HTMLDivElement;
+
+    onMount(() => {
+        Corbado.mountAuthUI(
+            authElement, {
+                onLoggedIn: () => goto("/profile"),
+            })
+    })
+</script>
+
+<div bind:this={authElement}></div>
+```
+
+<Note>
+    You customize the appearance of the Authentication UI in the `Corbado.load` function.
+    Find more info [here](/frontend-integration/ui-components/corbadoprovider).
+</Note>

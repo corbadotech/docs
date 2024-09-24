@@ -122,7 +122,17 @@
                 "frontend-integration/angular",
                 "frontend-integration/next-js",
                 "frontend-integration/nuxt-js",
-                "frontend-integration/svelte",
+                {
+                    "group": "Svelte",
+                    "pages": [
+                        "frontend-integration/svelte",
+                        "frontend-integration/svelte/authentication-ui",
+                        "frontend-integration/svelte/passkeylist",
+                        "frontend-integration/svelte/authentication-state-client",
+                        "frontend-integration/svelte/authentication-state-server",
+                        "frontend-integration/svelte/link-to-svelte-blog"
+                    ]
+                },
                 "frontend-integration/link-to-api-ref"
             ]
         },
