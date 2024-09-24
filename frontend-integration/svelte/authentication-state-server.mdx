@@ -19,7 +19,8 @@ To gain access to authentication state on the serverside we utilize the [Corbdo 
 We might use it in a serverside load function to verify the user is authenticated and retrieve some data in this case:
 
 <Warning>
-    This example assumes you are using the `setShortSessionCookie` option in the `Corbado.load` function.
+    This example assumes you are using the `setShortSessionCookie` option in the `Corbado.load` function,
+    so that a cookie with the users shortSession JWT will be set on login.
     Find more info [here](/frontend-integration/ui-components/corbadoprovider#api-reference).
 </Warning>
 
