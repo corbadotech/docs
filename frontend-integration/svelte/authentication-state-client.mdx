@@ -1,13 +1,41 @@
 ---
-title: "Clientside Authentication State"
-description: "Learn how to access and manage the user authentication state on the clientside in your Svelte or SvelteKit application."
+title: "Client-side Authentication State"
+description: "Learn how to access and manage the user authentication state on the client-side in your Svelte or SvelteKit application."
 ---
 
 ## Prerequisites
 
 Before we can use the users authentication state, the `Corbado.load` call has to resolve.
 
+## Onetime access to Authentication State
+
+If you want to access user state once, you can simply call `Corbado.shortSession`,
+`Corbado.user` or `Corbado.isAuthenticated` to get the current user state.
+
+```html routes/+page.svelte
+<script lang="ts">
+    import Corbado from '@corbado/web-js';
+    import { onMount } from 'svelte';
+
+    onMount(async () => {
+        const resp = await fetch("https://acme.com/api", {
+            headers: {
+                // access the users session token once
+                Authorization: `Bearer ${Corbado.shortSession}`
+            }
+        })
+        // process result
+    });
+</script>
+
+<div>
+<!--Content-->
+</div>
+```
+
 ## Subscribing to Authentication State
+
+If you want to synchronize user state to your own state, you can subscribe to the `authStateChanges` and `userChanges` observables.
 
 ```html routes/+page.svelte
 <script lang="ts">
@@ -37,30 +65,9 @@ Before we can use the users authentication state, the `Corbado.load` call has to
 </div>
 ```
 
-## Onetime access to Authentication State
-
-```html routes/+page.svelte
-<script lang="ts">
-    import Corbado from '@corbado/web-js';
-    import { onMount } from 'svelte';
-
-    onMount(async () => {
-        const resp = await fetch("https://acme.com/api", {
-            headers: {
-                // access the users session token once
-                Authorization: `Bearer ${Corbado.shortSession}`
-            }
-        })
-        // process result
-    });
-</script>
-
-<div>
-<!--Content-->
-</div>
-```
-
 ## Logout
+
+You can log out the user by calling `Corbado.logout`.
 
 ```html routes/+page.svelte
 <script lang="ts">
@@ -70,5 +77,8 @@ Before we can use the users authentication state, the `Corbado.load` call has to
 <button on:click={Corbado.logout}>
     Logout
 </button>
-
 ```
+
+## Next
+
+[Access user information](/frontend-integration/svelte/authentication-state-server) on the server-side of your application.

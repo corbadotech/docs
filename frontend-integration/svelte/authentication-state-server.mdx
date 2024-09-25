@@ -1,7 +1,11 @@
 ---
-title: "Serverside Authentication State"
-description: "Learn how to access and manage the user authentication state on the serverside in your Svelte or SvelteKit application."
+title: "Server-side Authentication State"
+description: "Learn how to access and manage the user authentication state on the server-side in your SvelteKit application."
 ---
+
+<Info>
+    This guide is only applicable to SvelteKit applications, as they can contain code that runs on the server-side.
+</Info>
 
 ## Prerequisites
 
@@ -14,9 +18,9 @@ npm install @corbado/node-sdk
 [Generate an API](https://app.corbado.com/settings/credentials?tab=API+Secrets) secret in the developer panel
 to allow the SDK to access the [Corbado BackendAPI](/overview/corbado-api-structure/backend-api).
 
-To gain access to authentication state on the serverside we utilize the [Corbdo Node.js SDK](/backend-integration/node-js-sdk).
+To gain access to authentication state on the server-side we utilize the [Corbdo Node.js SDK](/backend-integration/node-js-sdk).
 
-We might use it in a serverside load function to verify the user is authenticated and retrieve some data in this case:
+We might use it in a server-side load function to verify the user is authenticated and retrieve some data in this case:
 
 <Warning>
     This example assumes you are using the `setShortSessionCookie` option in the `Corbado.load` function,
