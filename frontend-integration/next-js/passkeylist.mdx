@@ -1,0 +1,32 @@
+---
+title: "Passkey List UI"
+description: "Learn how to integrate the Corbado Passkeylist into your Next.js application."
+---
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+## Passkeylist
+
+The Passkeylist allows the user to view and manage their passkeys.
+He can delete existing passkeys or create new ones.
+This can be useful if the user wants to have individual passkeys for multiple devices, or erase ones
+that are no longer needed.
+
+```html routes/+page.svelte
+"use client";
+
+import { PasskeyList } from "@corbado/react";
+
+export default function Page() {
+    return <PasskeyList />;
+}
+```
+
+<Note>
+    You customize the appearance of the Passkeylist UI in the `CorbadoProvider`.
+    Find more info [here](/frontend-integration/ui-components/corbadoprovider).
+</Note>
+
+## Next
+
+[Access user information](/frontend-integration/next-js/authentication-state-client) on the client-side of your application.

@@ -1,0 +1,34 @@
+---
+title: "Authentication UI"
+description: "Learn how to integrate Corbado Authentication into your Next.js application."
+---
+
+![Next.js Authentication UI](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
+
+## Authentication UI
+
+The Authentication UI allows the user to log in or register with Corbado.
+Once the user is logged in, the onLoggedIn callback is executed.
+
+```tsx app/auth/page.tsx
+"use client";
+
+import { CorbadoAuth } from "@corbado/react";
+import { useRouter } from "next/navigation";
+
+export default function Page() {
+    const router = useRouter();
+
+    const onLoggedIn = () => {
+        //post login actions can be performed here.
+        router.push("/profile");
+    };
+
+    return <CorbadoAuth onLoggedIn={onLoggedIn} />;
+}
+```
+
+<Note>
+    You customize the appearance of the Authentication UI in the `CorbadoProvider`.
+    Find more info [here](/frontend-integration/ui-components/corbadoprovider).
+</Note>

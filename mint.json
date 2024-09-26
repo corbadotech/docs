@@ -126,7 +126,18 @@
                 "frontend-integration/flutter",
                 "frontend-integration/vue-js",
                 "frontend-integration/angular",
-                "frontend-integration/next-js",
+                {
+                    "group": "Next.js",
+                    "pages": [
+                        "frontend-integration/next-js",
+                        "frontend-integration/next-js/authentication-ui",
+                        "frontend-integration/next-js/passkeylist",
+                        "frontend-integration/next-js/authentication-state-client",
+                        "frontend-integration/next-js/authentication-state-server",
+                        "frontend-integration/next-js/pages-router",
+                        "frontend-integration/next-js/link-to-nextjs-blog"
+                    ]
+                },
                 "frontend-integration/nuxt-js",
                 {
                     "group": "Svelte",

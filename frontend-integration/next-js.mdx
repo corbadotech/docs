@@ -1,28 +1,22 @@
 ---
-title: "Next.js"
+title: "Setup"
 description: "Learn how to add the Corbado React package to your Next.js application."
 ---
 
-import Blogpost from "/snippets/blogpost.mdx";
-
-## 1. Prerequisites
-
-First, you need to [set up a Corbado project](/overview/getting-started).
-
-To get started with the integration, install the [Corbado React Package](/frontend-integration/react).
-
-```bash
-npm install @corbado/react
-```
+import Installation from "/snippets/react-prerequisites.mdx";
 
 <Note>
-    Further information on the React package can be found
-    [here](/frontend-integration/react)
+    The integration process is slightly different for the Next.js pages router.
+    Make sure to have a look at our [dedicated page](/frontend-integration/next-js/pages-router), if you're using the pages router.
 </Note>
 
-## 2. Add the React Package to Your Next.js Project
+## Installation
 
-First, create a wrapper around the `CorbadoProvider`, to render it on the client:
+<Installation />
+
+## Setup Corbado
+
+Create a wrapper around the `CorbadoProvider`, to render it on the client:
 
 ```tsx ProviderWrapper.tsx
 "use client";
@@ -62,32 +56,7 @@ export default function RootLayout({
 }
 ```
 
-Now you're ready to integrate the `CorbadoAuth` component to allow your users to login and sign up.
-
-```tsx page.tsx
-"use client";
-
-import { CorbadoAuth } from "@corbado/react";
-import { useRouter } from "next/navigation";
-
-export default function Auth() {
-    const router = useRouter();
-
-    const onLoggedIn = () => {
-        //post login actions can be performed here.
-        //router.push("/profile");
-    };
-
-    return <CorbadoAuth onLoggedIn={onLoggedIn} />;
-}
-```
-
-If you need access to user data on the server, also take a look at our [Corbado Node.js SDK](/backend-integration/node-js-sdk).
-
-## 3. Read the blog post
-
-To find a step-by-step tutorial on how to integrate passkeys into Next.js, please check out our blog post:
-
-<Card href="https://www.corbado.com/blog/nextjs-passkeys">
-    <Blogpost title="Fullstack Next.js Passkey Authentication with Corbado" />
-</Card>
+<Note>
+    Most customization is done in the `CorbadoProvider`.
+    See a full list of options for the `CorbadoProvider` function in the [CorbadoProvider documentation](/frontend-integration/ui-components/corbadoprovider).
+</Note>
