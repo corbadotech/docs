@@ -126,31 +126,36 @@
                 "frontend-integration/flutter",
                 "frontend-integration/vue-js",
                 "frontend-integration/angular",
+                "frontend-integration/link-to-api-ref"
+            ]
+        },
+        {
+            "group": "Fullstack Integration",
+            "pages": [
                 {
                     "group": "Next.js",
                     "pages": [
-                        "frontend-integration/next-js",
-                        "frontend-integration/next-js/authentication-ui",
-                        "frontend-integration/next-js/passkeylist",
-                        "frontend-integration/next-js/authentication-state-client",
-                        "frontend-integration/next-js/authentication-state-server",
-                        "frontend-integration/next-js/pages-router",
-                        "frontend-integration/next-js/link-to-nextjs-blog"
+                        "fullstack-integration/next-js",
+                        "fullstack-integration/next-js/authentication-ui",
+                        "fullstack-integration/next-js/passkeylist",
+                        "fullstack-integration/next-js/authentication-state-client",
+                        "fullstack-integration/next-js/authentication-state-server",
+                        "fullstack-integration/next-js/pages-router",
+                        "fullstack-integration/next-js/link-to-nextjs-blog"
                     ]
                 },
-                "frontend-integration/nuxt-js",
                 {
                     "group": "Svelte",
                     "pages": [
-                        "frontend-integration/svelte",
-                        "frontend-integration/svelte/authentication-ui",
-                        "frontend-integration/svelte/passkeylist",
-                        "frontend-integration/svelte/authentication-state-client",
-                        "frontend-integration/svelte/authentication-state-server",
-                        "frontend-integration/svelte/link-to-svelte-blog"
+                        "fullstack-integration/svelte",
+                        "fullstack-integration/svelte/authentication-ui",
+                        "fullstack-integration/svelte/passkeylist",
+                        "fullstack-integration/svelte/authentication-state-client",
+                        "fullstack-integration/svelte/authentication-state-server",
+                        "fullstack-integration/svelte/link-to-svelte-blog"
                     ]
                 },
-                "frontend-integration/link-to-api-ref"
+                "fullstack-integration/nuxt-js"
             ]
         },
         {
@@ -301,6 +306,30 @@
         {
             "source": "/frontend-integration/ui-components/customization",
             "destination": "/ui-components/configuration"
+        },
+        {
+            "source": "/frontend-integration/next-js",
+            "destination": "/fullstack-integration/next-js"
+        },
+        {
+            "source": "/frontend-integration/next-js/:slug*",
+            "destination": "/fullstack-integration/next-js/:slug*"
+        },
+        {
+            "source": "/frontend-integration/svelte",
+            "destination": "/fullstack-integration/svelte"
+        },
+        {
+            "source": "/frontend-integration/svelte/:slug*",
+            "destination": "/fullstack-integration/svelte/:slug*"
+        },
+        {
+            "source": "/frontend-integration/nuxt-js",
+            "destination": "/fullstack-integration/nuxt-js"
+        },
+        {
+            "source": "/frontend-integration/nuxt-js/:slug*",
+            "destination": "/fullstack-integration/nuxt-js/:slug*"
         }
     ]
 }
