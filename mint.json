@@ -89,26 +89,26 @@
             ]
         },
         {
+            "group": "UI Components",
+            "pages": [
+                "ui-components",
+                "ui-components/corbadoauth",
+                "ui-components/passkeylist",
+                {
+                    "group": "Configuration",
+                    "pages": [
+                        "ui-components/configuration",
+                        "ui-components/configuration/corbadoprovider",
+                        "ui-components/configuration/styling",
+                        "ui-components/configuration/translation"
+
+                    ]
+                }
+            ]
+        },
+        {
             "group": "Frontend Integration",
             "pages": [
-                {
-                    "group": "UI Components",
-                    "pages": [
-                        "frontend-integration/ui-components",
-                        "frontend-integration/ui-components/corbadoprovider",
-                        "frontend-integration/ui-components/corbadoauth",
-                        "frontend-integration/ui-components/passkeylist",
-                        "frontend-integration/ui-components/customization",
-                        {
-                            "group": "Web Component (deprecated)",
-                            "pages": [
-                                "frontend-integration/ui-components/web-component-previous-version",
-                                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
-                                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
-                            ]
-                        }
-                    ]
-                },
                 {
                     "group": "React",
                     "pages": [
@@ -280,5 +280,27 @@
     "footerSocials": {
         "twitter": "https://twitter.com/corbadotech",
         "linkedin": "https://www.linkedin.com/company/corbado"
-    }
+    },
+    "redirects": [
+        {
+            "source": "/frontend-integration/ui-components",
+            "destination": "/ui-components/"
+        },
+        {
+            "source": "/frontend-integration/ui-components/corbadoprovider",
+            "destination": "/ui-components/configuration/corbadoprovider"
+        },
+        {
+            "source": "/frontend-integration/ui-components/corbadoauth",
+            "destination": "/ui-components/corbadoauth"
+        },
+        {
+            "source": "/frontend-integration/ui-components/passkeylist",
+            "destination": "/ui-components/passkeylist"
+        },
+        {
+            "source": "/frontend-integration/ui-components/customization",
+            "destination": "/ui-components/configuration"
+        }
+    ]
 }
