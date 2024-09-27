@@ -113,7 +113,10 @@
                     "group": "React",
                     "pages": [
                         "frontend-integration/react",
-                        "frontend-integration/react/usecorbado"
+                        "frontend-integration/react/authentication-ui",
+                        "frontend-integration/react/passkeylist",
+                        "frontend-integration/react/authentication-state",
+                        "frontend-integration/react/link-to-react-blog"
                     ]
                 },
                 {

@@ -1,5 +1,3 @@
-import Link from "./customizable-link.mdx";
-
 After setting up Corbado in your {framework ?? "React"} application, you now want to access authentication state and you want to use Corbado's SDK to trigger certain authentication related functions (e.g. a logout).
 All of these functions and some basic state are exposed by the `useCorbado()` hook.
 
@@ -51,7 +49,9 @@ Additionally, you can use it to trigger the following operations:
 | deletePasskey | Delete a passkey for the current user.                                                                                                           |
 | logout        | Logs the user out of your application and cleans all local authentication state.                                                                 |
 
-**Note:**
 
--   [PasskeyList UI](/ui-components/corbadoauth) already makes use of `getPasskeys`, `appendPasskey` and `deletePasskey` to provide a passkey management interface.
--   Only if you want to build your custom UI components there is a need to make use of these operations yourself.
+<Note>
+[PasskeyList UI](/ui-components/corbadoauth) already makes use of `getPasskeys`, `appendPasskey` and `deletePasskey` to provide a passkey management interface.
+
+Only if you want to build your custom UI components there is a need to make use of these operations yourself.
+</Note>

@@ -1,0 +1,33 @@
+---
+title: "Authentication UI"
+description: "Learn how to integrate Corbado Authentication into your React application."
+---
+
+![React Authentication UI](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
+
+## Authentication UI
+
+The Authentication UI allows the user to log in or register with Corbado.
+Once the user is logged in, the `onLoggedIn` callback is executed.
+
+```tsx components/Auth.tsx
+import { CorbadoAuth } from "@corbado/react";
+
+export default function Auth() {
+    const onLoggedIn = () => {
+        //post login actions like navigation can be performed here.
+        console.log("User is logged in");
+    };
+
+    return <CorbadoAuth onLoggedIn={onLoggedIn} />;
+}
+```
+
+<Note>
+    You customize the appearance of the Authentication UI in the `CorbadoProvider`.
+    Find more info [here](/ui-components/configuration/corbadoprovider).
+</Note>
+
+## Next
+
+Let your users manage their passkeys with the [PasskeyList](/frontend-integration/react/passkeylist).

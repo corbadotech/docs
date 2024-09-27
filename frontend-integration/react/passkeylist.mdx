@@ -1,6 +1,6 @@
 ---
 title: "PasskeyList UI"
-description: "Learn how to integrate the Corbado Passkeylist into your Next.js application."
+description: "Learn how to integrate the Corbado Passkeylist into your React application."
 ---
 
 ![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
@@ -12,13 +12,16 @@ He can delete existing passkeys or create new ones.
 This can be useful if the user wants to have individual passkeys for multiple devices, or erase ones
 that are no longer needed.
 
-```tsx app/user-management/page.tsx
-"use client";
-
+```tsx components/passkey-management.tsx
 import { PasskeyList } from "@corbado/react";
 
-export default function Page() {
-    return <PasskeyList />;
+export default function PasskeyManagement() {
+    return (
+        <div>
+            <h1>Manage your Passkeys</h1>
+            <PasskeyList />
+        </div>
+    );
 }
 ```
 
@@ -29,4 +32,4 @@ export default function Page() {
 
 ## Next
 
-[Access user information](/frontend-integration/next-js/authentication-state-client) on the client-side of your application.
+[Access user information](/frontend-integration/react/authentication-state) with our hooks.
