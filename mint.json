@@ -95,12 +95,11 @@
                 "ui-components/corbadoauth",
                 "ui-components/passkeylist",
                 {
-                    "group": "Configuration",
+                    "group": "Customization",
                     "pages": [
-                        "ui-components/configuration",
-                        "ui-components/configuration/corbadoprovider",
-                        "ui-components/configuration/styling",
-                        "ui-components/configuration/translation"
+                        "ui-components/customization/corbadoprovider",
+                        "ui-components/customization/styling",
+                        "ui-components/customization/translation"
 
                     ]
                 }
@@ -318,7 +317,7 @@
         },
         {
             "source": "/frontend-integration/ui-components/customization",
-            "destination": "/ui-components/configuration"
+            "destination": "/ui-components/customization"
         },
         {
             "source": "/frontend-integration/next-js",
