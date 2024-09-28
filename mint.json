@@ -127,7 +127,16 @@
                     ]
                 },
                 "frontend-integration/flutter",
-                "frontend-integration/vue-js",
+                {
+                    "group": "Vue.js",
+                    "pages": [
+                        "frontend-integration/vue-js",
+                        "frontend-integration/vue-js/authentication-ui",
+                        "frontend-integration/vue-js/passkeylist",
+                        "frontend-integration/vue-js/authentication-state",
+                        "frontend-integration/vue-js/link-to-vuejs-blog"
+                    ]
+                },
                 "frontend-integration/angular",
                 "frontend-integration/link-to-api-ref"
             ]
