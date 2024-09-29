@@ -122,7 +122,9 @@
                     "group": "VanillaJS",
                     "pages": [
                         "frontend-integration/vanilla-js",
-                        "frontend-integration/vanilla-js/global-corbado-object",
+                        "frontend-integration/vanilla-js/authentication-ui",
+                        "frontend-integration/vanilla-js/passkeylist",
+                        "frontend-integration/vanilla-js/authentication-state",
                         "frontend-integration/vanilla-js/link-to-vanillajs-blog"
                     ]
                 },

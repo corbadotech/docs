@@ -1,0 +1,52 @@
+---
+title: "Authentication UI Component"
+description: "Learn how to integrate Corbado Authentication into your VanillaJS application."
+---
+
+![Vue.js Authentication UI](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
+
+<Warning>
+    Before we can begin to render the AuthenticationUI, the `Corbado.load` call has to resolve.
+    Find more [here](/frontend-integration/vanilla-js).
+</Warning>
+
+## Authentication UI
+
+The Authentication UI allows the user to log in or register with Corbado.
+Once the user is logged in, the `onLoggedIn` callback is executed.
+
+```html main.html
+<!DOCTYPE html>
+<html>
+<head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
+    />
+    <script src="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.js"></script>
+<body>
+    <script type="module">
+        await Corbado.load({
+            projectId: "pro-XXX"
+        });
+        const authElement = document.getElementById("corbadoAuth");
+        Corbado.mountAuthUI(authElement, {
+            onLoggedIn: () => {
+                console.log("User logged in");
+                // perform any action after the user logs in (e.g. redirect to another page)
+            }
+        });
+    </script>
+    <div id="corbadoAuth"></div>
+</body>
+</html>
+```
+
+<Note>
+    You customize the appearance of the Authentication UI in the `CorbadoProvider`.
+    Find more info [here](/ui-components/corbadoprovider).
+</Note>
+
+## Next
+
+Let your users manage their passkeys with the [PasskeyList](/frontend-integration/vanilla-js/passkeylist).

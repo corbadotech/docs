@@ -6,10 +6,11 @@ sidebarTitle: "Setup"
 
 import Blogpost from "/snippets/blogpost.mdx";
 
-## 1. Prerequisites
+## Installation
 
--   First, you need to [set up a Corbado project](/overview/getting-started).
--   Now, install the Corbado UI components via npm or add the JavaScript library via CDN:
+First, you need to [set up a Corbado project](/overview/getting-started).
+To get started with the integration, either install the Corbado web-js package via npm or add the JavaScript
+library via CDN.
 
 <CodeGroup>
 
@@ -19,7 +20,9 @@ npm install @corbado/web-js
 
 ```html CDN
 <!-- Include the following lines in the head section of your html  -->
-<!-- @2 loads the most recent version of major version 2. Replace @2 with a specific version number if you want to pin it. Use @latest if you always want to have the most recent version including majors (not recommended for production). -->
+<!-- @2 loads the most recent version of major version 2
+Replace @2 with a specific version number if you want to pin it.
+Use @latest if you always want to have the most recent version including majors (not recommended for production). -->
 <link
     rel="stylesheet"
     href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
@@ -34,47 +37,38 @@ npm install @corbado/web-js
     which may impact dark mode and other custom UI stylings.
 </Note>
 
-## 2. Add UI Components to your JavaScript Code
+## Setup Corbado
 
-This example show how to load the global Corbado object and mount the `CorbadoAuth` component.
-
-Find a list and description of all the Corbado [UI Components](/ui-components) here.
+As a prerequisite to all future actions, Corbado has to be loaded.
+We do this by using the [Corbado.load](/ui-components/corbadoprovider) function.
 
 ```html
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <link
-      rel="stylesheet"
-      href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
+        rel="stylesheet"
+        href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
     />
     <script src="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.js"></script>
-
-  <body>
-    <script>
-      await Corbado.load({
-        projectId: "your-project-id",
-      });
-
-      const authElement = document.getElementById('corbado-auth'); //Element where you want to render CorbadoAuth UI
-      Corbado.mountAuthUI(authElement, {
-        onLoggedIn: () => {
-          //post login actions can be performed here.
-          //window.location.href = '/';
-        },
-      });
+<body>
+    <script type="module">
+        await Corbado.load({
+            projectId: "pro-XXX"
+        });
     </script>
-    <div id="corbado-auth"></div>
-  </body>
+</body>
 </html>
 ```
 
-Find detailed documentation about the available configuration options for all UI components [here](/frontend-integration/ui-components/).
+<Note>
+    Most customization is done in the `Corbado.load` function.
+    See a full list of options for the `Corbado.load` function in the [web-js
+    documentation](/ui-components/corbadoprovider).
+</Note>
 
-## 3. Read the blog post
+## Next
 
-To find a step-by-step tutorial on how to integrate passkeys into a VanillaJS project, please check out our blog post.
-
-<Card href="https://www.corbado.com/blog/passkeys-javascript">
-    <Blogpost title="Building a Passkey Login Page with JavaScript" />
-</Card>
+1. Add [authentication UI components](/frontend-integration/vanilla-js/authentication-ui) to your application.
+2. Let your users manage their passkeys with the [PasskeyList](/frontend-integration/vanilla-js/passkeylist).
+3. Learn how you can [access the users authentication state](/frontend-integration/vanilla-js/authentication-state).
