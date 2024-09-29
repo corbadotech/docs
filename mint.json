@@ -92,12 +92,12 @@
             "group": "UI Components",
             "pages": [
                 "ui-components",
+                "ui-components/corbadoprovider",
                 "ui-components/corbadoauth",
                 "ui-components/passkeylist",
                 {
                     "group": "Customization",
                     "pages": [
-                        "ui-components/customization/corbadoprovider",
                         "ui-components/customization/styling",
                         "ui-components/customization/translation"
 
@@ -305,7 +305,7 @@
         },
         {
             "source": "/frontend-integration/ui-components/corbadoprovider",
-            "destination": "/ui-components/configuration/corbadoprovider"
+            "destination": "/ui-components/corbadoprovider"
         },
         {
             "source": "/frontend-integration/ui-components/corbadoauth",

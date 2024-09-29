@@ -1,9 +1,9 @@
 ---
-title: "CorbadoProvider"
+title: "Setup"
 description: "The CorbadoProvider component provides global configuration for all your Corbado UI Components."
 ---
 
-## Introduction
+## CorbadoProvider
 
 This component is **required** for integrating any other UI Component (e.g., CorbadoAuth, PasskeyList, etc.). Unlike other components, it exclusively handles global configuration for all other UI components without rendering any UI elements.
 
@@ -56,9 +56,9 @@ Here are the API references for the CorbadoProvider in both **React** and **Vani
 | projectId             | string (e.g. pro-1234567890) | **required**                                                                | The ID of your Corbado project. This setting is **mandatory** and can be found in the Developer Panel.                                                                                                                                                |
 | autoDetectLanguage    | boolean                      | `true`                                                                      | If set to `true` the language used in UI components will be derived from the browser.                                                                                                                                                                 |
 | defaultLanguage       | string                       | `en`                                                                        | The default language to be used if auto-detection is disabled or fails. Corbado supports "en", "de" and "fr". You can define custom translations though.                                                |
-| customTranslations    | object                       | `null`                                                                      | A map from language (e.g. "en") to an object containing your custom translation overrides. Find more details [here](/ui-components/configuration/translation)                                                                                                                                                            |
+| customTranslations    | object                       | `null`                                                                      | A map from language (e.g. "en") to an object containing your custom translation overrides. Find more details [here](/ui-components/customization/translation)                                                                                                                                                            |
 | darkMode              | `on` \| `off` \| `auto`      | `auto`                                                                      | Controls if your components are rendered in dark mode. If set to `auto` the darkMode setting will be derived from the browser.                                                                                                                        |
-| theme                 | string                       | `undefined`                                                                 | Controls the style of your components. Currently, the only alternative theme that can be set here is `emerald-funk`. To create your own custom theme find all information [here](/ui-components/configuration/styling).
+| theme                 | string                       | `undefined`                                                                 | Controls the style of your components. Currently, the only alternative theme that can be set here is `emerald-funk`. To create your own custom theme find all information [here](/ui-components/customization/styling).
 | customerSupportEmail  | string                       | `undefined`                                                                 | Email address for customer support in case of critical errors.                                                      |
 | isDevMode             | boolean                      | `false`                                                                     | If set to true, the UI components will log debug messages to console.
 | frontendApiUrl        | string                       | Set to your [Frontend API](/overview/corbado-api-structure/frontend-api) URL| Please set this value when you go live to your defined [CNAME](/helpful-guides/url-overview#5-cname).                         |
