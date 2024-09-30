@@ -139,7 +139,16 @@
                         "frontend-integration/vue-js/link-to-vuejs-blog"
                     ]
                 },
-                "frontend-integration/angular",
+                {
+                    "group": "Angular",
+                    "pages": [
+                        "frontend-integration/angular",
+                        "frontend-integration/angular/authentication-ui",
+                        "frontend-integration/angular/passkeylist",
+                        "frontend-integration/angular/authentication-state",
+                        "frontend-integration/angular/link-to-angular-blog"
+                    ]
+                },
                 "frontend-integration/link-to-api-ref"
             ]
         },
