@@ -20,13 +20,13 @@ that are no longer needed.
 ```html routes/+page.svelte
 <script lang="ts">
     import Corbado from '@corbado/web-js';
-    import { onMount } from 'svelte';
+    import {isCorbadoLoaded} from "../../corbadoStore";
 
     let passkeyListElement: HTMLDivElement;
 
-    onMount(() => {
-        Corbado.mountPasskeyListUI(passkeyListElement);
-    });
+    $: if ($isCorbadoLoaded) {
+        Corbado.mountPasskeyListUI(passkeyListElement)
+    }
 </script>
 
 <div bind:this={passkeyListElement}></div>

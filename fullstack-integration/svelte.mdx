@@ -18,29 +18,35 @@ We are working on SSR support and will update this guide once it is available.
 export const ssr = false;
 ```
 
-Load Corbado in your root layout to make it available throughout your application.
+To inform the rest of our application of Corbado loading status, we will create a store.
+
+```ts src/corbadoStore.ts
+import { writable } from 'svelte/store';
+
+export const isCorbadoLoaded = writable(false);
+```
+
+Now, load Corbado in your root layout to make it available throughout your application.
 
 ```html routes/+layout.svelte
 <script lang="ts">
     import Corbado from "@corbado/web-js";
-    import { onMount } from "fullstack-integration/svelte.mdx";
-    import { PUBLIC_CORBADO_PROJECT_ID } from '$env/static/public';
+    import {onMount} from "svelte";
+    import {PUBLIC_CORBADO_PROJECT_ID} from '$env/static/public';
+    import {isCorbadoLoaded} from "../corbadoStore";
 
-    let isInitialized = false;
     onMount(async () => {
         await Corbado.load({
             projectId: PUBLIC_CORBADO_PROJECT_ID,
             darkMode: 'off',
             setShortSessionCookie: true
         });
-        isInitialized = true; // Set to true once Corbado is initialized
+        $isCorbadoLoaded = true;
     });
 </script>
 
 <div>
-    {#if isInitialized}
-        <slot></slot>
-    {/if}
+    <slot />
 </div>
 ```
 

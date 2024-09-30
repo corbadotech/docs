@@ -19,20 +19,21 @@ Once the user is logged in, the `onLoggedIn` callback is executed.
 ```html routes/+page.svelte
 <script lang="ts">
     import Corbado from '@corbado/web-js';
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import {goto} from '$app/navigation';
+    import {isCorbadoLoaded} from "../corbadoStore";
 
     let authElement: HTMLDivElement;
 
-    onMount(() => {
+    $: if ($isCorbadoLoaded) {
         Corbado.mountAuthUI(
             authElement, {
                 onLoggedIn: () => goto("/profile"),
             })
-    })
+    }
 </script>
 
 <div bind:this={authElement}></div>
+
 ```
 
 <Note>

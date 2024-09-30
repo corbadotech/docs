@@ -41,19 +41,27 @@ If you want to synchronize user state to your own state, you can subscribe to th
 ```html routes/+page.svelte
 <script lang="ts">
     import Corbado from '@corbado/web-js';
-    import { onMount } from 'svelte';
-    import type { SessionUser } from '@corbado/types';
+    import {isCorbadoLoaded} from "../corbadoStore";
+    import type {SessionUser} from "@corbado/types";
+    import {onDestroy} from "svelte";
+    import {Subscription} from "rxjs"
 
     let loggedIn = false;
     let user: SessionUser | undefined;
 
-    onMount(() => {
-        const authStateSubscription = Corbado.authStateChanges.subscribe(next => loggedIn = next === 1);
-        const userSubscription = Corbado.userChanges.subscribe(next => user = next);
-        return () => {
-            authStateSubscription.unsubscribe();
-            userSubscription.unsubscribe();
-        };
+    let authStateSubscription: Subscription;
+    let userSubscription: Subscription;
+
+    $: if ($isCorbadoLoaded) {
+        authStateSubscription = Corbado.authStateChanges.subscribe(
+            next => loggedIn = next === 1
+        );
+        userSubscription = Corbado.userChanges.subscribe(next => user = next);
+    }
+
+    onDestroy(() => {
+        authStateSubscription?.unsubscribe();
+        userSubscription?.unsubscribe();
     });
 </script>
 
