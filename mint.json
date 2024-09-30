@@ -178,7 +178,17 @@
                         "fullstack-integration/svelte/link-to-svelte-blog"
                     ]
                 },
-                "fullstack-integration/nuxt-js"
+                {
+                    "group": "Nuxt.js",
+                    "pages": [
+                        "fullstack-integration/nuxt-js",
+                        "fullstack-integration/nuxt-js/authentication-ui",
+                        "fullstack-integration/nuxt-js/passkeylist",
+                        "fullstack-integration/nuxt-js/authentication-state-client",
+                        "fullstack-integration/nuxt-js/authentication-state-server",
+                        "fullstack-integration/nuxt-js/link-to-nuxtjs-blog"
+                    ]
+                }
             ]
         },
         {

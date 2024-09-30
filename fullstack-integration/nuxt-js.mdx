@@ -1,49 +1,53 @@
 ---
-title: "Nuxt.js"
-description: "Learn how to add the Corbado web-js Package to your Nuxt.js application."
+title: "Setup"
+description: "Learn how to add the Corbado web-js package to your Nuxt.js application."
 ---
 
-import Blogpost from "/snippets/blogpost.mdx";
-import Prerequisites from "/snippets/web-js-prerequisites.mdx";
+import Installation from "/snippets/web-js-prerequisites.mdx";
 
-## 1. Prerequisites
+## Installation
 
-<Prerequisites />
+<Installation />
 
-## 2. Add web-js to Nuxt.js code
+## Setup Corbado
 
-```html App.vue
-<template>
-    <div id="corbado-auth"></div>
-</template>
+As a prerequisite to all future actions, Corbado has to be loaded.
+We do this by using the [Corbado.load](/ui-components/corbadoprovider) function.
+We also maintain a global state, indicating whether Corbado is successfully loaded.
 
-<script setup>
-    import Corbado from "@corbado/web-js";
-    import { onMounted } from "vue";
+```html layouts/default.vue
+<script setup lang="ts">
+import Corbado from "@corbado/web-js"
+import {onMounted} from "vue";
 
-    onMounted(() => {
-        //if user is authenticated you can navigate to a protected route
-        if (Corbado.isAuthenticated) {
-            return;
-        }
+const isCorbadoLoaded = useState('isCorbadoLoaded', () => false)
 
-        const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
+onMounted(async () => {
+    await Corbado.load({
+        projectId: "pro-XXX",
+        darkMode: "off"
+    })
+    isCorbadoLoaded.value = true
+})
 
-        Corbado.mountAuthUI(authElement, {
-            onLoggedIn: () => {
-                //post login actions can be performed here.
-            }
-        });
-    });
+provide('isCorbadoLoaded', isCorbadoLoaded)
 </script>
+
+<template>
+    <slot/>
+</template>
 ```
 
-If you need access to user data on the server, also take a look at our [Corbado Node.js SDK](/backend-integration/node-js-sdk).
+<Note>
+    Most customization is done in the `Corbado.load` function.
+    See a full list of options for the `Corbado.load` function in the [web-js
+    documentation](/ui-components/corbadoprovider).
+</Note>
 
-## 3. Read the blog post
+## Next
 
-To find a step-by-step tutorial on how to integrate passkeys into Nuxt.js, please check out our blog post:
-
-<Card href="https://www.corbado.com/blog/passkeys-nuxtjs">
-    <Blogpost title="Building a Nuxt.js Passkey Login" />
-</Card>
+1. Add [authentication UI components](/frontend-integration/nuxt-js/authentication-ui) to your application.
+2. Let your users manage their passkeys with the [PasskeyList](/frontend-integration/nuxt-js/passkeylist).
+3. Learn how you can access the users authentication state on the [client-side](/frontend-integration/nuxt-js/authentication-state-client).
+4. Easily [access user information on the server-side](/frontend-integration/nuxt-js/authentication-state-server)
+with the [Node.js SDK](/backend-integration/node-js-sdk).
