@@ -7,7 +7,7 @@ description: "To access authentication state or trigger authentication-related m
 
 | Name                | Type                                       | Description                                                                                                                                                                                                                                                                                                                                      |
 | ------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| load                | Promise\<void>                             | Initializes the SDK. Takes your `projectId` as a mandatory parameter. For a list of additional optional parameters take a look at the [API reference of CorbadoProvider](/ui-components/configuration/corbadoprovider#api-reference) (they share the same parameters). `Load` must be called before you can use any of the other methods. |
+| load                | Promise\<void>                             | Initializes the SDK. Takes your `projectId` as a mandatory parameter. For a list of additional optional parameters take a look at the [API reference of CorbadoProvider](/ui-components/corbadoprovider) (they share the same parameters). `Load` must be called before you can use any of the other methods. |
 | mountAuthUI         | void                                       | Mounts the [CorbadoAuth](/ui-components/corbadoauth) component to your DOM.                                                                                                                                                                                                                                                 |
 | mountPasskeyList    | void                                       | Mounts the [PasskeyList](/ui-components/corbadoauth) component to your DOM.                                                                                                                                                                                                                                                 |
 | isAuthenticated     | boolean                                    | Indicates if the user is logged in. Changes when a user logs in, logs out, or when her session expires.                                                                                                                                                                                                                                          |
@@ -19,8 +19,7 @@ description: "To access authentication state or trigger authentication-related m
 | logout              | void                                       | Logs the user out of your application and cleans all local authentication state.                                                                                                                                                                                                                                                                 |
 
 <Note>
-    {" "}
-    In addition to [CorbadoProvider](/frontend-integration/vanilla-js)
+    In addition to [CorbadoProvider](/ui-components/corbadoprovider)
     parameter, `load` also support `onError` callback which can be used to fetch
     global errors in the Corbado components. This is useful if you want to show a
     customised screen in case of failure.
