@@ -4,6 +4,7 @@ description: "Learn how to add the Corbado web-js package to your Nuxt.js applic
 ---
 
 import Installation from "/snippets/web-js-prerequisites.mdx";
+import CorbadoProviderReference from "/snippets/corbadoprovider-api-reference.mdx";
 
 ## Installation
 
@@ -38,15 +39,11 @@ provide('isCorbadoLoaded', isCorbadoLoaded)
 </template>
 ```
 
-<Note>
-    Most customization is done in the `Corbado.load` function.
-    See a full list of options for the `Corbado.load` function in the [web-js
-    documentation](/ui-components/corbadoprovider).
-</Note>
+<CorbadoProviderReference isWebJS={true} />
 
 ## Next
 
-1. Add [authentication UI components](/fullstack-integration/nuxt-js/authentication-ui) to your application.
+1. Add [authentication UI components](/fullstack-integration/nuxt-js/corbadoauth) to your application.
 2. Let your users manage their passkeys with the [PasskeyList](/fullstack-integration/nuxt-js/passkeylist).
 3. Learn how you can access the users authentication state on the [client-side](/fullstack-integration/nuxt-js/authentication-state-client).
 4. Easily [access user information on the server-side](/fullstack-integration/nuxt-js/authentication-state-server)

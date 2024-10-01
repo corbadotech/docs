@@ -4,10 +4,11 @@ description: "Learn how to add the Corbado React package to your Next.js applica
 ---
 
 import Installation from "/snippets/react-prerequisites.mdx";
+import CorbadoProviderReference from "/snippets/corbadoprovider-api-reference.mdx";
 
 <Note>
     The integration process is slightly different for the Next.js pages router.
-    Make sure to have a look at our [dedicated page](/fullstack-integration/next-js/pages-router), if you're using the pages router.
+    Make sure to have a look at our [dedicated page](/frontend-integration/next-js/pages-router), if you're using the pages router.
 </Note>
 
 ## Installation
@@ -56,14 +57,11 @@ export default function RootLayout({
 }
 ```
 
-<Note>
-    Most customization is done in the `CorbadoProvider`.
-    See a full list of options for the `CorbadoProvider` in the [CorbadoProvider documentation](/ui-components/corbadoprovider).
-</Note>
+<CorbadoProviderReference />
 
 ## Next
 
-1. Add [authentication UI components](/fullstack-integration/next-js/authentication-ui) to your application.
+1. Add [authentication UI components](/fullstack-integration/next-js/corbadoauth) to your application.
 2. Let your users manage their passkeys with the [PasskeyList](/fullstack-integration/next-js/passkeylist).
 3. Learn how you can access the users authentication state on the [client-side](/fullstack-integration/next-js/authentication-state-client).
 4. Easily [access user information on the server-side](/fullstack-integration/next-js/authentication-state-server)

@@ -1,9 +1,11 @@
 ---
-title: "Authentication UI Component"
+title: "CorbadoAuth Component"
 description: "Learn how to integrate Corbado Authentication into your Svelte or SvelteKit application."
 ---
 
-![Svelte Authentication UI](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
+import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
+
+![Svelte CorbadoAuth](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
 
 <Warning>
     Before we can begin to render the Corbado Authentication UI, the `Corbado.load` call has to resolve.
@@ -33,13 +35,14 @@ Once the user is logged in, the `onLoggedIn` callback is executed.
 </script>
 
 <div bind:this={authElement}></div>
-
 ```
 
 <Note>
     You customize the appearance of the Authentication UI in the `Corbado.load` function.
     Find more info [here](/ui-components/corbadoprovider).
 </Note>
+
+<StylingTranslationCards />
 
 ## Next
 

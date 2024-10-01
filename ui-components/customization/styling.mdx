@@ -20,7 +20,8 @@ Currently, Corbado offers two themes out of the box:
 -   default
 -   emerald-funk
 
-You can pass the theme to the [CorbadoProvider](/ui-components/corbadoprovider) `theme` setting. If no setting is passed, the default theme is used.
+You can pass the theme to the `CorbadoProvider` `theme` setting (see your framework's integration guide for more details).
+If no setting is passed, the default theme is used.
 Currently the only alternative theme is `emerald-funk`.
 
 ### Creating a custom theme
@@ -54,7 +55,7 @@ Inside this class you can now overwrite all the Corbado classes. Every Corbado c
 }
 ```
 
-Finally, configure the [CorbadoProvider](/ui-components/corbadoprovider) component to use the theme.
+Finally, configure the `CorbadoProvider` component to use the theme.
 
 <CodeGroup>
 ```tsx React
@@ -69,7 +70,7 @@ const App = () => {
 };
 ```
 
-```html VanillaJS
+```html Web-JS
 <script type="module">
     Corbado.load({
         projectId: "pro-XXX",
