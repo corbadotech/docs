@@ -1,0 +1,142 @@
+---
+title: "Authentication State"
+description: "Learn how to access and manage the user authentication state on the in your Angular application."
+---
+
+<Warning>
+    Before we can begin to access authentication state, the `Corbado.load` call has to resolve.
+    Find more [here](/frontend-integration/angular).
+</Warning>
+
+## One-time access to Authentication State
+
+If you want to access user state once, you can simply call `Corbado.shortSession`,
+`Corbado.user` or `Corbado.isAuthenticated` to get the current user state.
+
+```ts app.component.ts
+import {Component, OnInit} from '@angular/core';
+import Corbado from '@corbado/web-js';
+import {RouterOutlet} from "@angular/router";
+
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [RouterOutlet],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
+})
+export class AppComponent implements OnInit {
+    constructor() {
+    }
+
+    async ngOnInit() {
+        // Load and initialize Corbado SDK when the component mounts
+        await Corbado.load({
+            projectId: "pro-0552933888880246188",
+            darkMode: 'off',
+        });
+    }
+
+    async someApiCall() {
+        if (Corbado.isAuthenticated) {
+            const resp = await fetch('https://acme.com/api', {
+                headers: {
+                    // access the users session token once
+                    Authorization: `Bearer ${Corbado.shortSession}`
+                }
+            })
+        }
+    }
+}
+```
+
+## Subscribing to Authentication State
+
+If you want to synchronize user state to your own state, you can subscribe to the `authStateChanges` and `userChanges` observables.
+
+```ts app.component.ts
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import Corbado from '@corbado/web-js';
+import {RouterOutlet} from "@angular/router";
+import {Subscription} from "rxjs";
+
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [RouterOutlet],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
+})
+export class AppComponent implements OnInit, OnDestroy {
+    userId: string | undefined = undefined
+    private userSubscription: Subscription | undefined;
+
+    constructor() {
+    }
+
+    async ngOnInit() {
+        // Load and initialize Corbado SDK when the component mounts
+        await Corbado.load({
+            projectId: "pro-XXX",
+            darkMode: 'off',
+        });
+        // Subscribe to Corbado user changes
+        this.userSubscription = Corbado.userChanges.subscribe(next => {
+            this.userId = next?.sub;
+        });
+    }
+
+    ngOnDestroy() {
+        // Clean up the subscription to avoid memory leaks
+        if (this.userSubscription) {
+            this.userSubscription.unsubscribe();
+        }
+    }
+}
+```
+
+We can now render the `userId` in the template.
+
+```html app.component.html
+<h1>{{userId}}</h1>
+```
+
+## Logout
+
+You can log out the user by calling `Corbado.logout`.
+
+```ts app.component.ts
+import {Component, OnInit} from '@angular/core';
+import Corbado from '@corbado/web-js';
+import {RouterOutlet} from "@angular/router";
+
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [RouterOutlet],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
+})
+export class AppComponent implements OnInit {
+    constructor() {
+    }
+
+    async ngOnInit() {
+        // Load and initialize Corbado SDK when the component mounts
+        await Corbado.load({
+            projectId: "pro-XXX",
+            darkMode: 'off',
+        });
+    }
+
+    logout() {
+        void Corbado.logout();
+    }
+}
+```
+
+Now call the `logout` function in your template.
+
+```html app.component.html
+<button (click)="logout()">Logout</button>
+```

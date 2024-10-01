@@ -1,78 +1,53 @@
 ---
-title: "Angular"
+title: "Setup"
 description: "Learn how to add the Corbado web-js package to your Angular application."
 ---
 
-import Blogpost from "/snippets/blogpost.mdx";
-import Prerequisites from "/snippets/web-js-prerequisites.mdx";
+import Installation from "/snippets/web-js-prerequisites.mdx";
 
-## 1. Prerequisites
+## Prerequisites
 
-<Prerequisites />
+<Installation />
 
-## 2. Define custom elements schema
+## Setup Corbado
 
-To prevent build failures due to unrecognized elements, Angular mandates the declaration of custom elements within your Angular modules. To achieve this, you should import the `CUSTOM_ELEMENTS_SCHEMA` and include it in the schemas section of your module:
+As a prerequisite to all future actions, Corbado has to be loaded.
+We do this by using the [Corbado.load](/ui-components/corbadoprovider) function.
 
-```javascript app.module.ts
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-
-import { AppComponent } from "./app.component";
-import { ProfileComponent } from "./profile/profile.component";
-import { AppRoutingModule } from "./app-routing.module";
-import { LoginComponent } from "./login/login.component";
-
-@NgModule({
-    declarations: [AppComponent, ProfileComponent, LoginComponent],
-    imports: [BrowserModule, AppRoutingModule],
-    providers: [],
-    bootstrap: [AppComponent],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class AppModule {}
-```
-
-## 3. Add the web-js package to Angular Code
-
-<CodeGroup>
-
-```html login.component.html
-<div id="corbado-auth"></div>
-```
-
-```ts login.component.ts
-import { Component, AfterViewInit } from "@angular/core";
-import { Router } from "@angular/router";
-import Corbado from "@corbado/web-js";
+```ts app.component.ts
+import {Component, OnInit} from '@angular/core';
+import Corbado from '@corbado/web-js';
+import {RouterOutlet} from "@angular/router";
 
 @Component({
-    selector: "app-login",
-    templateUrl: "./auth.component.html",
-    styleUrls: ["./auth.component.css"]
+    selector: 'app-root',
+    standalone: true,
+    imports: [RouterOutlet],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
 })
-export class AuthComponent implements AfterViewInit {
-    constructor(private router: Router) {}
-    async ngAfterViewInit() {
-        const authElement = document.getElementById("corbado-auth");
-        if (authElement) {
-            Corbado.mountAuthUI(authElement, {
-                onLoggedIn: () => {
-                    //post login actions can be performed here.
-                    this.router.navigate(["/profile"]);
-                }
-            });
-        }
+export class AppComponent implements OnInit {
+    constructor() {
+    }
+
+    async ngOnInit() {
+        // Load and initialize Corbado SDK when the component mounts
+        await Corbado.load({
+            projectId: "pro-XXX",
+            darkMode: 'off',
+        });
     }
 }
 ```
 
-</CodeGroup>
+<Note>
+    Most customization is done in the `Corbado.load` function.
+    See a full list of options for the `Corbado.load` function in the [web-js
+    documentation](/ui-components/corbadoprovider).
+</Note>
 
-## 4. Read the blog post
+## Next
 
-To find a step-by-step tutorial on how to integrate passkeys into Angular, please check out our blog post:
-
-<Card href="https://www.corbado.com/blog/angular-passkeys">
-    <Blogpost title="Building an Angular Passkey Login with TypeScript" />
-</Card>
+1. Add [authentication UI components](/frontend-integration/angular/authentication-ui) to your application.
+2. Let your users manage their passkeys with the [PasskeyList](/frontend-integration/angular/passkeylist).
+3. Learn how you can [access the users authentication state](/frontend-integration/angular/authentication-state).

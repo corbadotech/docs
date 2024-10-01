@@ -1,0 +1,57 @@
+After setting up Corbado in your {framework ?? "React"} application, you now want to access authentication state and you want to use Corbado's SDK to trigger certain authentication related functions (e.g. a logout).
+All of these functions and some basic state are exposed by the `useCorbado()` hook.
+
+It gives you access to the following state:
+
+| State           | Type                     | Description                                                                                                                                                                                                                                             |
+|-----------------|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isAuthenticated | boolean                  | Indicates if the user is logged in.                                                                                                                                                                                                                     |
+| loading         | boolean                  | If true, the SDK is still in a loading state. You should then not yet make use of the other states but wait until `loading = false`.                                                                                                                    |
+| shortSession    | string \| undefined      | A JWT that proves that the user is authenticated. It can be used to make calls to your backend and thus should be included as an authorization header in the requests to such a backend. A value of undefined indicates that the user is not logged in. |
+| user            | SessionUser \| undefined | An object that holds basic information about the user. A value of `undefined` indicates that the user is not logged in.                                                                                                                                 |
+
+This is a simple example that shows how you can use this hook to render a page that depends on the user's authentication state.
+
+```tsx HomePage.tsx
+import { useCorbado } from "@corbado/react";
+
+function HomePage() {
+    const { loading, isAuthenticated, logout } = useCorbado();
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (!isAuthenticated) {
+        return <p>You are not logged in.</p>;
+    }
+
+    const onLogout = async () => {
+        await logout();
+        //post logout functionalities can be performed here
+    };
+
+    return (
+        <div>
+            <p>You are logged in.</p>
+            <button onClick={() => void onLogout()}>Logout</button>
+        </div>
+    );
+}
+```
+
+Additionally, you can use it to trigger the following operations:
+
+| Name          | Description                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| getFullUser   | Get the complete user object. In addition to the `user` state from above this gives you access to a user's login identifiers.                    |
+| getPasskeys   | Get all passkeys that are available for the current user.                                                                                        |
+| appendPasskey | Creates a new passkey for an already authenticated user. This only works if the user has not already set up another passkey for the same device. |
+| deletePasskey | Delete a passkey for the current user.                                                                                                           |
+| logout        | Logs the user out of your application and cleans all local authentication state.                                                                 |
+
+
+<Note>
+[PasskeyList UI](/ui-components/corbadoauth) already makes use of `getPasskeys`, `appendPasskey` and `deletePasskey` to provide a passkey management interface.
+
+Only if you want to build your custom UI components there is a need to make use of these operations yourself.
+</Note>

@@ -15,19 +15,20 @@ Based on your application setup (e.g. does it have different URL / ports for fro
 
 ## 1. Authorized origin
 
-**Required: yes**
+**Required: only for production**
 
 ### Description
 
 The full URL (incl. protocol & port, no path) that the user sees in the browser and from where JavaScript calls to Corbado are made.
 
-It's needed to make [CORS](/helpful-guides/cross-origin-resource-sharing-cors) requests possible.
+It's needed to make [CORS](/helpful-guides/cross-origin-resource-sharing-cors) requests possible and can be
+configured in the [developer panel](https://app.corbado.com/settings/general?tab=Authorized+origins).
 
 ### Example
 
-| Prod                           | Local                 |
-| ------------------------------ | --------------------- |
-| https://www.my-application.com | http://localhost:8080 |
+| Production                     | Development                       |
+|--------------------------------|-----------------------------------|
+| https://www.my-application.com | All origins authorized by default |
 
 ## 2. Application URL
 
@@ -35,12 +36,13 @@ It's needed to make [CORS](/helpful-guides/cross-origin-resource-sharing-cors) r
 
 ### Description
 
-The location (incl. protocol, port & path) where the web component runs. For example, it's used to correctly redirect users in email magic links.
+The location (incl. protocol, port & path) where the web component runs.
+For example, it's used to correctly redirect users in email magic links.
 
 Often, it's on the same domain like the authorized origin.
 
-| Prod                                 | Local                       |
-| ------------------------------------ | --------------------------- |
+| Production                           | Development                 |
+|--------------------------------------|-----------------------------|
 | https://www.my-application.com/login | http://localhost:8080/login |
 
 ## 3. Redirect URL
@@ -59,37 +61,32 @@ If you use your own session management, the Redirect URL is appended a `corbadoA
 
 ### Example
 
-| Prod                                                                                                                                                                                                                     | Local                                                                                                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production                                                                                                                                                                                                               | Development                                                                                                                                                                                                 |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <p>https://www.my-application.com/logged-in<br/><br/>with <code>corbadoAuthToken</code>: https://www.my-application.com/logged-in?corbadoAuthTOken= 5FClU6XEWynC4dQ2W34LGERlHYGPe8PHs9zUhxgrSbVj9FNupp5lE5z4lMoRpDlP</p> | <p>http://localhost:8080/logged-in<br/><br/>with <code>corbadoAuthToken</code>: http://localhost:8080/logged-in?corbadoAuthToken= 5FClU6XEWynC4dQ2W34LGERlHYGPe8PHs9zUhxgrSbVj9FNupp5lE5z4lMoRpDlP:8080</p> |
 
 ## 4. Preview URL
 
-**Required: provided by Corbado**
+**Provided by Corbado**
 
 ### Description
 
-The location (incl. protocl, port & path) where your preview runs.
-
-### Example
-
-| Prod                                     | Local |
-| ---------------------------------------- | ----- |
-| https://\<project ID>.preview.corbado.io | n/a   |
+The location (incl. protocl, port & path) where your preview runs (`https://<project ID>.preview.cloud.corbado.io`).
 
 ## 5. CNAME
 
-**Required: no**
+**Required: only in production, when using corbado session management**
 
 ### Description
 
-THE CNAME DNS address (no protocol, port or path) that can be used instead of Corbado’s default Frontend API URL. The CNAME needs to point to “\<Project-ID>.frontendapi.cloud.corbado.io”.
+THE CNAME DNS address (no protocol, port or path) that can be used instead of Corbado’s default Frontend API URL.
+The CNAME needs to point to “\<Project-ID>.frontendapi.cloud.corbado.io”.
 
 ### Example
 
-| Prod                     | Local                    |
-| ------------------------ | ------------------------ |
-| login.my-application.com | login.my-application.com |
+| Production               | Development |
+|--------------------------|-------------|
+| login.my-application.com | -           |
 
 ## 6. Webhooks URL
 
@@ -103,8 +100,8 @@ The location (incl. protocol, port & path) in your backend that receives calls f
 
 ### Example
 
-| Prod                                               | Local                                     |
-| -------------------------------------------------- | ----------------------------------------- |
+| Production                                         | Development                               |
+|----------------------------------------------------|-------------------------------------------|
 | https://www.my-application.com/v1/corbado/webhooks | http://localhost:8080/v1/corbado/webhooks |
 
 ## 7. Relying Party ID
@@ -113,11 +110,18 @@ The location (incl. protocol, port & path) in your backend that receives calls f
 
 ### Description
 
-The Relying Party ID is the domain (no protocol, port or path) where passkeys are bound to. By default it will be set to `<project ID>.frontendapi.cloud.corbado.io`. You can only use passkeys in a web component that runs in a matching domain of the Relying Party ID. Matching domains means that it's either the same or a subdomain of the Relying Party ID.&#x20;
+The Relying Party ID is the domain (no protocol, port or path) where passkeys are bound to.
+By default it will be set to `localhost`.
+Passkeys are bound to your relying party ID, meaning they can only be used on matching domains.
+Matching domains means that it's either the same or a subdomain of the Relying Party ID.&#x20;
 
 ### Example
 
-| Prod                                                       | Local     |
-| ---------------------------------------------------------- | --------- |
-| pro-123456789.frontendapi.cloud.corbado.io or my-application.com | localhost |
+| Production         | Development |
+|--------------------|-------------|
+| my-application.com | localhost   |
 
+<Warning>
+    Changing the relying party ID will invalidate all existing passkeys.
+    Though, reverting a change will restore the passkeys.
+</Warning>

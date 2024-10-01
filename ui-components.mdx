@@ -1,0 +1,28 @@
+---
+title: "UI Components"
+description: "Discover Corbado's flexible UI components that can be embedded with a few lines of code."
+sidebarTitle: "Overview"
+---
+## Overview
+
+Corbado helps you to add a full passkey authentication process to your application. As all of this involves a lot of complex UI, Corbado provides you with prebuilt and configurable **UI components**.
+
+## Available Packages
+
+Corbado provides the UI components in two different packages:
+
+- [React components](/frontend-integration/react): Can be used for React or React-based frameworks (e.g. [Next.js](/frontend-integration/next-js), [Remix](https://www.corbado.com/blog/remix-passkeys)).
+- [VanillaJS components](/frontend-integration/vanilla-js): Can be used for all other frameworks (e.g. [Angular](/frontend-integration/angular), [Vue.js](/frontend-integration/vue-js), [Svelte](/fullstack-integration/svelte)).
+
+## Available UI Components
+
+**Note:** You can use the Corbado [VanillaJS](/frontend-integration/vanilla-js) components with any other framework / technology that uses JavaScript in the frontend (e.g. also Python, PHP or Java projects).
+
+
+| Component                                         | React                    | VanillaJS                          | Description                                                                                                                                                                                                                                                 |
+|---------------------------------------------------|--------------------------|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [CorbadoProvider](/ui-components/corbadoprovider) | ```<CorbadoProvider/>``` | ```Corbado.load()```               | **Required** when adding UI components to an application. <br/>Applies global project configuration (e.g., projectID, themes, etc.) to all Corbado components. Before using any of the following components, ensure the CorbadoProvider is properly set up. |
+| [CorbadoAuth](/ui-components/corbadoauth)         | ```<CorbadoAuth/>```     | ```Corbado.mountAuthUI()```        | This component serves as a comprehensive solution for user authentication, combining both account creation and login functionalities into a single, streamlined interface.                                                                                  |
+| [PasskeyList](/ui-components/corbadoauth)         | ```<PasskeyList/>```     | ```Corbado.mountPasskeyListUI()``` | Component displays and manages all created passkeys. Users can view, create, and delete passkeys directly from this interface, enhancing device and account security management.                                                                            |
+
+For all UI components, you can customize stylings and translations. Find detailed information in the [Customization](/ui-components/configuration) page.

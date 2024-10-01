@@ -1,0 +1,40 @@
+---
+title: "PasskeyList UI Component"
+description: "Learn how to integrate the Corbado Passkeylist into your React application."
+---
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+<Warning>
+    Before we can begin to render the PasskeyList, the `CorbadoProvider` has to be integrated.
+    Find more [here](/frontend-integration/react).
+</Warning>
+
+## Passkeylist
+
+The Passkeylist allows the user to view and manage their passkeys.
+He can delete existing passkeys or create new ones.
+This can be useful if the user wants to have individual passkeys for multiple devices, or erase ones
+that are no longer needed.
+
+```tsx components/passkey-management.tsx
+import { PasskeyList } from "@corbado/react";
+
+export default function PasskeyManagement() {
+    return (
+        <div>
+            <h1>Manage your Passkeys</h1>
+            <PasskeyList />
+        </div>
+    );
+}
+```
+
+<Note>
+    You customize the appearance of the Passkeylist UI in the `CorbadoProvider`.
+    Find more info [here](/ui-components/corbadoprovider).
+</Note>
+
+## Next
+
+[Access user information](/frontend-integration/react/authentication-state) with our hooks.

@@ -1,0 +1,92 @@
+---
+title: "Styling"
+description: "Discover how you can customize your UI components styles to align with your preferences and needs."
+---
+
+Corbado offers multiple ways to customize the styling of the UI components. You can adjust the styling through the following settings:
+
+-   [Configuring dark-mode](#configuring-dark-mode)
+-   [Switching the theme](#switching-the-theme)
+-   [Creating a custom theme](#creating-a-custom-theme)
+
+### Configuring dark-mode
+
+For every theme, there is styling for dark and for light mode. Which of these themes is applied depends on your configuration for the `darkMode` parameter in the `CorbadoProvider`.<br/> You can set the `darkMode` to `on|off|auto`. If set to `auto` the darkMode setting will be derived from the browser.
+
+### Switching the theme
+
+Currently, Corbado offers two themes out of the box:
+
+-   default
+-   emerald-funk
+
+You can pass the theme to the [CorbadoProvider](/ui-components/corbadoprovider) `theme` setting. If no setting is passed, the default theme is used.
+Currently the only alternative theme is `emerald-funk`.
+
+### Creating a custom theme
+
+If you need more customization, you can create your own theme. To do so, create one parent CSS class named after your theme (e.g. "your-custom-theme").
+
+Inside this class you can now overwrite all the Corbado classes. Every Corbado class is prefixed with "cb-" so you can easily identify them.
+
+<Tip>
+    If you want to change the styling of a particular part of the UI components
+    but you don't know the classname, just use your browser's "inspect" tool
+    from the developer tools.
+</Tip>
+
+```css Custome Theme
+.your-custom-theme {
+    --cb-box-color: #3f465d;
+    --cb-primary-color-hover: #1145df80;
+    --cb-primary-color-disabled: #6f7486;
+    --cb-script-text-color: #d0d9f5;
+    --cb-box-color-hover: #525d83;
+
+    .cb-container {
+        width: 500px;
+    }
+
+    .cb-error-popup {
+        gap: 1rem;
+        padding: 2rem 3rem;
+    }
+}
+```
+
+Finally, configure the [CorbadoProvider](/ui-components/corbadoprovider) component to use the theme.
+
+<CodeGroup>
+```tsx React
+import { CorbadoProvider } from "@corbado/react";
+
+const App = () => {
+    return (
+        <CorbadoProvider projectId="pro-XXX" theme="your-custom-theme">
+            /** Your application **/
+        </CorbadoProvider>
+    );
+};
+```
+
+```html VanillaJS
+<script type="module">
+    Corbado.load({
+        projectId: "pro-XXX",
+        theme: "your-custom-theme"
+    });
+</script>
+```
+
+</CodeGroup>
+
+## FAQs
+
+### Dark mode customizations not loading in production
+
+This can happen if your custom CSS is loading before the `.cb-dark` class from the Corbado package is loaded by the browser. It can be fixed by increasing the specificity of the custom class like with `.cb-dark.your-custom-theme`
+
+### Icon colors not applied in `web-js` package when using `<script />` tag
+
+We use the `windows.atob` function which decodes a string of Base64-encoded data into bytes. This is used to convert Base64 SVG images to HTML SVG elements and then apply custom styling to them.
+In case of using `web-js` package with inline `<script />` tag this is not allowed by the browsers and thus customised colors cannot be applied to SVGs for now in these types of applications.

@@ -1,0 +1,103 @@
+---
+title: "Authentication State"
+description: "Learn how to access and manage the user authentication state on the in your VanillaJS application."
+---
+
+<Warning>
+    Before we can begin to access authentication state, the `Corbado.load` call has to resolve.
+    Find more [here](/frontend-integration/vanilla-js).
+</Warning>
+
+## One-time access to Authentication State
+
+If you want to access user state once, you can simply call `Corbado.shortSession`,
+`Corbado.user` or `Corbado.isAuthenticated` to get the current user state.
+
+```html main.html
+<!DOCTYPE html>
+<html>
+<head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
+    />
+    <script src="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.js"></script>
+<body>
+    <script type="module">
+        await Corbado.load({
+            projectId: "pro-XXX",
+        });
+        const submitButton = document.getElementById("submitButton");
+        submitButton.addEventListener("click", async () => {
+            if (Corbado.isAuthenticated) {
+                const resp = await fetch("https://acme.com/api", {
+                    headers: {
+                        // access the users session token once
+                        Authorization: `Bearer ${Corbado.shortSession}`
+                    }
+                });
+            }
+            // ...
+        });
+    </script>
+    <button id="submitButton">Submit</button>
+</body>
+</html>
+```
+
+## Subscribing to Authentication State
+
+If you want to be informed about any updates in authentication state, you can subscribe to the `authStateChanges` and `userChanges`
+observables.
+
+```html main.html
+<!DOCTYPE html>
+<html>
+<head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
+    />
+    <script src="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.js"></script>
+<body>
+    <script type="module">
+        await Corbado.load({
+            projectId: "pro-XXX",
+        });
+        const userIdElement = document.getElementById("userId");
+        Corbado.userChanges.subscribe((next) => {
+            userIdElement.innerText = next?.sub || "Not logged in";
+        })
+    </script>
+    <h1 id="userId"></h1>
+</body>
+</html>
+```
+
+## Logout
+
+You can log out the user by calling `Corbado.logout`.
+
+```html main.html
+<!DOCTYPE html>
+<html>
+<head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.css"
+    />
+    <script src="https://unpkg.com/@corbado/web-js@2/dist/bundle/index.js"></script>
+<body>
+    <script type="module">
+        await Corbado.load({
+            projectId: "pro-XXX",
+        });
+        const logoutButton = document.getElementById("logoutButton");
+        logoutButton.addEventListener("click", () => {
+            Corbado.logout();
+        });
+    </script>
+    <button id="logoutButton">Logout</button>
+</body>
+</html>
+```

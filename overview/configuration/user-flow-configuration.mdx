@@ -7,7 +7,7 @@ description: "Each application has individual user requirements that can be conf
 
 These settings directly impact the user journey during sign-up and login and define what screens the user is going to see.
 
-The following settings can be adapted in the [Developer Panel](https://app.corbado.com/app/settings/userinterface) in the **Settings>User interface** page:
+The following settings can be adapted in the [Developer Panel](https://app.corbado.com/settings/userinterface) in the **Settings > User interface** page:
 
 1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Settings associated with the sign-up part of your user flow
 2. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#2-login-identifiers-and-fallbacks): Configure the required user information for sign-up and login, as well as the authentication fallback options.
@@ -34,7 +34,7 @@ Currently the following login identifier are supported:
 
 - Email address
 - Phone number
-- Username 
+- Username
 
 ![Login identifier](/images/overview/signup/user-flow-configuration/login-identifier.webp)
 
@@ -45,18 +45,10 @@ There are two types of login identifiers:
 
 Depending on the desired authentication journey, one or more login identifiers can be activated. Each activated login identifier is requested during the sign-up process.
 
-An overview of the available login identifiers and their properties can be found below. 
-
+An overview of the available login identifiers and their properties can be found below.
 
 <table><thead><tr><th width="150">Login identifier</th><th>[Allow login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode<br/>&bull; Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No &#42;</td><td>&bull; None</td><td>&bull; None</td></tr></tbody></table>
 <sup>&#42; In this case, it is recommended to include an additional login identifier, such as email address or phone number, to provide a fallback option.</sup>
-
-
-
-
-
-
-
 
 ### 3.1 Allow login
 For each activated login identifier, an additional setting can be adjusted to determine whether it's allowed for login. If this setting isn't enabled, the activated login identifier serves after successful sign-up only as a fallback option.
@@ -69,7 +61,7 @@ To ensure a smooth sign-up and login process, even when no passkeys are supporte
 
 If a verifiable login identifier is activated, it automatically serves as the fallback option.
 
-<Note> 
+<Note>
 Enabling **only the username** as login identifier will provide no fallback option and may leave users unable to recover accounts or authenticate on devices that do not support passkeys. To address this, it's recommended to activate a secondary login identifier, without allowing login, to serve as a fallback.
 
 </Note>

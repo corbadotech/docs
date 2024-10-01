@@ -19,7 +19,7 @@ Corbado's passkeys analyzer does not store any personal data or uses cookies. Al
 
 ## Configuration
 
-To use the passkeys analyzer, you need to create an account in the Corbado [developer panel](https://app.corbado.com/signin#register).
+To use the passkeys analyzer, you need to create an account in the Corbado [developer panel](https://app.corbado.com/#signup-init).
 
 If you sign up, you need to create a new Corbado project. Every project in Corbado will get a unique `project ID` which will be used to analyze the passkey-readiness of your user base.
 
@@ -40,7 +40,7 @@ Corbado will issue you with a JavaScript snippet. This code must appear on every
     if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete') ) {
       done=true;
       tracking.visit({
-        projectID: 'pro-1',
+        projectID: '<Project ID>',
       })
       script.onload = script.onreadystatechange = null;
       head.removeChild(script);
@@ -51,6 +51,8 @@ Corbado will issue you with a JavaScript snippet. This code must appear on every
 </script>
 ```
 
+You can also copy the snippet with your project ID from the [developer panel](https://app.corbado.com/settings/passkeys-analyzer).
+
 ## 2. Start analyzing the passkey-readiness
 
-Once you have pushed your code to production, Corbado starts analyzing the passkey-readiness of your users. Take a look at the [charts in the developer panel](https://app.corbado.com/app/stats/passkeys-analyzer) to see details.
+Once you have pushed your code to production, Corbado starts analyzing the passkey-readiness of your users. Take a look at the [charts in the developer panel](https://app.corbado.com/stats/passkeys-analyzer?tab=Passkeys+Support) to see details.

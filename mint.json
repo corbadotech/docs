@@ -89,47 +89,106 @@
             ]
         },
         {
+            "group": "UI Components",
+            "pages": [
+                "ui-components",
+                "ui-components/corbadoprovider",
+                "ui-components/corbadoauth",
+                "ui-components/passkeylist",
+                {
+                    "group": "Customization",
+                    "pages": [
+                        "ui-components/customization/styling",
+                        "ui-components/customization/translation"
+
+                    ]
+                }
+            ]
+        },
+        {
             "group": "Frontend Integration",
             "pages": [
-                {
-                    "group": "UI Components",
-                    "pages": [
-                        "frontend-integration/ui-components",
-                        "frontend-integration/ui-components/corbadoprovider",
-                        "frontend-integration/ui-components/corbadoauth",
-                        "frontend-integration/ui-components/passkeylist",
-                        "frontend-integration/ui-components/customization",
-                        {
-                            "group": "Web Component (deprecated)",
-                            "pages": [
-                                "frontend-integration/ui-components/web-component-previous-version",
-                                "frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users",
-                                "frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users"
-                            ]
-                        }
-                    ]
-                },
                 {
                     "group": "React",
                     "pages": [
                         "frontend-integration/react",
-                        "frontend-integration/react/usecorbado"
+                        "frontend-integration/react/authentication-ui",
+                        "frontend-integration/react/passkeylist",
+                        "frontend-integration/react/authentication-state",
+                        "frontend-integration/react/link-to-react-blog"
                     ]
                 },
                 {
                     "group": "VanillaJS",
                     "pages": [
                         "frontend-integration/vanilla-js",
-                        "frontend-integration/vanilla-js/global-corbado-object"
+                        "frontend-integration/vanilla-js/authentication-ui",
+                        "frontend-integration/vanilla-js/passkeylist",
+                        "frontend-integration/vanilla-js/authentication-state",
+                        "frontend-integration/vanilla-js/link-to-vanillajs-blog"
                     ]
                 },
                 "frontend-integration/flutter",
-                "frontend-integration/vue-js",
-                "frontend-integration/angular",
-                "frontend-integration/next-js",
-                "frontend-integration/nuxt-js",
-                "frontend-integration/svelte",
+                {
+                    "group": "Vue.js",
+                    "pages": [
+                        "frontend-integration/vue-js",
+                        "frontend-integration/vue-js/authentication-ui",
+                        "frontend-integration/vue-js/passkeylist",
+                        "frontend-integration/vue-js/authentication-state",
+                        "frontend-integration/vue-js/link-to-vuejs-blog"
+                    ]
+                },
+                {
+                    "group": "Angular",
+                    "pages": [
+                        "frontend-integration/angular",
+                        "frontend-integration/angular/authentication-ui",
+                        "frontend-integration/angular/passkeylist",
+                        "frontend-integration/angular/authentication-state",
+                        "frontend-integration/angular/link-to-angular-blog"
+                    ]
+                },
                 "frontend-integration/link-to-api-ref"
+            ]
+        },
+        {
+            "group": "Fullstack Integration",
+            "pages": [
+                {
+                    "group": "Next.js",
+                    "pages": [
+                        "fullstack-integration/next-js",
+                        "fullstack-integration/next-js/authentication-ui",
+                        "fullstack-integration/next-js/passkeylist",
+                        "fullstack-integration/next-js/authentication-state-client",
+                        "fullstack-integration/next-js/authentication-state-server",
+                        "fullstack-integration/next-js/pages-router",
+                        "fullstack-integration/next-js/link-to-nextjs-blog"
+                    ]
+                },
+                {
+                    "group": "Svelte",
+                    "pages": [
+                        "fullstack-integration/svelte",
+                        "fullstack-integration/svelte/authentication-ui",
+                        "fullstack-integration/svelte/passkeylist",
+                        "fullstack-integration/svelte/authentication-state-client",
+                        "fullstack-integration/svelte/authentication-state-server",
+                        "fullstack-integration/svelte/link-to-svelte-blog"
+                    ]
+                },
+                {
+                    "group": "Nuxt.js",
+                    "pages": [
+                        "fullstack-integration/nuxt-js",
+                        "fullstack-integration/nuxt-js/authentication-ui",
+                        "fullstack-integration/nuxt-js/passkeylist",
+                        "fullstack-integration/nuxt-js/authentication-state-client",
+                        "fullstack-integration/nuxt-js/authentication-state-server",
+                        "fullstack-integration/nuxt-js/link-to-nuxtjs-blog"
+                    ]
+                }
             ]
         },
         {
@@ -259,5 +318,51 @@
     "footerSocials": {
         "twitter": "https://twitter.com/corbadotech",
         "linkedin": "https://www.linkedin.com/company/corbado"
-    }
+    },
+    "redirects": [
+        {
+            "source": "/frontend-integration/ui-components",
+            "destination": "/ui-components/"
+        },
+        {
+            "source": "/frontend-integration/ui-components/corbadoprovider",
+            "destination": "/ui-components/corbadoprovider"
+        },
+        {
+            "source": "/frontend-integration/ui-components/corbadoauth",
+            "destination": "/ui-components/corbadoauth"
+        },
+        {
+            "source": "/frontend-integration/ui-components/passkeylist",
+            "destination": "/ui-components/passkeylist"
+        },
+        {
+            "source": "/frontend-integration/ui-components/customization",
+            "destination": "/ui-components/customization"
+        },
+        {
+            "source": "/frontend-integration/next-js",
+            "destination": "/fullstack-integration/next-js"
+        },
+        {
+            "source": "/frontend-integration/next-js/:slug*",
+            "destination": "/fullstack-integration/next-js/:slug*"
+        },
+        {
+            "source": "/frontend-integration/svelte",
+            "destination": "/fullstack-integration/svelte"
+        },
+        {
+            "source": "/frontend-integration/svelte/:slug*",
+            "destination": "/fullstack-integration/svelte/:slug*"
+        },
+        {
+            "source": "/frontend-integration/nuxt-js",
+            "destination": "/fullstack-integration/nuxt-js"
+        },
+        {
+            "source": "/frontend-integration/nuxt-js/:slug*",
+            "destination": "/fullstack-integration/nuxt-js/:slug*"
+        }
+    ]
 }

@@ -1,47 +1,52 @@
 ---
-title: "Vue.js"
+title: "Setup"
 description: "Learn how to add the Corbado web-js package to your Vue.js application."
 ---
 
-import Blogpost from "/snippets/blogpost.mdx";
-import Prerequisites from "/snippets/web-js-prerequisites.mdx";
+import Installation from "/snippets/web-js-prerequisites.mdx";
 
-## 1. Prerequisites
+## Installation
 
-<Prerequisites />
+<Installation />
 
-## 2. Add web-js to Vue.js code
+## Setup Corbado
+
+As a prerequisite to all future actions, Corbado has to be loaded.
+We do this by using the [Corbado.load](/ui-components/corbadoprovider) function.
+We also maintain a global state, indicating whether Corbado is successfully loaded.
 
 ```html App.vue
-<template>
-    <div id="corbado-auth"></div>
-</template>
+<script setup lang="ts">
+import Corbado from "@corbado/web-js"
+import { ref, provide, onMounted } from 'vue'
 
-<script setup>
-    import Corbado from "@corbado/web-js";
-    import { onMounted } from "vue";
+// Create a global state
+const isCorbadoLoaded = ref(false)
 
-    onMounted(async () => {
-        await Corbado.load({
-            projectId: "your-project-id"
-        });
+onMounted(async () => {
+    await Corbado.load({
+        projectId: "pro-XXX"
+    })
+    isCorbadoLoaded.value = true // Set the global state to true after Corbado is loaded
+})
 
-        const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
-
-        Corbado.mountAuthUI(authElement, {
-            onLoggedIn: () => {
-                //post login actions can be performed here.
-                //router.push("/profile");
-            }
-        });
-    });
+// Provide the state globally
+provide('isCorbadoLoaded', isCorbadoLoaded)
 </script>
+
+<template>
+    <!-- Your app content -->
+</template>
 ```
 
-## 3. Read the blog post
+<Note>
+    Most customization is done in the `Corbado.load` function.
+    See a full list of options for the `Corbado.load` function in the [web-js
+    documentation](/ui-components/corbadoprovider).
+</Note>
 
-To find a step-by-step tutorial on how to integrate passkeys into Vue.js, please check out our blog post:
+## Next
 
-<Card href="https://www.corbado.com/blog/vuejs-passkeys">
-    <Blogpost title="Building a Vue.js Passkey Login" />
-</Card>
+1. Add [authentication UI components](/frontend-integration/vue-js/authentication-ui) to your application.
+2. Let your users manage their passkeys with the [PasskeyList](/frontend-integration/vue-js/passkeylist).
+3. Learn how you can [access the users authentication state](/frontend-integration/vue-js/authentication-state).

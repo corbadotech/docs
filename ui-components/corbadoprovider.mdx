@@ -1,0 +1,67 @@
+---
+title: "CorbadoProvider"
+description: "The CorbadoProvider component provides global configuration for all your Corbado UI Components."
+sidebarTitle: "Setup"
+---
+
+## CorbadoProvider
+
+This component is **required** for integrating any other UI Component (e.g., CorbadoAuth, PasskeyList, etc.). Unlike other components, it exclusively handles global configuration for all other UI components without rendering any UI elements.
+
+The `CorbadoProvider` component is defined
+- in **React** as `<CorbadoProvider />` 
+- in **VanillaJS and for other JS frameworks** as `Corbado.load()`
+
+## Example
+
+Find here an example how to implement the `CorbadoProvider` in your application.
+
+<CodeGroup>
+
+```tsx React
+import { CorbadoProvider } from '@corbado/react';
+import { RouterProvider } from 'react-router-dom';
+
+const App = () => {
+  return (
+    <CorbadoProvider
+        projectId="pro-XXX"
+        /*Add here further optional configurations*/
+    >
+      <RouteProvider />
+    </CorbadoProvider>
+  );
+}
+```
+
+```html VanillaJS
+<script type="module">
+  Corbado.load({
+    projectId: "pro-XXX",
+    /*Add here further optional configurations*/
+  });
+</script>
+```
+
+</CodeGroup>
+
+
+
+## API reference
+Here are the API references for the CorbadoProvider in both **React** and **VanillaJS**.
+
+
+
+| Name                  | Type              | Default                                                                                | Description                                                                                                                                                                                                                                           |
+| --------------------- | ---------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| projectId             | string (e.g. pro-1234567890) | **required**                                                                | The ID of your Corbado project. This setting is **mandatory** and can be found in the Developer Panel.                                                                                                                                                |
+| autoDetectLanguage    | boolean                      | `true`                                                                      | If set to `true` the language used in UI components will be derived from the browser.                                                                                                                                                                 |
+| defaultLanguage       | string                       | `en`                                                                        | The default language to be used if auto-detection is disabled or fails. Corbado supports "en", "de" and "fr". You can define custom translations though.                                                |
+| customTranslations    | object                       | `null`                                                                      | A map from language (e.g. "en") to an object containing your custom translation overrides. Find more details [here](/ui-components/customization/translation)                                                                                                                                                            |
+| darkMode              | `on` \| `off` \| `auto`      | `auto`                                                                      | Controls if your components are rendered in dark mode. If set to `auto` the darkMode setting will be derived from the browser.                                                                                                                        |
+| theme                 | string                       | `undefined`                                                                 | Controls the style of your components. Currently, the only alternative theme that can be set here is `emerald-funk`. To create your own custom theme find all information [here](/ui-components/customization/styling).
+| customerSupportEmail  | string                       | `undefined`                                                                 | Email address for customer support in case of critical errors.                                                      |
+| isDevMode             | boolean                      | `false`                                                                     | If set to true, the UI components will log debug messages to console.
+| frontendApiUrl        | string                       | Set to your [Frontend API](/overview/corbado-api-structure/frontend-api) URL| Please set this value when you go live to your defined [CNAME](/helpful-guides/url-overview#5-cname).                         |
+| setShortSessionCookie | boolean                      | `false`                                                                     | If set to true, a `cbo_short_session` cookie will be set automatically by the Corbado component for the current domain. This setting makes sense if you are running a full stack application (e.g. Next.js) or a multi page application (e.g. PHP).              |
+| apiTimeout            | number                       | 30000                                                                       | Front-end api timeout time in miliseconds

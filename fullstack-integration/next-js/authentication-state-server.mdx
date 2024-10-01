@@ -1,0 +1,60 @@
+---
+title: "Server-side Authentication State"
+description: "Learn how to access and manage the user authentication state on the server-side in your SvelteKit application."
+---
+
+## Prerequisites
+
+Install the Corbado Node.js SDK:
+
+```bash
+npm install @corbado/node-sdk
+```
+
+[Generate an API](https://app.corbado.com/settings/credentials?tab=API+Secrets) secret in the developer panel
+to allow the SDK to access the [Corbado BackendAPI](/overview/corbado-api-structure/backend-api).
+
+## Example
+
+To gain access to authentication state on the server-side we utilize the [Corbdo Node.js SDK](/backend-integration/node-js-sdk).
+
+We might use it in a server-side action function to verify the user is authenticated and retrieve some data in this case:
+
+<Warning>
+    This example assumes you are using the `setShortSessionCookie` option in the `CorbadoProvider`,
+    so that a cookie with the users shortSession JWT will be set on login.
+    Find more info [here](/ui-components/configuration/corbadoprovider#api-reference).
+</Warning>
+
+```ts actions.ts
+"use server";
+
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { Config, SDK } from '@corbado/node-sdk';
+
+const config = new Config(
+    process.env.PUBLIC_CORBADO_PROJECT_ID, process.env.CORBADO_API_SECRET,
+    `https://${process.env.PUBLIC_CORBADO_PROJECT_ID}.frontendapi.corbado.io`,
+    'https://backendapi.cloud.corbado.io'
+);
+const sdk = new SDK(config);
+
+export async function getUser() {
+    const cbo_short_session = cookies().get('cbo_short_session')?.value;
+    if (!cbo_short_session) {
+        redirect("/")
+    }
+    try {
+        const user = await sdk.sessions().validateToken(cbo_short_session);
+        return { user: { name: user.fullName, userID: user.userId } };
+    } catch (e) {
+        // session cookie was invalid
+        redirect("/")
+    }
+}
+```
+
+<Note>
+    Find more info on the [Corbdo Node.js SDK](/backend-integration/node-js-sdk) in the backend integration section.
+</Note>

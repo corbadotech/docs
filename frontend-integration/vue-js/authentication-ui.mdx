@@ -1,0 +1,53 @@
+---
+title: "Authentication UI Component"
+description: "Learn how to integrate Corbado Authentication into your Vue.js application."
+---
+
+![Vue.js Authentication UI](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
+
+<Warning>
+    Before we can begin to render the AuthenticationUI, the `Corbado.load` call has to resolve.
+    Find more [here](/frontend-integration/vue-js).
+</Warning>
+
+## Authentication UI
+
+The Authentication UI allows the user to log in or register with Corbado.
+The UI is rendered by using the `Corbado.mountAuthUI` method.
+Once the user is logged in, the `onLoggedIn` callback is executed.
+
+```html Auth.vue
+<script setup lang="ts">
+import Corbado from '@corbado/web-js'
+import { inject, type Ref, ref, watchEffect } from 'vue'
+
+// Inject the global state
+const isCorbadoLoaded = inject('isCorbadoLoaded') as Ref<boolean>
+const authElement = ref<HTMLDivElement>()
+
+watchEffect(() => {
+    if (isCorbadoLoaded.value && authElement.value) {
+        // mount auth UI as soon as Corbado is loaded
+        Corbado.mountAuthUI(authElement.value, {
+            onLoggedIn: () => {
+                console.log('User logged in')
+                // perform any action after the user logs in (e.g. redirect to another page)
+            }
+        })
+    }
+})
+</script>
+
+<template>
+    <div ref="authElement"></div>
+</template>
+```
+
+<Note>
+    You customize the appearance of the Authentication UI in the `CorbadoProvider`.
+    Find more info [here](/ui-components/corbadoprovider).
+</Note>
+
+## Next
+
+Let your users manage their passkeys with the [PasskeyList](/frontend-integration/vue-js/passkeylist).

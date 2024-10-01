@@ -1,0 +1,67 @@
+---
+title: "Sign-up"
+description: "The Sign-up component offers users the possibility to create a new account."
+---
+
+
+![Sign-up Component](/images/frontend-integration/ui-components/signup/signup-component-dark.webp)
+
+## Introduction
+
+This component handles the user sign-up process. It collects user authentication information, allows users to set up a passkey, and handles fallback scenarios.
+
+Instructions on configuring the information collected during the sign-up process and managing fallback options can be found in the [User Flow Configuration](/overview/configuration/user-flow-configuration).
+
+
+## Example
+<CodeGroup>
+
+```tsx React
+import { SignUp } from '@corbado/react';
+
+export const SignUpPage = () => {
+  const navigate = useNavigate();
+
+  const onSignedUp = () => {
+    navigate('/');
+  };
+
+  const navigateToLogin = () => {
+    navigate('/login');
+  };
+
+  return (
+    <SignUp
+      onSignedUp={onSignedUp}
+      navigateToLogin={navigateToLogin}
+    />
+  );
+};
+```
+
+```html VanillaJS
+<script>
+  const authElement = document.getElementById('signup');
+  Corbado.mountSignUpUI(authElement!, {
+    onSignedUp: () => {
+      window.location.href = '/';
+    },
+    navigateToLogin: () => {
+      window.location.href = '/login';
+    }
+  });
+</script>
+
+<div id="signup"></div>
+```
+
+</CodeGroup>
+
+## API reference
+
+| Name            | Type              | Description                                                                                                                                                                                                                                                                                             |
+| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| onSignedUp      | callback function | This callback function is called after successful sign-up. You can use it to navigate the user to a specific page inside your application (e.g. `/home`).                                                                                                                                                 |
+| navigateToLogin | callback function | The `Signup` component contains a clickable link that allows users to navigate to the page where they can log in. The `navigateToLogin` callback will be called whenever a user clicks that link. You should then navigate the user to the part in your application that shows the `Login` component. |
+
+<Note> This component requires the `CorbadoProvider` component. Most configuration settings will be applied there, so make sure to check out the available settings of the [Corbado Provider](/ui-components/corbadoprovider). </Note>
