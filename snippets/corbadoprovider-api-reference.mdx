@@ -1,56 +1,8 @@
----
-title: "CorbadoProvider"
-description: "The CorbadoProvider component provides global configuration for all your Corbado UI Components."
-sidebarTitle: "Setup"
----
-
-## CorbadoProvider
-
-This component is **required** for integrating any other UI Component (e.g., CorbadoAuth, PasskeyList, etc.). Unlike other components, it exclusively handles global configuration for all other UI components without rendering any UI elements.
-
-The `CorbadoProvider` component is defined
-- in **React** as `<CorbadoProvider />` 
-- in **VanillaJS and for other JS frameworks** as `Corbado.load()`
-
-## Example
-
-Find here an example how to implement the `CorbadoProvider` in your application.
-
-<CodeGroup>
-
-```tsx React
-import { CorbadoProvider } from '@corbado/react';
-import { RouterProvider } from 'react-router-dom';
-
-const App = () => {
-  return (
-    <CorbadoProvider
-        projectId="pro-XXX"
-        /*Add here further optional configurations*/
-    >
-      <RouteProvider />
-    </CorbadoProvider>
-  );
-}
-```
-
-```html VanillaJS
-<script type="module">
-  Corbado.load({
-    projectId: "pro-XXX",
-    /*Add here further optional configurations*/
-  });
-</script>
-```
-
-</CodeGroup>
-
 
 
 ## API reference
-Here are the API references for the CorbadoProvider in both **React** and **VanillaJS**.
-
-
+Most configuration is done in the **{isWebJS ? "Corbado.load" : "CorbadoProvider"}**{isWebJS && " function"}.
+You can see an exhaustive list of options below.
 
 | Name                  | Type              | Default                                                                                | Description                                                                                                                                                                                                                                           |
 | --------------------- | ---------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

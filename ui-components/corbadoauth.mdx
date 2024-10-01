@@ -1,45 +1,17 @@
 ---
-title: "CorbadoAuth"
+title: "CorbadoAuth Component"
 description: "The CorbadoAuth component allows users to create a new account or login."
 ---
+
+import Frontend from '/snippets/integration-guides/frontend.mdx';
+import Fullstack from '/snippets/integration-guides/fullstack.mdx';
+import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
 
 ![CorbadoAuth Component](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
 
 ## Introduction
 
 `CorbadoAuth` serves as a comprehensive solution for user authentication, combining both account creation and login functionalities into a single, streamlined interface.
-
-## Example
-
-<CodeGroup>
-
-```tsx React
-import { CorbadoAuth } from "@corbado/react";
-
-const AuthPage = () => {
-    const onLoggedIn = () => {
-        //post login actions can be performed here.
-    };
-
-    return <CorbadoAuth onLoggedIn={onLoggedIn} />;
-};
-```
-
-```html VanillaJS
-<script>
-    const authElement = document.getElementById("corbado-auth"); //Element where you want to render CorbadoAuth UI
-
-    Corbado.mountAuthUI(authElement, {
-        onLoggedIn: () => {
-            //post login actions can be performed here.
-        }
-    });
-</script>
-
-<div id="corbado-auth"></div>
-```
-
-</CodeGroup>
 
 ## Seamless Navigation During Authentication
 
@@ -62,8 +34,15 @@ This navigation strategy enhances user experience by providing a seamless intera
 | handleNavigationEvents | boolean           | If enabled, the user can navigate between screens during the authentication process. When disabled, the user will leave the authentication process immediately when he navigates back or refresh page.                    |
 
 <Note>
-    {" "}
     This component requires the `CorbadoProvider` component. Most configuration settings
     will be applied there so make sure to check out the available settings of the
-    [Corbado Provider](/ui-components/corbadoprovider).{" "}
+    `Corbado Provider` (see your framework's integration guide for more info).
 </Note>
+
+<StylingTranslationCards />
+
+## Integration Guides
+
+<Fullstack />
+
+<Frontend />
