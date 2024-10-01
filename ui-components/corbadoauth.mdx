@@ -45,9 +45,9 @@ const AuthPage = () => {
 
 The `CorbadoAuth` component employs hash-based URLs to ensure a seamless user experience during the authentication process. Here's how it benefits users:
 
--   **Progress Preservation:** If a user refreshes the page during signup, their progress is maintained. The component automatically resumes the authentication flow at the correct step.
--   **Flexible Back Navigation:** Users can easily navigate back to previous steps in the signup process to review or modify information without having to restart from the beginning.
--   **Direct Screen Access:** Users can directly access the signup or login screens using `#signup-init` (or `#register`) and `#login-init` (or `#login`) in the URL.
+-   **Progress Preservation:** If a user refreshes the page during sign-up, their progress is maintained. The component automatically resumes the authentication flow at the correct step.
+-   **Flexible Back Navigation:** Users can easily navigate back to previous steps in the sign-up process to review or modify information without having to restart from the beginning.
+-   **Direct Screen Access:** Users can directly access the sign-up or login screens using `#signup-init` (or `#register`) and `#login-init` (or `#login`) in the URL.
 -   **Customization:** Developers can disable hash-based navigation if needed by setting the `handleNavigationEvents` option to false.
 
 This navigation strategy enhances user experience by providing a seamless interaction flow and reducing the frustration typically associated with losing session data during authentication processes.
@@ -58,7 +58,7 @@ This navigation strategy enhances user experience by providing a seamless intera
 
 | Name                   | Type              | Description                                                                                                                                                                                                               |
 | ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| onLoggedIn             | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a signUp). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
+| onLoggedIn             | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a sign-up). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
 | handleNavigationEvents | boolean           | If enabled, the user can navigate between screens during the authentication process. When disabled, the user will leave the authentication process immediately when he navigates back or refresh page.                    |
 
 <Note>
