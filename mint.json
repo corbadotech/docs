@@ -93,7 +93,6 @@
             "group": "UI Components",
             "pages": [
                 "ui-components",
-                "ui-components/corbadoprovider",
                 "ui-components/corbadoauth",
                 "ui-components/passkeylist",
                 {
@@ -107,60 +106,13 @@
             ]
         },
         {
-            "group": "Frontend Integration",
-            "pages": [
-                {
-                    "group": "React",
-                    "pages": [
-                        "frontend-integration/react",
-                        "frontend-integration/react/authentication-ui",
-                        "frontend-integration/react/passkeylist",
-                        "frontend-integration/react/authentication-state",
-                        "frontend-integration/react/link-to-react-blog"
-                    ]
-                },
-                {
-                    "group": "VanillaJS",
-                    "pages": [
-                        "frontend-integration/vanilla-js",
-                        "frontend-integration/vanilla-js/authentication-ui",
-                        "frontend-integration/vanilla-js/passkeylist",
-                        "frontend-integration/vanilla-js/authentication-state",
-                        "frontend-integration/vanilla-js/link-to-vanillajs-blog"
-                    ]
-                },
-                "frontend-integration/flutter",
-                {
-                    "group": "Vue.js",
-                    "pages": [
-                        "frontend-integration/vue-js",
-                        "frontend-integration/vue-js/authentication-ui",
-                        "frontend-integration/vue-js/passkeylist",
-                        "frontend-integration/vue-js/authentication-state",
-                        "frontend-integration/vue-js/link-to-vuejs-blog"
-                    ]
-                },
-                {
-                    "group": "Angular",
-                    "pages": [
-                        "frontend-integration/angular",
-                        "frontend-integration/angular/authentication-ui",
-                        "frontend-integration/angular/passkeylist",
-                        "frontend-integration/angular/authentication-state",
-                        "frontend-integration/angular/link-to-angular-blog"
-                    ]
-                },
-                "frontend-integration/link-to-api-ref"
-            ]
-        },
-        {
             "group": "Fullstack Integration",
             "pages": [
                 {
                     "group": "Next.js",
                     "pages": [
                         "fullstack-integration/next-js",
-                        "fullstack-integration/next-js/authentication-ui",
+                        "fullstack-integration/next-js/corbadoauth",
                         "fullstack-integration/next-js/passkeylist",
                         "fullstack-integration/next-js/authentication-state-client",
                         "fullstack-integration/next-js/authentication-state-server",
@@ -172,7 +124,7 @@
                     "group": "Svelte",
                     "pages": [
                         "fullstack-integration/svelte",
-                        "fullstack-integration/svelte/authentication-ui",
+                        "fullstack-integration/svelte/corbadoauth",
                         "fullstack-integration/svelte/passkeylist",
                         "fullstack-integration/svelte/authentication-state-client",
                         "fullstack-integration/svelte/authentication-state-server",
@@ -183,13 +135,60 @@
                     "group": "Nuxt.js",
                     "pages": [
                         "fullstack-integration/nuxt-js",
-                        "fullstack-integration/nuxt-js/authentication-ui",
+                        "fullstack-integration/nuxt-js/corbadoauth",
                         "fullstack-integration/nuxt-js/passkeylist",
                         "fullstack-integration/nuxt-js/authentication-state-client",
                         "fullstack-integration/nuxt-js/authentication-state-server",
                         "fullstack-integration/nuxt-js/link-to-nuxtjs-blog"
                     ]
                 }
+            ]
+        },
+        {
+            "group": "Frontend Integration",
+            "pages": [
+                {
+                    "group": "React",
+                    "pages": [
+                        "frontend-integration/react",
+                        "frontend-integration/react/corbadoauth",
+                        "frontend-integration/react/passkeylist",
+                        "frontend-integration/react/authentication-state",
+                        "frontend-integration/react/link-to-react-blog"
+                    ]
+                },
+                {
+                    "group": "VanillaJS",
+                    "pages": [
+                        "frontend-integration/vanilla-js",
+                        "frontend-integration/vanilla-js/corbadoauth",
+                        "frontend-integration/vanilla-js/passkeylist",
+                        "frontend-integration/vanilla-js/authentication-state",
+                        "frontend-integration/vanilla-js/link-to-vanillajs-blog"
+                    ]
+                },
+                "frontend-integration/flutter",
+                {
+                    "group": "Vue.js",
+                    "pages": [
+                        "frontend-integration/vue-js",
+                        "frontend-integration/vue-js/corbadoauth",
+                        "frontend-integration/vue-js/passkeylist",
+                        "frontend-integration/vue-js/authentication-state",
+                        "frontend-integration/vue-js/link-to-vuejs-blog"
+                    ]
+                },
+                {
+                    "group": "Angular",
+                    "pages": [
+                        "frontend-integration/angular",
+                        "frontend-integration/angular/corbadoauth",
+                        "frontend-integration/angular/passkeylist",
+                        "frontend-integration/angular/authentication-state",
+                        "frontend-integration/angular/link-to-angular-blog"
+                    ]
+                },
+                "frontend-integration/link-to-api-ref"
             ]
         },
         {
@@ -327,7 +326,7 @@
         },
         {
             "source": "/frontend-integration/ui-components/corbadoprovider",
-            "destination": "/ui-components/corbadoprovider"
+            "destination": "/frontend-integration/react"
         },
         {
             "source": "/frontend-integration/ui-components/corbadoauth",

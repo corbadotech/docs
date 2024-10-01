@@ -1,7 +1,11 @@
 ---
-title: "PasskeyList"
+title: "PasskeyList Component"
 description: "PasskeyList lists all available passkeys from a user and allows to manage the passkeys."
 ---
+
+import Frontend from '/snippets/integration-guides/frontend.mdx';
+import Fullstack from '/snippets/integration-guides/fullstack.mdx';
+import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
 
 ![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
 
@@ -11,38 +15,12 @@ The `PasskeyList` component lists all passkeys that a user has created and that 
 
 The `PasskeyList` component allows an application to add only one passkey per device.
 
-## Example
-
-<CodeGroup>
-
-```tsx Typescript
-import { PasskeyList } from "@corbado/react";
-
-const PasskeyPage = () => {
-    return <PasskeyList />;
-};
-```
-
-```html VanillaJS
-<script>
-    const passkeyListElement = document.getElementById("passkey-list"); //Element where you want to render PasskeyList UI
-
-    //Check if the user is authenticated
-    if (Corbado.isAuthenticated) {
-        Corbado.mountPasskeyListUI(passkeyListElement);
-    }
-</script>
-
-<div id="passkey-list"></div>
-```
-
-</CodeGroup>
-
 You can embed this component in the user's profile page and thus give them control over their passkeys.
 
-<Note>
-    {" "}
-    This component requires the `CorbadoProvider` component. Most configuration settings
-    will be applied there so make sure to check out the available settings of the
-    [Corbado Provider](/ui-components/corbadoprovider).{" "}
-</Note>
+<StylingTranslationCards />
+
+## Integration Guides
+
+<Fullstack />
+
+<Frontend />
