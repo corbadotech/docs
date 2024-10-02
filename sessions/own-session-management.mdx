@@ -4,149 +4,37 @@ description: "Learn how to use your own session management while using Corbado's
 ---
 
 <Warning>
-The following documentation provides a detailed explanation how Corbado can be used with your own session management. If you build a new application without existing users, we strongly recommend to use [Corbado's session management](./overview), as this will save you a lot of implementation time and is a proven solution.
+The following documentation provides a detailed explanation how Corbado can be used with your own session management. If you build a new application without existing users, we strongly recommend to use [Corbado's session management](/sessions/overview), as this will save you a lot of implementation time and is a proven solution.
 
-To **use your own session management**, you have to **switch the toggle** in the Corbado developer panel ["Settings" - "Sessions"](https://app.corbado.com/app/settings/sessions). Otherwise, your [Redirect URL](/helpful-guides/url-overview#3-redirect-url) will not receive the `corbadoAuthToken`.&#x20;
-
+To **use your own session management**, you have to **switch the toggle** in the Corbado developer panel [Settings > Sessions](https://app.corbado.com/settings/sessions).
 </Warning>
 
 ## Overview
 
-![Own Session Management](/images/sessions/own-session-management/own-session-management.webp)
+In the following, we'll outline the step-by-step implementation of your own session management.
 
-## 1. Get and validate corbadoAuthToken
-
-After successful authentication, e.g. passkeys or email magic link, Corbado redirects the user to the [Redirect URL](/helpful-guides/url-overview#3-redirect-url) that you have defined in the [developer panel](https://app.corbado.com/app/settings/general/urls).&#x20;
-
-The [Redirect URL](/helpful-guides/url-overview#3-redirect-url) will be appended with a GET parameter (query string) called `corbadoAuthToken` (e.g. `https://www.acme.com/corbado?corbadoAuthToken=<tokenValue>`). This token is valid for five minutes and can only be used once.&#x20;
-
-To proceed, you need to validate this token:
-
-<Note>Create an instance of the Backend SDK (private client) first.</Note>
-
-<CodeGroup>
-
-```js Node.js (Express)
-app.get("/validateAuthToken", async (req, res) => {
-  try {
-    const corbadoAuthToken = req.query.corbadoAuthToken;
-    const request = {
-      token: corbadoAuthToken,
-      clientInfo: {
-        remoteAddress: "127.0.0.1",
-        userAgent: "Corbado Node.js SDK Example",
-      },
-    };
-
-    // Returns response on valid auth token, throws exception on invalid auth token
-    const response = await sdk.authTokens().validate(request);
-
-    // ...
-  } catch (error) {
-    res.send(error);
-  }
-});
-```
-
-```php PHP
-try {
-  $corbadoAuthToken = $_GET['corbadoAuthToken'] ?? '';
-  $remoteAddress = $_SERVER['REMOTE_ADDR'] ?? '';
-  $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-
-  $request = new Corbado\Generated\Model\AuthTokenValidateReq();
-  $request->setToken($corbadoAuthToken);
-  $request->setClientInfo(Corbado\SDK::createClientInfo($remoteAddress, $userAgent));
-
-  // Returns $response on valid auth token, throws exception on invalid auth token
-  $response = $sdk->authTokens()->validate($request);
-
-  // ...
-
-} catch (Throwable $e) {
-  // Handle exception (see https://github.com/corbado/corbado-php?tab=readme-ov-file#error-handling for more details)
-  echo $e->getMessage();
-}
-```
-
-```go Go (Stdlib)
-http.HandleFunc("/validateAuthToken", func(w http.ResponseWriter, r *http.Request) {
-	corbadoAuthToken := r.URL.Query().Get("corbadoAuthToken")
-
-	request := api.AuthTokenValidateReq{
-		Token: corbadoAuthToken,
-		ClientInfo: common.ClientInfo{
-			RemoteAddress: "127.0.0.1",
-			UserAgent:     "Corbado Go SDK Example",
-		},
-	}
-
-	response, err := sdk.AuthTokens().Validate(context.Background(), request)
-	if err != nil {
-		if serverErr := corbado.AsServerError(err); serverErr != nil {
-			fmt.Fprintf(w, serverErr.Error())
-			return
-		} else {
-			panic(err)
-		}
-	}
-
-	// ...
-})
-```
-
-</CodeGroup>
-
-<Note>
-There should be **no origin header** set for the API call from your backend to Corbado's AuthTokenValidate Backend API endpoint.
-
-**clientInfo** extracts the information from an HTTP request object - specifically, the client's IP address (remoteAddress) and browser/OS details (userAgent).
-
-The client's IP can is obtained by checking the 'x-forwarded-for' header first - this is common when clients connect via an HTTP proxy or load balancer. If present, it extracts the first IP from either an array or string format of the header. If the 'x-forwarded-for' header is absent, the function resorts to the IP address from the remote socket:
-
-```json
-{
-  "remoteAddress": "string",
-  "userAgent": "string"
-}
-```
-
-</Note>
-
-## 2. Get user data and generate own session
-
-Next you can get user data from the response and create a session:
-
-<CodeGroup>
-
-```js Node.js (Express)
-// ...
-
-// Generate own session (e.g. creating a JWT with user ID from
-// response.data.userID and storing it as cookie)
-
-res.redirect("/profile");
-```
-
-```go Go (Stdlib)
-// ...
-
-// Generate own session (e.g. creating a JWT with user ID from
-// response.data.userID and storing it as cookie)
-
-http.Redirect(w, r, "/profile", http.StatusFound)
-```
-
-```php PHP
-// ...
-
-session_start();
-$_SESSION['userID'] = $response->getData()->getUserId();
-
-header('Location: /');
-exit(0);
-```
-
-</CodeGroup>
-
-
+<Steps>
+    <Step title="User logs in to your application">
+        The user logs into your application using our [UI Components](/ui-components).
+    </Step>
+    <Step title="Corbado backend creates JWT token">
+        Upon successful login, the Corbado [Frontend API](/overview/corbado-api-structure/frontend-api) responds with a
+        [short-term session JWT](/sessions/overview#short-term-session-represented-as-jwt).
+    </Step>
+    <Step title="Request a session from your application">
+        After receiving the **Corbado short-term session**, the user sends a request to **your backend**
+        including the **Corbado short-term session** either as a cookie or in an authorization header.
+    </Step>
+    <Step title="Validate the Corbado short-term session in your backend">
+        **Your backend** must verify the **Corbado short-term** session to be authentic. This can be done either by using
+        a dedicated [Corbado backend SDK](/overview/welcome#backend-integration) or manually using our [JWKS](https://apireference.cloud.corbado.io/frontendapi-v1/#tag/Sessions/operation/WellKnownJWKSList).
+    </Step>
+    <Step title="Create your own session">
+        After confirming that the **Corbado short-term** session is authentic, so you can create **your own session** in the backend.
+        Then, send your session to the user.
+    </Step>
+    <Step title="Store and use your own session">
+        After the user receives your session, he can store it in any way you prefer (e.g. cookie or localstorage).
+        Moving forward, it's up to you how to handle your own session and what properties it should have.
+    </Step>
+</Steps>
