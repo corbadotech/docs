@@ -228,7 +228,6 @@
                 {
                     "group": "Other",
                     "pages": [
-                        "sessions/other",
                         "sessions/other/refresh",
                         "sessions/other/revocation",
                         "sessions/other/oauth2-comparison",
