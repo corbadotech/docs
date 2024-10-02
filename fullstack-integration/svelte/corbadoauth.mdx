@@ -8,11 +8,11 @@ import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
 ![Svelte CorbadoAuth](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
 
 <Warning>
-    Before we can begin to render the Corbado Authentication UI, the `Corbado.load` call has to resolve.
+    Before we can begin to render the Corbado Authentication UI, the `Corbado.load()` call has to resolve.
     Find more [here](/fullstack-integration/svelte).
 </Warning>
 
-## Authentication UI
+## Integration
 
 The Authentication UI allows the user to log in or register with Corbado.
 The UI is rendered by using the `Corbado.mountAuthUI` method.
@@ -36,11 +36,6 @@ Once the user is logged in, the `onLoggedIn` callback is executed.
 
 <div bind:this={authElement}></div>
 ```
-
-<Note>
-    You customize the appearance of the Authentication UI in the `Corbado.load` function.
-    Find more info [here](/fullstack-integration/svelte).
-</Note>
 
 <StylingTranslationCards />
 

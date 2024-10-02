@@ -8,11 +8,11 @@ import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
 ![React CorbadoAuth](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
 
 <Warning>
-    Before we can begin to render the AuthenticationUI, the `CorbadoProvider` has to be integrated.
+    Before we can begin to render the Corbado Authentication UI, the `CorbadoProvider` has to be integrated.
     Find more [here](/frontend-integration/react).
 </Warning>
 
-## Authentication UI
+## Integration
 
 The Authentication UI allows the user to log in or register with Corbado.
 Once the user is logged in, the `onLoggedIn` callback is executed.
@@ -29,11 +29,6 @@ export default function Auth() {
     return <CorbadoAuth onLoggedIn={onLoggedIn} />;
 }
 ```
-
-<Note>
-    You customize the appearance of the Authentication UI in the `CorbadoProvider`.
-    Find more info [here](/frontend-integration/react).
-</Note>
 
 <StylingTranslationCards />
 

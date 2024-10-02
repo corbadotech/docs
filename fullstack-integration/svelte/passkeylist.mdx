@@ -9,11 +9,11 @@ import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
 ![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
 
 <Warning>
-    Before we can begin to render the PasskeyList, the `Corbado.load` call has to resolve.
+    Before we can begin to render the Corbado PasskeyList, the `Corbado.load()` call has to resolve.
     Find more [here](/fullstack-integration/svelte).
 </Warning>
 
-## Passkeylist
+## Integration
 
 The Passkeylist allows the user to view and manage their passkeys.
 He can delete existing passkeys or create new ones.
@@ -34,11 +34,6 @@ that are no longer needed.
 
 <div bind:this={passkeyListElement}></div>
 ```
-
-<Note>
-    You customize the appearance of the PasskeyList UI in the `Corbado.load` function.
-    Find more info [here](/fullstack-integration/svelte).
-</Note>
 
 <StylingTranslationCards />
 

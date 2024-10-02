@@ -12,7 +12,7 @@ import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
     Find more [here](/fullstack-integration/next-js).
 </Warning>
 
-## Authentication UI
+## Integration
 
 The Authentication UI allows the user to log in or register with Corbado.
 Once the user is logged in, the `onLoggedIn` callback is executed.
@@ -34,11 +34,6 @@ export default function Page() {
     return <CorbadoAuth onLoggedIn={onLoggedIn} />;
 }
 ```
-
-<Note>
-    You customize the appearance of the Authentication UI in the `CorbadoProvider`.
-    Find more info [here](/fullstack-integration/next-js).
-</Note>
 
 <StylingTranslationCards />
 

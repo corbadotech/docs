@@ -4,6 +4,8 @@ description: "Discover Corbado's flexible UI components that can be embedded wit
 sidebarTitle: "Overview"
 ---
 
+import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
+
 ## Overview
 
 Corbado helps you to add a full passkey authentication process to your application. As all of this involves a lot of complex UI, Corbado provides you with prebuilt and configurable **UI components**.
@@ -23,6 +25,6 @@ Corbado provides the UI components in two different packages:
 | Component                                         | React                    | VanillaJS                          | Description                                                                                                                                                                                                                                                 |
 |---------------------------------------------------|--------------------------|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [CorbadoAuth](/ui-components/corbadoauth)         | ```<CorbadoAuth/>```     | ```Corbado.mountAuthUI()```        | This component serves as a comprehensive solution for user authentication, combining both account creation and login functionalities into a single, streamlined interface.                                                                                  |
-| [PasskeyList](/ui-components/corbadoauth)         | ```<PasskeyList/>```     | ```Corbado.mountPasskeyListUI()``` | Component displays and manages all created passkeys. Users can view, create, and delete passkeys directly from this interface, enhancing device and account security management.                                                                            |
+| [PasskeyList](/ui-components/passkeylist)         | ```<PasskeyList/>```     | ```Corbado.mountPasskeyListUI()``` | Component displays and manages all created passkeys. Users can view, create, and delete passkeys directly from this interface, enhancing device and account security management.                                                                            |
 
-For all UI components, you can customize stylings and translations. Find detailed information in the [Customization](/ui-components/configuration) page.
+<StylingTranslationCards />

@@ -8,11 +8,11 @@ import StylingTranslationCards from "/snippets/styling-translations-cards.mdx";
 ![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
 
 <Warning>
-    Before we can begin to render the AuthenticationUI, the `Corbado.load` call has to resolve.
+    Before we can begin to render the Corbado PasskeyList, the `Corbado.load()` call has to resolve.
     Find more [here](/fullstack-integration/nuxt-js).
 </Warning>
 
-## Passkeylist
+## Integration
 
 The Passkeylist allows the user to view and manage their passkeys.
 He can delete existing passkeys or create new ones.
@@ -38,11 +38,6 @@ watchEffect(() => {
     <div ref="passkeyListElement"></div>
 </template>
 ```
-
-<Note>
-    You customize the appearance of the PasskeyList UI in the `Corbado.load` function.
-    Find more info [here](/fullstack-integration/nuxt-js).
-</Note>
 
 <StylingTranslationCards />
 
