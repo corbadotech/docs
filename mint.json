@@ -349,6 +349,34 @@
         {
             "source": "/frontend-integration/nuxt-js/:slug*",
             "destination": "/corbado-complete/fullstack-integration/nuxt-js/:slug*"
+        },
+        {
+            "source": "/analytics/:slug*",
+            "destination": "/corbado-complete/analytics/:slug*"
+        },
+        {
+            "source": "/backend-integration/:slug*",
+            "destination": "/corbado-complete/backend-integration/:slug*"
+        },
+        {
+            "source": "/frontend-integration/:slug*",
+            "destination": "/corbado-complete/frontend-integration/:slug*"
+        },
+        {
+            "source": "/fullstack-integration/:slug*",
+            "destination": "/corbado-complete/fullstack-integration/:slug*"
+        },
+        {
+            "source": "/overview/:slug*",
+            "destination": "/corbado-complete/overview/:slug*"
+        },
+        {
+            "source": "/sessions/:slug*",
+            "destination": "/corbado-complete/sessions/:slug*"
+        },
+        {
+            "source": "/ui-components/:slug*",
+            "destination": "/corbado-complete/ui-components/:slug*"
         }
     ]
 }
