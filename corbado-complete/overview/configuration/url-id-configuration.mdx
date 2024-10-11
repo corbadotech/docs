@@ -1,0 +1,53 @@
+---
+title: "URL & ID Configuration"
+description: "In the developer panel, you can define configurations regarding URLs & IDs."
+---
+
+## Introduction
+
+To get passkeys smoothly implemented, you need to adapt the following settings in the Corbado developer panel (not in your code):
+
+1. [Relying party ID](#1-relying-party-id)
+2. [Native app settings ](#2-native-app-settings)(only for native Android or iOS apps)
+3. [Authorized origins](#3-authorized-origins) (for production deployments)
+4. [CNAME](#4-cname) (for production deployments)
+
+For each of these settings, we provide recommendations and examples in the [URL Overview](/corbado-complete/helpful-guides/url-overview) site.
+
+## 1. Relying party ID
+
+The relying party ID is a crucial setting when working with passkeys and ensures that the passkey can only be used on the intended domain.
+
+Please see also our [Relying Party ID page](/other/helpful-guides/passkeys/relying-party-id) to get more details or find recommendations and examples in the [URL Overview page](/corbado-complete/helpful-guides/url-overview#7-relying-party-id).
+
+The relying party ID an be defined in [Settings > General > URLs](https://app.corbado.com/settings/general?tab=URLs).
+
+![Relying Party ID](/images/overview/signup/passkey-configuration/relying-party-id.webp)
+
+## 2. Native app settings
+
+If you want to integrate Corbado with your native Android or iOS app, you have to register your native app here.
+
+Native app settings can be defined in [Settings > Native apps](https://app.corbado.com/settings/native-apps).
+
+![Native App Settings](/images/overview/signup/passkey-configuration/native-app-settings.webp)
+
+## 3. Authorized origins
+
+The authorized origin is the full URL (incl. protocol & port, no path) that the user sees in the browser and from where JavaScript calls to Corbado are made.
+
+Please see also our [URL overview for authorized origins](/corbado-complete/helpful-guides/url-overview#1-authorized-origin) to get more details, examples and recommendations.
+
+Authorized origins can be defined [Settings > General > Authorized origins](https://app.corbado.com/settings/general?tab=Authorized+origins).
+
+![Authorized Origins Settings](/images/overview/signup/passkey-configuration/authorized-origins-settings.webp)
+
+## 4. CNAME
+
+Define the CNAME DNS address (no protocol, port or path) that can be used instead of Corbado's default Frontend API URL. The CNAME needs to point to `<project ID>.frontendapi.cloud.corbado.io`.
+
+Please see also our [URL overview for CNAME](/corbado-complete/helpful-guides/url-overview#5-cname) to get more details, examples and recommendations.
+
+The CNAME can be defined here [Setting > General > Domains](https://app.corbado.com/settings/general?tab=Domains)
+
+![CName Settings](/images/overview/signup/passkey-configuration/cname-settings.webp)

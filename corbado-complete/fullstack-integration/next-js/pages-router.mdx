@@ -1,0 +1,58 @@
+---
+title: "Pages Router"
+description: "Learn how to integrate Corbado into your Next.js pages router application."
+---
+
+<Note>
+    Corbado cannot be rendered on the server-side when using the pages router.
+    This page covers how you can integrate Corbado using lazy loading through
+    [next/dynamic](https://nextjs.org/docs/pages/building-your-application/optimizing/lazy-loading).
+</Note>
+
+## How to lazy load Corbado
+
+Lazy loading means our components will only be loaded once they are needed,
+after the initial page load. In general, this improves performance.
+
+But it also prevents our components from being rendered on the server-side, which is
+currently only possible in the Next.js app router.
+
+First create, your [authentication component](/corbado-complete/fullstack-integration/next-js/corbadoauth)
+as the default export of a separate file.
+This may look something like this:
+
+```tsx
+import { CorbadoAuth } from "@corbado/react";
+import { useRouter } from "next/navigation";
+
+export default function Authentication() {
+    const router = useRouter();
+
+    const onLoggedIn = () => {
+        //post login actions can be performed here.
+        router.push("/profile");
+    };
+
+    return <CorbadoAuth onLoggedIn={onLoggedIn} />;
+}
+```
+
+You can now achieve lazy loading by importing your component using [next/dynamic](https://nextjs.org/docs/pages/building-your-application/optimizing/lazy-loading):
+
+```tsx
+import dynamic from "next/dynamic";
+const Auth = dynamic(() => import("./_components/auth"), {ssr: false});
+
+export default function Home() {
+    return (
+        <Auth />
+    );
+}
+
+```
+
+<Note>
+    You have to apply this pattern to every component that uses either Corbado components or hooks.
+</Note>
+
+

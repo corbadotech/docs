@@ -1,0 +1,69 @@
+---
+title: "Server-side Authentication State"
+description: "Learn how to access and manage the user authentication state on the server-side in your Nuxt.js application."
+---
+
+## Prerequisites
+
+Install the Corbado Node.js SDK:
+
+```bash
+npm install @corbado/node-sdk
+```
+
+[Generate an API](https://app.corbado.com/settings/credentials?tab=API+Secrets) secret in the developer panel
+to allow the SDK to access the [Corbado BackendAPI](/corbado-complete/overview/corbado-api-structure/backend-api).
+
+## Example
+
+To gain access to authentication state on the server-side we utilize the [Corbdo Node.js SDK](/corbado-complete/backend-integration/node-js-sdk).
+
+We might use it in a server-side event handler function to verify the user is authenticated and retrieve some data in this case:
+
+<Warning>
+    This example assumes you are using the `setShortSessionCookie` option in the `Corbado.load()` function,
+    so that a cookie with the users shortSession JWT will be set on login.
+    Find more info [here](/corbado-complete/fullstack-integration/nuxt-js).
+</Warning>
+
+```ts server/api/user-info.ts
+import { SDK, Config } from "@corbado/node-sdk";
+import { defineEventHandler, H3Event, parseCookies } from "h3";
+
+const projcetId = "pro-XXX";
+
+const config = new Config(
+    projcetId,
+    "corbado1_XXX",
+    `https://${projcetId}.frontendapi.corbado.io`,
+    "https://backendapi.cloud.corbado.io",
+);
+const sdk = new SDK(config);
+
+export default defineEventHandler(async (event: H3Event) => {
+    const cookies = parseCookies(event);
+    const shortSession = cookies.cbo_short_session;
+
+    if (!shortSession) {
+        return {
+            user: undefined,
+        };
+    }
+
+    try {
+        const user = await sdk.sessions().validateToken(shortSession);
+        return {
+            id: user.userId,
+        };
+    } catch (e) {
+        console.log(e)
+        return {
+            id: undefined,
+        };
+    }
+});
+```
+
+<Note>
+    Find more info on the [Corbdo Node.js SDK](/corbado-complete/backend-integration/node-js-sdk) in the backend integration section.
+</Note>

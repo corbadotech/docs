@@ -1,0 +1,46 @@
+---
+title: "PasskeyList Component"
+description: "Learn how to integrate the Corbado Passkeylist into your Vue.js application."
+---
+
+import StylingTranslationCards from "/snippets/corbado-complete/styling-translations-cards.mdx";
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+<Warning>
+    Before we can begin to render the Corbado PasskeyList, the `Corbado.load()` call has to resolve.
+    Find more [here](/corbado-complete/frontend-integration/vue-js).
+</Warning>
+
+## Integration
+
+The Passkeylist allows the user to view and manage their passkeys.
+He can delete existing passkeys or create new ones.
+This can be useful if the user wants to have individual passkeys for multiple devices, or erase ones
+that are no longer needed.
+
+```html PasskeyList.vue
+<script setup lang="ts">
+import { inject, type Ref, ref, watchEffect } from 'vue'
+import Corbado from '@corbado/web-js'
+
+const isCorbadoLoaded = inject('isCorbadoLoaded') as Ref<boolean>
+const passkeyListElement = ref<HTMLDivElement>()
+
+watchEffect(() => {
+    if (isCorbadoLoaded.value && passkeyListElement.value) {
+        Corbado.mountPasskeyListUI(passkeyListElement.value)
+    }
+})
+</script>
+
+<template>
+    <div ref="passkeyListElement"></div>
+</template>
+```
+
+<StylingTranslationCards />
+
+## Next
+
+[Access user information](/corbado-complete/frontend-integration/vue-js/authentication-state) through the `Corbado` object.

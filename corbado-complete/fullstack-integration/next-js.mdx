@@ -1,0 +1,79 @@
+---
+title: "Setup"
+description: "Learn how to add the Corbado React package to your Next.js application."
+---
+
+import Installation from "/snippets/corbado-complete/react-prerequisites.mdx";
+import CorbadoProviderReference from "/snippets/corbado-complete/corbadoprovider-api-reference.mdx";
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/4XSnieeHapM"
+  title="Passkeys Next.js: How to Implement Passkeys in Next.js Apps"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+<Note>
+    The integration process is slightly different for the Next.js pages router.
+    Make sure to have a look at our [dedicated page](/corbado-complete/fullstack-integration/next-js/pages-router), if you're using the pages router.
+</Note>
+
+## Installation
+
+<Installation />
+
+## Set up CorbadoProvider
+
+Create a wrapper around the `CorbadoProvider`, to render it on the client:
+
+```tsx ProviderWrapper.tsx
+"use client";
+
+import { CorbadoProvider } from "@corbado/react";
+
+export default function ProviderWrapper({
+    children
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <CorbadoProvider projectId="your-project-id">
+            {children}
+        </CorbadoProvider>
+    );
+}
+```
+
+Now, integrate the `ProviderWrapper` into your root layout:
+
+```tsx layout.tsx
+import ProviderWrapper from "./ProviderWrapper";
+
+export default function RootLayout({
+    children
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <html lang="en">
+            <ProviderWrapper>
+                <body>{children}</body>
+            </ProviderWrapper>
+        </html>
+    );
+}
+```
+
+<CorbadoProviderReference />
+
+## Next
+
+1. Add [authentication UI components](/corbado-complete/fullstack-integration/next-js/corbadoauth) to your application.
+2. Let your users manage their passkeys with the [PasskeyList](/corbado-complete/fullstack-integration/next-js/passkeylist).
+3. Learn how you can access the users authentication state on the [client-side](/corbado-complete/fullstack-integration/next-js/authentication-state-client).
+4. Easily [access user information on the server-side](/corbado-complete/fullstack-integration/next-js/authentication-state-server)
+with the [Node.js SDK](/corbado-complete/backend-integration/node-js-sdk).
+5. If you're using the pages router, have a look at our [dedicated page](/corbado-complete/fullstack-integration/next-js/pages-router).

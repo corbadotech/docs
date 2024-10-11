@@ -1,0 +1,111 @@
+---
+title: "URL Overview"
+description: "This page provides an overview and examples for the different URL types used with Corbado."
+---
+
+Based on your application setup (e.g. does it have different URL / ports for frontend and backend) and the selected integration mode, different URLs need to be handled. See the following overview to get specific examples:
+
+1. [Authorized origin](#1-authorized-origin)
+2. [Application URL](#2-application-url)
+3. [Redirect URL](#3-redirect-url)
+4. [Preview URL](#4-preview-url)
+5. [CNAME](#5-cname)
+6. [Webhooks URL](#6-webhooks-url)
+7. [Relying Party ID](#7-relying-party-id)
+
+## 1. Authorized origin
+
+**Required: only for production**
+
+### Description
+
+The full URL (incl. protocol & port, no path) that the user sees in the browser and from where JavaScript calls to Corbado are made.
+
+It's needed to make [CORS](/other/helpful-guides/cross-origin-resource-sharing-cors) requests possible and can be
+configured in the [developer panel](https://app.corbado.com/settings/general?tab=Authorized+origins).
+
+### Example
+
+| Production                     | Development                       |
+|--------------------------------|-----------------------------------|
+| https://www.my-application.com | All origins authorized by default |
+
+## 2. Application URL
+
+**Required**
+
+### Description
+
+The location (incl. protocol, port & path) where the web component runs.
+For example, it's used to correctly redirect users in email magic links.
+
+Often, it's on the same domain like the authorized origin.
+
+| Production                           | Development                 |
+|--------------------------------------|-----------------------------|
+| https://www.my-application.com/login | http://localhost:8080/login |
+
+## 3. Redirect URL
+
+**Required: only in web component (previous)**
+
+### Description
+
+Depending on your decision to use Corbado's session management or your own session management, the Redirect URL has different purposes.
+
+In any case, the Redirect URL (incl. protocol, port & path) is the location where the user is redirected to after successful authentication.
+
+If you use Corbado's session management, the Redirect URL receives a short-term session as cookie or header.
+
+If you use your own session management, the Redirect URL is appended a `corbadoAuthToken` as GET parameter (query string).
+
+### Example
+
+| Production                                                                                                                                                                                                               | Development                                                                                                                                                                                                 |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <p>https://www.my-application.com/logged-in<br/><br/>with <code>corbadoAuthToken</code>: https://www.my-application.com/logged-in?corbadoAuthTOken= 5FClU6XEWynC4dQ2W34LGERlHYGPe8PHs9zUhxgrSbVj9FNupp5lE5z4lMoRpDlP</p> | <p>http://localhost:8080/logged-in<br/><br/>with <code>corbadoAuthToken</code>: http://localhost:8080/logged-in?corbadoAuthToken= 5FClU6XEWynC4dQ2W34LGERlHYGPe8PHs9zUhxgrSbVj9FNupp5lE5z4lMoRpDlP:8080</p> |
+
+## 4. Preview URL
+
+**Provided by Corbado**
+
+### Description
+
+The location (incl. protocl, port & path) where your preview runs (`https://<project ID>.preview.cloud.corbado.io`).
+
+## 5. CNAME
+
+**Required: only in production, when using corbado session management**
+
+### Description
+
+THE CNAME DNS address (no protocol, port or path) that can be used instead of Corbado’s default Frontend API URL.
+The CNAME needs to point to “\<Project-ID>.frontendapi.cloud.corbado.io”.
+
+### Example
+
+| Production               | Development |
+|--------------------------|-------------|
+| login.my-application.com | -           |
+
+## 6. Relying Party ID
+
+**Required: yes**
+
+### Description
+
+The Relying Party ID is the domain (no protocol, port or path) where passkeys are bound to.
+By default it will be set to `localhost`.
+Passkeys are bound to your relying party ID, meaning they can only be used on matching domains.
+Matching domains means that it's either the same or a subdomain of the Relying Party ID.&#x20;
+
+### Example
+
+| Production         | Development |
+|--------------------|-------------|
+| my-application.com | localhost   |
+
+<Warning>
+    Changing the relying party ID will invalidate all existing passkeys.
+    Though, reverting a change will restore the passkeys.
+</Warning>

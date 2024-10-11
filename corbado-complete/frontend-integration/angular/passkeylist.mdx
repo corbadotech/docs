@@ -1,0 +1,61 @@
+---
+title: "PasskeyList Component"
+description: "Learn how to integrate the Corbado Passkeylist into your Angular application."
+---
+
+import StylingTranslationCards from "/snippets/corbado-complete/styling-translations-cards.mdx";
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+<Warning>
+    Before we can begin to render the Corbado PasskeyList, the `Corbado.load()` call has to resolve.
+    Find more [here](/corbado-complete/frontend-integration/angular).
+</Warning>
+
+## Integration
+
+The Passkeylist allows the user to view and manage their passkeys.
+He can delete existing passkeys or create new ones.
+This can be useful if the user wants to have individual passkeys for multiple devices, or erase ones
+that are no longer needed.
+
+```ts app.component.ts
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import Corbado from '@corbado/web-js';
+import {RouterOutlet} from "@angular/router";
+
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [RouterOutlet],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
+})
+export class AppComponent implements OnInit {
+    @ViewChild('passkeylist', {static: true}) authElement!: ElementRef;
+
+    constructor() {
+    }
+
+    async ngOnInit() {
+        // Load and initialize Corbado SDK when the component mounts
+        await Corbado.load({
+            projectId: "pro-XXX",
+            darkMode: 'off',
+        });
+        Corbado.mountPasskeyListUI(this.authElement.nativeElement)
+    }
+}
+```
+
+Simply provide an empty div in your template to render the PasskeyList UI.
+
+```html app.component.html
+<div #passkeylist id="passkeylist"></div>
+```
+
+<StylingTranslationCards />
+
+## Next
+
+[Access user information](/corbado-complete/frontend-integration/angular/authentication-state) through the `Corbado` object.

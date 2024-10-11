@@ -1,0 +1,92 @@
+---
+title: "Authentication State"
+description: "Learn how to access and manage the user authentication state on the in your Nuxt.js application."
+---
+
+<Warning>
+    Before we can begin to access authentication state, the `Corbado.load()` call has to resolve.
+    Find more [here](/corbado-complete/fullstack-integration/nuxt-js).
+</Warning>
+
+## One-time access to Authentication State
+
+If you want to access user state once, you can simply call `Corbado.shortSession`,
+`Corbado.user` or `Corbado.isAuthenticated` to get the current user state.
+
+```html UserInformation.vue
+<script setup lang="ts">
+import Corbado from '@corbado/web-js'
+import { inject, type Ref, watchEffect } from 'vue'
+
+const isCorbadoLoaded = inject('isCorbadoLoaded') as Ref<boolean>
+
+watchEffect(async () => {
+    if (isCorbadoLoaded.value && Corbado.isAuthenticated) {
+        const resp = await fetch('https://acme.com/api', {
+            headers: {
+                // access the users session token once
+                Authorization: `Bearer ${Corbado.shortSession}`
+            }
+        })
+    }
+})
+</script>
+
+<template>
+    <!-- Content -->
+</template>
+```
+
+## Subscribing to Authentication State
+
+If you want to synchronize user state to your own state, you can subscribe to the `authStateChanges` and `userChanges` observables.
+
+```html UserInformation.vue
+<script setup lang="ts">
+import Corbado from '@corbado/web-js'
+import type { SessionUser } from '@corbado/types'
+import { inject, type Ref, ref, watchEffect } from 'vue'
+
+const loggedIn = ref(false)
+const user = ref<SessionUser | undefined>(undefined)
+const isCorbadoLoaded = inject('isCorbadoLoaded') as Ref<boolean>
+
+watchEffect((onCleanup) => {
+    if (isCorbadoLoaded.value) {
+        const authStateSubscription = Corbado.authStateChanges.subscribe(
+            (next) => (loggedIn.value = next === 1)
+        )
+        const userSubscription = Corbado.userChanges.subscribe(
+            (next) => (user.value = next)
+        )
+        onCleanup(() => {
+            authStateSubscription.unsubscribe()
+            userSubscription.unsubscribe()
+        })
+    }
+})
+</script>
+
+<template>
+    <div v-if="loggedIn">
+        <h1>Welcome, {{ user?.sub }}!</h1>
+    </div>
+    <div v-else>
+        <h1>Log in to see your profile</h1>
+    </div>
+</template>
+```
+
+## Logout
+
+You can log out the user by calling `Corbado.logout`.
+
+```html routes/+page.svelte
+<script setup>
+import Corbado from '@corbado/web-js'
+</script>
+
+<template>
+    <button @click="Corbado.logout()">Logout</button>
+</template>
+```

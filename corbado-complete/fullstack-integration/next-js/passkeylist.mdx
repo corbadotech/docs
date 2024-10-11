@@ -1,0 +1,36 @@
+---
+title: "PasskeyList Component"
+description: "Learn how to integrate the Corbado Passkeylist into your Next.js application."
+---
+
+import StylingTranslationCards from "/snippets/corbado-complete/styling-translations-cards.mdx";
+
+![PasskeyList Component](/images/frontend-integration/ui-components/passkeylist/passkeylist.webp)
+
+<Warning>
+    Before we can begin to render the Corbado PasskeyList, the `CorbadoProvider` has to be integrated.
+    Find more [here](/corbado-complete/fullstack-integration/next-js).
+</Warning>
+
+## Integration
+
+The Passkeylist allows the user to view and manage their passkeys.
+He can delete existing passkeys or create new ones.
+This can be useful if the user wants to have individual passkeys for multiple devices, or erase ones
+that are no longer needed.
+
+```tsx app/user-management/page.tsx
+"use client";
+
+import { PasskeyList } from "@corbado/react";
+
+export default function Page() {
+    return <PasskeyList />;
+}
+```
+
+<StylingTranslationCards />
+
+## Next
+
+[Access user information](/corbado-complete/fullstack-integration/next-js/authentication-state-client) on the client-side of your application.

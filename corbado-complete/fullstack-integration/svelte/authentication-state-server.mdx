@@ -1,0 +1,63 @@
+---
+title: "Server-side Authentication State"
+description: "Learn how to access and manage the user authentication state on the server-side in your SvelteKit application."
+---
+
+<Info>
+    This guide is only applicable to SvelteKit applications, as they can contain code that runs on the server-side.
+</Info>
+
+## Prerequisites
+
+Install the Corbado Node.js SDK:
+
+```bash
+npm install @corbado/node-sdk
+```
+
+[Generate an API](https://app.corbado.com/settings/credentials?tab=API+Secrets) secret in the developer panel
+to allow the SDK to access the [Corbado BackendAPI](/corbado-complete/overview/corbado-api-structure/backend-api).
+
+## Example
+
+To gain access to authentication state on the server-side we utilize the [Corbdo Node.js SDK](/corbado-complete/backend-integration/node-js-sdk).
+
+We might use it in a server-side load function to verify the user is authenticated and retrieve some data in this case:
+
+<Warning>
+    This example assumes you are using the `setShortSessionCookie` option in the `Corbado.load()` function,
+    so that a cookie with the users shortSession JWT will be set on login.
+    Find more info [here](/corbado-complete/fullstack-integration/svelte).
+</Warning>
+
+```ts routes/profile/+page.server.ts
+import { redirect, type RequestEvent } from '@sveltejs/kit';
+import { PUBLIC_CORBADO_PROJECT_ID } from '$env/static/public';
+import { CORBADO_API_SECRET } from '$env/static/private';
+import { Config, SDK } from '@corbado/node-sdk';
+
+const config = new Config(
+    PUBLIC_CORBADO_PROJECT_ID, CORBADO_API_SECRET,
+    `https://${PUBLIC_CORBADO_PROJECT_ID}.frontendapi.corbado.io`,
+    'https://backendapi.cloud.corbado.io'
+);
+const sdk = new SDK(config);
+
+export async function load({ cookies }: RequestEvent) {
+    const cbo_short_session = cookies.get('cbo_short_session');
+    if (!cbo_short_session) {
+        return redirect(302, "/")
+    }
+    try {
+        const user = await sdk.sessions().validateToken(cbo_short_session);
+        return { user: { name: user.fullName, userID: user.userId } };
+    } catch (e) {
+        // session cookie was invalid
+        return redirect(302, "/")
+    }
+}
+```
+
+<Note>
+    Find more info on the [Corbdo Node.js SDK](/corbado-complete/backend-integration/node-js-sdk) in the backend integration section.
+</Note>
