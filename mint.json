@@ -274,7 +274,11 @@
         {
             "group": "Overview",
             "pages": [
-                "corbado-connect/overview/welcome"
+                "corbado-connect/overview/welcome",
+                "corbado-connect/overview/primary-vs.-Second-Factor",
+                "corbado-connect/overview/integration",
+                "corbado-connect/overview/fallback",
+                "corbado-connect/overview/deployment"
             ]
         },
         {
