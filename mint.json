@@ -106,7 +106,7 @@
         {
             "group": "UI Components",
             "pages": [
-                "corbado-complete/ui-components",
+                "corbado-complete/ui-components/overview",
                 "corbado-complete/ui-components/corbadoauth",
                 "corbado-complete/ui-components/passkeylist",
                 {
@@ -308,47 +308,47 @@
     "redirects": [
         {
             "source": "/frontend-integration/ui-components",
-            "destination": "/ui-components/"
+            "destination": "/corbado-complete/ui-components/"
         },
         {
             "source": "/frontend-integration/ui-components/corbadoprovider",
-            "destination": "/frontend-integration/react"
+            "destination": "/corbado-complete/frontend-integration/react"
         },
         {
             "source": "/frontend-integration/ui-components/corbadoauth",
-            "destination": "/ui-components/corbadoauth"
+            "destination": "/corbado-complete/ui-components/corbadoauth"
         },
         {
             "source": "/frontend-integration/ui-components/passkeylist",
-            "destination": "/ui-components/passkeylist"
+            "destination": "/corbado-complete/ui-components/passkeylist"
         },
         {
             "source": "/frontend-integration/ui-components/customization",
-            "destination": "/ui-components/customization"
+            "destination": "/corbado-complete/ui-components/customization"
         },
         {
             "source": "/frontend-integration/next-js",
-            "destination": "/fullstack-integration/next-js"
+            "destination": "/corbado-complete/fullstack-integration/next-js"
         },
         {
             "source": "/frontend-integration/next-js/:slug*",
-            "destination": "/fullstack-integration/next-js/:slug*"
+            "destination": "/corbado-complete/fullstack-integration/next-js/:slug*"
         },
         {
             "source": "/frontend-integration/svelte",
-            "destination": "/fullstack-integration/svelte"
+            "destination": "/corbado-complete/fullstack-integration/svelte"
         },
         {
             "source": "/frontend-integration/svelte/:slug*",
-            "destination": "/fullstack-integration/svelte/:slug*"
+            "destination": "/corbado-complete/fullstack-integration/svelte/:slug*"
         },
         {
             "source": "/frontend-integration/nuxt-js",
-            "destination": "/fullstack-integration/nuxt-js"
+            "destination": "/corbado-complete/fullstack-integration/nuxt-js"
         },
         {
             "source": "/frontend-integration/nuxt-js/:slug*",
-            "destination": "/fullstack-integration/nuxt-js/:slug*"
+            "destination": "/corbado-complete/fullstack-integration/nuxt-js/:slug*"
         }
     ]
 }
