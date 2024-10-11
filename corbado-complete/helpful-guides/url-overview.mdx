@@ -21,7 +21,7 @@ Based on your application setup (e.g. does it have different URL / ports for fro
 
 The full URL (incl. protocol & port, no path) that the user sees in the browser and from where JavaScript calls to Corbado are made.
 
-It's needed to make [CORS](/corbado-complete/helpful-guides/cross-origin-resource-sharing-cors) requests possible and can be
+It's needed to make [CORS](/other/helpful-guides/cross-origin-resource-sharing-cors) requests possible and can be
 configured in the [developer panel](https://app.corbado.com/settings/general?tab=Authorized+origins).
 
 ### Example
@@ -88,23 +88,7 @@ The CNAME needs to point to “\<Project-ID>.frontendapi.cloud.corbado.io”.
 |--------------------------|-------------|
 | login.my-application.com | -           |
 
-## 6. Webhooks URL
-
-**Required: optional**
-
-### Description
-
-The location (incl. protocol, port & path) in your backend that receives calls from Corbado to handle existing users.
-
-[See more details](/products/corbado-connect/connect-via-webhooks/webhooks)
-
-### Example
-
-| Production                                         | Development                               |
-|----------------------------------------------------|-------------------------------------------|
-| https://www.my-application.com/v1/corbado/webhooks | http://localhost:8080/v1/corbado/webhooks |
-
-## 7. Relying Party ID
+## 6. Relying Party ID
 
 **Required: yes**
 
