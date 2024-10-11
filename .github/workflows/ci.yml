@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  check_broken_links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23'
+
+      - name: Install Mintlify
+        run: npm install -g mintlify
+
+      - name: Check for broken links
+        run: |
+          mintlify broken-links
+        continue-on-error: false
