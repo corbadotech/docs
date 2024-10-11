@@ -15,7 +15,7 @@ If you've successfully developed and tested your product locally or on a staging
 ## Prerequisites
 
 1. You will need to have a domain you own.
-2. If you use [Corbado's session management](/sessions/overview), you will need to be able to add DNS records on your domain.
+2. If you use [Corbado's session management](/corbado-complete/sessions/overview), you will need to be able to add DNS records on your domain.
 
 ### Configuring environment variables and API secrets
 
@@ -32,7 +32,7 @@ In the [Corbado developer panel](https://app.corbado.com), we recommend that you
 
 Update the application URL to the match the production URL of our UI component (including path).
 
-Set a final [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) [here](https://app.corbado.com/settings/general?tab=URLs), where passkeys are bound to. Note that all passkeys you created and used during development and testing will not work anymore once this value is changed. That's also why a later change in production is not possible anymore (as it would invalidate all existing, working passkeys in production).
+Set a final [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) [here](https://app.corbado.com/settings/general?tab=URLs), where passkeys are bound to. Note that all passkeys you created and used during development and testing will not work anymore once this value is changed. That's also why a later change in production is not possible anymore (as it would invalidate all existing, working passkeys in production).
 
 <Note>
 Please also check this [guide](https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys) that helps you to determine your Relying Party ID (rpID).
@@ -40,9 +40,9 @@ Please also check this [guide](https://www.corbado.com/blog/webauthn-relying-par
 
 ## 3. Add authorized origins for production
 
-Add a new [authorized origin](/helpful-guides/url-overview#1-authorized-origin) for your production application [here](https://app.corbado.com/settings/general?tab=Authorized+origins). You can add more authorized origins later. You need to specify each [origin ](/helpful-guides/url-overview#1-authorized-origin)that communicates with Corbado in a separate row.
+Add a new [authorized origin](/corbado-complete/helpful-guides/url-overview#1-authorized-origin) for your production application [here](https://app.corbado.com/settings/general?tab=Authorized+origins). You can add more authorized origins later. You need to specify each [origin ](/corbado-complete/helpful-guides/url-overview#1-authorized-origin)that communicates with Corbado in a separate row.
 
-The [origin ](/helpful-guides/url-overview#1-authorized-origin)is the address of your website or application where you integrate Corbado and that the user sees in the browser (the browser URL).
+The [origin ](/corbado-complete/helpful-guides/url-overview#1-authorized-origin)is the address of your website or application where you integrate Corbado and that the user sees in the browser (the browser URL).
 
 You need to provide the protocol (e.g. https) and port (if it's different than 80 for http or 443 for https). The path should be empty (thus no trailing "/"), e.g.: `https://www.acme.com` for a live application.
 
@@ -56,25 +56,25 @@ You need to provide the protocol (e.g. https) and port (if it's different than 8
 
 ### 4.1 What is a CNAME?
 
-A [CNAME](/helpful-guides/url-overview#5-cname), or Canonical Name record, is a type of DNS record that maps one domain name (an alias, e.g. `pro-123456789.frontendapi.cloud.corbado.io`) to another (the canonical name, e.g. `auth.acme.com`).
+A [CNAME](/corbado-complete/helpful-guides/url-overview#5-cname), or Canonical Name record, is a type of DNS record that maps one domain name (an alias, e.g. `pro-123456789.frontendapi.cloud.corbado.io`) to another (the canonical name, e.g. `auth.acme.com`).
 
 ### 4.2 Why is a CNAME needed for go live?
 
-A [CNAME](/helpful-guides/url-overview#5-cname) is crucial when using Corbado's session management in live environments because it enables you to use a custom subdomain that points to `<project ID>.frontendapi.cloud.corbado.io` ensuring [SameSite](https://web.dev/i18n/de/samesite-cookies-explained/) cookies work properly, which enhances the security. Moreover, it improves UX as users see a familiar URL in the browser.
+A [CNAME](/corbado-complete/helpful-guides/url-overview#5-cname) is crucial when using Corbado's session management in live environments because it enables you to use a custom subdomain that points to `<project ID>.frontendapi.cloud.corbado.io` ensuring [SameSite](https://web.dev/i18n/de/samesite-cookies-explained/) cookies work properly, which enhances the security. Moreover, it improves UX as users see a familiar URL in the browser.
 
 ### 4.3 When is a CNAME needed for go live?
 
 #### 4.3.1 You use Corbado's session management
 
-If you use [**Corbado's session management**](/sessions/overview) you must set up a CNAME to establish trust with users (by showing them a URL in the browser that they expect from your service) and leverage enhanced security with [SameSite](https://web.dev/i18n/de/samesite-cookies-explained/) cookies.
+If you use [**Corbado's session management**](/corbado-complete/sessions/overview) you must set up a CNAME to establish trust with users (by showing them a URL in the browser that they expect from your service) and leverage enhanced security with [SameSite](https://web.dev/i18n/de/samesite-cookies-explained/) cookies.
 
-If you use your [**own session management**](/sessions/own-session-management), it might not be strictly necessary but still advised.
+If you use your [**own session management**](/corbado-complete/sessions/own-session-management), it might not be strictly necessary but still advised.
 
 #### 4.3.2 You use a native iOS or Android app
 
-Although not needed to be working correctly, we recommend to set a [CNAME](/helpful-guides/url-overview#5-cname) also for your native iOS or Android app, because then you can update the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) as well to your desires.
+Although not needed to be working correctly, we recommend to set a [CNAME](/corbado-complete/helpful-guides/url-overview#5-cname) also for your native iOS or Android app, because then you can update the [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) as well to your desires.
 
-This is mainly due to UX reasons, as without [CNAME](/helpful-guides/url-overview#id-5-cname), the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) by default would be `<project ID>.frontendapi.cloud.corbado.io` which might be confusing for users if they see this [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) in a Touch ID / Face ID / Android biometrics modal / popup. To update the [Relying Party ID](/helpful-guides/passkeys/relying-party-id) to your desired value, you would need a [CNAME ](/helpful-guides/url-overview#5-cname)which is a subdomain of your [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id).
+This is mainly due to UX reasons, as without [CNAME](/corbado-complete/helpful-guides/url-overview#id-5-cname), the [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) by default would be `<project ID>.frontendapi.cloud.corbado.io` which might be confusing for users if they see this [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) in a Touch ID / Face ID / Android biometrics modal / popup. To update the [Relying Party ID](/corbado-complete/helpful-guides/passkeys/relying-party-id) to your desired value, you would need a [CNAME ](/corbado-complete/helpful-guides/url-overview#5-cname)which is a subdomain of your [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id).
 
 ### 4.4 Which CNAME to set?
 
@@ -92,7 +92,7 @@ In the Corbado developer panel, you can enter the CNAME [here](https://app.corba
 
 ### 4.6 Set CNAME in UI components and Backend SDKs
 
-If you use our UI components or one of our Backend SDKs (e.g. for Corbado's session management), you need to update the [Frontend API](/overview/corbado-api-structure/frontend-api) URL to be the same like the defined CNAME (otherwise you could get a JWT validation error because the `iss` JWT claim would not match anymore). See details here:
+If you use our UI components or one of our Backend SDKs (e.g. for Corbado's session management), you need to update the [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) URL to be the same like the defined CNAME (otherwise you could get a JWT validation error because the `iss` JWT claim would not match anymore). See details here:
 
 **UI components**
 
@@ -164,7 +164,7 @@ config.FrontendAPI = "https://auth.acme.com"
 
 ### 4.7 How do I test if the CNAME is correctly set up for go live?
 
-To verify the [CNAME](/helpful-guides/url-overview#5-cname), run the following DNS test in a terminal.
+To verify the [CNAME](/corbado-complete/helpful-guides/url-overview#5-cname), run the following DNS test in a terminal.
 
 ```sh
 dig cname <CNAME>

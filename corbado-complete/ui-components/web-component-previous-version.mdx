@@ -9,9 +9,9 @@ sidebarTitle: "Overview"
 The following page shows how to set up the pre-built Corbado web component. Using the web component saves you a lot of engineering time, comes with many of out-of-the-box features and can be easily integrated with existing authentication solutions.
 
 <Check>
-Before you start integrating, please follow [Getting started](/overview/getting-started) to setup your project at the developer panel.
+Before you start integrating, please follow [Getting started](/corbado-complete/overview/getting-started) to setup your project at the developer panel.
 
-If you use React or VanillaJS as your tech stack, we highly recommend to use the new [React components](/frontend-integration/react) or [VanillaJS components](/frontend-integration/vanilla-js).
+If you use React or VanillaJS as your tech stack, we highly recommend to use the new [React components](/corbado-complete/frontend-integration/react) or [VanillaJS components](/corbado-complete/frontend-integration/vanilla-js).
 
 </Check>
 
@@ -92,7 +92,7 @@ The following attributes for `<corbado-auth/>` exist:
 | login-title             | Change the title of the login screen of the web component.                                                                                                                                                                                                             | null                                             |
 | login-btn               | Change the button text of the login button of the web component.                                                                                                                                                                                                       | null                                             |
 | sub-title               | Change the sub tile of the login screen of the web component (it can also be empty).                                                                                                                                                                                   | Welcome back! Please enter your details          |
-| endpoint                | This should be your [Frontend API](/overview/corbado-api-structure/frontend-api).                                                                                                                                                                           | `https://<project ID>.frontendapi.cloud.corbado.io`    |
+| endpoint                | This should be your [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api).                                                                                                                                                                           | `https://<project ID>.frontendapi.cloud.corbado.io`    |
 | username                | Pre-fill the username (email address) input field with a value of your choice. If there is no username HTML attribute set or it is empty, LocalStorage is searched for a key `username` that is then taken instead. If that doesn't exist, the pre-fill will be empty. | -                                                |
 | user-full-name          | Pre-fill the userFullName input field with a value of your choice.                                                                                                                                                                                                     | -                                                |
 | passkey-append-text     | Change the text of the passkey-append-screen                                                                                                                                                                                                                           | Login event faster with Touch ID, Face ID or PIN |
@@ -165,13 +165,13 @@ To adapt Corbado web component to your UI, you can modify the following style pr
 
 #### 4.1 Session refresh
 
-If you want to use Corbado's [session management](/sessions/overview), it is mandatory to include the JavaScript logic below on **all** of your pages. This ensures that [session refresh](/sessions/other/refresh) functionality works seamlessly.
+If you want to use Corbado's [session management](/corbado-complete/sessions/overview), it is mandatory to include the JavaScript logic below on **all** of your pages. This ensures that [session refresh](/corbado-complete/sessions/other/refresh) functionality works seamlessly.
 
 #### 4.2 Session logout
 
 Corbado provides functionality to logout the current user. The logout work as follows:&#x20;
 
-1. Corbado sends an [AJAX](https://www.w3schools.com/js/js_ajax_intro.asp) call to your [Frontend API](/overview/corbado-api-structure/frontend-api).
+1. Corbado sends an [AJAX](https://www.w3schools.com/js/js_ajax_intro.asp) call to your [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api).
 2. The current session is revoked using your **long-term** session (represented as session ID with database entry).
 3. In the response of the [AJAX](https://www.w3schools.com/js/js_ajax_intro.asp) call, Corbado sends a delete cookie.
 4. The **short-term** session cookie (represented as JWT) is deleted via JavaScript.
@@ -349,17 +349,17 @@ If you want to find out how you can get data via Corbado session management, ple
 
 ### 5. Define Application URL
 
-Please provide the URL where the web component runs (incl. protocol, port & path) as [Application URL](/helpful-guides/url-overview#.-application-url) in ["Settings" - "General" - "URLs"](https://app.corbado.com/app/settings/general/urls). The [Application URL](/helpful-guides/url-overview#2-application-url) is used, among others, to correctly direct users to the web component again, when they have clicked on an email magic link.
+Please provide the URL where the web component runs (incl. protocol, port & path) as [Application URL](/corbado-complete/helpful-guides/url-overview#.-application-url) in ["Settings" - "General" - "URLs"](https://app.corbado.com/app/settings/general/urls). The [Application URL](/corbado-complete/helpful-guides/url-overview#2-application-url) is used, among others, to correctly direct users to the web component again, when they have clicked on an email magic link.
 
-Often, it is on the same domain like the [authorized origin](/helpful-guides/url-overview#1-authorized-origin).
+Often, it is on the same domain like the [authorized origin](/corbado-complete/helpful-guides/url-overview#1-authorized-origin).
 
 ![Application URL in Developer Panel](/images/frontend-integration/ui-components/web-component/application-url-setting.webp)
 
 ### 6. Define Redirect URL
 
-Once a user has authenticated successfully (either with passkey, email magic link or password), the user redirected to the [Redirect URL](/helpful-guides/url-overview#3-redirect-url)in the browser.
+Once a user has authenticated successfully (either with passkey, email magic link or password), the user redirected to the [Redirect URL](/corbado-complete/helpful-guides/url-overview#3-redirect-url)in the browser.
 
-Provide the [Redirect URL](/helpful-guides/url-overview#3-redirect-url) (incl. protocol, port and path) in ["Settings" - "General" - "URLs"](https://app.corbado.com/app/settings/general/urls), e.g.:
+Provide the [Redirect URL](/corbado-complete/helpful-guides/url-overview#3-redirect-url) (incl. protocol, port and path) in ["Settings" - "General" - "URLs"](https://app.corbado.com/app/settings/general/urls), e.g.:
 
 - `https://www.my-application.com/redirectUrl` for a live application
 - `http://localhost:8080/redirectUrl` for localhost
@@ -368,15 +368,15 @@ Provide the [Redirect URL](/helpful-guides/url-overview#3-redirect-url) (incl. p
 
 ### 7. Verify Relying Party ID
 
-By default the WebAuthn [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) will be set to `<project ID>.preview.corbado.io` for previews and `localhost` for web component integration. This is where the passkeys are bound to. You can only use passkeys in a web component that runs in a matching domain of the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id). Matching domains means that it's either the same or a subdomain of the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id).&#x20;
+By default the WebAuthn [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) will be set to `<project ID>.preview.corbado.io` for previews and `localhost` for web component integration. This is where the passkeys are bound to. You can only use passkeys in a web component that runs in a matching domain of the [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id). Matching domains means that it's either the same or a subdomain of the [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id).&#x20;
 
-Provide the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) (without protocol, port and path) in ["Settings" - "General" - "URLs"](https://app.corbado.com/app/settings/general/urls), e.g.:
+Provide the [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) (without protocol, port and path) in ["Settings" - "General" - "URLs"](https://app.corbado.com/app/settings/general/urls), e.g.:
 
 - `my-application.com` for a live application
 - `localhost` for localhost
 
 <Info>
-If you develop locally on `http://localhost:<port>`, please set the [Relying Party ID](/helpful-guides/url-overview#7-relying-party-id) to `localhost.`
+If you develop locally on `http://localhost:<port>`, please set the [Relying Party ID](/corbado-complete/helpful-guides/url-overview#7-relying-party-id) to `localhost.`
 
 We highly recommend to take at our [detailed blog post about the Relying Party ID](https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys).
 
@@ -388,6 +388,6 @@ We highly recommend to take at our [detailed blog post about the Relying Party I
 
 After you made the inital settings for the web component, there are two ways depending on if you create an entirely new application (greenfield) without existing users or if you already have users that login with a password.
 
-1. [New application (no existing users)](/frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users)
-2. [Existing application (with existing users)](/frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users)
+1. [New application (no existing users)](/corbado-complete/frontend-integration/ui-components/web-component-previous-version/new-application-no-existing-users)
+2. [Existing application (with existing users)](/corbado-complete/frontend-integration/ui-components/web-component-previous-version/existing-application-with-existing-users)
 

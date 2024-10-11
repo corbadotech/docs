@@ -36,7 +36,7 @@ For greater user experience, a larger value is recommended, while a smaller valu
 
 This value defines the time that can pass without a user activity before the user is automatically logged out, regardless of whether the **long-term** session (represented as session ID and database entry) is still active.
 
-Since the **short-term** session (represented as **JWT**) is validated client-side without any server requests to Corbado, the only way to measure activity is by updating it upon [session refresh](/sessions/other/refresh). For instance, no additional activity is recorded if the user simply closes the browser (without logging out) or experiences a loss of internet connection.
+Since the **short-term** session (represented as **JWT**) is validated client-side without any server requests to Corbado, the only way to measure activity is by updating it upon [session refresh](/corbado-complete/sessions/other/refresh). For instance, no additional activity is recorded if the user simply closes the browser (without logging out) or experiences a loss of internet connection.
 
 This value must be **smaller than** the **maximum lifetime** for the **long-term** session (represented as session ID and database entry) and **larger than** the **maximum lifetime** for the **short-term** session (represented as **JWT**).
 

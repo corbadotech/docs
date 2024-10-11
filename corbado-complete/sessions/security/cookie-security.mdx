@@ -5,12 +5,12 @@ description: "Learn about the security features of cookies and how Corbado's ses
 
 # Cookie security
 
-On successful authentication, the Corbado [Frontend API](/overview/corbado-api-structure/frontend-api) sets the following cookies:
+On successful authentication, the Corbado [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) sets the following cookies:
 
 | Type                   | Name              | Value                      | Path                                                                    | Attributes                         | Default duration |
 | ---------------------- | ----------------- | -------------------------- | ----------------------------------------------------------------------- | ---------------------------------- | ---------------- |
-| **Short-term** session | cbo_short_session | JWT                        | [Application URL](/helpful-guides/url-overview#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
-| **Long-term** session  | cbo_long_session  | Session ID (opaque string) | [Frontend API](/overview/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
+| **Short-term** session | cbo_short_session | JWT                        | [Application URL](/corbado-complete/helpful-guides/url-overview#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
+| **Long-term** session  | cbo_long_session  | Session ID (opaque string) | [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
 
 Both the **short-term** session (represented as **JWT**) and the **long-term** session (represented as session ID with database entry) cookies are set with the `secure` flag, which ensures that they can only be accessed on secure internet connections.
 

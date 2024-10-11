@@ -4,7 +4,7 @@ description: "Learn how to use your own session management while using Corbado's
 ---
 
 <Warning>
-The following documentation provides a detailed explanation how Corbado can be used with your own session management. If you build a new application without existing users, we strongly recommend to use [Corbado's session management](/sessions/overview), as this will save you a lot of implementation time and is a proven solution.
+The following documentation provides a detailed explanation how Corbado can be used with your own session management. If you build a new application without existing users, we strongly recommend to use [Corbado's session management](/corbado-complete/sessions/overview), as this will save you a lot of implementation time and is a proven solution.
 
 To **use your own session management**, you have to **switch the toggle** in the Corbado developer panel [Settings > Sessions](https://app.corbado.com/settings/sessions).
 </Warning>
@@ -15,11 +15,11 @@ In the following, we'll outline the step-by-step implementation of your own sess
 
 <Steps>
     <Step title="User logs in to your application">
-        The user logs into your application using our [UI Components](/ui-components).
+        The user logs into your application using our [UI Components](/corbado-complete/ui-components).
     </Step>
     <Step title="Corbado backend creates JWT token">
-        Upon successful login, the Corbado [Frontend API](/overview/corbado-api-structure/frontend-api) responds with a
-        [short-term session JWT](/sessions/overview#short-term-session-represented-as-jwt).
+        Upon successful login, the Corbado [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) responds with a
+        [short-term session JWT](/corbado-complete/sessions/overview#short-term-session-represented-as-jwt).
     </Step>
     <Step title="Request a session from your application">
         After receiving the **Corbado short-term session**, the user sends a request to **your backend**
@@ -27,7 +27,7 @@ In the following, we'll outline the step-by-step implementation of your own sess
     </Step>
     <Step title="Validate the Corbado short-term session in your backend">
         **Your backend** must verify the **Corbado short-term** session to be authentic. This can be done either by using
-        a dedicated [Corbado backend SDK](/overview/welcome#backend-integration) or manually using our [JWKS](https://apireference.cloud.corbado.io/frontendapi-v1/#tag/Sessions/operation/WellKnownJWKSList).
+        a dedicated [Corbado backend SDK](/corbado-complete/overview/welcome#backend-integration) or manually using our [JWKS](https://apireference.cloud.corbado.io/frontendapi-v1/#tag/Sessions/operation/WellKnownJWKSList).
     </Step>
     <Step title="Create your own session">
         After confirming that the **Corbado short-term** session is authentic, so you can create **your own session** in the backend.

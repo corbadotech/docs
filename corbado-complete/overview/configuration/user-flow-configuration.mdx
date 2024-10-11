@@ -9,8 +9,8 @@ These settings directly impact the user journey during sign-up and login and def
 
 The following settings can be adapted in the [Developer Panel](https://app.corbado.com/settings/userinterface) in the **Settings > User interface** page:
 
-1. [Sign-up settings](/overview/configuration/user-flow-configuration#1-sign-up-settings): Settings associated with the sign-up part of your user flow
-2. [Login identifiers and fallbacks](/overview/configuration/user-flow-configuration#2-login-identifiers-and-fallbacks): Configure the required user information for sign-up and login, as well as the authentication fallback options.
+1. [Sign-up settings](/corbado-complete/overview/configuration/user-flow-configuration#1-sign-up-settings): Settings associated with the sign-up part of your user flow
+2. [Login identifiers and fallbacks](/corbado-complete/overview/configuration/user-flow-configuration#2-login-identifiers-and-fallbacks): Configure the required user information for sign-up and login, as well as the authentication fallback options.
 
 ## 1. Sign-up settings
 This section allows you to adjust the sign-up settings. You can configure two settings:
@@ -40,14 +40,14 @@ Currently the following login identifier are supported:
 
 There are two types of login identifiers:
 
-- Verifiable by [one-time passcodes](/overview/configuration/user-flow-configuration#3-4-1-one-time-passcode) or [email magic links](/overview/configuration/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
+- Verifiable by [one-time passcodes](/corbado-complete/overview/configuration/user-flow-configuration#3-4-1-one-time-passcode) or [email magic links](/corbado-complete/overview/configuration/user-flow-configuration#3-4-2-magic-link) (email address and phone number)
 - Not verifiable (username)
 
 Depending on the desired authentication journey, one or more login identifiers can be activated. Each activated login identifier is requested during the sign-up process.
 
 An overview of the available login identifiers and their properties can be found below.
 
-<table><thead><tr><th width="150">Login identifier</th><th>[Allow login](/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode<br/>&bull; Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No &#42;</td><td>&bull; None</td><td>&bull; None</td></tr></tbody></table>
+<table><thead><tr><th width="150">Login identifier</th><th>[Allow login](/corbado-complete/overview/configuration/user-flow-configuration#3-1-allow-login)</th><th>[Fallback](/corbado-complete/overview/configuration/user-flow-configuration#3-2-fallback)</th><th>[Verification stage](/corbado-complete/overview/configuration/user-flow-configuration#3-3-verification-stage)</th><th>[Verification methods](/corbado-complete/overview/configuration/user-flow-configuration#3-4-verification-methods)</th></tr></thead><tbody><tr><td>Email address</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode<br/>&bull; Email magic link</td></tr><tr><td>Phone number</td><td>Yes</td><td>Yes</td><td>&bull; None<br/>&bull; At sign-up<br/>&bull; Before first login</td><td>&bull; One-time passcode</td></tr><tr><td>Username</td><td>Yes</td><td>No &#42;</td><td>&bull; None</td><td>&bull; None</td></tr></tbody></table>
 <sup>&#42; In this case, it is recommended to include an additional login identifier, such as email address or phone number, to provide a fallback option.</sup>
 
 ### 3.1 Allow login
@@ -66,7 +66,7 @@ Enabling **only the username** as login identifier will provide no fallback opti
 
 </Note>
 
-Find more information in the [Fallback Options](/helpful-guides/passkeys/fallback-options) page.
+Find more information in the [Fallback Options](/corbado-complete/helpful-guides/passkeys/fallback-options) page.
 
 
 ### 3.3 Verification stage
