@@ -46,10 +46,6 @@
         {
             "name": "Corbado Connect",
             "url": "/corbado-connect"
-        },
-        {
-            "name": "Other",
-            "url": "/other"
         }
     ],
     "anchors": [
@@ -268,7 +264,25 @@
                         "corbado-complete/helpful-guides/go-live/troubleshooting"
                     ]
                 },
+                {
+                    "group": "Passkeys",
+                    "pages": [
+                        "corbado-complete/helpful-guides/passkeys",
+                        "corbado-complete/helpful-guides/passkeys/relying-party-id",
+                        "corbado-complete/helpful-guides/passkeys/passkeys-in-web-apps",
+                        "corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps",
+                        "corbado-complete/helpful-guides/passkeys/fallback-options"
+                    ]
+                },
+                "corbado-complete/helpful-guides/cross-origin-resource-sharing-cors",
+                "corbado-complete/helpful-guides/google-chrome-virtual-authenticator",
                 "corbado-complete/helpful-guides/local-multi-device-testing-with-ngrok"
+            ]
+        },
+        {
+            "group": "Other",
+            "pages": [
+                "corbado-complete/other/security-and-privacy"
             ]
         },
         {
@@ -279,29 +293,6 @@
                 "corbado-connect/overview/integration",
                 "corbado-connect/overview/fallback",
                 "corbado-connect/overview/deployment"
-            ]
-        },
-        {
-            "group": "Helpful Guides",
-            "pages": [
-                {
-                    "group": "Passkeys",
-                    "pages": [
-                        "other/helpful-guides/passkeys",
-                        "other/helpful-guides/passkeys/relying-party-id",
-                        "other/helpful-guides/passkeys/passkeys-in-web-apps",
-                        "other/helpful-guides/passkeys/passkeys-in-native-apps",
-                        "other/helpful-guides/passkeys/fallback-options"
-                    ]
-                },
-                "other/helpful-guides/cross-origin-resource-sharing-cors",
-                "other/helpful-guides/google-chrome-virtual-authenticator"
-            ]
-        },
-        {
-            "group": "Security",
-            "pages": [
-                "other/security/security-and-privacy"
             ]
         }
     ],
