@@ -11,28 +11,39 @@ After successful user authentication, Corbado creates a session. A session repre
 
 Corbado employs a combination of technologies for its session management, ensuring a highly secure and user-friendly solution.
 
-## Short-term session (represented as JWT)
+## Session
 
-On the one hand, Corbado offers a **short-term** session, implemented through the usage of JSON Web Tokens (**JWTs**). This **short-term** session (represented as **JWT**) is passed within your application and serves as a means to verify user authentication (refer to the [Protecting routes](./protecting-routes) section for more details). As implied by its name, the **short-term** session (represented as **JWT**) has a limited lifespan ([configurable](https://app.corbado.com/app/settings/sessions)), ensuring enhanced security.
+Upon creating a session, Corbado records an entry in its session database. This entry is used for managing the status and lifetime of the session.
 
-The technical name of the **short-term** session (represented as JWT) cookie is `cbo_short_session`.
+Additionally, it allows us to display all sessions in the [developer panel](https://app.corbado.com/app/sessions) and [revoke](./other/revocation) them when needed.
 
-## Long-term session (represented as session ID with database entry)
+## Session-token
 
-On the other hand, Corbado provides a **long-term** session that utilizes an opaque string as a session ID. This session ID is associated with a corresponding entry in the Corbado database. The **long-term** session (represented as session ID with database entry) serves the purpose of refreshing the **short-term** session (represented as **JWT**) as needed (refer to the [Refresh](./other/refresh) section for more details).
+Besides creating a session entry in the database, Corbado also generates a **session-token**.
 
-Both **short-term** session (represented as **JWT**) and **long-term** session (represented as session ID with database entry) are set as cookies (refer to the [Cookie security](./security/cookie-security) section for more details).
+The **session-token** is implemented through the usage of JSON Web Tokens (**JWT**). It is passed within your application and serves as a means to verify user authentication (refer to the [Protecting routes](./protecting-routes) section for more details).
 
-The technical name of the **long-term** session (represented as session ID with database entry) cookie is `cbo_long_session`.
+If [session refresh](./refresh) is enabled, the **session-token** has a limited lifespan, ensuring enhanced security.
+
+The **session-token** is stored as a cookie by the Corbado UI component (with the name `cbo_session_token`, refer to [Cookie Security](./security/cookie-security) for more details).
+
+## Refresh-token
+
+To enhance the security of the [refresh](./refresh) mechanism (if enabled), a second token is generated: the **refresh-token**.
+
+Everytime a **session-token** is refreshed (generating a new one) the **refresh-token** is needed.
+
+The **refresh-token** is stored as a cookie by the Corbado UI component (with the name `cbo_long_session`, refer to [Cookie Security](./security/cookie-security) for more details).
 
 ## Advantages
 
 Implementing session management like this offers the following advantages:
 
-* **Short-term** sessions (represented as **JWT**) can be verified client-side in **less than 1ms** through standard **JWT** verification
-* **Short-term** sessions (represented as **JWT**) have the ability to carry additional user information through [claims](https://quadmeup.com/2022/06/29/jwt-claims-explained)
-* **Long-term** sessions (represented as session ID with database entry) can be listed and inspected in the [developer panel](https://app.corbado.com/app/sessions), providing a comprehensive overview of users currently logged in and the devices they are using
-* **Long-term** sessions (represented as session ID with database entry) can be revoked using the [developer panel](https://app.corbado.com/app/sessions) &#x20;
+* Database-stored sessions can be listed and inspected in the [developer panel](https://app.corbado.com/app/sessions), providing a comprehensive overview of users currently logged in and the devices they are using
+* Database-stored sessions can be revoked using the [developer panel](https://app.corbado.com/app/sessions)
+* The **session-token** implemented as **JWT** can be verified client-side in **less than 1ms** through standard **JWT** verification
+* The **session-token** has the ability to carry additional user information through [claims](https://quadmeup.com/2022/06/29/jwt-claims-explained)
+* The *+refresh-token** enhances security by requiring a second token for session refresh
 
 ## Security
 

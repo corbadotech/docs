@@ -222,7 +222,9 @@
             "pages": [
                 "corbado-complete/sessions/overview",
                 "corbado-complete/sessions/protecting-routes",
-                "corbado-complete/sessions/session-data",
+                "corbado-complete/sessions/token-handling",
+                "corbado-complete/sessions/refresh",
+                "corbado-complete/sessions/own-session-management",
                 {
                     "group": "Security",
                     "pages": [
@@ -238,13 +240,12 @@
                 {
                     "group": "Other",
                     "pages": [
-                        "corbado-complete/sessions/other/refresh",
+
                         "corbado-complete/sessions/other/revocation",
                         "corbado-complete/sessions/other/oauth2-comparison",
                         "corbado-complete/sessions/other/development-mode"
                     ]
-                },
-                "corbado-complete/sessions/own-session-management"
+                }
             ]
         },
         {
