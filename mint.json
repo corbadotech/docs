@@ -233,8 +233,7 @@
                         "corbado-complete/sessions/security/cookie-security",
                         "corbado-complete/sessions/security/xss-protection",
                         "corbado-complete/sessions/security/csrf-protection",
-                        "corbado-complete/sessions/security/session-fixation-protection",
-                        "corbado-complete/sessions/security/session-timeouts"
+                        "corbado-complete/sessions/security/session-fixation-protection"
                     ]
                 },
                 {

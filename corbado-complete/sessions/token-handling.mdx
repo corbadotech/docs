@@ -1,7 +1,32 @@
 ---
 title: "Token Handling"
-description: "Find a detailed page that shows how to protect routes for your type of application and tech stack."
+description: "Learn how to handle your session-token and pass it through your system."
 ---
 
-The easiest way to understand how to protect your routes is to use our [Getting started wizard](https://app.corbado.com/getting-started)
-which you can use after you created your first project.
+When a user logs in into your application, the UI component stores the **session-token** as a cookie. Since user authentication is determined by the **session-token** (see [Protecting Routes](./protecting-routes)), it must be accessible wherever you need to verify the user's authentication status.
+
+By default, the `Domain` of the **session-token** cookie is set to the domain the UI component is integrated on (e.g. the UI component is integrated on https://www.example.com/auth/ the `Domain` will be www.example.com).
+
+The following scenarios can happen (which result in different cookie availability):
+
+### 1) Frontend and backend are on the same domain
+
+- Frontend runs on https://www.example.com
+- User logs in using the Corbado UI component
+- The **session-token** is created and stored as cookie with name `cbo_session_token` and `Domain=www.example.com`
+- User interacts and frontend (JavaScript) sends requests to the backend on https://www.example.com/api
+- The **session-token** cookie is sent with the request to the backend because the `Domain` matches
+- Backend reads **session-token** from cookie `cbo_session_token` and validates it
+
+### 2) Frontend and backend are on different domains
+
+- Frontend runs on https://www.example.com
+- User logs in using the Corbado UI component
+- The **session-token** is created and stored as cookie with name `cbo_session_token` and `Domain=www.example.com`
+- User interacts and frontend (JavaScript) sends requests to the backend on https://www.example.com/api
+- The **session-token** cookie is sent with the request to the backend because the `Domain` matches
+- Backend reads **session-token** from cookie `cbo_session_token` and validates it
+
+### 3) Frontend and multiples backends are on different domains
+
+TODO

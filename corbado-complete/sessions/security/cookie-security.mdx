@@ -9,10 +9,10 @@ On successful authentication, the Corbado [Frontend API](/corbado-complete/overv
 
 | Type                   | Name              | Value                      | Path                                                                    | Attributes                         | Default duration |
 | ---------------------- | ----------------- | -------------------------- | ----------------------------------------------------------------------- | ---------------------------------- | ---------------- |
-| **Short-term** session | cbo_short_session | JWT                        | [Application URL](/corbado-complete/helpful-guides/url-overview#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
-| **Long-term** session  | cbo_long_session  | Session ID (opaque string) | [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
+| **session-token**      | cbo_session_token | JWT                        | [Application URL](/corbado-complete/helpful-guides/url-overview#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
+| **refresh-token**      | cbo_long_session  | Session ID (opaque string) | [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
 
-Both the **short-term** session (represented as **JWT**) and the **long-term** session (represented as session ID with database entry) cookies are set with the `secure` flag, which ensures that they can only be accessed on secure internet connections.
+Both the **session-token** and the **refresh-token** cookies are set with the `secure` flag, which ensures that they can only be accessed on secure internet connections.
 
 The properties of `httpOnly` and `sameSite` will be explained in the following sections on [**XSS** protection](./xss-protection) and [**CSRF** protection](./csrf-protection), respectively. These sections provide further details on how these properties contribute to safeguarding against specific types of attacks.
 
