@@ -7,6 +7,10 @@ Writing the `Authorization` header is usually quite easy:
 
 <CodeGroup>
 ```javascript JavaScript
-TODO
+fetch('https://api.example.com', {
+  headers: {Authorization: 'Bearer {session-token}'}
+})
+.then(resp => resp.json())
+.then(json => console.log(JSON.stringify(json)))
 ```
 </CodeGroup>

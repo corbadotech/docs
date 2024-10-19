@@ -6,7 +6,18 @@ description: "Learn how to read the Authorization header to get the session-toke
 Reading the `Authorization` header is usually quite easy:
 
 <CodeGroup>
-  ```javascript JavaScript
-  TODO
-  ```
+```javascript Node.js/Express
+app.get('/your-endpoint', (req, res) => {
+  const authHeader = req.headers['authorization'];
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const sessionToken = authHeader.split(' ')[1];
+    console.log('session-token:', sessionToken);
+  } else {
+    console.log('No Authorization header or invalid format.');
+  }
+
+  res.send('Authorization header checked');
+});
+```
 </CodeGroup>
