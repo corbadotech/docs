@@ -6,11 +6,21 @@ description: "Learn how to write the Authorization header to pass the session-to
 Writing the `Authorization` header is usually quite easy:
 
 <CodeGroup>
-```javascript JavaScript
+```javascript JavaScript fetch API
+const sessionToken = 'xxx';
+
 fetch('https://api.example.com', {
-  headers: {Authorization: 'Bearer {session-token}'}
+  headers: {Authorization: `Bearer ${sessionToken}`}
 })
-.then(resp => resp.json())
-.then(json => console.log(JSON.stringify(json)))
+.then(console.log).catch(console.log);
+```
+
+```javascript JavaScript Axios
+const sessionToken = 'xxx';
+
+Axios.post('https://api.example.com', {}, {
+  headers: {Authorization: `Bearer ${sessionToken}`}
+})
+.then(console.log).catch(console.log);
 ```
 </CodeGroup>

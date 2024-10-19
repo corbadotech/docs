@@ -1,5 +1,5 @@
 ---
-title: "Token Handling"
+title: "Session Token Handling"
 description: "Learn how to handle your session-token and pass it through your system."
 sidebarTitle: "Overview"
 ---
@@ -14,11 +14,16 @@ Thus, there will be different scenarios where the **session-token** cookie is av
 
 This is the simplest scenario. The **session-token** cookie is available in both the frontend and the backend because they share the same cookie domain.
 
+#### Frontend
+
 - Frontend runs on https://www.example.com
 - User logs in using the Corbado UI component
 - The **session-token** is created and stored as cookie with name `cbo_session_token` and `Domain=www.example.com`
 - User interacts and frontend (JavaScript) sends requests to the backend on https://www.example.com/api
 - The **session-token** cookie is sent with the request to the backend because the `Domain` matches
+
+#### Backend
+
 - Backend reads **session-token** from cookie `cbo_session_token` and validates it
 
 ### 2) Frontend and backend are on different domains
@@ -27,11 +32,16 @@ In this scenario, the **session-token** cookie is not available in the backend b
 
 To make the **session-token** cookie available in the backend, you have to pass it as bearer token in the `Authorization` header.
 
+#### Frontend
+
 - Frontend runs on https://www.example.com
 - User logs in using the Corbado UI component
 - The **session-token** is created and stored as cookie with name `cbo_session_token` and `Domain=www.example.com`
 - User interacts and frontend (JavaScript) sends requests to the backend on https://api.example.com
 - The **session-token** is sent with the request using `Authorization` header (bearer) to the backend because the `Domain` does not match
+
+#### Backend
+
 - Backend reads **session-token** from `Authorization` header (bearer) and validates it
 
 <CardGroup>
@@ -47,14 +57,22 @@ To make the **session-token** cookie available in the backend, you have to pass 
 
 Scenario 3 is pretty similar to scenario 2. The only difference is that you have multiple backends (like it is common in microservice architectures).
 
+#### Frontend
+
 - Frontend runs on https://www.example.com
 - User logs in using the Corbado UI component
 - The **session-token** is created and stored as cookie with name `cbo_session_token` and `Domain=www.example.com`
 - User interacts and frontend (JavaScript) sends requests to the Shop backend on https://shop.example.com
 - The **session-token** is sent with the request using `Authorization` header (bearer) to the backend because the `Domain` does not match
+
+#### Shop backend
+
 - Shop backend reads **session-token** from `Authorization` header (bearer) and validates it
 - Shop backend sends requests to the Payment backend on https://payment.example.com
 - The **session-token** is sent with the request using `Authorization` header (bearer) to the backend because no Browser is involved and we have no cookie handling
+
+#### Payment backend
+
 - Payment backend reads **session-token** from `Authorization` header (bearer) and validates it
 
 <CardGroup>
