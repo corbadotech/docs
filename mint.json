@@ -222,7 +222,14 @@
             "pages": [
                 "corbado-complete/sessions/overview",
                 "corbado-complete/sessions/protecting-routes",
-                "corbado-complete/sessions/token-handling",
+                {
+                    "group": "Token Handling",
+                    "pages": [
+                        "corbado-complete/sessions/token-handling",
+                        "corbado-complete/sessions/token-handling/write",
+                        "corbado-complete/sessions/token-handling/read"
+                    ]
+                },
                 "corbado-complete/sessions/refresh",
                 "corbado-complete/sessions/own-session-management",
                 {
