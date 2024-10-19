@@ -3,10 +3,10 @@ title: "Revocation"
 description: "Learn about session revocation in Corbado's session management."
 ---
 
-The combination of a **short-term** session (represented as **JWT**) and a **long-term** session (represented as session ID with database entry) provides a convenient method for revoking sessions.
+The combination of a **session-token** and a session database entry provides a convenient method for revoking sessions.
 
-Revoking a session involves deleting the corresponding **long-term** session entry from the Corbado database. You can accomplish this easily through the developer panel by accessing the [session list](https://app.corbado.com/app/sessions).
+Revoking a session involves deleting the corresponding session entry from the Corbado database. You can accomplish this easily through the developer panel by accessing the [session list](https://app.corbado.com/app/sessions).
 
 <Info>
-Technically speaking, the session will persist until the **short-term** session (represented as **JWT**) expires. Thus the revocation/logout will be delayed to a maximum of the **short-term** session (represented as **JWT**) lifetime.
+Technically speaking, the session will persist until the **session-token** expires. Thus the revocation/logout will be delayed to a maximum of the **session-token** lifetime.
 </Info>

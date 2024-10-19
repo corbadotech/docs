@@ -222,7 +222,16 @@
             "pages": [
                 "corbado-complete/sessions/overview",
                 "corbado-complete/sessions/protecting-routes",
-                "corbado-complete/sessions/session-data",
+                {
+                    "group": "session-token Handling",
+                    "pages": [
+                        "corbado-complete/sessions/session-token-handling",
+                        "corbado-complete/sessions/session-token-handling/write",
+                        "corbado-complete/sessions/session-token-handling/read"
+                    ]
+                },
+                "corbado-complete/sessions/session-refresh",
+                "corbado-complete/sessions/own-session-management",
                 {
                     "group": "Security",
                     "pages": [
@@ -231,20 +240,18 @@
                         "corbado-complete/sessions/security/cookie-security",
                         "corbado-complete/sessions/security/xss-protection",
                         "corbado-complete/sessions/security/csrf-protection",
-                        "corbado-complete/sessions/security/session-fixation-protection",
-                        "corbado-complete/sessions/security/session-timeouts"
+                        "corbado-complete/sessions/security/session-fixation-protection"
                     ]
                 },
                 {
                     "group": "Other",
                     "pages": [
-                        "corbado-complete/sessions/other/refresh",
+
                         "corbado-complete/sessions/other/revocation",
                         "corbado-complete/sessions/other/oauth2-comparison",
                         "corbado-complete/sessions/other/development-mode"
                     ]
-                },
-                "corbado-complete/sessions/own-session-management"
+                }
             ]
         },
         {
