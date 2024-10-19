@@ -17,7 +17,7 @@ Upon creating a session, Corbado records an entry in its session database. This 
 
 Additionally, it allows us to display all sessions in the [developer panel](https://app.corbado.com/app/sessions) and [revoke](./other/revocation) them when needed.
 
-## Session-token
+## session-token
 
 Besides creating a session entry in the database, Corbado also generates a **session-token**.
 
@@ -27,7 +27,7 @@ If [session refresh](./session-refresh) is enabled, the **session-token** has a 
 
 The **session-token** is stored as a cookie by the Corbado UI component (with the name `cbo_session_token`, refer to [Cookie Security](./security/cookie-security) for more details).
 
-## Refresh-token
+## refresh-token
 
 To enhance the security of the [refresh](./session-refresh) mechanism (if enabled), a second token is generated: the **refresh-token**.
 
