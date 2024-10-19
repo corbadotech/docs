@@ -23,13 +23,13 @@ Besides creating a session entry in the database, Corbado also generates a **ses
 
 The **session-token** is implemented through the usage of JSON Web Tokens (**JWT**). It is passed within your application and serves as a means to verify user authentication (refer to the [Protecting routes](./protecting-routes) section for more details).
 
-If [session refresh](./refresh) is enabled, the **session-token** has a limited lifespan, ensuring enhanced security.
+If [session refresh](./session-refresh) is enabled, the **session-token** has a limited lifespan, ensuring enhanced security.
 
 The **session-token** is stored as a cookie by the Corbado UI component (with the name `cbo_session_token`, refer to [Cookie Security](./security/cookie-security) for more details).
 
 ## Refresh-token
 
-To enhance the security of the [refresh](./refresh) mechanism (if enabled), a second token is generated: the **refresh-token**.
+To enhance the security of the [refresh](./session-refresh) mechanism (if enabled), a second token is generated: the **refresh-token**.
 
 Everytime a **session-token** is refreshed (generating a new one) the **refresh-token** is needed.
 
