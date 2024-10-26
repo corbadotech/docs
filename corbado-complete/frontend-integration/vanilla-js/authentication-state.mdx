@@ -90,11 +90,13 @@ You can log out the user by calling `Corbado.logout`.
 <body>
     <script type="module">
         await Corbado.load({
-            projectId: "pro-XXX",
+            projectId: 'pro-XXX',
         });
-        const logoutButton = document.getElementById("logoutButton");
-        logoutButton.addEventListener("click", () => {
-            Corbado.logout();
+
+        const logoutButton = document.getElementById('logoutButton');
+        logoutButton.addEventListener('click', async function () {
+            await Corbado.logout();
+            window.location.href = '/';
         });
     </script>
     <button id="logoutButton">Logout</button>
