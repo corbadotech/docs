@@ -39,8 +39,7 @@ Now, load Corbado in your root layout to make it available throughout your appli
     onMount(async () => {
         await Corbado.load({
             projectId: PUBLIC_CORBADO_PROJECT_ID,
-            darkMode: 'off',
-            setShortSessionCookie: true
+            darkMode: 'off'
         });
         $isCorbadoLoaded = true;
     });

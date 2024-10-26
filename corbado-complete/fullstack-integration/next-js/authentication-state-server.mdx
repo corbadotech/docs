@@ -20,12 +20,6 @@ To gain access to authentication state on the server-side we utilize the [Corbdo
 
 We might use it in a server-side action function to verify the user is authenticated and retrieve some data in this case:
 
-<Warning>
-    This example assumes you are using the `setShortSessionCookie` option in the `CorbadoProvider`,
-    so that a cookie with the users shortSession JWT will be set on login.
-    Find more info [here](/corbado-complete/fullstack-integration/next-js).
-</Warning>
-
 ```ts actions.ts
 "use server";
 
@@ -41,12 +35,13 @@ const config = new Config(
 const sdk = new SDK(config);
 
 export async function getUser() {
-    const cbo_short_session = cookies().get('cbo_short_session')?.value;
-    if (!cbo_short_session) {
+    const sessionToken = cookies().get('cbo_session_token')?.value;
+    if (!sessionToken) {
         redirect("/")
     }
+
     try {
-        const user = await sdk.sessions().validateToken(cbo_short_session);
+        const user = await sdk.sessions().validateToken(sessionToken);
         return { user: { name: user.fullName, userID: user.userId } };
     } catch (e) {
         // session cookie was invalid

@@ -10,7 +10,7 @@ description: "Learn how to access and manage the user authentication state on th
 
 ## One-time access to Authentication State
 
-If you want to access user state once, you can simply call `Corbado.shortSession`,
+If you want to access user state once, you can simply call `Corbado.sessionToken`,
 `Corbado.user` or `Corbado.isAuthenticated` to get the current user state.
 
 ```html main.html
@@ -33,7 +33,7 @@ If you want to access user state once, you can simply call `Corbado.shortSession
                 const resp = await fetch("https://acme.com/api", {
                     headers: {
                         // access the users session token once
-                        Authorization: `Bearer ${Corbado.shortSession}`
+                        Authorization: `Bearer ${Corbado.sessionToken}`
                     }
                 });
             }
