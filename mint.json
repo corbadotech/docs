@@ -164,6 +164,7 @@
                         "corbado-complete/frontend-integration/react/corbadoauth",
                         "corbado-complete/frontend-integration/react/passkeylist",
                         "corbado-complete/frontend-integration/react/authentication-state",
+                        "corbado-complete/frontend-integration/react/session-refresh",
                         "corbado-complete/frontend-integration/react/link-to-react-blog"
                     ]
                 },
@@ -174,6 +175,7 @@
                         "corbado-complete/frontend-integration/vanilla-js/corbadoauth",
                         "corbado-complete/frontend-integration/vanilla-js/passkeylist",
                         "corbado-complete/frontend-integration/vanilla-js/authentication-state",
+                        "corbado-complete/frontend-integration/vanilla-js/session-refresh",
                         "corbado-complete/frontend-integration/vanilla-js/link-to-vanillajs-blog"
                     ]
                 },
@@ -185,6 +187,7 @@
                         "corbado-complete/frontend-integration/vue-js/corbadoauth",
                         "corbado-complete/frontend-integration/vue-js/passkeylist",
                         "corbado-complete/frontend-integration/vue-js/authentication-state",
+                        "corbado-complete/frontend-integration/vue-js/session-refresh",
                         "corbado-complete/frontend-integration/vue-js/link-to-vuejs-blog"
                     ]
                 },
@@ -195,6 +198,7 @@
                         "corbado-complete/frontend-integration/angular/corbadoauth",
                         "corbado-complete/frontend-integration/angular/passkeylist",
                         "corbado-complete/frontend-integration/angular/authentication-state",
+                        "corbado-complete/frontend-integration/angular/session-refresh",
                         "corbado-complete/frontend-integration/angular/link-to-angular-blog"
                     ]
                 },
