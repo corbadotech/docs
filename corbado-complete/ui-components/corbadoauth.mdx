@@ -3,8 +3,10 @@ title: "CorbadoAuth Component"
 description: "The CorbadoAuth component allows users to create a new account or login."
 ---
 
-import Frontend from '/snippets/corbado-complete/integration-guides/frontend.mdx';
-import Fullstack from '/snippets/corbado-complete/integration-guides/fullstack.mdx';
+
+
+import Frontend from "/snippets/corbado-complete/integration-guides/frontend.mdx";
+import Fullstack from "/snippets/corbado-complete/integration-guides/fullstack.mdx";
 import StylingTranslationCards from "/snippets/corbado-complete/styling-translations-cards.mdx";
 
 ![CorbadoAuth Component](/images/frontend-integration/ui-components/corbado-auth/corbadoauth-component-dark.webp)
@@ -28,10 +30,12 @@ This navigation strategy enhances user experience by providing a seamless intera
 
 ## API reference
 
-| Name                   | Type              | Description                                                                                                                                                                                                               |
-| ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| onLoggedIn             | callback function | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a sign-up). You can use it to navigate the user to a specific page inside your application (e.g., /home). |
-| handleNavigationEvents | boolean           | If enabled, the user can navigate between screens during the authentication process. When disabled, the user will leave the authentication process immediately when he navigates back or refresh page.                    |
+| Name                   | Type                      | Description                                                                                                                                                                                                                                                                                       |
+|------------------------|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| onLoggedIn             | callback function         | This callback function is called whenever a user has been authenticated (i.e., after every login, but also after a sign-up). You can use it to navigate the user to a specific page inside your application (e.g., /home).                                                                        |
+| handleNavigationEvents | boolean                   | If enabled, the user can navigate between screens during the authentication process. When disabled, the user will leave the authentication process immediately when he navigates back or refreshes the page.                                                                                      |
+| initialBlock           | signup-init or login-init | Default: `signup-init`. Allows you to choose which screen the component shows on initialization.                                                                                                                                                                                                  |
+| autoFocus              | boolean                   | Default: `true`. If `true`, the component will automatically focus the first input field when it\'s rendered. If false, this behavior is disabled on the `signup-init` and `login-init` block. Turning this off can be useful because some browsers automatically scroll to focused input fields. |
 
 <Note>
     This component requires the `CorbadoProvider` component. Most configuration settings
