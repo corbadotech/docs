@@ -10,7 +10,7 @@ On successful authentication, the Corbado [Frontend API](/corbado-complete/overv
 | Type                   | Name              | Value                      | Path                                                                    | Attributes                         | Default duration |
 | ---------------------- | ----------------- | -------------------------- | ----------------------------------------------------------------------- | ---------------------------------- | ---------------- |
 | **session-token**      | cbo_session_token | JWT                        | [Application URL](/corbado-complete/helpful-guides/url-overview#2-application-url)    | `secure` `sameSite=lax`            | 5 mins           |
-| **refresh-token**      | cbo_long_session  | Session ID (opaque string) | [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
+| **refresh-token**      | cbo_refresh_token | Opaque string              | [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) | `httpOnly` `secure` `sameSite=lax` | 1 day            |
 
 Both the **session-token** and the **refresh-token** cookies are set with the `secure` flag, which ensures that they can only be accessed on secure internet connections.
 
