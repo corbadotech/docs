@@ -58,7 +58,8 @@ import englishTranslations from "./translations/en";
 const App = () => {
     return (
         <CorbadoProvider
-            projectId="pro-XXX"
+            projectId="pro-1234567890"
+            frontendApi="https://pro-1234567890.frontendapi.cloud.corbado.io"
             customTranslations={{
                 en: englishTranslations,
             }}
@@ -72,7 +73,8 @@ const App = () => {
 ```html VanillaJS
 <script type="module">
     Corbado.load({
-        projectId: "pro-XXX",
+        projectId: "pro-1234567890",
+        frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io",
         customTranslations: {
             en: englishTranslations
         }
