@@ -78,7 +78,6 @@ export class AppComponent implements OnInit, OnDestroy {
         // Load and initialize Corbado SDK when the component mounts
         await Corbado.load({
             projectId: "pro-1234567890",
-            frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io",
             darkMode: 'off',
         });
         // Subscribe to Corbado user changes
@@ -126,7 +125,6 @@ export class AppComponent implements OnInit {
         // Load and initialize Corbado SDK when the component mounts
         await Corbado.load({
             projectId: "pro-1234567890",
-            frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io",
             darkMode: 'off',
         });
     }

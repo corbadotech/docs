@@ -90,44 +90,9 @@ Setting up the CNAME depends on your domain provider. In general, the steps are 
 
 In the Corbado developer panel, you can enter the CNAME [here](https://app.corbado.com/settings/general?tab=Domains).
 
-### 4.6 Set CNAME in UI components and Backend SDKs
+### 4.6 Set CNAME in Backend SDKs
 
-If you use our UI components or one of our Backend SDKs (e.g. for Corbado's session management), you need to update the [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) URL to be the same like the defined CNAME (otherwise you could get a JWT validation error because the `iss` JWT claim would not match anymore). See details here:
-
-**UI components**
-
-<CodeGroup>
-
-```jsx React
-<CorbadoProvider
-    ...
-    frontendApiUrl={"<CNAME>"}
-    ...
-/>
-```
-
-```javascript WebJS component
- await Corbado.load({
-      projectId: "Your Project ID",
-      frontendApiUrl: "<CNAME>"
- });
-```
-
-```html Web component (previous version)
-<corbado-auth project-id="<Project ID>" conditional="yes" endpoint="<CNAME>">
-    <input name="username" id="corbado-username"
-        required autocomplete="webauthn"/>
-</corbado-auth>
-
-<script>
-//Corbado session management (please add the CNAME as second parameter besides the project ID):
-const corbado = new Corbado.Session("<Project ID>", "<CNAME>")
-    </script>
-```
-
-</CodeGroup>
-
-**Backend SDKs**
+If you use one of our Backend SDKs, you need to update the [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) configuration and set it to the CNAME you just set up. This enables the Backend SDKs to verify the JWT issuer (the `session-token` is a JWT) which will be set to the CNAME.
 
 <CodeGroup>
 
@@ -153,11 +118,6 @@ $backendAPI = 'https://backendapi.cloud.corbado.io';
 // Create SDK instance
 $config = new \Corbado\Config($projectID, $apiSecret, $frontendAPI, $backendAPI);
 $sdk = new \Corbado\SDK($config);
-```
-
-```go Corbado GO SDK
-// Acme example
-config.FrontendAPI = "https://auth.acme.com"
 ```
 
 </CodeGroup>

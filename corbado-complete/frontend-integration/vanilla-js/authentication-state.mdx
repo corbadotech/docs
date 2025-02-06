@@ -25,8 +25,7 @@ If you want to access user state once, you can simply call `Corbado.sessionToken
 <body>
     <script type="module">
         await Corbado.load({
-            projectId: "pro-1234567890",
-            frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io"
+            projectId: "pro-1234567890"
         });
         const submitButton = document.getElementById("submitButton");
         submitButton.addEventListener("click", async () => {
@@ -63,8 +62,7 @@ observables.
 <body>
     <script type="module">
         await Corbado.load({
-            projectId: "pro-1234567890",
-            frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io"
+            projectId: "pro-1234567890"
         });
         const userIdElement = document.getElementById("userId");
         Corbado.userChanges.subscribe((next) => {
@@ -92,8 +90,7 @@ You can log out the user by calling `Corbado.logout`.
 <body>
     <script type="module">
         await Corbado.load({
-            projectId: "pro-1234567890",
-            frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io"
+            projectId: "pro-1234567890"
         });
 
         const logoutButton = document.getElementById('logoutButton');

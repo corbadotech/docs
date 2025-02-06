@@ -30,8 +30,7 @@ Once the user is logged in, the `onLoggedIn` callback is executed.
 <body>
     <script type="module">
         await Corbado.load({
-            projectId: "pro-1234567890",
-            frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io"
+            projectId: "pro-1234567890"
         });
         const authElement = document.getElementById("corbadoAuth");
         Corbado.mountAuthUI(authElement, {

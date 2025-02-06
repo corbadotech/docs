@@ -26,8 +26,7 @@ const isCorbadoLoaded = ref(false)
 
 onMounted(async () => {
     await Corbado.load({
-        projectId: "pro-1234567890",
-        frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io"
+        projectId: "pro-1234567890"
     })
     isCorbadoLoaded.value = true // Set the global state to true after Corbado is loaded
 })

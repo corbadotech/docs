@@ -63,7 +63,7 @@ import { CorbadoProvider } from "@corbado/react";
 
 const App = () => {
     return (
-        <CorbadoProvider projectId="pro-1234567890" frontendApi="https://pro-1234567890.frontendapi.cloud.corbado.io">
+        <CorbadoProvider projectId="pro-1234567890">
             /** Your application **/
         </CorbadoProvider>
     );
@@ -74,7 +74,6 @@ const App = () => {
 <script type="module">
     Corbado.load({
         projectId: "pro-1234567890",
-        frontendApi: "https://pro-1234567890.frontendapi.cloud.corbado.io",
         theme: "your-custom-theme"
     });
 </script>
