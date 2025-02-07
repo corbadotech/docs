@@ -27,15 +27,15 @@ If [session refresh](./session-refresh) is enabled, the **session-token** has a 
 
 The **session-token** is stored as a cookie by the Corbado UI component (with the name `cbo_session_token`, refer to [Cookie Security](./security/cookie-security) for more details).
 
-<Note>Previously, the session token was referred to as a short-term session, which is now **deprecated**. However, it is still stored in a cookie named `cbo_short_session` for backward compatibility.</Note>
-
 ## refresh-token
 
 To enhance the security of the [refresh](./session-refresh) mechanism (if enabled), a second token is generated: the **refresh-token**.
 
 Everytime a **session-token** is refreshed (generating a new one) the **refresh-token** is needed.
 
-The **refresh-token** is stored as a cookie by the Corbado UI component (with the name `cbo_long_session`, refer to [Cookie Security](./security/cookie-security) for more details).
+The **refresh-token** is stored as a cookie by the Frontend API (with the name `cbo_refresh_token`, refer to [Cookie Security](./security/cookie-security) for more details).
+
+<Note>Previously, the refresh-token was referred to as a long-term session, which is now **deprecated**. However, it is still stored in a cookie named `cbo_long_session` for backward compatibility.</Note>
 
 ## Advantages
 
