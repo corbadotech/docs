@@ -120,6 +120,24 @@ $config = new \Corbado\Config($projectID, $apiSecret, $frontendAPI, $backendAPI)
 $sdk = new \Corbado\SDK($config);
 ```
 
+```python Corbado Python SDK
+# Configuration
+project_id = '<Your Project ID>'
+api_secret = '<Your API secret>'
+frontend_api = 'https://your-cname.com'
+backend_api = 'https://backendapi.cloud.corbado.io'
+
+config = Config(
+    project_id=project_id,
+    api_secret=api_secret,
+    frontend_api=frontend_api,
+    backend_api=backend_api
+)
+
+# Create SDK instance
+sdk = CorbadoSDK(config=config)
+```
+
 </CodeGroup>
 
 ### 4.7 How do I test if the CNAME is correctly set up for go live?
