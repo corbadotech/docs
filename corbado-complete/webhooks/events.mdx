@@ -1,0 +1,274 @@
+---
+title: "Events"
+description: "This page provides details about specific events of the Corbado Webhook system."
+---
+
+Corbado supports webhooks for the following events:
+
+- `user.created` - sent when a new user is created and confirmed
+
+- `user.updated` - sent when a user's details are updated, including adding or removing an identifier, such as email
+
+- `user.deleted` - sent when a user is deleted
+
+- `passkey.created` - sent when a new passkey is created
+
+- `passkey.deleted` - sent when a passkey is deleted
+
+- `passkey-login.completed` - sent when a user successfully logs in using a passkey
+
+## Payload structure
+
+JSON payload contains the following fields:
+
+- `type` - the type of event that occurred
+- `metadata` - metadata about the event
+  - `ip` - the IP address of the user who triggered the event
+  - `os` - the operating system of the user who triggered the event
+  - `browser` - the browser of the user who triggered the event
+  - `customHeaders` - custom headers sent with the request, configured by the user
+- `timestamp` - the timestamp when the event occurred
+- `data` - the data associated with the event. Different for each event type
+
+Example:
+
+```
+{
+   "type":"passkey.created",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+        "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T08:52:27.130104135Z",
+   "data":{
+      "userID":"usr-8",
+      "credential":{
+         "id":"cre-2511854786935423285",
+         "webAuthnID":"usr-8",
+         "browser":"Chrome 133.0.0",
+         "os":"macOS 15.0.1"
+      }
+   }
+}
+```
+
+## `user.created`
+
+`user.created` event is sent when a new user is created and confirmed. The data payload contains the following fields:
+
+- `user` - the user details
+  - `id` - the user ID
+  - `fullName` - optional full name of the user
+  - `status` - the status of the user
+- `identifiers` - the identifiers associated with the user
+  - `id` - the identifier ID
+  - `type` - the type of identifier, such as email
+  - `value` - the value of the identifier
+  - `status` - the status of the identifier
+
+```
+{
+   "type":"user.created",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+        "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T09:12:37.647033293Z",
+   "data":{
+      "user":{
+         "id":"usr-527190118940595405",
+         "fullName":"Corbado User",
+         "status":"active"
+      },
+      "identifiers":[
+         {
+            "id":"ide-5278639276056059231",
+            "type":"email",
+            "value":"the.new.user@corbado.com",
+            "status":"verified"
+         }
+      ]
+   }
+}
+```
+
+## `user.updated`
+
+`user.updated` event is sent when a user's details are updated, including adding or removing an identifier, such as email. The data payload is the same as `user.created` and contains the following fields:
+
+- `user` - the user details
+  - `id` - the user ID
+  - `fullName` - optional full name of the user
+  - `status` - the status of the user
+- `identifiers` - the identifiers associated with the user
+  - `id` - the identifier ID
+  - `type` - the type of identifier, such as email
+  - `value` - the value of the identifier
+  - `status` - the status of the identifier
+
+```
+{
+   "type":"user.updated",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+        "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T09:12:38.647033293Z",
+   "data":{
+      "user":{
+         "id":"usr-527190118940595405",
+         "fullName":"Updated Corbado User",
+         "status":"active"
+      },
+      "identifiers":[
+         {
+            "id":"ide-5278639276056059231",
+            "type":"email",
+            "value":"the.new.user@corbado.com",
+            "status":"verified"
+         }
+      ]
+   }
+}
+```
+
+## `user.deleted`
+
+`user.deleted` event is sent when a user is deleted. The data payload contains the following fields:
+
+- `userID` - the user ID of deleted user
+
+```
+{
+   "type":"user.deleted",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+        "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T09:12:39.647033293Z",
+   "data":{
+      "userID":"usr-527190118940595405"
+   }
+}
+```
+
+## `passkey.created`
+
+`passkey.created` event is sent when a new passkey is created. The data payload contains the following fields:
+
+- `userID` - the user ID of the user who created the passkey
+- `credential` - the credential details
+  - `id` - the credential ID
+  - `webAuthnID` - the WebAuthn ID of the user
+  - `browser` - the browser used to create the passkey
+  - `os` - the operating system used to create the passkey
+
+```
+{
+   "type":"passkey.created",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+         "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T11:42:05.811560218Z",
+   "data":{
+      "userID":"usr-527190118940595405",
+      "credential":{
+         "id":"cre-10264112935886989443",
+         "webAuthnID":"usr-527190118940595405",
+         "browser":"Chrome 133.0.0",
+         "os":"macOS 15.0.1"
+      }
+   }
+}
+```
+
+## `passkey.deleted`
+
+`passkey.deleted` event is sent when a passkey is deleted. The data payload is the same as `passkey.created` and contains the following fields:
+
+- `userID` - the user ID of the user who created the passkey
+- `credential` - the credential details
+  - `id` - the credential ID
+  - `webAuthnID` - the WebAuthn ID of the user
+  - `browser` - the browser used to create the passkey
+  - `os` - the operating system used to create the passkey
+
+```
+{
+   "type":"passkey.deleted",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+         "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T11:44:32.38858755Z",
+   "data":{
+      "userID":"usr-527190118940595405",
+      "credential":{
+         "id":"cre-10264112935886989443",
+         "webAuthnID":"usr-527190118940595405",
+         "browser":"Chrome 133.0.0",
+         "os":"macOS 15.0.1"
+      }
+   }
+}
+```
+
+## `passkey-login.completed`
+
+`passkey-login.completed` event is sent when a user successfully logs in using a passkey. The data payload is the same as `passkey.created` and contains the following fields:
+
+- `userID` - the user ID of the user who created the passkey
+- `credential` - the credential details
+  - `id` - the credential ID
+  - `webAuthnID` - the WebAuthn ID of the user
+  - `browser` - the browser used to create the passkey
+  - `os` - the operating system used to create the passkey
+
+```
+{
+   "type":"passkey-login.completed",
+   "metadata":{
+      "ip":"172.20.0.13",
+      "os":"macOS 15.0.1",
+      "browser":"Chrome 133.0.0",
+      "customHeaders":{
+         "x-custom-header": "value"
+      }
+   },
+   "timestamp":"2025-02-14T11:46:43.594507722Z",
+   "data":{
+      "userID":"usr-527190118940595405",
+      "credential":{
+         "id":"cre-12532377606666115131",
+         "webAuthnID":"usr-527190118940595405",
+         "browser":"Chrome 133.0.0",
+         "os":"macOS 15.0.1"
+      }
+   }
+}
+```
