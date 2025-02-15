@@ -11,8 +11,4 @@ To ensure your system processes webhooks effectively:
 
 - Your webhook handler should be designed to handle duplicate events safely, as retries may occur
 
-- Webhooks should not be relied upon for mission-critical functionality since delivery is not guaranteed
-
-## Corbado webhooks
-
-Corbado webhooks allow you to subscribe to specific events that occur in Corbado, such as when a user is created or deleted. When an event occurs, Corbado sends an HTTP `POST` request to the webhook's configured URL. The request includes a JSON payload with information about the event.
+- Webhooks should not be relied upon for mission-critical functionality since delivery is not guaranteed (e.g. your webhook endpoint was offline)
