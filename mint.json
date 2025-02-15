@@ -259,6 +259,16 @@
             ]
         },
         {
+            "group": "Webhooks",
+            "pages": [
+                "corbado-complete/webhooks/overview",
+                "corbado-complete/webhooks/delivery",
+                "corbado-complete/webhooks/events",
+                "corbado-complete/webhooks/authentication",
+                "corbado-complete/webhooks/local-development"
+            ]
+        },
+        {
             "group": "Analytics",
             "pages": [
                 "corbado-complete/analytics/passkeys-analyzer"

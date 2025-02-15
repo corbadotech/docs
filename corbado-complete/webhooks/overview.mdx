@@ -1,0 +1,14 @@
+---
+title: "Overview"
+description: "This page provides an overview of the Corbado Webhook system."
+---
+
+Webhooks are a powerful way to integrate Corbado with your application. They allow you to receive near real-time notifications when specific events occur in Corbado rather than polling the API for changes.
+
+Webhooks in Corbado operate on a *best-effort* basis. This means that Corbado will attempt to deliver webhook events to your server, but delivery is *not guaranteed*. If a webhook delivery fails, Corbado will automatically retry the delivery *up to two times* before stopping further attempts.
+
+To ensure your system processes webhooks effectively:
+
+- Your webhook handler should be designed to handle duplicate events safely, as retries may occur
+
+- Webhooks should not be relied upon for mission-critical functionality since delivery is not guaranteed (e.g. your webhook endpoint was offline)

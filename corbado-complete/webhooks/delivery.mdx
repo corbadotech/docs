@@ -1,0 +1,8 @@
+---
+title: "Delivery"
+description: "Learn more about event delivery and retry mechanisms in Corbado webhooks."
+---
+
+Corbado allows you to subscribe to specific event types and receive near real-time notifications when these events occur by creating Webhook Endpoints. Each Webhook Endpoint needs a URL to which Corbado sends the event data, list of event types to subscribe to and optional basic authentication.
+
+When an event is triggered, Corbado sends an HTTP `POST` request to the configured webhook URL if event type matches the subscription. The request includes a JSON payload with information about the event. Each webhook request has `Content-Type: application/json` header. Corbado also duplicates the event type in `X-Corbado-Webhook-Event` header to provide a type hint before event deserialization. Every webhook request is retried up to two times if the delivery fails. A failed delivery means that the webhook endpoint did not respond with a `2xx` status code or failed to respond at all.
