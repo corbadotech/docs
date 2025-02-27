@@ -1,0 +1,55 @@
+---
+title: "System Architecture"
+description: "Learn about Corbado's system components and how they integrate with your application."
+sidebarTitle: "System Architecture"
+---
+
+import Blogpost from "/snippets/blogpost.mdx";
+
+Corbado offers multiple integration options and supports various types of applications (including regular web applications, single page applications, and native apps). The following chart illustrates how your application interacts with Corbado:
+
+![System Architecture](/images/overview/system-architecture.jpg)
+
+# Corbado UI Components
+
+For seamless frontend integration, Corbado provides UI components that handle all user-related processes such as signup and login. These components are compatible with multiple popular frameworks including Next.js, React, Vue.js, Angular and Vanilla JS. Learn more about our UI components [here](/corbado-complete/ui-components).
+
+# Corbado Frontend API
+
+The Corbado Frontend API serves as the foundation for the Corbado UI Components. While it's possible to interact with the Corbado Frontend API directly, we don't recommend this approach due to the complexity of authentication processes like signup and login.
+
+The Corbado Frontend API provides both authenticated and unauthenticated endpoints. Authenticated endpoints require a valid Corbado Session, which is issued to users upon successful authentication.
+
+<Card href="https://apireference.cloud.corbado.io/frontendapi-v2/">
+    <Blogpost title="Corbado Frontend API Reference" />
+</Card>
+
+# Corbado Backend API
+
+The Corbado Backend API provides the core functionality of Corbado's Authentication system and is utilized by both the Corbado Frontend API and your backend application. It enables you to perform essential operations such as managing users and their associated identifiers.
+
+The Corbado Backend API implements HTTP Basic Authentication and is restricted to clients capable of securely storing secrets. For authentication, use your project ID as the username and your API secret as the password. You can generate an API secret in the [developer panel](https://app.corbado.com/settings/api-secrets).
+
+<Warning>
+Native applications are not secure clients, as API secrets can be extracted through decompilation. Never store API secrets in your native application's code!
+</Warning>
+
+The Corbado Backend API adheres to a commonly recognized RESTful structure, which should make its usage fairly intuitive. However, should you require any assistance, you are always welcome to [contact us](https://www.corbado.com/contact).
+
+<Note>
+Your Corbado Backend API can be accessed at the following URL (default value):
+
+**https://backendapi.cloud.corbado.io**
+</Note>
+
+<Card href="https://apireference.cloud.corbado.io/backendapi-v2/">
+    <Blogpost title="Corbado Backend API Reference" />
+</Card>
+
+# Corbado User Database
+
+As shown in the architecture diagram, Corbado maintains its own user database while your application likely maintains a separate user database to store additional user properties and information.
+
+When a user signs up, Corbado creates a user record in its database. After successful authentication, we recommend checking your local user database using the Corbado user ID to determine if the user already exists. If they don't exist, you can create a new user record and collect any additional information needed for your application.
+
+We offer comprehensive [integration guides](https://app.corbado.com/getting-started) for various programming languages and frameworks that demonstrate how to implement this user management flow.

@@ -11,6 +11,6 @@ The session watcher checks every 10 seconds if there exists a **session-token** 
 
 ## Refresh routine
 
-In order to refresh the **session-token**, 60 seconds before the **session-token** expires, a refresh will be triggered. This refresh fetches a new **session-token** from the [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api). On this fetch, the **refresh-token** cookie gets transferred and the refresh routine issues a new **session-token** for you.
+In order to refresh the **session-token**, 60 seconds before the **session-token** expires, a refresh will be triggered. This refresh fetches a new **session-token** from the [Frontend API](/corbado-complete/overview/system-architecture#corbado-frontend-api). On this fetch, the **refresh-token** cookie gets transferred and the refresh routine issues a new **session-token** for you.
 
 In case there is no internet connection, it tries every ten seconds to refresh the **session-token**.

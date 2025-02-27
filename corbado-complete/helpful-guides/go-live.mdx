@@ -92,7 +92,7 @@ In the Corbado developer panel, you can enter the CNAME [here](https://app.corba
 
 ### 4.6 Set CNAME in Backend SDKs
 
-If you use one of our Backend SDKs, you need to update the [Frontend API](/corbado-complete/overview/corbado-api-structure/frontend-api) configuration and set it to the CNAME you just set up. This enables the Backend SDKs to verify the JWT issuer (the `session-token` is a JWT) which will be set to the CNAME.
+If you use one of our Backend SDKs, you need to update the [Frontend API](/corbado-complete/overview/system-architecture#corbado-frontend-api) configuration and set it to the CNAME you just set up. This enables the Backend SDKs to verify the JWT issuer (the `session-token` is a JWT) which will be set to the CNAME.
 
 <CodeGroup>
 
@@ -162,7 +162,7 @@ Alternatively, you can use an online DNS lookup tool (e.g. [MxToolbox](https://m
 
 ## 5. Create API secrets for production
 
-If you've used one of Corbado's Backend SDKs, you should create a new API secret [here](https://app.corbado.com/app/settings/credentials/api-keys) that is only valid for production in order to prevent the leakage of a development's API secret.
+If you've used one of Corbado's Backend SDKs, you should create a new API secret [here](https://app.corbado.com/app/settings/api-secrets) that is only valid for production in order to prevent the leakage of a development's API secret.
 
 ## 6. Deploy your code
 
