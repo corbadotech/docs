@@ -28,7 +28,7 @@ The Frontend API provides both authenticated and unauthenticated endpoints. Auth
 
 The Backend API provides the core functionality of Corbado's Authentication system and is utilized by both the Frontend API and your backend application. It enables you to perform essential operations such as managing users and their associated identifiers.
 
-The Backend API implements HTTP Basic Authentication and is restricted to clients capable of securely storing secrets. For authentication, use your project ID as the username and your API secret as the password. You can generate an API secret in the [developer panel](https://app.corbado.com/settings/credentials).
+The Backend API implements HTTP Basic Authentication and is restricted to clients capable of securely storing secrets. For authentication, use your project ID as the username and your API secret as the password. You can generate an API secret in the [developer panel](https://app.corbado.com/settings/api-secrets).
 
 <Warning>
 Native applications are not secure clients, as API secrets can be extracted through decompilation. Never store API secrets in your native application's code!
