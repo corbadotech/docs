@@ -89,14 +89,7 @@
                         }
                     ]
                 },
-                {
-                    "group": "Corbado API Structure",
-                    "pages": [
-                        "corbado-complete/overview/corbado-api-structure",
-                        "corbado-complete/overview/corbado-api-structure/frontend-api",
-                        "corbado-complete/overview/corbado-api-structure/backend-api"
-                    ]
-                }
+                "corbado-complete/overview/system-architecture"
             ]
         },
         {
