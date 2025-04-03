@@ -40,6 +40,10 @@
     },
     "tabs": [
         {
+            "name": "Start",
+            "url": "/start"
+        },
+        {
             "name": "Corbado Complete",
             "url": "/corbado-complete"
         },
@@ -48,6 +52,11 @@
             "url": "/corbado-connect"
         }
     ],
+    "primaryTab": {
+        "name": "Start"
+    },
+    "defaultPath": "/start",
+    "homepage": "/start",
     "anchors": [
         {
             "name": "Community",
@@ -66,6 +75,12 @@
         }
     ],
     "navigation": [
+        {
+            "group": "Getting Started",
+            "pages": [
+                "start"
+            ]
+        },
         {
             "group": "Overview",
             "pages": [
@@ -314,6 +329,10 @@
         "linkedin": "https://www.linkedin.com/company/corbado"
     },
     "redirects": [
+        {
+            "source": "/",
+            "destination": "/start"
+        },
         {
             "source": "/frontend-integration/ui-components",
             "destination": "/corbado-complete/ui-components/"
