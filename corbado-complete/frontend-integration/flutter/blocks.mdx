@@ -1,0 +1,24 @@
+---
+title: "New file"
+description: "Description of your new file."
+---
+
+When adding passkeys to your Flutter app, you'll need to support several user flows:
+
+- **Sign up** and **log in** with a passkey
+- Provide **fallback options** when passkeys aren’t available
+- Prompt users to **create a passkey** if they don’t have one yet
+
+Managing when and how these screens appear requires quite a bit of logic.
+**Corbado** simplifies this by offering:
+
+- A service that handles this logic for you
+- A developer panel to configure screen flows ([Settings \> User Interface](/settings/userinterface?tab=Overview))
+- Full flexibility to build your **own custom UI**
+
+To make implementation easy, we introduced **Corbado Blocks**. Each block (e.g., `SignupInitBlock`) defines:
+
+- The **data** available for a screen
+- The **functionality** you can trigger
+
+Next, we’ll walk you through each block and show how to implement them in your Flutter app.

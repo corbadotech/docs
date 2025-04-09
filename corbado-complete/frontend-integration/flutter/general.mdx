@@ -1,0 +1,99 @@
+---
+title: "General"
+description: "Corbado provides an open-source Flutter package to add passkeys your native app."
+---
+
+import Blogpost from "/snippets/blogpost.mdx"
+
+<a href="https://app.corbado.com/integration-guides/flutter" target="_blank">
+  <img noZoom src="https://github.com/user-attachments/assets/7859201b-a345-4b68-b336-6e2edcc6577b" />
+</a>
+
+## Overview
+
+The [corbado_auth](https://github.com/corbado/flutter-passkeys/tree/main/packages/corbado_auth) package provides an authentication SDK that fully integrates with Corbado's relying party server. Therefore, `corbado_auth` is the easiest way to add passkeys to your Flutter app. All you need to do is to set up your Corbado project and install `corbado_auth`.
+
+**Supported platforms**: Android, iOS, Web
+
+With `corbado_auth` you can:
+
+- sign up and login users with [passkeys](https://www.corbado.com/glossary/passkey)
+- login users with [Conditional UI](https://www.corbado.com/glossary/conditional-ui)
+- use email one-time passcodes (OTP) as a [fallback](/corbado-complete/helpful-guides/passkeys/fallback-options) mechanism for cases when passkeys cannot be used
+
+### Demos
+
+- 🔗 **[Live Demo (Flutter Web on Vercel)](https://corbadoauth.flutter.corbado.io)**
+  Explore a live example of Flutter web deployment on Vercel.
+
+- 📱 **Official Corbado App (Flutter)**
+  Another demonstration of a Corbado integration in a Flutter app is our official Corbado App:
+    - [Apple App Store](https://apps.apple.com/app/corbado-developer-panel/id6468424589)
+    - [Google Play Store](https://play.google.com/store/apps/details?id=com.corbado.developerpanel.app)
+
+## 1. Prerequisites
+
+<Note>
+Please see the [pub.dev page](https://pub.dev/packages/corbado_auth) for the latest prerequisites of the `corbado_auth` Flutter package.
+</Note>
+
+First, you need to set up a [Corbado project](/corbado-complete/overview/getting-started).
+
+Start by cloning our GitHub example repository:
+
+```bash
+git clone https://github.com/corbado/example-passkeys-flutter.git
+```
+
+## 2. Running the example
+
+First, we need to install the iOS Simulator and the Android Emulator:
+
+- **Xcode / iOS Simulator:**
+  Follow the [official Flutter guide](https://docs.flutter.dev/get-started/install/macos#ios-setup) to install Xcode and configure the iOS Simulator.
+
+- **Android Studio / Emulator:**
+  Follow the [official Flutter guide](https://docs.flutter.dev/get-started/install) to install Android Studio and set up the Android Emulator.
+
+> Please make sure you're using the latest versions of both Xcode and Android Studio.
+
+Next, we verify that the local development environment is properly configured:
+
+```bash
+flutter doctor
+```
+
+To enable passkeys, we need to configure both the iOS Simulator and the Android Emulator:
+
+- **iOS Simulator:**
+  To enable Touch ID (on older versions) or Face ID, use the iOS Simulator menu:
+
+    - **Features → Face ID / Touch ID → Enrolled**
+    - Trigger authentication using **Features → Face ID / Touch ID → Matching Face / Matching Touch**
+
+        **_Note:_** Simulate Face ID: `Command + Shift + M` / Simulate Touch ID: `Command + Shift + H`
+
+- **Android Emulator:**
+  Configure Passkeys by setting up a Google account and PIN:
+
+    1. Open Android Studio and launch the AVD Manager.
+    2. Select your emulator and ensure it's running API level 30 or higher.
+    3. Set up a Google account on the emulator (needed for passkeys).
+    4. Enable a PIN or password under `Settings → Security`.
+    5. Enable Fingerprint authentication in `Settings → Security → Fingerprint`.
+
+        **_Note:_** To simulate fingerprint authentication, you can use this command in the terminal:
+
+        ```bash
+        adb emu finger touch <finger_id>
+        ```
+
+    In case of issues during setup, please check this Troubleshooting Guide for further information: [Corbado Troubleshooting Guide](https://www.corbado.com/blog/flutter-passkeys-package#android-screen-lock-not-set-up-on-virtual-android-device)
+
+### Running the Example
+
+Finally, we can run the Flutter application by executing this command in the terminal:
+
+```bash
+flutter run lib/main.dart
+```

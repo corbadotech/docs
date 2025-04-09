@@ -1,0 +1,37 @@
+---
+title: 'New file'
+description: 'Description of your new file.'
+---
+
+This block is used to initiate a sign up. The goal of this block is to ask the user for a unique identifier (currently only email is supported) and an optional name (we call this a fullname at Corbado). The corresponding screen will thus be shown when a user starts a new signup in your app.
+
+### Screen
+
+First, we create a new screen implementing the `SignupInitBlock`:
+
+scr signup_init_block_constructor
+
+Then we add a `TextField` input for the email with its controller:
+
+scr signup_init_email_controller
+
+scr signup_init_email_textfield
+
+Finally, we add two buttons for navigating to Login and submission:
+
+scr signup_init_fallback
+
+scr signup_init_submit
+
+### Available block data
+
+Stores signup initialization details like `fullName`, `email`, and `primaryLoading`.
+
+### Available block methods
+
+- `navigateToLogin()`: Redirects users to the login screen.
+- `submitSignupInit({String? email, String? fullName}) async`: Initiates the signup process with optional email and full name.
+
+### Full code example
+
+scr signup_init

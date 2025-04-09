@@ -1,0 +1,213 @@
+---
+title: "Frontend Integration Guide"
+description: "In the following steps, we will guide you on how to integrate Corbado into your frontend."
+---
+## 1. Install dependencies
+
+When cloning the example, all dependencies are already set up, and you just need to run:
+
+```bash
+flutter pub get
+```
+
+If you start from scratch you need to install the `corbado_auth` Package:
+
+```bash
+flutter pub add corbado_auth
+```
+
+## 2. Initialize Corbado
+
+First, we need to set up the Corbado provider. The provider setup should be placed in a dedicated provider file:
+
+```dart lib/auth_provider.dart
+final corbadoProvider = Provider<CorbadoAuth>(
+    (ref) => throw UnimplementedError("no instance of corbadoAuth"));
+```
+
+Next, we need to initialize CorbadoAuth and configure the provider:
+
+```dart lib/main.dart
+final corbadoAuth = CorbadoAuth();
+  await corbadoAuth.init(projectId: projectId);
+ 
+  // Finally we override the providers that needed initialization.
+  // Now the real app can be loaded.
+  runApp(ProviderScope(
+    overrides: [
+      corbadoProvider.overrideWithValue(corbadoAuth),
+    ],
+    child: const MyApp(),
+  ));
+```
+
+Ensure the provider is correctly initialized within your app's state management solution, such as Riverpod.
+
+## 3. Implement authentication flow
+
+We use a provider to handle authentication state and access user information:
+
+```dart lib/auth_provider.dart
+final userProvider = StreamProvider<User?>((ref) async* {
+  final corbado = ref.watch(corbadoProvider);
+  await for (final value in corbado.userChanges) {
+    yield value;
+  }
+});
+```
+
+```dart lib/auth_provider.dart
+final authStateProvider = StreamProvider((ref) async* {
+  final corbado = ref.watch(corbadoProvider);
+  await for (final value in corbado.authStateChanges) {
+    yield value;
+  }
+});
+```
+
+To manage user navigation, we need to set up routing that is aware of authentication status. Here is an example using go_router:
+
+```dart lib/router.dart
+final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateProvider);
+ 
+  return GoRouter(
+      initialLocation: Routes.auth,
+      routes: [
+        _defaultTransitionGoRoute(
+          path: Routes.auth,
+          builder: (context, state) => AuthPage(),
+        ),
+        _defaultTransitionGoRoute(
+          path: Routes.profile,
+          builder: (context, state) => ProfilePage(),
+        ),
+        _defaultTransitionGoRoute(
+          path: Routes.editProfile,
+          builder: (context, state) => EditProfilePage(),
+        ),
+        _defaultTransitionGoRoute(
+          path: Routes.passkeyList,
+          builder: (context, state) => PasskeyListPage(),
+        ),
+      ],
+      redirect: (BuildContext context, GoRouterState state) {
+        final onLoggedOutRoutes = [
+          Routes.auth,
+        ].contains(state.fullPath);
+ 
+        if (authState.value == null) {
+          return null;
+        }
+ 
+        switch (authState.value!) {
+          case AuthState.None:
+          // if the user is not logged in but currently on a page that should
+          // only be visible for logged in users => redirect to signIn page.
+            if (!onLoggedOutRoutes) {
+              return Routes.auth;
+            }
+          case AuthState.SignedIn:
+          // if the user is logged in but currently on a page that should
+          // only be visible for logged out users => redirect to profile page.
+            if (onLoggedOutRoutes) {
+              return Routes.profile;
+            }
+        }
+ 
+        return null;
+      });
+});
+```
+
+Corbado's authentication flow requires handling user navigation based on authentication state. The routing configuration ensures that:
+
+- **Unauthenticated users** are redirected to the authentication screen (`/auth`).
+- **Authenticated users** are redirected to the profile screen (`/profile`).
+- Users cannot access restricted pages unless they are logged in.
+
+The redirect logic ensures:
+
+- If a user is **not signed in** and tries to access a protected route, they are sent to `/auth`.
+- If a user is **already signed in** but tries to access `/auth`, they are redirected to `/profile` instead.
+
+This behavior is handled within the `redirect` function in the routing setup:
+
+```dart lib/router.dart
+redirect: (BuildContext context, GoRouterState state) {
+        final onLoggedOutRoutes = [
+          Routes.auth,
+        ].contains(state.fullPath);
+ 
+        if (authState.value == null) {
+          return null;
+        }
+ 
+        switch (authState.value!) {
+          case AuthState.None:
+          // if the user is not logged in but currently on a page that should
+          // only be visible for logged in users => redirect to signIn page.
+            if (!onLoggedOutRoutes) {
+              return Routes.auth;
+            }
+          case AuthState.SignedIn:
+          // if the user is logged in but currently on a page that should
+          // only be visible for logged out users => redirect to profile page.
+            if (onLoggedOutRoutes) {
+              return Routes.profile;
+            }
+        }
+ 
+        return null;
+      });
+```
+
+## 4. Create authentication screens
+
+To display the authentication UI, `CorbadoAuthComponent` is used, which internally manages authentication flows such as signup, login, and passkey handling. The `corbadoAuth` provider is accessed using Riverpod:
+
+```dart lib/pages/auth_page.dart
+final corbadoAuth = ref.watch(corbadoProvider);
+```
+
+The authentication screen is implemented using `CorbadoAuthComponent`, handling user interactions:
+
+```dart lib/pages/auth_page.dart
+CorbadoAuthComponent(
+                  corbadoAuth: corbadoAuth,
+                  components: CorbadoScreens(
+                    signupInit: SignupInitScreen.new,
+                    loginInit: LoginInitScreen.new,
+                    emailVerifyOtp: EmailVerifyOtpScreen.new,
+                    passkeyAppend: PasskeyAppendScreen.new,
+                    passkeyVerify: PasskeyVerifyScreen.new,
+                    emailEdit: EmailEditScreen.new,
+                  ),
+                ),
+```
+
+After successful login, users are redirected to their profile. This page provides basic user information and allows users to sign out.
+
+The profile screen can include:
+
+- A welcome message displaying the authenticated user's details.
+- A sign-out button to log the user out and return to the authentication screen.
+
+## 5. Handle Corbado screens
+
+Corbado authentication is structured into multiple screens, each corresponding to a different part of the authentication flow. These screens are implemented using `CorbadoScreen<T>`, where `T` represents a supported Corbado block containing the required logic. Corbado automatically manages routing between these screens internally.
+
+For a deeper understanding of how these blocks work, we will go through each in the next steps.
+
+## 6. Set up Flutter Web
+
+For Flutter web applications, include the Corbado JavaScript bundle in your `index.html`:
+
+```html web/index.html
+<script
+    src="https://github.com/corbado/flutter-passkeys/releases/download/2.4.0/bundle.js"
+    type="application/javascript"
+></script>
+```
+
+Check the [index.html example](https://github.com/corbado/example-passkeys-flutter/blob/main/web/index.html) for reference.
