@@ -1,27 +1,60 @@
 ---
-title: 'New file'
-description: 'Description of your new file.'
+title: 'SignupInitBlock'
+description: 'Used to initiate a sign up. '
 ---
 
-This block is used to initiate a sign up. The goal of this block is to ask the user for a unique identifier (currently only email is supported) and an optional name (we call this a fullname at Corbado). The corresponding screen will thus be shown when a user starts a new signup in your app.
+The goal of this block is to ask the user for a unique identifier (currently only email is supported) and an optional name (we call this a fullname at Corbado). The corresponding screen will thus be shown when a user starts a new signup in your app.
 
 ### Screen
 
 First, we create a new screen implementing the `SignupInitBlock`:
 
-scr signup_init_block_constructor
+```dart lib/screens/signup_init.dart
+class SignupInitScreen extends HookWidget
+    implements CorbadoScreen<SignupInitBlock> {
+  final SignupInitBlock block;
+ 
+  SignupInitScreen(this.block);
+```
 
 Then we add a `TextField` input for the email with its controller:
 
-scr signup_init_email_controller
+```dart lib/screens/signup_init.dart
+final emailController = useTextEditingController(text: email.value);
+```
 
-scr signup_init_email_textfield
+```dart lib/screens/signup_init.dart
+TextField(
+            key: const ValueKey('textfield-email'),
+            controller: emailController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Email address',
+            ),
+          ),
+```
 
 Finally, we add two buttons for navigating to Login and submission:
 
-scr signup_init_fallback
+```dart lib/screens/signup_init.dart
+OutlinedTextButton(
+            onTap: block.navigateToLogin,
+            content: 'I already have an account',
+          ),
+```
 
-scr signup_init_submit
+```dart lib/screens/signup_init.dart
+FilledTextButton(
+            isLoading: block.data.primaryLoading,
+            onTap: () async {
+              await block.submitSignupInit(
+                email: emailController.text,
+                fullName: fullName != null ? fullNameController.text : 'fixed',
+              );
+            },
+            content: 'Sign up',
+          ),
+```
 
 ### Available block data
 
@@ -34,4 +67,126 @@ Stores signup initialization details like `fullName`, `email`, and `primaryLoadi
 
 ### Full code example
 
-scr signup_init
+```dart lib/screens/signup_init.dart
+import 'package:corbado_auth/corbado_auth.dart';
+import 'package:corbado_auth_example/screens/helper.dart';
+import 'package:corbado_auth_example/widgets/filled_text_button.dart';
+import 'package:corbado_auth_example/widgets/generic_error.dart';
+import 'package:corbado_auth_example/widgets/outlined_text_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+ 
+class SignupInitScreen extends HookWidget
+    implements CorbadoScreen<SignupInitBlock> {
+  final SignupInitBlock block;
+ 
+  SignupInitScreen(this.block);
+ 
+  Widget build(BuildContext context) {
+    final email = block.data.email;
+    final fullName = block.data.fullName;
+ 
+    if (email == null) {
+      return Container();
+    }
+ 
+    final emailController = useTextEditingController(text: email.value);
+ 
+    final fullNameController = useTextEditingController(text: fullName?.value);
+ 
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final maybeError = block.error;
+        if (maybeError != null) {
+          showNotificationError(context, maybeError.translatedError);
+        }
+      });
+    }, [block.error]);
+ 
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        MaybeGenericError(message: block.error?.translatedError),
+        const SizedBox(
+          height: 10,
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          child: Text(
+            'Tired of passwords?',
+            style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Text(
+            'Sign up using your biometrics like fingerprint or face.',
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child:
+          TextField(
+            key: const ValueKey('textfield-email'),
+            controller: emailController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Email address',
+            ),
+          ),
+        ),
+        MaybeGenericError(message: email.error?.translatedError),
+        if (fullName != null)
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: TextField(
+                  key: const ValueKey('textfield-fullName'),
+                  controller: fullNameController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Full name',
+                  ),
+                ),
+              ),
+              MaybeGenericError(message: fullName.error?.translatedError),
+            ],
+          ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child:
+          FilledTextButton(
+            isLoading: block.data.primaryLoading,
+            onTap: () async {
+              await block.submitSignupInit(
+                email: emailController.text,
+                fullName: fullName != null ? fullNameController.text : 'fixed',
+              );
+            },
+            content: 'Sign up',
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child:
+          OutlinedTextButton(
+            onTap: block.navigateToLogin,
+            content: 'I already have an account',
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
