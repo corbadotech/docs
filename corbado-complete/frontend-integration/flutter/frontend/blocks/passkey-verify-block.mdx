@@ -1,0 +1,41 @@
+---
+title: 'PasskeyVerifyBlock'
+description: 'Used to verify a passkey during login.'
+---
+
+The goal of this block is to verify a passkey during the login process. The corresponding screen will be shown when a user has a passkey available and needs to verify it.
+
+## Available block data
+
+Stores passkey verification details like `primaryLoading`.
+
+## Available block methods
+
+- `verifyPasskey() async`: Verifies the passkey for authentication.
+
+## Implementation Steps
+<Steps>
+  <Step title="Create Passkey Verify Screen">
+    Create a new screen that implements the `PasskeyVerifyBlock` interface. This screen will handle the passkey verification process.
+
+    ```dart lib/screens/passkey_verify.dart
+    class PasskeyVerifyScreen extends HookWidget implements CorbadoScreen<PasskeyVerifyBlock> {
+      final PasskeyVerifyBlock block;
+      
+      PasskeyVerifyScreen(this.block);
+    ```
+  </Step>
+  <Step title="Add Verification Button">
+    Implement a button to trigger the passkey verification process.
+    <CodeGroup>
+    ```dart Verify Button
+    FilledTextButton(
+      isLoading: block.data.primaryLoading,
+      onTap: block.verifyPasskey,
+      content: 'Verify with Passkey',
+    ),
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+<Note>For a complete implementation example, see the [PasskeyVerifyScreen implementation on GitHub](https://github.com/corbado/example-passkeys-flutter/blob/main/lib/screens/passkey_verify.dart).</Note>

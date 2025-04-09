@@ -188,13 +188,23 @@
                     "group": "Flutter",
                     "pages": [
                         "corbado-complete/frontend-integration/flutter/general",
-                        "corbado-complete/frontend-integration/flutter/frontend-integration",
                         {
-                            "group": "Blocks",
+                            "group": "Frontend",
                             "pages": [
-                                "corbado-complete/frontend-integration/flutter/blocks/blocks",
-                                "corbado-complete/frontend-integration/flutter/blocks/login-init-block",
-                                "corbado-complete/frontend-integration/flutter/blocks/signup-init-block"
+                                "corbado-complete/frontend-integration/flutter/frontend/frontend-integration",
+                                {
+                                    "group": "Blocks",
+                                    "pages": [
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/blocks",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/login-init-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/signup-init-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/passkey-append-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/passkey-verify-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/email-verify-block"
+                                    ]
+                                },
+                                "corbado-complete/frontend-integration/flutter/frontend/getting-user-data-frontend",
+                                "corbado-complete/frontend-integration/flutter/frontend/making-requests"
                             ]
                         }
                     ]

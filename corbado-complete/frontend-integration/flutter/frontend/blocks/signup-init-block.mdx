@@ -1,0 +1,86 @@
+---
+title: 'SignupInitBlock'
+description: 'Used to initiate a sign up. '
+---
+
+The goal of this block is to ask the user for a unique identifier (currently only email is supported) and an optional name (we call this a fullname at Corbado). The corresponding screen will thus be shown when a user starts a new signup in your app.
+
+## Available block data
+
+Stores signup initialization details like `fullName`, `email`, and `primaryLoading`.
+
+## Available block methods
+
+- `navigateToLogin()`: Redirects users to the login screen.
+- `submitSignupInit({String? email, String? fullName}) async`: Initiates the signup process with optional email and full name.
+
+## Implementation Steps
+<Steps>
+  <Step title="Create Signup Screen">
+    Create a new screen that implements the `SignupInitBlock` interface. This screen will handle the initial signup process.
+
+    ```dart lib/screens/signup_init.dart
+    class SignupInitScreen extends HookWidget implements CorbadoScreen<SignupInitBlock> {
+      final SignupInitBlock block;
+     
+      SignupInitScreen(this.block);
+    ```
+  </Step>
+  <Step title="Set Up Controllers">
+    Initialize text controllers for the email and full name input fields, pre-populated with any existing values.
+
+    ```dart lib/screens/signup_init.dart
+    final emailController = useTextEditingController(text: block.data.email);
+    final fullNameController = useTextEditingController(text: block.data.fullName);
+    ```
+  </Step>
+  <Step title="Create Input Fields">
+    Implement text fields for email and full name input with proper styling.
+    <CodeGroup>
+    ```dart Email Input Field
+    TextField(
+      controller: emailController,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Email address',
+      ),
+    ),
+    ```
+
+    ```dart Full Name Input Field
+    TextField(
+      controller: fullNameController,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Full name',
+      ),
+    ),
+    ```
+    </CodeGroup>
+  </Step>
+  <Step title="Add Navigation and Action Buttons">
+    Implement buttons for navigating to login and submitting the signup form.
+    <CodeGroup>
+    ```dart Login Navigation Button
+    OutlinedTextButton(
+      onTap: block.navigateToLogin,
+      content: 'I already have an account',
+    ),
+    ```
+
+    ```dart Signup Submit Button
+    FilledTextButton(
+      isLoading: block.data.primaryLoading,
+      onTap: () async {
+        await block.submitSignupInit(
+          email: emailController.text,
+          fullName: fullNameController.text,
+        );
+      },
+      content: 'Sign up',
+    ),
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+<Note>For a complete implementation example, see the [SignupInitScreen implementation on GitHub](https://github.com/corbado/example-passkeys-flutter/blob/main/lib/screens/signup_init.dart).</Note>

@@ -1,0 +1,136 @@
+---
+title: 'EmailVerifyBlock'
+description: 'Used to verify that a user has access to an email address.'
+---
+
+The corresponding screens will thus be shown during a signup (e.g. if passkeys are not supported or if you have configured your Corbado project to verify each email address during signup) or during a login (if no passkey has been used).
+
+- When the screen for this block is rendered, Corbado has already sent out an email to the user containing a 6-digit code. The user should provide this code through the screen.
+- It allows to enter the code multiple time in case of error or to resend the email (after 30s have passed).
+- It allows the user to change the email address in case he typed in the wrong email.
+
+## Available block data
+
+Stores email verification details like `email`, `verificationMethod`, `retryNotBefore`, `isPostLoginVerification`, and `primaryLoading`.
+
+## Available block methods
+
+- `navigateToEditEmail()`: Redirects users to the email edit screen.
+- `navigateToVerifyEmail()`: Redirects users to the email verify screen.
+- `submitOtpCode(String otpCode) async`: Submits the OTP for verification.
+- `resendEmail() async`: Resends the email verification code.
+- `updateEmail(String newValue) async`: Updates the email if needed.
+
+## Implementation Steps
+<Steps>
+  <Step title="Create Email Verification Screen">
+    Create a new screen that implements the `EmailVerifyBlock` interface. This screen will handle the OTP verification process.
+
+    ```dart lib/screens/email_verify_otp.dart
+    class EmailVerifyOtpScreen extends HookWidget implements CorbadoScreen<EmailVerifyBlock> {
+      final EmailVerifyBlock block;
+    
+      EmailVerifyOtpScreen(this.block);
+    ```
+  </Step>
+  <Step title="Set Up OTP Controller">
+    Initialize a text controller for the OTP input field to capture the verification code.
+
+    ```dart lib/screens/email_verify_otp.dart
+    final otpController = useTextEditingController();
+    ```
+  </Step>
+  <Step title="Create OTP Input Field">
+    Implement a text field for OTP input with proper styling and placeholder text.
+
+    ```dart lib/screens/email_verify_otp.dart
+    TextField(
+      controller: otpController,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'XXXXXX',
+      ),
+    ),
+    ```
+  </Step>
+  <Step title="Add Action Buttons">
+    Implement buttons for submitting the OTP code, resending the email, and changing the email address.
+    <CodeGroup>
+    ```dart Submit OTP Button
+    FilledTextButton(
+      isLoading: block.data.primaryLoading,
+      onTap: () async {
+        await block.submitOtpCode(otpController.text);
+      },
+      content: 'Submit',
+    ),
+    ```
+
+    ```dart Resend Email Button
+    OutlinedTextButton(
+      onTap: block.resendEmail,
+      content: 'Resend code',
+    ),
+    ```
+
+    ```dart Edit Email Button
+    OutlinedTextButton(
+      onTap: block.navigateToEditEmail,
+      content: 'Change email',
+    ),
+    ```
+    </CodeGroup>
+  </Step>
+  <Step title="Create Email Edit Screen">
+    Create a separate screen for editing the email address if needed.
+
+    ```dart lib/screens/email_edit.dart
+    class EmailEditScreen extends HookWidget implements CorbadoScreen<EmailVerifyBlock> {
+      final EmailVerifyBlock block;
+    
+      EmailEditScreen(this.block);
+    ```
+    </Step>
+    <Step title="Set Up Email Edit Controller">
+    Initialize a text controller for the email input field, pre-populated with the current email.
+
+    ```dart lib/screens/email_edit.dart
+    final emailController = useTextEditingController(text: email);
+    ```
+  </Step>
+  <Step title="Create Email Edit Field">
+    Implement a text field for email input with proper styling.
+
+    ```dart lib/screens/email_edit.dart
+    TextField(
+      controller: emailController,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Email address',
+      ),
+    ),
+    ```
+  </Step>
+  <Step title="Add Email Edit Actions">
+    Implement buttons for submitting the updated email and canceling the edit.
+    <CodeGroup>
+    ```dart Updating button
+    FilledTextButton(
+      isLoading: block.data.primaryLoading,
+      onTap: () async {
+        await block.updateEmail(emailController.text);
+      },
+      content: 'Edit email',
+    ),
+    ```
+
+    ```dart Canceling button
+    OutlinedTextButton(
+      onTap: block.navigateToVerifyEmail,
+      content: 'Back',
+    ),
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+<Note>For a complete implementation example, see the [EmailVerifyScreen implementation on GitHub](https://github.com/corbado/example-passkeys-flutter/blob/main/lib/screens/email_verify_otp.dart) and [EmailEditScreen implementation on GitHub](https://github.com/corbado/example-passkeys-flutter/blob/main/lib/screens/email_edit.dart).</Note>

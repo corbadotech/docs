@@ -1,0 +1,46 @@
+---
+title: 'Getting User Data'
+description: 'Getting user data is simple and fast. Since the Corbado session-token is implemented as a JWT, we can get certain user data from the JWT claims directly. Our SDK takes care of this:'
+---
+
+<Warning>The Corbado provider must be integrated for this to work. Go Back to [Initialize Corbado](/corbado-complete/frontend-integration/flutter/frontend/frontend-integration#2-initialize-corbado)</Warning>
+
+## Accessing User Data
+<Steps>
+  <Step title="Access the User Provider">
+    The `CorbadoUserProvider` supplies various user details.
+
+    ```dart lib/pages/profile_page.dart
+    final user = ref.watch(userProvider);
+    ```
+  </Step>
+
+  <Step title="Access User Properties">
+    Once you have the user provider, you can access the user data everywhere in your app:
+    <AccordionGroup>
+      <Accordion title="Username">
+        The `username` of the user (full name):
+
+        ```dart lib/pages/edit_profile_page.dart
+        final fullName = useTextEditingController(text: user.value!.username);
+        ```
+      </Accordion>
+
+      <Accordion title="Email">
+        The `email` of the user (the identifier):
+
+        ```dart lib/pages/edit_profile_page.dart
+        final email = useTextEditingController(text: user.value!.email);
+        ```
+      </Accordion>
+
+      <Accordion title="Authentication Token">
+        The `idToken` (session-token) used to authenticate the user:
+
+        ```dart lib/pages/edit_profile_page.dart
+        'Authorization': 'Bearer ${user.value!.idToken}',
+        ```
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+</Steps>

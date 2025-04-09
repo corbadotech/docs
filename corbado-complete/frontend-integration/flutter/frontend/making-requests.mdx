@@ -1,0 +1,26 @@
+---
+title: 'Making Requests'
+description: 'When your app makes requests to your backend, it must authenticate itself by including the session-token as a header of these requests. The backend can then validate the session-token and decide if the client (your app) is allowed to make that request.'
+---
+
+The session-token is created after successful login and is provided to you by CorbadoAuth through _userChanges_. We can access it through the _userProvider_ we created in the previous `Overview` step.
+
+<a href="/corbado-complete/sessions/session-token-handling" target="_blank"><Info >For more information on
+    session-token handling, we highly recommend consulting our documentation.</Info></a>
+
+Here is a brief example of how to include the session-token in your requests to your backend (e.g. https://www.corbado.com):
+
+```dart lib/pages/edit_profile_page.dart
+// This is only an example for demonstrations purposes
+    Future<void> makeRequest() async {
+      final url = Uri.parse('https://www.corbado.com');
+ 
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${user.value!.idToken}',
+          'Content-Type': 'application/json',
+        },
+      );
+    }
+```

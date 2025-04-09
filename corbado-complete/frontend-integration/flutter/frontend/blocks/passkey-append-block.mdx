@@ -1,0 +1,41 @@
+---
+title: 'PasskeyAppendBlock'
+description: 'Used to add a passkey to an existing account.'
+---
+
+The goal of this block is to add a passkey to an existing account. The corresponding screen will be shown when a user wants to add a passkey to their account after signing up or logging in.
+
+## Available block data
+
+Stores passkey append details like `primaryLoading`.
+
+## Available block methods
+
+- `appendPasskey() async`: Adds a passkey to the user's account.
+
+## Implementation Steps
+<Steps>
+  <Step title="Create Passkey Append Screen">
+    Create a new screen that implements the `PasskeyAppendBlock` interface. This screen will handle the passkey creation process.
+
+    ```dart lib/screens/passkey_append.dart
+    class PasskeyAppendScreen extends HookWidget implements CorbadoScreen<PasskeyAppendBlock> {
+      final PasskeyAppendBlock block;
+      
+      PasskeyAppendScreen(this.block);
+    ```
+  </Step>
+  <Step title="Add Passkey Creation Button">
+    Implement a button to trigger the passkey creation process.
+    <CodeGroup>
+    ```dart Create Passkey Button
+    FilledTextButton(
+      isLoading: block.data.primaryLoading,
+      onTap: block.appendPasskey,
+      content: 'Add Passkey',
+    ),
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+<Note>For a complete implementation example, see the [PasskeyAppendScreen implementation on GitHub](https://github.com/corbado/example-passkeys-flutter/blob/main/lib/screens/passkey_append.dart).</Note>
