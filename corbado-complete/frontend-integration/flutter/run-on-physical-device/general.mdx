@@ -1,0 +1,47 @@
+---
+title: "General Configuration"
+description: "Before running the app on a physical device, you need to configure two important settings"
+---
+
+<CardGroup>
+    <Card title="RPID (Relying Party ID)">
+        a crucial WebAuthn parameter that links passkeys to a specific domain, ensuring secure authentication tied to your application's origin. 
+    </Card>
+    <Card title="ProjectID">
+        identifies your specific Corbado project.
+    </Card>
+</CardGroup>
+
+<Steps>
+    <Step title="Configure RPID">
+        <Note>The RPID can be a root domain (e.g. example.com) or a subdomain (e.g. auth.example.com).</Note>
+
+        For simplicity, we set the RPID to your project's **Frontend API URL**:
+
+        1. Get your [**Frontend API URL**](https://app.corbado.com/settings/general?tab=Project+Info)
+        2. Input it as your [**RPID**](https://app.corbado.com/settings/general?tab=URLs)
+
+        <Info>When moving to production, you'll need to set a different RPID based on additional factors.</Info>
+    </Step>
+    <Step title="Configure ProjectID">
+        Configure your project ID in the config file:
+
+        ```dart {2} lib/config.dart
+        // if you want to override the used projectID change this
+        const PROJECT_ID = "<Your ProjectID>";
+        
+        String getProjectID() {
+            if (PROJECT_ID.isNotEmpty && PROJECT_ID.startsWith("pro-")) {
+                return PROJECT_ID;
+            }
+            
+            // These are default values
+            if (kIsWeb) {
+                return 'pro-8751299119685489253';
+            } else {
+                return 'pro-4268394291597054564';
+            }
+        }
+        ```
+    </Step>
+</Steps>

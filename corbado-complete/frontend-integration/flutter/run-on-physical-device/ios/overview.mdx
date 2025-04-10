@@ -1,0 +1,14 @@
+---
+title: "Overview"
+description: "To begin with iOS, it is essential to understand an important concept. To establish trust between your app and your website, you need to configure an Apple-App-Site-Association (AASA) file. This file is crucial for enabling passkeys for your Flutter app and the configured RPID. The following chart explains the concept in detail"
+---
+
+![iOS Configuration Diagram](/images/frontend-integration/flutter/flutter-ios-settings.webp)
+
+<Info>You will configure the AASA file in the step [`iOS: Configure project`](/corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-project).</Info>
+
+### AASA file caching and the `?mode=developer` parameter
+
+When a user installs or updates your app, iOS retrieves the AASA file from your website. To optimize performance and reduce server load, Apple caches this file using a Content Delivery Network (CDN). However, this caching mechanism can introduce delays when updating the AASA file, as changes might take up to 48 hours to propagate.
+
+During development, waiting for cache updates is impractical. To address this, iOS provides a `?mode=developer` parameter that allows your app to fetch the latest AASA file directly from your server, bypassing the CDN cache.

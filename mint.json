@@ -206,7 +206,34 @@
                                 "corbado-complete/frontend-integration/flutter/frontend/getting-user-data-frontend",
                                 "corbado-complete/frontend-integration/flutter/frontend/making-requests"
                             ]
-                        }
+                        },
+                        "corbado-complete/frontend-integration/flutter/backend",
+                        {
+                            "group": "Run on physical device",
+                            "pages": [
+                                "corbado-complete/frontend-integration/flutter/run-on-physical-device/introduction",
+                                "corbado-complete/frontend-integration/flutter/run-on-physical-device/general",
+                                {
+                                    "group": "iOS",
+                                    "pages": [
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/overview",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-device",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-xcode",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-project",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/run"
+                                    ]
+                                },
+                                {
+                                    "group": "Android",
+                                    "pages": [
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/overview",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/configure-project",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/run"
+                                    ]
+                                }
+                            ]
+                        },
+                        "corbado-complete/frontend-integration/flutter/blog"
                     ]
                 },
 

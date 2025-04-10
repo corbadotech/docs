@@ -1,0 +1,30 @@
+---
+title: "Configure Project"
+description: "Once your device and Xcode are set up, the final step is to configure your project so Corbado can recognize your iOS app."
+---
+<Steps>
+    <Step title="Set Application Identifier Prefix and Bundle Identifier">
+        As explained in [`iOS: Overview`](/corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/overview#aasa-file-caching-and-the-%3Fmode%3Ddeveloper-parameter), the Apple-App-Site-Association (AASA) file plays a crucial role in using passkeys in your Flutter app.
+            1. On the developer panel, Go to [`Settings → Native apps`](https://app.corbado.com/settings/native-apps?tab=iOS)
+            2. Click on `Add new`.
+            3. Insert your `Application Identifier Prefix` and your `Bundle Identifier`.
+        <Warning>Use your team ID as the Application Identifier Prefix. You can find it at https://developer.apple.com/account under "Membership".</Warning>
+        ![Team ID Apple](/images/frontend-integration/flutter/iOS-project-configuration.webp)
+            4. Submit the new iOS App
+        <Info>You can view your changes live through the association file link found in [`Settings → Native apps`](https://app.corbado.com/settings/native-apps?tab=iOS)</Info>
+        
+        
+    </Step>
+    <Step title="Update Runner.entitlements">
+        To link your Flutter app with the associated domain:
+        1. Open `ios/Runner/Runner.entitlements`
+        2. Add the following association domain (Change with your **RPID**):
+        ```xml {3}
+        <key>com.apple.developer.associated-domains</key>
+        <array>
+            <string>webcredentials:<Your RPID>?mode=developer</string>
+        </array>
+        ```
+        <Info>As mentioned before, we want to bypass the Apple-App-Site-Association (AASA) file caching in development, so we need to specify the `?mode=developer` here.</Info>
+    </Step>
+</Steps>

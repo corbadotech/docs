@@ -1,0 +1,67 @@
+---
+title: "Configure xCode"
+---
+
+To begin, let's introduce some key concepts:
+
+<CardGroup>
+    <Card title="Bundle Identifier">
+        This is a unique identifier assigned to your app, typically in reverse domain name notation (e.g., com.yourcompany.yourapp). It ensures that no two apps share the same identifier.
+    </Card>
+    <Card title="Team ID">
+        An Apple Developer Team ID is a unique 10-character alphanumeric identifier assigned by Apple to your development team.
+    </Card>
+</CardGroup>
+<Card title="App ID">
+    This identifier comprises a Team ID (assigned by Apple to your development team) and a Bundle Identifier search string. It associates your app with specific services and capabilities, such as push notifications or iCloud or more importantly for us the associated domains.
+</Card>
+
+## 1. xCode setup
+
+We need to configure a few settings in Xcode:
+
+![Xcode Configuration](/images/frontend-integration/flutter/xcode-signing-capabilities.webp)
+
+<Steps>
+    <Step title="Open your project in Xcode">
+        - Navigate to your flutter project directory in Finder then to your `ios` directory
+        - Open `Runner.xcworkspace`
+    </Step>
+    <Step title="Go to Signing & Capabilities">
+        Go to the **Signing & Capabilities** tab
+    </Step>
+    <Step title="Select your Apple ID account">
+        Under **Team**, select your Apple ID account
+        <Note>If you haven't added your Apple ID yet, click **"Add Account..."**, log in, and select it</Note>
+        <Warning>Choose an account that is part of the **Apple Developer Program**</Warning>
+    </Step>
+    <Step title="Set Bundle Identifier">
+        Set a **unique Bundle Identifier** for your app
+        - For example: `com.yourname.myapp`
+        <Note>This needs to be globally unique across all apps in the App Store</Note>
+    </Step>
+    <Step title="Enable automatic signing">
+        Check `Automatically manage signing` so Xcode takes care of configuring everything for you
+    </Step>
+</Steps>
+
+
+## 2. Register your device
+
+Xcode needs to register your iPhone as a development device:
+
+<Steps>
+    <Step title="Connect your iPhone">
+        Connect your iPhone to your Mac via a USB cable
+    </Step>
+    <Step title="Trust the computer">
+        If it is the first time you connect, you may need to tap **"Trust this computer"** on your iPhone and enter your passcode
+    </Step>
+    <Step title="Select run target">
+        In the top bar, select your connected iPhone from the device list as the run target
+    </Step>
+    <Step title="Register device">
+        If this is your first time using the device for development, Xcode will register it automatically
+        <Warning>Sometimes you need to replug your device for the registration to complete</Warning>
+    </Step>
+</Steps>
