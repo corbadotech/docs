@@ -187,7 +187,7 @@
                 {
                     "group": "Flutter",
                     "pages": [
-                        "corbado-complete/frontend-integration/flutter/general",
+                        "corbado-complete/frontend-integration/flutter/introduction",
                         {
                             "group": "Frontend",
                             "pages": [
