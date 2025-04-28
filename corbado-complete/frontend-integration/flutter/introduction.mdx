@@ -1,0 +1,116 @@
+---
+title: "Introduction"
+description: "Learn how to add the Corbado Flutter SDK to your Flutter application."
+---
+
+import Blogpost from "/snippets/blogpost.mdx"
+
+<a href="https://app.corbado.com/integration-guides/flutter" target="_blank">
+  <img noZoom src="https://github.com/user-attachments/assets/7859201b-a345-4b68-b336-6e2edcc6577b" />
+</a>
+
+## Welcome to Corbado's Flutter Integration Guide
+
+This guide will help you integrate passkey authentication into your Flutter applications using Corbado's official Flutter package. Whether you're building for Android, iOS, or Web, we've got you covered with a comprehensive solution for modern authentication.
+
+### What You'll Learn
+
+<CardGroup cols={2}>
+  <Card title="Passkey Setup" icon="key">
+    How to set up passkey authentication in your Flutter app
+  </Card>
+  <Card title="Authentication Flows" icon="user-check">
+    How to implement sign-up and login flows
+  </Card>
+  <Card title="Conditional UI" icon="robot">
+    How to use Conditional UI for seamless authentication
+  </Card>
+  <Card title="Fallback Methods" icon="shield">
+    How to handle fallback authentication methods
+  </Card>
+</CardGroup>
+
+### See It in Action
+
+Before diving into the implementation, check out these live examples:
+
+<CardGroup cols={2}>
+  <Card title="Live Demo" icon="globe">
+    A fully functional example deployed on Vercel:
+    [Live Demo (Flutter Web)](https://corbadoauth.flutter.corbado.io)
+  </Card>
+  <Card title="Official Corbado App" icon="mobile">
+    Our production-ready Flutter app:
+    - [Apple App Store](https://apps.apple.com/app/corbado-developer-panel/id6468424589)
+    - [Google Play Store](https://play.google.com/store/apps/details?id=com.corbado.developerpanel.app)
+  </Card>
+</CardGroup>
+
+## Quick Start Guide
+
+Let's get you up and running with a local example. Follow these steps:
+
+<Steps>
+<Step title="Set Up Your Development Environment">
+1. **Install Required Tools**:
+   - [Xcode](https://docs.flutter.dev/get-started/install/macos#ios-setup) (for iOS development)
+   - [Android Studio](https://docs.flutter.dev/get-started/install) (for Android development)
+   - [Flutter SDK](https://docs.flutter.dev/get-started/install)
+
+2. **Verify Your Setup**:
+   Run the following command to ensure everything is properly configured:
+   ```bash
+   flutter doctor
+   ```
+</Step>
+
+<Step title="Get the Example Code">
+Clone our example repository:
+```bash
+git clone https://github.com/corbado/example-passkeys-flutter.git
+```
+</Step>
+
+<Step title="Configure Your Emulators">
+<Tabs>
+  <Tab title="iOS Simulator Setup">
+    1. Open the iOS Simulator
+    2. Enable biometric authentication:
+       - Go to **Features → Face ID / Touch ID → Enrolled**
+       - Test authentication using **Features → Face ID / Touch ID → Matching Face / Matching Touch**
+       - **Pro Tip:** Use `Command + Shift + M` for Face ID or `Command + Shift + H` for Touch ID simulation
+  </Tab>
+  <Tab title="Android Emulator Setup">
+    1. Launch Android Studio and open the AVD Manager
+    2. Ensure your emulator is running API level 30 or higher
+    3. Complete these steps in the emulator:
+       - Set up a Google account (required for passkeys)
+       - Enable PIN/password in `Settings → Security`
+       - Configure fingerprint authentication in `Settings → Security → Fingerprint`
+
+    <Note>**Pro Tip:** Simulate fingerprint with: `adb emu finger touch <finger_id>`</Note>
+
+    <Note>
+    For detailed troubleshooting, check out our [Android Emulator Setup Guide](https://www.corbado.com/blog/flutter-passkeys-package#android-screen-lock-not-set-up-on-virtual-android-device).
+    </Note>
+  </Tab>
+</Tabs>
+</Step>
+
+<Step title="Run the Example">
+Navigate to your project directory and run:
+```bash
+flutter run lib/main.dart
+```
+</Step>
+</Steps>
+
+## Next Steps
+
+Now that you have the example running, you can:
+- Explore the code structure
+- Learn about [passkey implementation](https://www.corbado.com/glossary/passkey)
+- Understand [Conditional UI](https://www.corbado.com/glossary/conditional-ui)
+- Set up [fallback authentication](/corbado-complete/helpful-guides/passkeys/fallback-options)
+
+Ready to integrate passkeys into your own app? Let's continue with the implementation guide.
