@@ -1,0 +1,26 @@
+---
+title: "Overview"
+description: "When building Android apps that interact with passkeys or Universal Links, two key concepts come into play: Digital Asset Links (DAL) and Keystores. The following chart explains the concepts in detail"
+---
+
+![Android Configuration Diagram](/images/frontend-integration/flutter/flutter-android-settings.webp)
+
+## Digital Asset Links (DAL)
+
+Android uses a system called Digital Asset Links to verify that your app is allowed to interact with specific domains — for example, to log in users via passkeys or handle deep links.
+
+This is done via a small file called `assetlinks.json` hosted on your domain, under:
+
+`https://yourdomain.com/.well-known/assetlinks.json`
+
+This file declares a secure link between your app and your domain by including your app’s package name and signing key fingerprint. Once this link is verified, Android allows your app to handle URLs and securely exchange credentials.
+
+<Info>For more detailed information about Digital Asset Links, check out the [official documentation](https://developers.google.com/digital-asset-links)</Info>
+
+## Keystores and Signing
+
+Every Android app must be digitally signed to run on a real device. This is done using a **keystore**, which securely stores your signing keys.
+
+The signature from your keystore is also what’s used in the `assetlinks.json` file — meaning that your keystore and your asset links setup are directly connected. When you generate a keystore (via Android Studio or command line), it produces a SHA-256 fingerprint that proves your app is authentic.
+
+<Info>For more detailed information about Android app signing, check out the [official documentation](https://developer.android.com/studio/publish/app-signing)</Info>

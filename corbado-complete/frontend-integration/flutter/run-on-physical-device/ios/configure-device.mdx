@@ -1,0 +1,54 @@
+---
+title: "Configure Device"
+description: "To deploy your Flutter app to your device, you need to adjust a few settings."
+---
+<Steps>
+    <Step title="Enable iPhone Developer Mode">
+        <div style={{
+            overflow: "auto",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            gap: "20px",
+            flexWrap: "wrap"
+        }}>
+            <div style={{width: 200}}>
+                ![Deverloper Mode](/images/frontend-integration/flutter/iOS-device-configuration-1.webp)
+            </div>
+            <div style={{ flex: 1 }}>
+                To allow Flutter to install your app on your device, you must enable **Developer Mode**:
+
+                1. Open **Settings** on your iPhone
+                2. Go to **Privacy & Security**
+                3. Scroll down and tap **Developer Mode**
+                4. Toggle it **on**
+
+                <Note>If you have previously run apps from Xcode on your device, Developer Mode is likely already enabled.</Note>
+            </div>
+        </div>
+    </Step>
+    <Step title="Enable Associated Domains Development">
+        <div style={{
+            overflow: "auto",
+            marginBottom: "20px",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            gap: "20px",
+            flexWrap: "wrap"
+        }}>
+            <div style={{width: 200}}>
+                ![Associated Domains Development](/images/frontend-integration/flutter/iOS-device-configuration-3.webp)
+            </div>
+            <div style={{ flex: 1 }}>
+                To enable your device to bypass the Apple-App-Site-Association (AASA) file cache using `?mode=developer`, you
+                must enable **Associated Domains Development**:
+
+                1. Open **Settings** on your iPhone
+                2. Scroll down to **Developer**
+                3. Tap **Associated Domains Development**
+                4. Toggle it **on**
+            </div>
+        </div>
+    </Step>
+</Steps>

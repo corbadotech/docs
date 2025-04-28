@@ -1,0 +1,42 @@
+---
+title: "Overview"
+description: "Abstraction of the authentication flow"
+---
+
+When adding passkeys to your Flutter app, you'll need to support several user flows:
+
+<CardGroup cols={2}>
+  <Card title="Sign Up Flow" icon="user-plus">
+    Create a new account using passkey authentication
+  </Card>
+  <Card title="Login Flow" icon="key">
+    Access your account using passkey authentication
+  </Card>
+  <Card title="Fallback Options" icon="shield">
+    Alternative login methods when passkeys aren't available
+  </Card>
+  <Card title="Passkey Creation" icon="fingerprint">
+    Set up a new passkey for your account
+  </Card>
+</CardGroup>
+
+Managing these authentication flows requires handling various scenarios and user interactions. **Corbado** simplifies this process by providing:
+
+<CardGroup cols={2}>
+  <Card title="Authentication Service" icon="server">
+    A service that handles the authentication logic for you
+  </Card>
+  <Card title="Developer Panel" icon="table-columns">
+    Configure screen flows in [Settings > User Interface](https://app.corbado.com/settings/userinterface?tab=Overview)
+  </Card>
+  <Card title="Custom UI" icon="brush">
+    Full flexibility to build your own custom UI
+  </Card>
+  <Card title="Corbado Blocks" icon="puzzle">
+    Each block (e.g., `SignupInitBlock`) defines the data and functionality available for a screen
+  </Card>
+</CardGroup>
+
+To make implementation easy, we've organized the authentication flow into modular blocks. Each block represents a specific part of the authentication process and provides the necessary data and functionality to build your custom UI.
+
+Next, we'll walk you through each block and show how to implement them in your Flutter app.

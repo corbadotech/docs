@@ -77,9 +77,7 @@
     "navigation": [
         {
             "group": "Welcome",
-            "pages": [
-                "start"
-            ]
+            "pages": ["start"]
         },
         {
             "group": "Overview",
@@ -118,7 +116,6 @@
                     "pages": [
                         "corbado-complete/ui-components/customization/styling",
                         "corbado-complete/ui-components/customization/translation"
-
                     ]
                 }
             ]
@@ -187,7 +184,59 @@
                         "corbado-complete/frontend-integration/vanilla-js/link-to-vanillajs-blog"
                     ]
                 },
-                "corbado-complete/frontend-integration/flutter",
+                {
+                    "group": "Flutter",
+                    "pages": [
+                        "corbado-complete/frontend-integration/flutter/introduction",
+                        {
+                            "group": "Frontend",
+                            "pages": [
+                                "corbado-complete/frontend-integration/flutter/frontend/frontend-integration",
+                                {
+                                    "group": "Blocks",
+                                    "pages": [
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/blocks",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/login-init-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/signup-init-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/passkey-append-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/passkey-verify-block",
+                                        "corbado-complete/frontend-integration/flutter/frontend/blocks/email-verify-block"
+                                    ]
+                                },
+                                "corbado-complete/frontend-integration/flutter/frontend/getting-user-data-frontend",
+                                "corbado-complete/frontend-integration/flutter/frontend/making-requests"
+                            ]
+                        },
+                        "corbado-complete/frontend-integration/flutter/backend",
+                        {
+                            "group": "Run on physical device",
+                            "pages": [
+                                "corbado-complete/frontend-integration/flutter/run-on-physical-device/introduction",
+                                "corbado-complete/frontend-integration/flutter/run-on-physical-device/general",
+                                {
+                                    "group": "iOS",
+                                    "pages": [
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/overview",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-device",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-xcode",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-project",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/run"
+                                    ]
+                                },
+                                {
+                                    "group": "Android",
+                                    "pages": [
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/overview",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/configure-project",
+                                        "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/run"
+                                    ]
+                                }
+                            ]
+                        },
+                        "corbado-complete/frontend-integration/flutter/blog"
+                    ]
+                },
+
                 {
                     "group": "Vue.js",
                     "pages": [
@@ -258,7 +307,6 @@
                 {
                     "group": "Other",
                     "pages": [
-
                         "corbado-complete/sessions/other/revocation",
                         "corbado-complete/sessions/other/oauth2-comparison",
                         "corbado-complete/sessions/other/development-mode"
@@ -278,9 +326,7 @@
         },
         {
             "group": "Analytics",
-            "pages": [
-                "corbado-complete/analytics/passkeys-analyzer"
-            ]
+            "pages": ["corbado-complete/analytics/passkeys-analyzer"]
         },
         {
             "group": "Helpful Guides",
@@ -310,17 +356,14 @@
         },
         {
             "group": "Other",
-            "pages": [
-                "corbado-complete/other/security-and-privacy"
-            ]
+            "pages": ["corbado-complete/other/security-and-privacy"]
         },
         {
             "group": "Overview",
             "pages": [
                 "corbado-connect/overview/welcome",
-                "corbado-connect/overview/components",        
+                "corbado-connect/overview/components",
                 "corbado-connect/overview/deployment"
-
             ]
         }
     ],
