@@ -355,10 +355,6 @@
             ]
         },
         {
-            "group": "Other",
-            "pages": ["corbado-complete/other/security-and-privacy"]
-        },
-        {
             "group": "Overview",
             "pages": [
                 "corbado-connect/overview/welcome",
