@@ -1,0 +1,40 @@
+---
+title: "Telemetry"
+description: "Corbado gathers telemetry data from its SDKs, components and example applications."
+---
+
+# What is telemetry data?
+
+Telemetry data consists of information produced through interactions with our SDKs, components, and example applications, which is subsequently transmitted to our servers. Consider it as an event such as "I used feature A of SDK B".
+
+# Why does Corbado gather telemetry data?
+
+By gathering telemetry data, we gain a more comprehensive understanding of how our SDKs, components, and example applications are utilized across various scenarios. This information is crucial in helping us prioritize features that are beneficial and impactful for the majority of our users.
+
+# What data is being collected?
+
+Firstly, data is collected only for projects configured with the environment set to "development" (this does not apply to example applications, as the telemetry data there is not related to any specific project). 
+
+At present, the following events are being generated:
+
+TODO Amine
+
+An example event looks like this:
+
+TODO Amine
+
+To gain a clearer understanding of event data, you can enable the telemetry debug mode. This mode will **not** send the event but will print it for inspection. The configuration varies depending on the SDK, component, or example application you are using and is explained in the respective documentation.
+
+# How do we handle sensitive data and ensure its protection?
+
+At Corbado, we prioritize your privacy and the security of your data. We are committed to not collecting any sensitive information from your application or development environment that is unrelated to the use of our SDKs. This means we do not gather environment variables that are not pertinent to Corbado, user-specific data, file paths, file contents, logs, git remote details, or raw JavaScript errors.
+
+We ensure that telemetry data is primarily used in an aggregated form to derive insights for product enhancement. Access to raw data is restricted to a limited number of Corbado employees. Rest assured, we do not share or sell telemetry data to third parties; it is solely utilized to refine and improve the Corbado product.
+
+# How do I opt-out?
+
+Telemetry data is collected by default, but you can opt out at any time. The method for opting out varies depending on the SDK, component, or example application you are using, and detailed instructions can be found in the respective documentation. For your convenience, here is a quick access list:
+
+TODO Amine
+
+If you cannot find a telemetry setting in the SDK, component, or example application documentation you are using, then telemetry has not been implemented there yet, and no data is being collected.

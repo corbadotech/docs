@@ -355,6 +355,12 @@
             ]
         },
         {
+            "group": "Other",
+            "pages": [
+                "corbado-complete/other/telemetry"
+            ]
+        },
+        {
             "group": "Overview",
             "pages": [
                 "corbado-connect/overview/welcome",
