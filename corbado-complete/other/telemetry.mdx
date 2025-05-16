@@ -68,3 +68,12 @@ await corbadoAuth.init(
 </Tabs>
 
 <Note>If you cannot find a telemetry setting in the SDK, component, or example application documentation you are using, then telemetry has not been implemented there yet, and no data is being collected.</Note>
+
+## Configuration Options
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `projectId` | `String` | Yes | - | Your Corbado project ID |
+| `debugMode` | `bool?` | No | `false` | Enables our doctor tool to help debug and troubleshoot your passkey integration |
+| `telemetryDisabled` | `bool?` | No | `false` | Disables telemetry data collection |
+| `telemetryDebugModeEnabled` | `bool?` | No | `false` | Prints telemetry events to console instead of sending them |
