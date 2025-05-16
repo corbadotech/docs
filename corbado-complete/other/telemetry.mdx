@@ -17,13 +17,32 @@ Firstly, data is collected only for projects configured with the environment set
 
 At present, the following events are being generated:
 
-TODO Amine (List of type with a general description, not for each field)
+<Accordion title="PACKAGE_METADATA">
+This event is automatically sent once during SDK initialization to collect essential environment information. It runs when the `TelemetryService` is first initialized and only sends data if telemetry is enabled. The event captures the Dart SDK version for compatibility tracking, Flutter doctor usage, and SDK version information for version tracking. This one-time event helps us understand the development environment and ensure proper SDK compatibility. The data is sent only once per process to minimize overhead.
+</Accordion>
+
+<Accordion title="METHOD_CALLED">
+This event tracks user interactions by logging SDK method invocations, capturing the method name and screen context where the interaction occurred. This data helps us understand how features are being used and identify areas for improving the user experience. Each method call is logged with its specific context to provide detailed insights into user behavior and feature adoption patterns.
+</Accordion>
 
 An example event looks like this:
 
-TODO Amine (show JSON)
+```json
+{
+  "type": "METHOD_CALLED",
+  "sdkVersion": "3.6.0",
+  "sdkName": "@corbado/corbado_auth",
+  "identifier": "<your_project_id>",
+  "payload": "{\"methodName\":\"signIn\",\"screenName\":\"LoginScreen\"}"
+}
+```
+# Inspect Telemetry Locally
 
-To gain a clearer understanding of event data, you can enable the telemetry debug mode. This mode will **not** send the event but will print it for inspection. The configuration varies depending on the SDK, component, or example application you are using and is explained in the respective documentation.
+To gain a clearer understanding of event data, you can enable the telemetry debug mode by setting `telemetryDebugModeEnabled: true`.
+
+When enabled, the event is printed to the console instead of being sent. This is helpful for inspecting payloads during development.
+
+<Note>The configuration varies depending on the SDK, component, or example application you are using and is explained in the respective documentation.</Note>
 
 # How do we handle sensitive data and ensure its protection?
 
@@ -35,6 +54,18 @@ We ensure that telemetry data is primarily used in an aggregated form to derive 
 
 Telemetry data is collected by default, but you can opt out at any time. The method for opting out varies depending on the SDK, component, or example application you are using, and detailed instructions can be found in the respective documentation. For your convenience, here is a quick access list:
 
-TODO Amine
+<Tabs>
+<Tab title="Flutter SDK">
+Disable telemetry by passing `telemetryDisabled: true` when initializing CorbadoAuth:
 
-If you cannot find a telemetry setting in the SDK, component, or example application documentation you are using, then telemetry has not been implemented there yet, and no data is being collected.
+```dart
+await corbadoAuth.init(
+  projectId: projectId,
+  debugMode: true,
+  telemetryDisabled: true,
+);
+```
+</Tab>
+</Tabs>
+
+<Note>If you cannot find a telemetry setting in the SDK, component, or example application documentation you are using, then telemetry has not been implemented there yet, and no data is being collected.</Note>
