@@ -42,7 +42,19 @@ An example event looks like this:
 ```
 # Inspect Telemetry Locally
 
-To gain a clearer understanding of event data, you can enable the telemetry debug mode by setting `telemetryDebugModeEnabled: true`.
+To gain a clearer understanding of event data, you can enable the telemetry debug mode using the following configuration based on your SDK:
+
+<Tabs>
+<Tab title="Flutter SDK">
+Set `telemetryDebugModeEnabled: true` when initializing CorbadoAuth
+</Tab>
+<Tab title="React SDK">
+Set `telemetry={{ debug: true }}` in the CorbadoProvider
+</Tab>
+<Tab title="Javascript SDK">
+Set `telemetry: { debug: true }` in the Corbado.load() call
+</Tab>
+</Tabs>
 
 When enabled, the event is printed to the console instead of being sent. This is helpful for inspecting payloads during development.
 
@@ -62,12 +74,35 @@ Telemetry data is collected by default, but you can opt out at any time. The met
 <Tab title="Flutter SDK">
 Disable telemetry by passing `telemetryDisabled: true` when initializing CorbadoAuth:
 
-```dart
+```dart {3}
 await corbadoAuth.init(
   projectId: projectId,
   telemetryDisabled: true,
 );
 ```
+</Tab>
+<Tab title="React SDK">
+Disable telemetry by passing `telemetry={false}` to the CorbadoProvider :
+
+```typescript {3}
+<CorbadoProvider
+        ...
+        telemetry={false}
+      >
+```
+
+</Tab>
+<Tab title="Javascript SDK">
+Disable telemetry by passing `telemetry={false}` to the Corbado.load() call :
+
+```javascript {4}
+await Corbado.load({
+      projectId: projectId,
+      ...
+      telemetry: false,
+    });
+```
+
 </Tab>
 </Tabs>
 
