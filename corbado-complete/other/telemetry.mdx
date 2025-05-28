@@ -21,6 +21,10 @@ At present, the following events are being generated:
 This event is automatically sent once during SDK initialization to collect essential environment information. It runs when the `TelemetryService` is first initialized. This one-time event helps us understand the development environment and ensure proper SDK compatibility. The data is sent only once per process to minimize overhead.
 </Accordion>
 
+<Accordion title="COMPONENT_MOUNTED">
+This event is triggered once when a Corbado UI component is mounted in your application, helping us understand the development environment and which features are most used and which need improvement.
+</Accordion>
+
 <Accordion title="METHOD_CALLED">
 This event tracks user interactions by logging SDK method invocations. This data helps us understand how features are being used and identify areas for improving the user experience. Each method call is logged with its specific context to provide detailed insights into user behavior and feature adoption patterns.
 </Accordion>
