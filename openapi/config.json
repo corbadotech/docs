@@ -1,0 +1,8 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Corbado API",
+        "version": "1.0.0"
+    },
+    "apis": [{ "url": "./openapi/common.yml" }, { "url": "./openapi/spec.yml" }]
+}
