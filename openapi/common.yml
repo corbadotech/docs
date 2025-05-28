@@ -20,6 +20,7 @@ paths:
     # This has to be there with all possible schemas references, so that the generator actually generates types for them
     /unused/{sessionID}:
         get:
+            x-hidden: true
             description: unused
             operationId: unused
             tags:

@@ -56,5 +56,3 @@ This will:
 
 -   Combine the OpenAPI specifications from `common.yml` and `spec.yml`
 -   Output the merged specification to `content/spec.yml`
-
-The configuration file (`merge-config.json`) should contain:
