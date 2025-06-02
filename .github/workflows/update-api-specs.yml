@@ -2,10 +2,9 @@ name: Update API Specs
 
 on:
     workflow_dispatch:
-    pull_request:
+    push:
         branches:
-            - main
-        types: [opened]
+            - "**"
 
 jobs:
     update-specs:
