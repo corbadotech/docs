@@ -554,6 +554,163 @@ paths:
         - Users
       security:
         - basicAuth: []
+      x-codeSamples:
+        - lang: NodeJS
+          label: Create a new user using Corbado SDK
+          source: |
+            const { Corbado } = require('@corbado/node-sdk');
+
+            const corbado = new Corbado({
+              projectId: 'pro-xxxxx',
+              apiSecret: 'corbado_xxxxx'
+            });
+
+            const user = await corbado.users.create({
+              email: 'user@example.com',
+              name: 'John Doe'
+            });
+        - lang: PHP
+          label: Create a new user using Corbado SDK
+          source: |
+            use Corbado\SDK;
+
+            $corbado = new SDK([
+              'projectId' => 'pro-xxxxx',
+              'apiSecret' => 'corbado_xxxxx'
+            ]);
+
+            $user = $corbado->users->create([
+              'email' => 'user@example.com',
+              'name' => 'John Doe'
+            ]);
+        - lang: Python
+          label: Create a new user using Corbado SDK
+          source: |
+            from corbado import Corbado
+
+            corbado = Corbado(
+              project_id='pro-xxxxx',
+              api_secret='corbado_xxxxx'
+            )
+
+            user = corbado.users.create(
+              email='user@example.com',
+              name='John Doe'
+            )
+        - lang: Go
+          label: Create a new user using Corbado SDK
+          source: >
+            import "github.com/corbado/corbado-go"
+
+
+            client := corbado.NewClient("pro-xxxxx", "corbado_xxxxx")
+
+
+            user, err := client.Users.Create(context.Background(),
+            &corbado.UserCreateRequest{
+              Email: "user@example.com",
+              Name:  "John Doe",
+            })
+        - lang: Ruby
+          label: Create a new user using Corbado SDK
+          source: |
+            require 'corbado'
+
+            corbado = Corbado::Client.new(
+              project_id: 'pro-xxxxx',
+              api_secret: 'corbado_xxxxx'
+            )
+
+            user = corbado.users.create(
+              email: 'user@example.com',
+              name: 'John Doe'
+            )
+        - lang: Perl
+          label: Create a new user using Corbado SDK
+          source: |
+            use Corbado::SDK;
+
+            my $corbado = Corbado::SDK->new(
+              project_id => 'pro-xxxxx',
+              api_secret => 'corbado_xxxxx'
+            );
+
+            my $user = $corbado->users->create({
+              email => 'user@example.com',
+              name  => 'John Doe'
+            });
+        - lang: Java
+          label: Create a new user using Corbado SDK
+          source: |
+            import com.corbado.sdk.Corbado;
+            import com.corbado.sdk.models.UserCreateRequest;
+
+            Corbado corbado = new Corbado.Builder()
+                .projectId("pro-xxxxx")
+                .apiSecret("corbado_xxxxx")
+                .build();
+
+            UserCreateRequest request = new UserCreateRequest.Builder()
+                .email("user@example.com")
+                .name("John Doe")
+                .build();
+
+            User user = corbado.users().create(request);
+        - lang: C#
+          label: Create a new user using Corbado SDK
+          source: |
+            using Corbado.SDK;
+
+            var corbado = new CorbadoClient(
+                projectId: "pro-xxxxx",
+                apiSecret: "corbado_xxxxx"
+            );
+
+            var user = await corbado.Users.CreateAsync(new UserCreateRequest
+            {
+                Email = "user@example.com",
+                Name = "John Doe"
+            });
+        - lang: C++
+          label: Create a new user using Corbado SDK
+          source: |
+            #include <corbado/sdk.hpp>
+
+            corbado::Client corbado("pro-xxxxx", "corbado_xxxxx");
+
+            corbado::UserCreateRequest request{
+                .email = "user@example.com",
+                .name = "John Doe"
+            };
+
+            auto user = corbado.users().create(request);
+        - lang: Rust
+          label: Create a new user using Corbado SDK
+          source: |
+            use corbado::Client;
+
+            let corbado = Client::new(
+                "pro-xxxxx",
+                "corbado_xxxxx"
+            );
+
+            let user = corbado.users().create(UserCreateRequest {
+                email: "user@example.com".to_string(),
+                name: "John Doe".to_string(),
+            }).await?;
+        - lang: javascript
+          label: Create a new user using Corbado SDK
+          source: |
+            const corbado = new Corbado({
+              projectId: 'pro-xxxxx',
+              apiSecret: 'corbado_xxxxx'
+            });
+
+            // In a server endpoint
+            const user = await corbado.users.create({
+              email: 'user@example.com',
+              name: 'John Doe'
+            });
       requestBody:
         required: true
         content:
