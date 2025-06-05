@@ -322,11 +322,11 @@
                 "groups": [
                     {
                         "group": "Frontend API",
-                        "openapi": "https://frontendapi.cloud.corbado-staging.io/v2/openapi.yaml"
+                        "openapi": "https://frontendapi.cloud.corbado.io/v2/openapi.yaml"
                     },
                     {
                         "group": "Backend API",
-                        "openapi": "https://backendapi.cloud.corbado-staging.io/v2/openapi.yaml"
+                        "openapi": "https://backendapi.cloud.corbado.io/v2/openapi.yaml"
                     }
                 ]
             }
