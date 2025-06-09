@@ -1,0 +1,21 @@
+---
+title: "System Architecture"
+description: "Learn about Corbado's system components and how they integrate with your application."
+sidebarTitle: "System Architecture"
+---
+
+- Explain system architecture/big picture similiar to [Corbado Complete System Architecture](/corbado-complete/overview/system-architecture)
+- Show one big chart/diagram
+- Introduce UI components, Frontend API and Backend API
+- Organize everything around 3 key processes:
+    - Create passkeys (append)
+        - After login
+        - Handle MFA settings
+    - Use passkeys (login)
+        - Session "handover"
+    - Manage passkeys (list)
+- Explain what is NOT changing
+    - They keep their own IdP/CIAM/user database (bold/red)
+    - They keep their session and token system
+    - They keep their concepts for protecting routes and getting user state
+- Link to generic integration to show more details like sequence charts
