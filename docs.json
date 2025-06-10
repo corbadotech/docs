@@ -328,14 +328,14 @@
                         "group": "Frontend API",
                         "openapi": {
                             "source": "https://frontendapi.cloud.corbado.io/v2/openapi.yaml",
-                            "directory": "api-reference/frontend"
+                            "directory": "api-reference/frontend-api"
                         }
                     },
                     {
                         "group": "Backend API",
                         "openapi": {
                             "source": "https://backendapi.cloud.corbado.io/v2/openapi.yaml",
-                            "directory": "api-reference/backend"
+                            "directory": "api-reference/backend-api"
                         }
                     }
                 ]
