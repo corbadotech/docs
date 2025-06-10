@@ -20,6 +20,9 @@ The Corbado Frontend API serves as the foundation for the Corbado UI Components.
 
 The Corbado Frontend API provides both authenticated and unauthenticated endpoints. Authenticated endpoints require a valid Corbado Session, which is issued to users upon successful authentication.
 
+
+{/* We use absolute links (https://docs.corbado.com/...) instead of relative links
+     because the broken-links CI from mint incorrectly flags relative links in the card component as broken. */}
 <Card href="https://docs.corbado.com/api-reference/frontend-api">
     <Blogpost title="Corbado Frontend API Reference" />
 </Card>
@@ -42,6 +45,8 @@ Your Corbado Backend API can be accessed at the following URL (default value):
 **https://backendapi.cloud.corbado.io**
 </Note>
 
+{/* We use absolute links (https://docs.corbado.com/...) instead of relative links (/...) 
+     because the broken-links CI from mint incorrectly flags relative links in the card component as broken. */}
 <Card href="https://docs.corbado.com/api-reference/backend-api">
     <Blogpost title="Corbado Backend API Reference" />
 </Card>
