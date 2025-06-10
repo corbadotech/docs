@@ -398,18 +398,18 @@
             ]
         },
         {
-            "group": "Integration",
+            "group": "Integration Guides",
             "pages": [
-                "corbado-connect-new/integration/generic",
-                "corbado-connect-new/integration/cognito",
-                "corbado-connect-new/integration/keycloak",
-                "corbado-connect-new/integration/duende"
+                "corbado-connect-new/integration-guides/generic",
+                "corbado-connect-new/integration-guides/cognito",
+                "corbado-connect-new/integration-guides/keycloak",
+                "corbado-connect-new/integration-guides/duende"
             ]
         },
         {
-            "group": "Other",
+            "group": "Security & Compliance",
             "pages": [
-                "https://www.corbado.com/security"
+                "corbado-connect-new/security-compliance/overview"
             ]
         }
     ],
