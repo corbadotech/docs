@@ -376,20 +376,25 @@
             "group": "Overview",
             "pages": [
                 "corbado-connect-new/overview/welcome",
-                "corbado-connect-new/overview/system-architecture",
-                "corbado-connect-new/overview/demo",
-                "corbado-connect-new/overview/deployment"
+                "corbado-connect-new/overview/demo"
+            ]
+        },
+        {
+            "group": "Architecture",
+            "pages": [
+                "corbado-connect-new/architecture/overview",
+                "corbado-connect-new/architecture/deployment",
+                "corbado-connect-new/architecture/fault-tolerance",
+                "corbado-connect-new/architecture/scalability",
+                "corbado-connect-new/architecture/actions"
             ]
         },
         {
             "group": "Features",
             "pages": [
-                "corbado-connect-new/features/actions",
                 "corbado-connect-new/features/passkey-intelligence",
                 "corbado-connect-new/features/gradual-rollout",
-                "corbado-connect-new/features/split-tests",
-                "corbado-connect-new/features/one-tap",
-                "corbado-connect-new/features/analytics"
+                "corbado-connect-new/features/split-tests"
             ]
         },
         {
@@ -399,6 +404,12 @@
                 "corbado-connect-new/integration/cognito",
                 "corbado-connect-new/integration/keycloak",
                 "corbado-connect-new/integration/duende"
+            ]
+        },
+        {
+            "group": "Other",
+            "pages": [
+                "https://www.corbado.com/security"
             ]
         }
     ],
