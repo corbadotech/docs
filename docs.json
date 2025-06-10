@@ -321,7 +321,7 @@
                 "tab": "API Reference",
                 "groups": [
                     {
-                        "group": "Overview",
+                        "group": "API Reference",
                         "pages": ["api-reference/overview"]
                     },
                     {
