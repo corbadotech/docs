@@ -12,3 +12,7 @@ description: "To begin with iOS, it is essential to understand an important conc
 When a user installs or updates your app, iOS retrieves the AASA file from your website. To optimize performance and reduce server load, Apple caches this file using a Content Delivery Network (CDN). However, this caching mechanism can introduce delays when updating the AASA file, as changes might take up to 48 hours to propagate.
 
 During development, waiting for cache updates is impractical. To address this, iOS provides a `?mode=developer` parameter that allows your app to fetch the latest AASA file directly from your server, bypassing the CDN cache.
+
+<Warning>
+Do not use the `?mode=developer` parameter in your production release. This parameter is intended for development purposes only. Using it in production will prevent iOS from properly detecting your AASA file, which will break passkey functionality in your released app.
+</Warning>
