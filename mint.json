@@ -385,7 +385,7 @@
                 "corbado-connect-new/architecture/overview",
                 "corbado-connect-new/architecture/deployment",
                 "corbado-connect-new/architecture/fault-tolerance",
-                "corbado-connect-new/architecture/scalability",
+                "corbado-connect-new/architecture/scalability-performance",
                 "corbado-connect-new/architecture/actions"
             ]
         },
