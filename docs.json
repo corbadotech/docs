@@ -324,6 +324,7 @@
                         "group": "Overview",
                         "pages": [
                             "corbado-connect-new/overview/welcome",
+                            "corbado-connect-new/overview/use-cases",
                             "corbado-connect-new/overview/demo"
                         ]
                     },
@@ -332,9 +333,26 @@
                         "pages": [
                             "corbado-connect-new/architecture/overview",
                             "corbado-connect-new/architecture/deployment",
-                            "corbado-connect-new/architecture/fault-tolerance",
-                            "corbado-connect-new/architecture/scalability-performance",
                             "corbado-connect-new/architecture/actions"
+                        ]
+                    },
+                    {
+                        "group": "UI Components",
+                        "pages": [
+                            "corbado-connect-new/ui-components/overview",
+                            "corbado-connect-new/ui-components/corbadoconnectappend",
+                            "corbado-connect-new/ui-components/corbadoconnectlogin",
+                            "corbado-connect-new/ui-components/corbadoconnectpasskeylist"
+                        ]
+                    },
+                    {
+                        "group": "Integration",
+                        "pages": [
+                            "corbado-connect-new/integration/generic",
+                            "corbado-connect-new/integration/cognito",
+                            "corbado-connect-new/integration/keycloak",
+                            "corbado-connect-new/integration/duende",
+                            "corbado-connect-new/integration/support"
                         ]
                     },
                     {
@@ -343,15 +361,6 @@
                             "corbado-connect-new/features/passkey-intelligence",
                             "corbado-connect-new/features/gradual-rollout",
                             "corbado-connect-new/features/split-tests"
-                        ]
-                    },
-                    {
-                        "group": "Integration Guides",
-                        "pages": [
-                            "corbado-connect-new/integration-guides/generic",
-                            "corbado-connect-new/integration-guides/cognito",
-                            "corbado-connect-new/integration-guides/keycloak",
-                            "corbado-connect-new/integration-guides/duende"
                         ]
                     },
                     {
