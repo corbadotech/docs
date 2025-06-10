@@ -321,12 +321,22 @@
                 "tab": "API Reference",
                 "groups": [
                     {
+                        "group": "Overview",
+                        "pages": ["api-reference/overview"]
+                    },
+                    {
                         "group": "Frontend API",
-                        "openapi": "https://frontendapi.cloud.corbado.io/v2/openapi.yaml"
+                        "openapi": {
+                            "source": "https://frontendapi.cloud.corbado.io/v2/openapi.yaml",
+                            "directory": "api-reference/frontend"
+                        }
                     },
                     {
                         "group": "Backend API",
-                        "openapi": "https://backendapi.cloud.corbado.io/v2/openapi.yaml"
+                        "openapi": {
+                            "source": "https://backendapi.cloud.corbado.io/v2/openapi.yaml",
+                            "directory": "api-reference/backend"
+                        }
                     }
                 ]
             }

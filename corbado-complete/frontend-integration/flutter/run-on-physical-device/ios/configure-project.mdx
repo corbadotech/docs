@@ -26,5 +26,8 @@ description: "Once your device and Xcode are set up, the final step is to config
         </array>
         ```
         <Info>As mentioned before, we want to bypass the Apple-App-Site-Association (AASA) file caching in development, so we need to specify the `?mode=developer` here.</Info>
+        <Warning>
+        Do not use the `?mode=developer` parameter in your production release. This parameter is intended for development purposes only. Using it in production will prevent iOS from properly detecting your AASA file, which will break passkey functionality in your released app.
+        </Warning>
     </Step>
 </Steps>
