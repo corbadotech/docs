@@ -1,0 +1,63 @@
+---
+title: "Authentication"
+description: "Learn about the different authentication methods for Corbado's APIs"
+sidebarTitle: "Authentication"
+---
+
+## Overview
+
+Corbado provides two different APIs with distinct authentication methods:
+
+1. **Frontend API**: Uses session-based authentication
+2. **Backend API**: Uses HTTP Basic Authentication
+
+## Frontend API Authentication
+
+The Frontend API uses session-based authentication. As a developer, you don't need to handle the authentication details manually as they are automatically managed by our [UI Components](/corbado-complete/ui-components/overview). The session management, token handling, and security measures are all built into our components.
+
+## Backend API Authentication
+
+The Backend API uses HTTP Basic Authentication. You need to provide your Project ID and API Secret in the Authorization header of each request.
+
+### Getting Started
+
+To get started with the Backend API, you'll need to obtain your API credentials:
+
+1. Go to [API Secrets](https://app.corbado.com/settings/api-secrets) in your Corbado dashboard
+2. Create a new API secret or use an existing one
+3. Keep your Project ID and API Secret secure - they provide full access to your Corbado account
+
+### Authentication Header Format
+
+```http
+Authorization: Basic <base64-encoded-credentials>
+```
+
+Where `<base64-encoded-credentials>` is the Base64 encoding of `projectID:apiSecret`.
+
+### Example Request
+
+```bash
+curl --request GET \
+  --url https://backendapi.corbado.io/v2/socialAccounts \
+  --header 'Authorization: Basic <base64-encoded-credentials>'
+```
+
+### Security Best Practices
+
+- Never expose your API Secret in client-side code
+- Never commit your API Secret to your source code management system (SCM)
+- Use professional secret management solutions (e.g., [HashiCorp Vault](https://www.vaultproject.io/))
+- Rotate your API Secret regularly
+- Use HTTPS for all API requests
+
+## Error Handling
+
+If authentication fails, you'll receive a `401 Unauthorized` response. Common authentication errors include:
+
+- Invalid API credentials
+- Expired session tokens
+- Missing authentication headers
+- Malformed authentication headers
+
+For more details about error handling, see our [Error Types](/api-reference/error-types) documentation.
