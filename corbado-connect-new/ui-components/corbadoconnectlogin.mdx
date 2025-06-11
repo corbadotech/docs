@@ -4,4 +4,59 @@ description: "TODO"
 sidebarTitle: "CorbadoConnectLogin"
 ---
 
-- Copy from old Components page
+import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
+
+CorbadoConnectLogin handles passkey logins. You might embed this component in a modal or on a dedicated login page. It's responsible for prompting the user to log in with a passkey and managing fallback if no passkey is available or if the passkey flow fails.
+
+# Example
+
+```js
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+
+  <script type="module">
+    const passkeyLoginElement = document.getElementById('authorize-with-passkey');
+    Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
+      projectId: "pro-9991871320976140999",
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
+
+      // Called when passkey login is completed successfully
+      onComplete: (signedPasskeyData, clientState) => {
+        fetch(SYSTEM_BE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ signedPasskeyData: signedPasskeyData, clientState: clientState }),
+        }).then(() => {
+          // e.g., update the embedding application state to proceed with the next step
+        });
+      },
+
+      // Called when passkey login is not possible or fails
+      onFallback: (identifier, errorMessage) => {
+        // e.g., show a fallback UI (password, OTP, etc.)
+      },
+    });
+  </script>
+</head>
+
+<body>
+  <div id="authorize-with-passkey"></div>
+  <div id="authorize-with-fallback">
+    <!-- Fallback UI logic here (Your existing fallback authentication comes here) -->
+  </div>
+</body>
+```
+
+# Available Configuration Parameters
+
+| **Name**     | **Description**                                                                                                                                                                                                                                                                                                         | **Required** | **Type**                                                   |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------- |
+| `onComplete` | Invoked upon a successful passkey login. Receives `signedPasskeyData` (a signed JWT containing cryptographic proof of a successful passkey ceremony) and `clientState` (an encoded string to speed up future passkey operations). Store `clientState` as a cookie or localStorage for a smoother user experience later. | ✅            | `(signedPasskeyData: string, clientState: string) => void` |
+| `onFallback` | Called if passkey login isn't possible (e.g., no passkey available) or fails unexpectedly. Provides an `identifier` (such as an email address the user entered) and an `errorMessage` you can display. Typically, you'd redirect or display a fallback authentication method (password, SMS OTP, etc.).                 | ✅            | `(identifier: string, errorMessage: string) => void`       |
+
+# Next steps: Get in touch
+
+<GetInTouch></GetInTouch>
