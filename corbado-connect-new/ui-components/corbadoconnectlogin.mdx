@@ -18,8 +18,8 @@ import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
   <script type="module">
     const passkeyLoginElement = document.getElementById('authorize-with-passkey');
     Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
-      projectId: "pro-9991871320976140999",
-      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
+      projectId: "pro-9991871320976140999", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
 
       // Called when passkey login is completed successfully
       onComplete: (signedPasskeyData, clientState) => {

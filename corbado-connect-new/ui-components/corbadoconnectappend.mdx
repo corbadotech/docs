@@ -20,18 +20,18 @@ import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
   <script type="module">
     // This connect token must be generated on the server side
     // and passed to the component (e.g. by embedding it during server-side rendering).
-    const connectAppendToken = 'ctk-xxxxxxxxxxxxxxxxxxxxxxxxxx';
+    const connectToken = 'ctk-xxxxxxxxxxxxxxxxxxxxxxxxxx';
 
     const passkeyAppendElement = document.getElementById('passkey-append');
     Corbado.mountCorbadoConnectAppend(passkeyAppendElement, {
-      projectId: "pro-9991871320976140999", // Your project's Corbado ID
+      projectId: "pro-9991871320976140999", // Your Corbado Project ID
       frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
 
       // Called when the user decides not to create a passkey or passkey creation is skipped
       onSkip: (status) => { /* custom logic, e.g., logging or analytics */ },
 
       // Provide the connect token to the component at runtime
-      appendTokenProvider: async () => connectAppendToken,
+      appendTokenProvider: async () => connectToken,
 
       // Called when passkey creation is completed successfully
       onComplete: (status, clientState) => { /* e.g., refresh page, show success UI, etc. */ },
