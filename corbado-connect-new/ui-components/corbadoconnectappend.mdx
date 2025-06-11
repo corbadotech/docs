@@ -9,7 +9,7 @@ import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
 **CorbadoConnectAppend** is used after a user has been authenticated (e.g., they’ve just logged in with a password or have an active session). Its role is to guide the user through creating (or "appending") a passkey to their account if the user and their device meet the eligibility requirements.
 ![CorbadoConnectAppend Component](https://www.corbado.com/_next/image?url=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fcorbado-cloud-staging-website-assets%2FImage_11_03_25_at_13_34_9c883cf482.jpeg&w=750&q=75&dpl=dpl_B1BvxMgoZpGVDaa5gQri9YWwY9ju)
 
-> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a secure ConnectToken (see below) on your backend to validate that the user session is legitimate. This token is then passed to the component.
+> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a secure ConnectToken (see [here](/corbado-connect-new/ui-components/overview#3-connecttokens-ctk)) on your backend to validate that the user session is legitimate. This token is then passed to the component.
 
 # Example
 
