@@ -1,0 +1,29 @@
+---
+title: "Error Types"
+description: "Learn about the different error types in Corbado's API"
+sidebarTitle: "Error Types"
+---
+
+Corbado's Backend API uses standard HTTP status codes along with specific error types to provide detailed information about what went wrong with your request. Each error response includes an error type and a descriptive message to help you understand and resolve the issue.
+
+| Error Type | Description | HTTP Status | Common Causes |
+|------------|-------------|-------------|---------------|
+| `internal_error` | Internal server error at Corbado | 500 | Server-side issues. You can retry your request. |
+| `not_found` | Resource not found | 404 | Wrong ID or resource doesn't exist |
+| `method_not_allowed` | HTTP method not supported | 405 | Using GET on an endpoint that only supports POST |
+| `validation_error` | Invalid request data | 400 | Invalid data in request payload or path |
+| `project_id_mismatch` | Project ID mismatch | 400 | Incorrect project ID provided |
+| `login_error` | Authentication failed | 401 | Wrong project ID and API secret pair |
+| `invalid_json` | Invalid JSON in request body | 400 | Malformed JSON in request body |
+| `rate_limited` | Rate limit exceeded | 429 | More than 2000 requests within 10 seconds from a single IP |
+| `invalid_origin` | Unauthorized origin | 403 | API called from unauthorized origin (CORS) |
+| `already_exists` | Resource already exists | 409 | Attempting to create a resource that already exists |
+
+<Warning>
+The Corbado Backend API has a rate limit of 2000 requests within 10 seconds from a single IP. If you need a higher rate limit, please contact support@corbado.com.
+</Warning>
+
+
+<Note>
+To resolve `invalid_origin` errors, add your origin to your project's authorized origins at https://app.corbado.com/app/settings/credentials/authorized-origins.
+</Note>

@@ -322,7 +322,11 @@
                 "groups": [
                     {
                         "group": "API Reference",
-                        "pages": ["api-reference/overview"]
+                        "pages": [
+                            "api-reference/overview",
+                            "api-reference/authentication",
+                            "api-reference/error-types"
+                        ]
                     },
                     {
                         "group": "Frontend API",
