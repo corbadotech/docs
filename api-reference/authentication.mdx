@@ -8,22 +8,31 @@ sidebarTitle: "Authentication"
 
 Corbado provides two different APIs with distinct authentication methods:
 
-1. **Backend API**: Uses HTTP Basic Authentication
-2. **Frontend API**: Uses session-based authentication
+1. **Frontend API**: Uses session-based authentication
+2. **Backend API**: Uses HTTP Basic Authentication
 
-## Getting Started
+## Frontend API Authentication
 
-### API Keys
+The Frontend API uses session-based authentication. As a developer, you don't need to handle the authentication details manually as they are automatically managed by our [UI Components](/corbado-complete/ui-components/overview). The session management, token handling, and security measures are all built into our components.
 
-To get started with Corbado's APIs, you'll need to obtain your API credentials:
+### Security Best Practices
 
-1. Go to [API Secrets](https://app.corbado.com/settings/api-secrets) in your Corbado dashboard
-2. Create a new API secret or use an existing one
-3. Keep your Project ID and API Secret secure - they provide full access to your Corbado account
+- Always use HTTPS
+- Implement proper session management
+- Set appropriate session timeouts
+- Handle token refresh when needed
 
 ## Backend API Authentication
 
 The Backend API uses HTTP Basic Authentication. You need to provide your Project ID and API Secret in the Authorization header of each request.
+
+### Getting Started
+
+To get started with the Backend API, you'll need to obtain your API credentials:
+
+1. Go to [API Secrets](https://app.corbado.com/settings/api-secrets) in your Corbado dashboard
+2. Create a new API secret or use an existing one
+3. Keep your Project ID and API Secret secure - they provide full access to your Corbado account
 
 ### Authentication Header Format
 
@@ -44,34 +53,11 @@ curl --request GET \
 ### Security Best Practices
 
 - Never expose your API Secret in client-side code
+- Never commit your API Secret to your source code management system (SCM)
+- Use professional secret management solutions (e.g., [HashiCorp Vault](https://www.vaultproject.io/))
 - Store your API Secret securely in environment variables
 - Rotate your API Secret regularly
 - Use HTTPS for all API requests
-
-## Frontend API Authentication
-
-The Frontend API uses session-based authentication. After a user successfully logs in, they receive a session token that must be included in subsequent API requests.
-
-### Authentication Header Format
-
-```http
-Authorization: Bearer <session-token>
-```
-
-### Example Request
-
-```bash
-curl --request GET \
-  --url https://{projectId}.frontendapi.corbado.io/v2/me \
-  --header 'Authorization: Bearer <session-token>'
-```
-
-### Security Best Practices
-
-- Always use HTTPS
-- Implement proper session management
-- Set appropriate session timeouts
-- Handle token refresh when needed
 
 ## Error Handling
 
