@@ -13,7 +13,7 @@ import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
 
 This component should be loaded on any page that is shown to a user **immediately after they have successfully logged in**, such as a dashboard or a dedicated welcome page.
 
-# Rendering Logic
+### Rendering Logic
 
 The component is not always visible. Before rendering its UI, it performs two critical checks. If either check fails, the component will not render, and the `onSkip` callback will be triggered.
 
@@ -86,7 +86,7 @@ The component features built-in error handling. If an issue occurs during the pa
 
 You can customize the component's appearance to match your application's design in two ways:
 
-## 1. Through CSS Theme Variables
+### 1. Through CSS Theme Variables
 
 The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet.
 
@@ -115,11 +115,11 @@ The easiest way to change colors, fonts, and border-radius is by overriding our 
 | `--cb-font-family-primary` | Primary font family | 'Space Grotesk', sans-serif |
 | `--cb-border-radius` | Border radius for elements | 0rem |
 
-## 2. Through CSS Classes
+### 2. Through CSS Classes
 
 For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
 
-### Shared CSS Classes
+#### Shared CSS Classes
 
 These classes are used across multiple Corbado Connect components.
 
@@ -135,7 +135,7 @@ These classes are used across multiple Corbado Connect components.
 | `.cb-notification-container` | Used for notification containers |
 | `.loader` | Used for loader/spinner animations |
 
-### Component Specific CSS Classes
+#### Component Specific CSS Classes
 
 These classes are specific to the `CorbadoConnectAppend` component.
 
