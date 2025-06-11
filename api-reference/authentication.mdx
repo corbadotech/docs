@@ -1,0 +1,85 @@
+---
+title: "Authentication"
+description: "Learn about the different authentication methods for Corbado's APIs"
+sidebarTitle: "Authentication"
+---
+
+## Overview
+
+Corbado provides two different APIs with distinct authentication methods:
+
+1. **Backend API**: Uses HTTP Basic Authentication
+2. **Frontend API**: Uses session-based authentication
+
+## Getting Started
+
+### API Keys
+
+To get started with Corbado's APIs, you'll need to obtain your API credentials:
+
+1. Go to [API Secrets](https://app.corbado.com/settings/api-secrets) in your Corbado dashboard
+2. Create a new API secret or use an existing one
+3. Keep your Project ID and API Secret secure - they provide full access to your Corbado account
+
+## Backend API Authentication
+
+The Backend API uses HTTP Basic Authentication. You need to provide your Project ID and API Secret in the Authorization header of each request.
+
+### Authentication Header Format
+
+```http
+Authorization: Basic <base64-encoded-credentials>
+```
+
+Where `<base64-encoded-credentials>` is the Base64 encoding of `projectID:apiSecret`.
+
+### Example Request
+
+```bash
+curl --request GET \
+  --url https://backendapi.corbado.io/v2/socialAccounts \
+  --header 'Authorization: Basic <encoded-value>'
+```
+
+### Security Best Practices
+
+- Never expose your API Secret in client-side code
+- Store your API Secret securely in environment variables
+- Rotate your API Secret regularly
+- Use HTTPS for all API requests
+
+## Frontend API Authentication
+
+The Frontend API uses session-based authentication. After a user successfully logs in, they receive a session token that must be included in subsequent API requests.
+
+### Authentication Header Format
+
+```http
+Authorization: Bearer <session-token>
+```
+
+### Example Request
+
+```bash
+curl --request GET \
+  --url https://{projectId}.frontendapi.corbado.io/v2/me \
+  --header 'Authorization: Bearer <session-token>'
+```
+
+### Security Best Practices
+
+- Always use HTTPS
+- Implement proper session management
+- Set appropriate session timeouts
+- Handle token refresh when needed
+
+## Error Handling
+
+If authentication fails, you'll receive a `401 Unauthorized` response. Common authentication errors include:
+
+- Invalid API credentials
+- Expired session tokens
+- Missing authentication headers
+- Malformed authentication headers
+
+For more details about error handling, see our [Error Types](/api-reference/error-types) documentation.
