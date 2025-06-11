@@ -45,10 +45,11 @@ curl --request GET \
 
 ### Security Best Practices
 
+- Never expose your API Secret in client-side code
 - Never commit your API Secret to your source code management system (SCM)
 - Use professional secret management solutions (e.g., [HashiCorp Vault](https://www.vaultproject.io/))
-- Store your API Secret securely in environment variables and rotate it regularly
-- Always use HTTPS for all API requests
+- Rotate your API Secret regularly
+- Use HTTPS for all API requests
 
 ## Error Handling
 
