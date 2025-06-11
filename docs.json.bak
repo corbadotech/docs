@@ -325,6 +325,7 @@
                         "pages": [
                             "corbado-connect-new/overview/welcome",
                             "corbado-connect-new/overview/getting-started",
+                            "corbado-connect-new/overview/use-cases",
                             "corbado-connect-new/overview/demo"
                         ]
                     },
@@ -332,7 +333,8 @@
                         "group": "Architecture",
                         "pages": [
                             "corbado-connect-new/architecture/overview",
-                            "corbado-connect-new/architecture/deployment"
+                            "corbado-connect-new/architecture/deployment",
+                            "corbado-connect-new/architecture/actions"
                         ]
                     },
                     {
@@ -347,11 +349,19 @@
                     {
                         "group": "Integration",
                         "pages": [
-                            "corbado-connect-new/integration/cognito",
                             "corbado-connect-new/integration/generic",
+                            "corbado-connect-new/integration/cognito",
                             "corbado-connect-new/integration/keycloak",
                             "corbado-connect-new/integration/duende",
                             "corbado-connect-new/integration/support"
+                        ]
+                    },
+                    {
+                        "group": "Features",
+                        "pages": [
+                            "corbado-connect-new/features/passkey-intelligence",
+                            "corbado-connect-new/features/gradual-rollout",
+                            "corbado-connect-new/features/split-tests"
                         ]
                     },
                     {
