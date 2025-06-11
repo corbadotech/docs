@@ -73,11 +73,11 @@ In other cases, such as when a user instinctively closes the browser's passkey p
         });
       },
 
-      // Called when passkey login is not possible or fails critically
+      // Called when passkey login is not possible or fails critically. Show your
+      // fallback UI (e.g., a password field). The identifier might be pre-filled if
+      // the user provided one.
       onFallback: (identifier, errorMessage) => {
         console.log(`Fallback triggered for '${identifier}' with message: ${errorMessage}`);
-        // Show your fallback UI (e.g., a password field).
-        // The identifier might be pre-filled if the user provided one.
       },
     });
   </script>
