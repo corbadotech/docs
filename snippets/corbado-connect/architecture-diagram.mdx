@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 
-export const ArchitectureDiagram = ({
-  imageSrc = '/images/corbado-connect/architecture.png',
-  areas = [
+export const ArchitectureDiagram = () => {
+  const imageSrc = '/images/corbado-connect/architecture.png';
+  const areas = [
     {
       id: 'G1',
       title: 'Customer Environment',
@@ -33,8 +33,8 @@ export const ArchitectureDiagram = ({
         rect: { top: '62%', left: '10%', width: '20%', height: '15%' },
         text: 'For returning users, this UI component handles the login. It checks if a passkey exists for the user.',
     },
-  ]
-}) => {
+  ];
+
   const [activeArea, setActiveArea] = useState(null);
 
   const handleMouseEnter = useCallback((area) => {
