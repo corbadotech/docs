@@ -5,21 +5,21 @@ export const ArchitectureDiagram = () => {
   const imageSrc = '/images/corbado-connect/architecture.png';
   const areas = [
     {
+        id: 'G1',
+        title: 'Customer Environment',
+        rect: { top: '3%', left: '16%', width: '5%', height: '5%' },
+        text: "The frontend of the customer's application where users interact with the UI components.",
+    },
+    {
         id: 'G2',
         title: 'Customer Web Application',
-        rect: { top: '8%', left: '10%', width: '20%', height: '80%' },
-        text: "The frontend of the customer's application where users interact with the UI components.",
+        rect: { top: '8%', left: '22%', width: '5%', height: '5%' },
+        text: "The customer's backend server that handles business logic and communicates with the user database and Corbado.",
     },
     {
         id: 'G3',
         title: 'Customer Backend',
-        rect: { top: '8%', left: '32%', width: '15%', height: '80%' },
-        text: "The customer's backend server that handles business logic and communicates with the user database and Corbado.",
-    },
-    {
-        id: 'G4',
-        title: 'Customer User Database',
-        rect: { top: '8%', left: '49%', width: '15%', height: '80%' },
+        rect: { top: '82%', left: '45%', width: '5%', height: '5%' },
         text: "The customer's existing identity provider or user database where user information is stored.",
     },
   ];
@@ -35,7 +35,7 @@ export const ArchitectureDiagram = () => {
   }, []);
 
   return (
-    <div style={{ fontFamily: 'sans-serif' }}>
+    <div style={{ fontFamily: 'sans-serif', border: '2px solid #eee', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
       <div style={{ position: 'relative', display: 'inline-block' }}>
         <img src={imageSrc} alt="Architecture Diagram" style={{ display: 'block', width: '100%' }} />
         {areas.map(area => (
@@ -58,7 +58,7 @@ export const ArchitectureDiagram = () => {
           />
         ))}
       </div>
-      <div style={{ marginTop: '16px', padding: '16px', border: '1px solid #ddd', borderRadius: '4px', minHeight: '100px', backgroundColor: '#f9f9f9' }}>
+      <div style={{ padding: '16px', minHeight: '100px', backgroundColor: '#fff' }}>
         {activeArea ? (
           <div>
             <h4 style={{ marginTop: 0, marginBottom: '8px' }}>{activeArea.title}</h4>
