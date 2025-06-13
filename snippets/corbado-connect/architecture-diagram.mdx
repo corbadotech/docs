@@ -1,0 +1,84 @@
+import { useState, useCallback } from 'react';
+
+export const ArchitectureDiagram = ({
+  imageSrc = '/images/corbado-connect/architecture.png',
+  areas = [
+    {
+      id: 'G1',
+      title: 'Customer Environment',
+      rect: { top: '3%', left: '8%', width: '57%', height: '91%' },
+      text: 'This is the overarching environment of the customer, including their web application, backend, and user database (IdP/CIAM).',
+    },
+    {
+      id: 'G5',
+      title: 'Corbado Environment',
+      rect: { top: '3%', left: '68%', width: '29%', height: '91%' },
+      text: 'This is the Corbado environment, which provides passkey-as-a-service functionality through its APIs and user database.',
+    },
+    {
+      id: 'P1.1',
+      title: 'Customer login form',
+      rect: { top: '30%', left: '10%', width: '15%', height: '15%' },
+      text: "The user logs in with their existing credentials (e.g., email/password + MFA) on the customer's original login form.",
+    },
+    {
+      id: 'P1.2',
+      title: 'CorbadoConnectAppend UI Component',
+      rect: { top: '30%', left: '34%', width: '20%', height: '15%' },
+      text: 'After a successful login, this UI component is shown to the user to create and append a passkey to their account.',
+    },
+    {
+        id: 'P2.1',
+        title: 'CorbadoConnectLogin UI Component',
+        rect: { top: '62%', left: '10%', width: '20%', height: '15%' },
+        text: 'For returning users, this UI component handles the login. It checks if a passkey exists for the user.',
+    },
+  ]
+}) => {
+  const [activeArea, setActiveArea] = useState(null);
+
+  const handleMouseEnter = useCallback((area) => {
+    setActiveArea(area);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setActiveArea(null);
+  }, []);
+
+  return (
+    <div style={{ fontFamily: 'sans-serif' }}>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <img src={imageSrc} alt="Architecture Diagram" style={{ display: 'block', width: '100%' }} />
+        {areas.map(area => (
+          <div
+            key={area.id}
+            title={area.title}
+            style={{
+              position: 'absolute',
+              top: area.rect.top,
+              left: area.rect.left,
+              width: area.rect.width,
+              height: area.rect.height,
+              cursor: 'pointer',
+              backgroundColor: activeArea === area ? 'rgba(0, 123, 255, 0.2)' : 'transparent',
+              border: activeArea === area ? '2px solid rgba(0, 123, 255, 0.5)' : 'none',
+              transition: 'background-color 0.2s, border 0.2s',
+            }}
+            onMouseEnter={() => handleMouseEnter(area)}
+            onMouseLeave={handleMouseLeave}
+          />
+        ))}
+      </div>
+      <div style={{ marginTop: '16px', padding: '16px', border: '1px solid #ddd', borderRadius: '4px', minHeight: '100px', backgroundColor: '#f9f9f9' }}>
+        {activeArea ? (
+          <div>
+            <h4 style={{ marginTop: 0, marginBottom: '8px' }}>{activeArea.title}</h4>
+            <p style={{ margin: 0 }}>{activeArea.text}</p>
+          </div>
+        ) : (
+          <p style={{ margin: 0, color: '#666' }}>Hover over a region in the diagram to get more information.</p>
+        )}
+      </div>
+    </div>
+  );
+};
