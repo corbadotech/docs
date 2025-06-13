@@ -1,0 +1,73 @@
+import { useState, useCallback } from 'react';
+
+export const ArchitectureDiagram = () => {
+  const visualize = true;
+  const imageSrc = '/images/corbado-connect/architecture.png';
+  const areas = [
+    {
+        id: 'G1',
+        title: 'Customer Environment',
+        rect: { top: '3%', left: '16%', width: '5%', height: '5%' },
+        text: "The frontend of the customer's application where users interact with the UI components.",
+    },
+    {
+        id: 'G2',
+        title: 'Customer Web Application',
+        rect: { top: '8%', left: '22%', width: '5%', height: '5%' },
+        text: "The customer's backend server that handles business logic and communicates with the user database and Corbado.",
+    },
+    {
+        id: 'G3',
+        title: 'Customer Backend',
+        rect: { top: '82%', left: '45%', width: '5%', height: '5%' },
+        text: "The customer's existing identity provider or user database where user information is stored.",
+    },
+  ];
+
+  const [activeArea, setActiveArea] = useState(null);
+
+  const handleMouseEnter = useCallback((area) => {
+    setActiveArea(area);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setActiveArea(null);
+  }, []);
+
+  return (
+    <div style={{ fontFamily: 'sans-serif', border: '2px solid #eee', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <img src={imageSrc} alt="Architecture Diagram" style={{ display: 'block', width: '100%' }} />
+        {areas.map(area => (
+          <div
+            key={area.id}
+            title={area.title}
+            style={{
+              position: 'absolute',
+              top: area.rect.top,
+              left: area.rect.left,
+              width: area.rect.width,
+              height: area.rect.height,
+              cursor: 'pointer',
+              backgroundColor: visualize || activeArea === area ? 'rgba(0, 123, 255, 0.2)' : 'transparent',
+              border: visualize || activeArea === area ? '2px solid rgba(0, 123, 255, 0.5)' : 'none',
+              transition: 'background-color 0.2s, border 0.2s',
+            }}
+            onMouseEnter={() => handleMouseEnter(area)}
+            onMouseLeave={handleMouseLeave}
+          />
+        ))}
+      </div>
+      <div style={{ padding: '16px', minHeight: '100px', backgroundColor: '#fff' }}>
+        {activeArea ? (
+          <div>
+            <h4 style={{ marginTop: 0, marginBottom: '8px' }}>{activeArea.title}</h4>
+            <p style={{ margin: 0 }}>{activeArea.text}</p>
+          </div>
+        ) : (
+          <p style={{ margin: 0, color: '#666' }}>Hover over a region in the diagram to get more information.</p>
+        )}
+      </div>
+    </div>
+  );
+};
