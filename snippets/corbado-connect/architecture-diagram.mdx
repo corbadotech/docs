@@ -1,37 +1,26 @@
 import { useState, useCallback } from 'react';
 
 export const ArchitectureDiagram = () => {
+  const visualize = true;
   const imageSrc = '/images/corbado-connect/architecture.png';
   const areas = [
     {
-      id: 'G1',
-      title: 'Customer Environment',
-      rect: { top: '3%', left: '8%', width: '57%', height: '91%' },
-      text: 'This is the overarching environment of the customer, including their web application, backend, and user database (IdP/CIAM).',
+        id: 'G2',
+        title: 'Customer Web Application',
+        rect: { top: '8%', left: '10%', width: '20%', height: '80%' },
+        text: "The frontend of the customer's application where users interact with the UI components.",
     },
     {
-      id: 'G5',
-      title: 'Corbado Environment',
-      rect: { top: '3%', left: '68%', width: '29%', height: '91%' },
-      text: 'This is the Corbado environment, which provides passkey-as-a-service functionality through its APIs and user database.',
+        id: 'G3',
+        title: 'Customer Backend',
+        rect: { top: '8%', left: '32%', width: '15%', height: '80%' },
+        text: "The customer's backend server that handles business logic and communicates with the user database and Corbado.",
     },
     {
-      id: 'P1.1',
-      title: 'Customer login form',
-      rect: { top: '30%', left: '10%', width: '15%', height: '15%' },
-      text: "The user logs in with their existing credentials (e.g., email/password + MFA) on the customer's original login form.",
-    },
-    {
-      id: 'P1.2',
-      title: 'CorbadoConnectAppend UI Component',
-      rect: { top: '30%', left: '34%', width: '20%', height: '15%' },
-      text: 'After a successful login, this UI component is shown to the user to create and append a passkey to their account.',
-    },
-    {
-        id: 'P2.1',
-        title: 'CorbadoConnectLogin UI Component',
-        rect: { top: '62%', left: '10%', width: '20%', height: '15%' },
-        text: 'For returning users, this UI component handles the login. It checks if a passkey exists for the user.',
+        id: 'G4',
+        title: 'Customer User Database',
+        rect: { top: '8%', left: '49%', width: '15%', height: '80%' },
+        text: "The customer's existing identity provider or user database where user information is stored.",
     },
   ];
 
@@ -60,8 +49,8 @@ export const ArchitectureDiagram = () => {
               width: area.rect.width,
               height: area.rect.height,
               cursor: 'pointer',
-              backgroundColor: activeArea === area ? 'rgba(0, 123, 255, 0.2)' : 'transparent',
-              border: activeArea === area ? '2px solid rgba(0, 123, 255, 0.5)' : 'none',
+              backgroundColor: visualize || activeArea === area ? 'rgba(0, 123, 255, 0.2)' : 'transparent',
+              border: visualize || activeArea === area ? '2px solid rgba(0, 123, 255, 0.5)' : 'none',
               transition: 'background-color 0.2s, border 0.2s',
             }}
             onMouseEnter={() => handleMouseEnter(area)}
