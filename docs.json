@@ -324,8 +324,7 @@
                         "group": "Overview",
                         "pages": [
                             "corbado-connect-new/overview/welcome",
-                            "corbado-connect-new/overview/getting-started",
-                            "corbado-connect-new/overview/demo"
+                            "corbado-connect-new/overview/getting-started"
                         ]
                     },
                     {
