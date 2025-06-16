@@ -26,12 +26,8 @@ export const ArchitectureDiagram = () => {
 
   const [activeArea, setActiveArea] = useState(null);
 
-  const handleMouseEnter = useCallback((area) => {
-    setActiveArea(area);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setActiveArea(null);
+  const handleClick = useCallback((area) => {
+    setActiveArea(prev => prev && prev.id === area.id ? null : area);
   }, []);
 
   return (
@@ -53,8 +49,7 @@ export const ArchitectureDiagram = () => {
               border: visualize || activeArea === area ? '2px solid rgba(0, 123, 255, 0.5)' : 'none',
               transition: 'background-color 0.2s, border 0.2s',
             }}
-            onMouseEnter={() => handleMouseEnter(area)}
-            onMouseLeave={handleMouseLeave}
+            onClick={() => handleClick(area)}
           />
         ))}
       </div>
@@ -65,7 +60,7 @@ export const ArchitectureDiagram = () => {
             <p style={{ margin: 0 }}>{activeArea.text}</p>
           </div>
         ) : (
-          <p style={{ margin: 0, color: '#666' }}>Hover over a region in the diagram to get more information.</p>
+          <p style={{ margin: 0, color: '#666' }}>Click on a region in the diagram to get more information.</p>
         )}
       </div>
     </div>
