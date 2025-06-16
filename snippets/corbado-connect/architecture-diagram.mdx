@@ -8,79 +8,79 @@ export const ArchitectureDiagram = () => {
         id: '1',
         title: 'Customer Environment',
         rect: { top: '7%', left: '16%', width: '5%', height: '5%' },
-        text: "todo <a href=\"/corbado-connect-new/overview/welcome.mdx\">test</a>",
+        text: "The customer's environment can be either cloud-based or on-premise. It is completely isolated from the Corbado environment.",
     },
     {
         id: '2',
         title: 'Customer Web Application',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "This architecture diagram uses a web application as an example. Corbado Connect can be integrated into any type of application, including native apps for iOS and Android.",
     },
     {
         id: '3',
         title: 'Customer Frontend',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The Corbado Connect passkey solution primarily interacts with the customer's frontend during the user sign-up and login processes. Other flows, such as passkey management, which would typically be included in a user profile, have been omitted for simplicity.",
     },
     {
         id: '4',
         title: 'User sign-up flow',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The user sign-up process has been thoroughly detailed <a href=\"TODO\">previously</a>. It is essential to integrate Corbado Connect at this stage to enable the creation of new passkeys.",
     },
     {
         id: '5',
         title: 'User login flow',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The user login process has been thoroughly detailed <a href=\"TODO\">earlier</a>. Integrating Corbado Connect at this stage is crucial to facilitate the use of existing passkeys for login.",
     },
     {
         id: '6',
         title: 'Passkey UI',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The Passkey UI includes all components related to the user interface and frontend logic required for creating and using passkeys. For web applications, you can use our pre-built <a href=\"/corbado-connect-new/ui-components/overview\">Corbado UI components</a>, while for native apps, our Corbado iOS & Android SDKs are available to fully implement the passkey UI. The passkey UI communicates with the Corbado Frontend API to fulfill its function.",
     },
     {
         id: '7',
         title: 'Customer Backend',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The customer backend communicates with the Corbado Backend API, primarily for generating <a href=\"/corbado-connect-new/ui-components/overview#3-connecttokens-ctk\">Connect tokens</a>, which are essential for the <a href=\"/corbado-connect-new/ui-components/overview\">Corbado UI Components</a>. It's important to note that there are no changes required to the customer backend concerning user state management and route protection, as a customer session is established after passkey login.",
     },
     {
         id: '8',
         title: 'Customer IdP/CIAM',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "Corbado Connect integrates a passkey layer into any existing authentication solution, allowing you to retain your current IdP (Identity Provider) or CIAM (Customer Identity & Access Management). Whether you use Amazon Cognito, Keycloak, or a fully custom authentication system built with open-source libraries, Corbado Connect can be seamlessly integrated.",
     },
     {
         id: '9',
         title: 'Corbado Environment',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The Corbado Environment is completely isolated from the customer's environment. Corbado Connect can be operated in Corbado's public cloud (shared AWS instance) or private cloud (dedicated AWS instance), depending on regulatory and compliance requirements.",
     },
     {
         id: '10',
         title: 'Corbado Frontend API',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The Corbado Frontend API serves as the foundation for the Corbado UI Components. While it’s possible to interact with the Corbado Frontend API directly, we don’t recommend this approach due to the complexity of authentication processes like signup and login.",
     },
     {
         id: '11',
         title: 'Corbado Backend API',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "The Corbado Backend API provides the core functionality of Corbado’s Authentication system and is utilized by both the Corbado Frontend API and your backend application. It enables you to perform essential operations such as managing users and their associated identifiers.",
     },
     {
         id: '12',
         title: 'Corbado User Database',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "While the primary user record is maintained in the customer's IdP/CIAM, Corbado requires its own user record to link processes and data, such as passkeys. For more details, please refer to our section on <a href=\"TODO\">UserID</a>.",
     },
     {
         id: '13',
         title: 'Corbado Actions',
         rect: { top: '12%', left: '22%', width: '5%', height: '5%' },
-        text: "todo",
+        text: "Corbado Actions are small scripts written in JavaScript or TypeScript that allow customization of the passkey flow and execution of specific actions. These actions can vary widely, but they will most likely interact with the customer backend.",
     },
   ];
 
@@ -117,7 +117,7 @@ export const ArchitectureDiagram = () => {
         {activeArea ? (
           <div>
             <h4 style={{ marginTop: 0, marginBottom: '8px' }}>{activeArea.title}</h4>
-            <p style={{ margin: 0 }}>{activeArea.text}</p>
+            <div style={{ margin: 0 }} dangerouslySetInnerHTML={{ __html: activeArea.text }} />
           </div>
         ) : (
           <p style={{ margin: 0, color: '#666' }}>Click on a region in the diagram to get more information.</p>
