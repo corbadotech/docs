@@ -331,7 +331,8 @@
                         "group": "Architecture",
                         "pages": [
                             "corbado-connect-new/architecture/overview",
-                            "corbado-connect-new/architecture/deployment"
+                            "corbado-connect-new/architecture/deployment",
+                            "corbado-connect-new/architecture/actions"
                         ]
                     },
                     {
