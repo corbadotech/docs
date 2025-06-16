@@ -1,29 +1,29 @@
 ---
 title: "Overview"
-description: "Learn about Corbado's system components and how they integrate with your application."
+description: "Learn about Corbado's system components and how they interact with your application."
 sidebarTitle: "Overview"
 ---
 
 import { ArchitectureDiagram } from "/snippets/corbado-connect/architecture-diagram.mdx"
 
-- Read flow section before
+The architecture diagram below provides a simplified view of how an environment similar to yours might interact with the **Corbado Connect** environment. It introduces several Corbado system components and how they interact with different components of your system. For a deeper understanding, we recommend starting with our sections on the [user sign-up](/corbado-connect-new/flows/user-sign-up) and [user login](/corbado-connect-new/flows/user-login) flows. Additionally, more detailed documentation, including sequence charts and endpoint information, is available in our integration guides, such as for [Amazon Cognito](/corbado-connect-new/integration/cognito).
+
+Please click on the blue bubbles to get additional information about parts of the architecture diagram.
 
 <ArchitectureDiagram />
 
-- Explain system architecture/big picture similiar to [Corbado Complete System Architecture](/corbado-complete/overview/system-architecture)
-- Show one big chart/diagram
-- Introduce UI components, Frontend API and Backend API
-- Organize everything around 3 key processes:
-    - Create passkeys (append)
-        - After login
-        - Handle MFA settings
-    - Use passkeys (login)
-        - Session "handover"
-    - Manage passkeys (list)
-- Explain what is NOT changing
-    - They keep their own IdP/CIAM/user database (bold/red)
-    - They keep their session and token system
-    - They keep their concepts for protecting routes and getting user state
-- Link to generic integration to show more details like sequence charts
-- Include gradual rollout, split tests and passkey intelligence
-- private aws account einzeichnen (managed by us, same country wie customer, data isolation etc.)
+# TODOS
+
+- DONE Explain system architecture/big picture similiar to [Corbado Complete System Architecture](/corbado-complete/overview/system-architecture)
+- DONE Show one big chart/diagram
+- DONE Introduce UI components, Frontend API and Backend API
+- DONE Organize everything around 3 key processes:
+    - DONE Create passkeys (append)
+        - DONE After login
+        - DONE Handle MFA settings
+    - DONE Use passkeys (login)
+        - DONE Session "handover"
+- DONE Explain what is NOT changing
+    - DONE They keep their own IdP/CIAM/user database (bold/red)
+- DONE Link to generic integration to show more details like sequence charts
+- DONE private aws account einzeichnen (managed by us, same country wie customer, data isolation etc.)
