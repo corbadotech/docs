@@ -328,6 +328,13 @@
                         ]
                     },
                     {
+                        "group": "Flows",
+                        "pages": [
+                            "corbado-connect-new/flows/user-sign-up",
+                            "corbado-connect-new/flows/user-login"
+                        ]
+                    },
+                    {
                         "group": "Architecture",
                         "pages": [
                             "corbado-connect-new/architecture/overview",
