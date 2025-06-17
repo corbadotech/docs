@@ -82,6 +82,12 @@ export const ArchitectureDiagram = () => {
         rect: { top: '69.5%', left: '93%', width: '4%', height: '4%' },
         text: "Actions are custom logic scripts written in JavaScript or TypeScript that execute at specific points within the Corbado Connect journey. They act as hooks, allowing you to deeply customize and extend Corbado Connect's functionality to fit your specific needs (including calling your backend). For more details, please refer to our section on <a href=\"/corbado-connect-new/architecture/actions\">Corbado Actions</a>.",
     },
+    {
+        id: '14',
+        title: 'Passkey UI',
+        rect: { top: '47.1%', left: '53.7%', width: '4%', height: '4%' },
+        text: "The Passkey UI includes all components related to the user interface and frontend logic required for creating and using passkeys. For web applications, you can use our pre-built <a href=\"/corbado-connect-new/ui-components/overview\">Corbado UI components</a>, while for native apps, our Corbado iOS & Android SDKs are available to fully implement the passkey UI. The passkey UI communicates with the Corbado Frontend API to fulfill its function.",
+    },
   ];
 
   const [activeArea, setActiveArea] = useState(null);
