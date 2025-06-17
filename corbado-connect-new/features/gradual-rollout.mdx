@@ -1,9 +1,36 @@
 ---
 title: "Gradual Rollout"
-description: "TODO"
+description: "Gradual rollout allows you to control which users get to see and use passkey-related UI components, enabling you to introduce passkeys to your user base incrementally."
 sidebarTitle: "Gradual Rollout"
 ---
 
-- TODO
+## What is Gradual Rollout?
 
-=> Removed from first iteration (kept file for future reference, set 'groups: ["admin"]', removed from docs.json but kept backup in docs.json.bak))
+Gradual rollout is a feature that allows you to control which users are able to interact with the passkey UI components. This gives you the flexibility to introduce passkeys to your users in a phased manner, for example, by first enabling it for a small percentage of users and then gradually rolling it out to a wider audience.
+
+This is managed through a set of rules that determine whether a user should be presented with a passkey component for appending a new passkey, logging in with a passkey, or viewing their list of passkeys.
+
+## How does it work?
+
+Whenever one of the UI components is about to be displayed to a user, it checks with Corbado's backend to see if the user is eligible based on the configured rules. Based on the response, the component will either render or stay hidden.
+
+These rules can be managed in the Corbado developer panel.
+
+## What can rules be based on?
+
+You can define rules based on a variety of factors to precisely target user segments:
+
+-   **IP Address**: You can restrict access to a certain IP range, which is useful for internal testing.
+-   **Operating System**: You can target users on specific operating systems and versions, like showing a component only to iOS users.
+-   **Browser**: Similarly, you can target specific browsers, like Chrome, and even specific versions.
+-   **Random Percentage**: You can roll out a feature to a random subset of your users, for example, enabling it for just 1% of them initially.
+
+## Example Scenario
+
+Here's a possible scenario for a phased rollout during the first week after launching passkeys:
+
+-   **Appending passkeys**: Enabled for only 5% of iOS users. This lets a small group of users start creating passkeys.
+-   **Logging in with passkeys**: Enabled for 100% of users. This ensures that anyone who has a passkey can use it to log in.
+-   **Managing passkeys**: Disabled for everyone initially.
+
+With this setup, you can gather feedback and monitor the system with a small group of users before making passkey creation more widely available. Subsequently, you could enable the passkey management component and then gradually increase the percentage of users who can create passkeys.
