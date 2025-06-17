@@ -6,21 +6,21 @@ export const ArchitectureDiagram = () => {
   const areas = [
     {
         id: '1',
-        title: 'Customer Environment',
+        title: 'Your Environment',
         rect: { top: '1%', left: '16.5%', width: '5%', height: '5%' },
-        text: "The customer's environment can be either cloud-based or on-premise. It is completely isolated from the Corbado environment.",
+        text: "Your environment can be either cloud-based or on-premise. It is completely isolated from the Corbado environment.",
     },
     {
         id: '2',
-        title: 'Customer Web Application',
+        title: 'Your Web Application',
         rect: { top: '6.5%', left: '21.5%', width: '5%', height: '5%' },
         text: "This architecture diagram uses a web application as an example. Corbado Connect can be integrated into any type of application, including native apps for iOS and Android.",
     },
     {
         id: '3',
-        title: 'Customer Frontend',
+        title: 'Your Frontend',
         rect: { top: '11.5%', left: '18.5%', width: '5%', height: '5%' },
-        text: "The Corbado Connect passkey solution primarily interacts with the customer's frontend during the user sign-up and login processes. Other flows, such as passkey management, which would typically be included in a user profile, have been omitted for simplicity.",
+        text: "The Corbado Connect passkey solution primarily interacts with your frontend during the user sign-up and login processes. Other flows, such as passkey management, which would typically be included in a user profile, have been omitted for simplicity.",
     },
     {
         id: '4',
@@ -42,13 +42,13 @@ export const ArchitectureDiagram = () => {
     },
     {
         id: '7',
-        title: 'Customer Backend',
+        title: 'Your Backend',
         rect: { top: '81%', left: '41%', width: '5%', height: '5%' },
-        text: "The customer backend communicates with the Corbado Backend API, primarily for generating <a href=\"/corbado-connect-new/ui-components/overview#3-connecttokens-ctk\">Connect tokens</a>, which are essential for the <a href=\"/corbado-connect-new/ui-components/overview\">Corbado UI Components</a>. It's important to note that there are no changes required to the customer backend concerning user state management and route protection, as a customer session is established after passkey login.",
+        text: "Your backend communicates with the Corbado Backend API, primarily for generating <a href=\"/corbado-connect-new/ui-components/overview#3-connecttokens-ctk\">Connect tokens</a>, which are essential for the <a href=\"/corbado-connect-new/ui-components/overview\">Corbado UI Components</a>. It's important to note that there are no changes required to your backend concerning user state management and route protection, as a new session is established in your system after passkey login.",
     },
     {
         id: '8',
-        title: 'Customer IdP/CIAM',
+        title: 'Your IdP/CIAM',
         rect: { top: '90.3%', left: '50.2%', width: '5%', height: '5%' },
         text: "Corbado Connect integrates a passkey layer into any existing authentication solution, allowing you to retain your current IdP (Identity Provider) or CIAM (Customer Identity & Access Management). Whether you use Amazon Cognito, Keycloak, or a fully custom authentication system built with open-source libraries, Corbado Connect can be seamlessly integrated.",
     },
@@ -56,7 +56,7 @@ export const ArchitectureDiagram = () => {
         id: '9',
         title: 'Corbado Environment',
         rect: { top: '1%', left: '88.2%', width: '5%', height: '5%' },
-        text: "The Corbado Environment is entirely separate from the customer's environment. Corbado Connect can be deployed in Corbado's public cloud (a shared AWS instance) or a private cloud (a dedicated AWS instance), based on regulatory and compliance needs. For more information, refer to the section on <a href=\"/corbado-connect-new/architecture/deployment\">deployment</a>.",
+        text: "The Corbado Environment is entirely separate from your environment. Corbado Connect can be deployed in Corbado's public cloud (a shared AWS instance) or a private cloud (a dedicated AWS instance), based on regulatory and compliance needs. For more information, refer to the section on <a href=\"/corbado-connect-new/architecture/deployment\">deployment</a>.",
     },
     {
         id: '10',
@@ -74,7 +74,7 @@ export const ArchitectureDiagram = () => {
         id: '12',
         title: 'Corbado User Database',
         rect: { top: '71.5%', left: '79.2%', width: '5%', height: '5%' },
-        text: "While the primary user record is maintained in the customer's IdP/CIAM, Corbado requires its own user record to link processes and data, such as passkeys. For more details, please refer to our section on <a href=\"TODO\">UserID</a>.",
+        text: "While the primary user record is maintained in your IdP/CIAM, Corbado requires its own user record to link processes and data, such as passkeys. For more details, please refer to our section on <a href=\"TODO\">UserID</a>.",
     },
     {
         id: '13',
