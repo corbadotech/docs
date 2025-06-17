@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react';
 
 export const ArchitectureDiagram = () => {
   const visualize = false;
-  const imageSrc = '/images/corbado-connect/architecture.png';
+  const imageSrc = '/images/corbado-connect/architecture.webp';
+  const [imageLoading, setImageLoading] = useState(true);
   const areas = [
     {
         id: '1',
@@ -98,9 +99,43 @@ export const ArchitectureDiagram = () => {
 
   return (
     <div style={{ fontFamily: 'sans-serif', border: '2px solid #eee', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
-      <div style={{ position: 'relative', display: 'block' }}>
-        <img src={imageSrc} alt="Architecture Diagram" style={{ display: 'block', width: '100%', margin: 0 }} />
-        {areas.map(area => (
+      <div style={{ position: 'relative', display: 'block', minHeight: '200px' }}>
+        {imageLoading && (
+            <>
+                <style>
+                {`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}
+                </style>
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    border: '4px solid #f3f3f3',
+                    borderTop: '4px solid #3498db',
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    animation: 'spin 1s linear infinite'
+                }}></div>
+            </>
+        )}
+        <img 
+            src={imageSrc} 
+            alt="Architecture Diagram" 
+            style={{ 
+                display: imageLoading ? 'none' : 'block', 
+                width: '100%', 
+                margin: 0 
+            }} 
+            loading="lazy" 
+            onLoad={() => setImageLoading(false)}
+        />
+        {!imageLoading && areas.map(area => (
           <div
             key={area.id}
             title={area.title}
