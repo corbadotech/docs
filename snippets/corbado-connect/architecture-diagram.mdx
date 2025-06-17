@@ -62,13 +62,13 @@ export const ArchitectureDiagram = () => {
         id: '10',
         title: 'Corbado Frontend API',
         rect: { top: '19%', left: '92%', width: '4%', height: '4%' },
-        text: "The Corbado Frontend API serves as the foundation for the Corbado UI Components. While it’s possible to interact with the Corbado Frontend API directly, we don’t recommend this approach due to the complexity of authentication processes like signup and login.",
+        text: "The Corbado Frontend API serves as the foundation for the Corbado UI Components. While it's possible to interact with the Corbado Frontend API directly, we don't recommend this approach due to the complexity of authentication processes like signup and login.",
     },
     {
         id: '11',
         title: 'Corbado Backend API',
         rect: { top: '49.5%', left: '91.5%', width: '4%', height: '4%' },
-        text: "The Corbado Backend API provides the core functionality of Corbado’s Authentication system and is utilized by both the Corbado Frontend API and your backend application. It enables you to perform essential operations such as managing users and their associated identifiers.",
+        text: "The Corbado Backend API provides the core functionality of Corbado's Authentication system and is utilized by both the Corbado Frontend API and your backend application. It enables you to perform essential operations such as managing users and their associated identifiers.",
     },
     {
         id: '12',
@@ -92,8 +92,8 @@ export const ArchitectureDiagram = () => {
 
   return (
     <div style={{ fontFamily: 'sans-serif', border: '2px solid #eee', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
-      <div style={{ position: 'relative', display: 'inline-block' }}>
-        <img src={imageSrc} alt="Architecture Diagram" style={{ display: 'block', width: '100%' }} />
+      <div style={{ position: 'relative', display: 'block' }}>
+        <img src={imageSrc} alt="Architecture Diagram" style={{ display: 'block', width: '100%', margin: 0 }} />
         {areas.map(area => (
           <div
             key={area.id}
@@ -113,14 +113,17 @@ export const ArchitectureDiagram = () => {
           />
         ))}
       </div>
-      <div style={{ padding: '16px', minHeight: '100px', backgroundColor: '#fff' }}>
+      <div style={{ padding: '16px', backgroundColor: '#fff' }}>
         {activeArea ? (
           <div>
             <h4 style={{ marginTop: 0, marginBottom: '8px' }}>{activeArea.title}</h4>
             <div style={{ margin: 0 }} dangerouslySetInnerHTML={{ __html: activeArea.text }} />
           </div>
         ) : (
-          <p style={{ margin: 0, color: '#666' }}>Click on a number to get additional information.</p>
+          <div>
+            <h4 style={{ marginTop: 0, marginBottom: '8px' }}>Additional information</h4>
+            <div style={{ margin: 0 }}>Click on a number to get additional information.</div>
+          </div>
         )}
       </div>
     </div>
