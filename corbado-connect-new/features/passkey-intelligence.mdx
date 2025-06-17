@@ -1,9 +1,26 @@
 ---
 title: "Passkey Intelligence"
-description: "TODO"
+description: "Optimizing user experience with intelligent, context-aware passkey decisions."
 sidebarTitle: "Passkey Intelligence"
 ---
 
-- TODO
+Passkey Intelligence (PI) is Corbado's decision-making system that optimizes the user experience by making contextual choices about when and how to offer passkey functionality. It analyzes a user's environment, device capabilities, and past behavior to present the most seamless and effective authentication flow.
 
-=> Removed from first iteration (kept file for future reference, set 'groups: ["admin"]', removed from docs.json but kept backup in docs.json.bak))
+It's important to distinguish Passkey Intelligence from Gradual Rollout (GR):
+- **Passkey Intelligence (PI)**: A sophisticated system that makes real-time, user-specific decisions to improve the passkey experience.
+- **Gradual Rollout (GR)**: A simpler gating mechanism used to control feature availability to broader user groups, often during initial project rollout phases.
+
+## How It Works
+
+At its core, Passkey Intelligence is a learning system that gathers context to make smart decisions.
+
+1.  **It Gathers Context**: Before any passkey operation, PI collects data about the user's environment. This includes the device and browser, its known passkey capabilities, the user's existing passkeys, and any detected password managers.
+2.  **It Makes a Decision**: Using this context, PI's rule-based engine decides the best course of action. For example, it might encourage using a device's built-in authenticator (like Face ID or Windows Hello) if it knows one is available, or it might prepare a cross-device flow if the user is on a new machine.
+3.  **It Learns and Adapts**: PI records the outcomes of these interactions. This allows it to learn and improve future decisions. For example, it can learn which browsers on a user's laptop share the same passkeys, ensuring a more consistent experience across them.
+
+## Application in Key Scenarios
+
+Passkey Intelligence is primarily applied in two scenarios to enhance the user journey:
+
+-   **Passkey Login**: When a user initiates a login, PI assesses their context to offer the most convenient passkey experience. It might prioritize a device's built-in authenticator (like Face ID or Windows Hello) or prepare a cross-device flow if the user is on a new computer where no local passkey is available.
+-   **Passkey Creation**: During the passkey creation process, PI works to ensure a high success rate. It can prevent common errors, such as a user trying to create a passkey that already exists on their device. It also manages how frequently users are prompted to create a passkey, avoiding excessive reminders for those who have previously opted out.
