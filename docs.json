@@ -362,6 +362,14 @@
                         ]
                     },
                     {
+                        "group": "Features",
+                        "pages": [
+                            "corbado-connect-new/features/gradual-rollout",
+                            "corbado-connect-new/features/split-tests",
+                            "corbado-connect-new/features/passkey-intelligence"
+                        ]
+                    },
+                    {
                         "group": "Security & Compliance",
                         "pages": [
                             "corbado-connect-new/security-compliance/overview"
