@@ -1,14 +1,16 @@
 ---
 title: "User Sign-Up"
-description: "TODO"
-sidebarTitle: "User Sign-Up"
+description: "Learn how Corbado Connect enhances the user sign-up process by seamlessly integrating passkeys."
+sidebarTitle: "User Sign-un"
 ---
 
-The following flow chart shows a typical user sign-up flow how it might exist in your system. It consists of a simple sign-up providing email address, password and phone number. It has MFA and provides two options: SMS OTP and Authenticator/TOTP.
+The following flow chart shows a typical user sign-up flow and how it can be enhanced with Corbado Connect. The basic flow involves signing up with an email, password, and phone number, with options for multi-factor authentication (MFA) like SMS OTP or an authenticator app.
 
-It demonstrates the integration of Corbado Connect into the sign-up process including [Gradual Rollout](/corbado-connect-system/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect-new/features/passkey-Intelligence). With Gradual Rollout you can configure fine-grained rollout rules to open passkeys step by step for your user base and make it as frictionless as possible. Passkey Intelligence helps in only offering passkey related functionalitty if its support.
+Corbado Connect integrates into this sign-up process to introduce passkeys, leveraging three powerful features to maximize adoption and ensure a smooth user experience: Gradual Rollout, Passkey Intelligence, and Split Tests:
 
-Another feature that helps for high passkey adoption rates is the [Split Tests](/corbado-connect-new/features/split-tests) feature. It is not shown in the flow chart for simplication reasons.
+- [Gradual Rollout](/corbado-connect-new/features/gradual-rollout) allows you to control which users are eligible for passkey functionality, enabling a phased introduction. By defining rules based on attributes like IP address, OS, or a percentage of users, you can introduce passkeys at your own pace and gather feedback from a smaller audience first.
+- [Passkey Intelligence](/corbado-connect-new/features/passkey-intelligence) is a smart decision-making engine that creates the most seamless experience possible. It analyzes the user's context, like device capabilities and available authenticators, to determine the optimal moment and method for offering passkey creation, ensuring a smooth journey.
+- [Split Tests](/corbado-connect-new/features/split-tests) are used by Corbado Connect to experiment with different user experiences. While not shown in the flow chart for simplicity, this feature allows you to A/B test different approaches to encouraging passkey creation.
 
 <Frame caption="User Sign-Up flow including Gradual Rollout and Passkey Intelligence">
   <img
