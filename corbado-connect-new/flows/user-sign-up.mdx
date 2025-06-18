@@ -1,17 +1,18 @@
 ---
-title: "User sign-up"
+title: "User Sign-Up"
 description: "TODO"
-sidebarTitle: "User sign-up"
+sidebarTitle: "User Sign-Up"
 ---
 
-<Frame caption="User sign-up flow including gradual rollout">
+The following flow chart shows a typical user sign-up flow how it might exist in your system. It consists of a simple sign-up providing email address, password and phone number. It has MFA and provides two options: SMS OTP and Authenticator/TOTP.
+
+It demonstrates the integration of Corbado Connect into the sign-up process including [Gradual Rollout](/corbado-connect-system/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect-new/features/passkey-Intelligence). With Gradual Rollout you can configure fine-grained rollout rules to open passkeys step by step for your user base and make it as frictionless as possible. Passkey Intelligence helps in only offering passkey related functionalitty if its support.
+
+Another feature that helps for high passkey adoption rates is the [Split Tests](/corbado-connect-new/features/split-tests) feature. It is not shown in the flow chart for simplication reasons.
+
+<Frame caption="User Sign-Up flow including Gradual Rollout and Passkey Intelligence">
   <img
     src="/images/corbado-connect/user-sign-up-flow.png"
-    alt="User sign-up flow"
-    
+    alt="User Sign-Up flow"    
   />
 </Frame>
-
-# TODOS
-
-- Include gradual rollout, split tests
