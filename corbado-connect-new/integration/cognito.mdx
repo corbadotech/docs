@@ -5,14 +5,24 @@ sidebarTitle: "Amazon Cognito"
 ---
 
 - Write introduction that Corbado Connect can be integrated with Amazon Cognito
-- Explain Cognito custom auth (see /local-context/cognito-custom-auth.md)
-- Explain 3 Cognito Lambdas with a simple use case like SMS OTP (without code but its easier to understand the different Lambdas, see Gemini above)
-- Explain what needs to be done for Corbado
-    - Explain AWS Console configuration/changes (configure Lambdas etc.)
-- Show needed Lambdas with Source-Code (JavaScript)
-    - Improve/finish Lambdas in connect-demo repository
-    - Wait for new BAPI verifySignedPasskeyData endpoint to put in verify_auth_challenge_response?
-- Where are the Lambdas "hosted": our AWS Account or Customer AWS account?
-- Show sequence charts
-- Describe user sign-up flow and user login flow (link to general flows)
-- Keep AWS Amplify approach
+- Explain Amazon Cognito and that we need to use custom auth (see /local-context/cognito-custom-auth.md) including 3 custom Lambdas to create a Cognito session (more details later)
+- Explain that we are going to explain the integration with an example application
+- Explain that this example uses Next.js, AWS Amplify to simplify access to Amazon Cognito and Amazon Cognito of course
+- Explain that we will demonstrate the integration along the two defined user flows: sign-up flow and login flow (link to flow pages)
+- Explain sign-up flow
+    - Explain sign-up
+    - Explain Backend code using AWS Amplify
+    - Explain CorbadoConnectAppend UI Component integration
+- Explain login flow
+    - Explain login with AWS Amplify initAuth()
+    - Explain CorbadoConnectLogin UI Component integration
+    - Explain 3 Cognito lambdas to get a Cognito Session
+    - Show sequence-diagram
+    - Show source-code of 3 Cognito lambdas
+    - Explain setup/configuration in AWS Console (Lambdas in Cognito userpool)
+    - Explain that those lambdas can be "hosted" in Corbado AWS Account or "your" AWS Account (depending on chosen setup/deployment options, link to deployment)
+
+Open TODOS for this documentation:
+
+- Improve/finish Lambdas in connect-demo repository
+- Wait for new BAPI verifySignedPasskeyData endpoint to be released on cloud-production
