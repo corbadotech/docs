@@ -1,6 +1,6 @@
 ---
 title: "Amazon Cognito"
-description: "TODO"
+description: "Integrate Corbado Connect with Amazon Cognito to enable passkey-based, passwordless authentication. "
 sidebarTitle: "Amazon Cognito"
 ---
 
@@ -125,10 +125,9 @@ export default function Page() {
 }
 ```
 
-Key props:
-- **`appendTokenProvider`**: A function that provides the ConnectToken we discussed earlier. It's called automatically by the component.
-- **`onComplete`**: A callback that runs after the passkey has been successfully created. Here you can perform actions like updating your own backend or redirecting the user.
-- **`onSkip`**: Allows the user to opt-out of creating a passkey at this time.
+<Info>
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect-new/ui-components/corbadoconnectappend).
+</Info>
 
 ## User Login
 
@@ -270,7 +269,7 @@ This is the final and most critical Lambda in the chain. It's responsible for ve
 Its key responsibilities are:
 1.  **Get Secret**: It securely fetches the secret from AWS Systems Manager Parameter Store.
 2.  **Call Corbado Backend API**: It takes the `signedPasskeyData` (which is the user's `challengeAnswer`) and the `cognitoID` and sends them to Corbado's `/v2/passkey/verifySignedData` endpoint.
-3.  **Return Result**: Based on the response from Corbado's API, it sets `event.response.answerCorrect` to `true` or `false`, telling Cognito whether the user's passkey authentication was successful.
+3.  **Return Result**: Based on the response from Corbado's Backend API, it sets `event.response.answerCorrect` to `true` or `false`, telling Cognito whether the user's passkey authentication was successful.
 
 ```javascript
 // This is the 3rd lambda in the Cognito custom auth flow
@@ -369,14 +368,146 @@ export const handler = async (event) => {
 </Tabs>
 
 <Info>
-You need to configure these three Lambdas in your Cognito User Pool's settings under **User pool properties** > **Lambda triggers**.
+You need to configure these three Lambdas in your Cognito User Pool's settings under **User pool** > **Authentication** > **Extensions**.
 </Info>
 
 ### Hosting Lambda functions
 
-- Explain that those lambdas can be "hosted" in Corbado AWS Account or "your" AWS Account (depending on chosen setup/deployment options, link to deployment)
+The three custom authentication Lambda functions can be deployed in two different ways, depending on your chosen setup and requirements:
 
-### Implementation
+*   **Corbado-Hosted**: For ease of use and quicker setup, Corbado can manage and host these Lambda functions on your behalf within our secure AWS environment. This model simplifies maintenance and operations.
+*   **Self-Hosted**: For organizations that require full control over their infrastructure for security, compliance, or customization reasons, you can deploy and manage these Lambda functions directly within your own AWS account.
 
-- Explain Implementation of user login
-- Explain CorbadoConnectLogin UI Component integration
+### UI Component Integration
+
+Now, let's tie everything together and look at the client-side implementation. The login process is orchestrated by the `CorbadoConnectLogin` UI component, which handles the passkey ceremony and then passes the result to our application logic to complete the sign-in with Cognito.
+
+The core logic resides in a client component that wraps the `CorbadoConnectLogin` component.
+
+```tsx /application/cognito/app/login/WrappedLogin.tsx
+'use client';
+
+import {useRouter} from "next/navigation";
+import useDevBox from "@/components/useDevBox";
+import React, {useState} from "react";
+import {confirmSignIn, signIn} from "aws-amplify/auth";
+import ConventionalLogin from "@/app/login/ConventionalLogin";
+import {CorbadoConnectLogin} from "@corbado/connect-react";
+import Link from "next/link";
+import {postPasskeyLogin} from "@/app/login/actions";
+
+export type Props = {
+    clientState: string | undefined;
+};
+
+const decodeJwt = (token: string) => {
+    const [, payload] = token.split('.');
+    return JSON.parse(atob(payload));
+}
+
+type WithWebauthnId = {
+    webauthnId: string;
+}
+
+const WrappedLogin = ({clientState}: Props) => {
+    const router = useRouter();
+    const {integratePasskeys} = useDevBox();
+
+    const [conventionalLoginVisible, setConventionalLoginVisible] = useState(false);
+    const [email, setEmail] = useState('');
+    const [fallbackErrorMessage, setFallbackErrorMessage] = useState('');
+
+    console.log('fallbackErrorMessage', fallbackErrorMessage);
+
+    const postPasskeyLoginNew = async (signedPasskeyData: string, clientState: string) => {
+
+        // decode JWT
+        const decoded = decodeJwt(signedPasskeyData) as WithWebauthnId;
+
+        try {
+            await signIn({
+                username: decoded.webauthnId,
+                options: {authFlowType: 'CUSTOM_WITHOUT_SRP'}
+            });
+
+            const resultConfirm = await confirmSignIn({
+                challengeResponse: signedPasskeyData,
+            });
+            console.log('resultConfirm', resultConfirm);
+
+            await postPasskeyLogin(clientState);
+
+            if (integratePasskeys) {
+                await router.push('/post-login');
+            } else {
+                await router.push('/profile');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    return (
+        <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
+            <div className="z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-gray-100 shadow-xl m-4">
+                {!integratePasskeys || conventionalLoginVisible ? (
+                    <ConventionalLogin integratePasskeys={integratePasskeys}
+                                       initialUserProvidedIdentifier={email}/>
+                ) : null}
+                {integratePasskeys && !conventionalLoginVisible ? (
+                    <>
+                        <div
+                            className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-8">
+                            <h3 className="text-xl font-semibold">Login with passkeys</h3>
+                            <p className="text-sm text-gray-500">
+                                A simple and secure way to log in.
+                            </p>
+                        </div>
+                        <div className='login-area bg-gray-50 px-4 py-8 sm:px-8 justify-center'>
+                            <CorbadoConnectLogin
+                                onFallback={(identifier: string, message: string) => {
+                                    setEmail(identifier);
+                                    setConventionalLoginVisible(true);
+                                    setFallbackErrorMessage(message);
+                                }}
+                                onFallbackCustom={(identifier: string, code: string) => {
+                                    setEmail(identifier);
+                                    setConventionalLoginVisible(true);
+                                    setFallbackErrorMessage(code);
+                                }}
+                                onError={(error: string) => console.log('error', error)}
+                                onLoaded={(msg: string) => console.log('component has loaded: ' + msg)}
+                                onComplete={async (signedPasskeyData: string, newClientState: string) => {
+                                    await postPasskeyLoginNew(signedPasskeyData, newClientState);
+                                }}
+                                onSignupClick={() => router.push('/signup')}
+                                clientState={clientState}
+                            />
+                        </div>
+                    </>
+                ) : null}
+                <p className="text-center text-sm text-gray-600 mb-10">
+                    {"Don't have an account? "}
+                    <Link href="/signup" className="font-semibold text-gray-800">
+                        Sign up
+                    </Link>
+                    {' for free.'}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export default WrappedLogin;
+```
+
+<Info>
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect-new/ui-components/corbadoconnectlogin).
+</Info>
+
+The `onComplete` handler triggers our `postPasskeyLoginNew` function, which performs the final steps to log the user into Cognito:
+
+1.  **Decode the JWT**: The `signedPasskeyData` is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for Cognito's custom flow.
+2.  **`signIn`**: We call `signIn` from the AWS Amplify library, passing the `webauthnId` as the `username` and specifying `authFlowType: 'CUSTOM_WITHOUT_SRP'`. This initiates the custom authentication flow and triggers our `define_auth_challenge` and `create_auth_challenge` Lambdas.
+3.  **`confirmSignIn`**: We then immediately call `confirmSignIn`, providing the entire `signedPasskeyData` as the `challengeResponse`. This is the answer to the custom challenge, which triggers our `verify_auth_challenge_response` Lambda.
+4.  **Redirection**: Once `confirmSignIn` completes successfully, Cognito has issued valid session tokens to the Amplify library. The user is now fully authenticated, and we can redirect them to a protected page, like their profile.
