@@ -33,13 +33,13 @@ To best illustrate the integration, we will refer to a complete example applicat
 - **Next.js**: A popular React framework for building server-rendered applications.
 - **AWS Amplify**: A library that simplifies interacting with AWS services like Cognito from a frontend application.
 
-We will walk through the implementation of two key user journeys, showing how **Corbado Connect** is integrated at each stage:
-- **[User Sign-up](/corbado-connect-new/flows/user-sign-up)**
-- **[User Login](/corbado-connect-new/flows/user-login)**
+We will guide you through the implementation of two primary user flows: sign-up and login.
 
 ## User Sign-up
 
 In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by Amazon Cognito. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
+
+The flow is illustrated [here](/corbado-connect-new/flows/user-sign-up).
 
 ### Implementation Overview
 
@@ -131,9 +131,11 @@ For a detailed explanation of all available props for this component, please see
 
 ## User Login
 
-Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the custom authentication flow we outlined in the "How it Works" section becomes essential.
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the Amazon Cognito custom authentication flow we outlined in the "How it Works" section becomes essential.
 
 The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with Amazon Cognito. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from Cognito.
+
+The flow is illustrated [here](/corbado-connect-new/flows/user-login).
 
 ### Implementation Overview
 
@@ -186,7 +188,7 @@ Here we will examine the code for each of the three Lambda functions required fo
 <Tab title="define_auth_challenge">
 This is the first and last Lambda to be called in the flow. It acts as the orchestrator or state machine.
 
-```javascript
+```javascript index.mjs
 // This is the 1st lambda function in the Cognito custom auth flow
 export const handler = async(event) => {
   console.log('Received event:', event);
@@ -240,7 +242,7 @@ This Lambda is responsible for creating the actual challenge. In a typical custo
 
 In our passkey flow, however, the "secret" is created and signed on the client side during the WebAuthn ceremony handled by **Corbado Connect**. Therefore, the only job of this Lambda is to pass the user's `cognitoID` securely to the next step via `privateChallengeParameters`. This ID is essential for the verification step.
 
-```javascript
+```javascript index.mjs
 // This is the 2nd lambda in the Cognito custom auth flow
 export const handler = async(event) => {
     console.log('Received event:', event);
@@ -271,7 +273,7 @@ Its key responsibilities are:
 2.  **Call Corbado Backend API**: It takes the `signedPasskeyData` (which is the user's `challengeAnswer`) and the `cognitoID` and sends them to Corbado's `/v2/passkey/verifySignedData` endpoint.
 3.  **Return Result**: Based on the response from Corbado's Backend API, it sets `event.response.answerCorrect` to `true` or `false`, telling Cognito whether the user's passkey authentication was successful.
 
-```javascript
+```javascript index.mjs
 // This is the 3rd lambda in the Cognito custom auth flow
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 
