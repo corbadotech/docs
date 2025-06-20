@@ -132,16 +132,44 @@ Key props:
 
 ## User Login
 
-- Write little introduction that we now need our 3 custom lambda functions
-- We need it to open a Cognito session or more precisely get Cognito tokens after successful authentication with Corbado Connect using a passkey
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the custom authentication flow we outlined in the "How it Works" section becomes essential.
 
-### Sequence chart
+The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with Amazon Cognito. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from Cognito.
 
-- Explain user login flow using a sequence chart
-- Explain that the sequence chart starts AFTER successfull paykey authentication and thus focusses on the interaction between Cognito and Corbado Connect
-- start with Amplify signIn, with it Cognito is going to execute define_auth_challenge and create_auth_challenge
-- explain Amplify confirmSignIn, with it Cognito is going to execute verify_auth_challenge_respone
-- explain how verify_auth_challenge_respone is using Corbado Backend API to verify signedPasskeyData
+### Implementation Overview
+
+The user login flow involves a sequence of interactions between the client application (using AWS Amplify), Amazon Cognito, and Corbado's backend services. To best visualize this, we can use a sequence chart.
+
+This chart illustrates the flow that begins **after** the user has successfully authenticated with their passkey using a **Corbado Connect** UI component. The focus here is on how the successful passkey authentication is used to establish a session with Cognito.
+
+TODO Use/adapt chart from Kostas
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Client (e.g., Next.js with Amplify)
+    participant IDP as Amazon Cognito
+    participant FAPI as Corbado Connect UI
+    participant BAPI as Corbado Backend API
+
+    C->>IDP: 1. Initiate Login (Amplify signIn)
+    Note over C, IDP: AuthFlow: 'CUSTOM_AUTH'
+    IDP-->>C: 2. Return Custom Challenge
+
+    C->>FAPI: 3. Authenticate with Passkey
+    FAPI-->>C: 4. Return signedPasskeyData
+    
+    C->>IDP: 5. Respond to Challenge (Amplify confirmSignIn)
+    Note over C, IDP: Answer: signedPasskeyData
+    IDP->>BAPI: 6. Verify signedPasskeyData
+    BAPI-->>IDP: 7. Validation OK
+
+    IDP-->>C: 8. Return Cognito Session Tokens
+```
+
+<Info>
+The `signedPasskeyData` is a short-lived, single-use JSON Web Token (JWT) that proves a successful passkey authentication with Corbado. It is the key artifact that connects the two systems.
+</Info>
 
 ### Storing Secrets
 
