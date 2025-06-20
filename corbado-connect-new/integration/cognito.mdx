@@ -4,21 +4,58 @@ description: "TODO"
 sidebarTitle: "Amazon Cognito"
 ---
 
+## Introduction
+
 - Write introduction that Corbado Connect can be integrated with Amazon Cognito
-- Explain Amazon Cognito and that we need to use custom auth (see /local-context/cognito-custom-auth.md) including 3 custom Lambdas to create a Cognito session (more details later)
+- Link to Amazon Cognito
+
+## How it Works
+
+- Explain Amazon Cognito and that we need to use custom auth (see /local-context/cognito-custom-auth.md)
+- Make a list of the needed 3 lambda functions and explain its functions (do not show source-code, we do this later)
+
+## Example Application
+
 - Explain that we are going to explain the integration with an example application
 - Explain that this example uses Next.js, AWS Amplify to simplify access to Amazon Cognito and Amazon Cognito itself
 - Explain that we will demonstrate the integration along the two defined user flows: sign-up flow and login flow (link to flow pages)
-- Explain sign-up flow
-    - Explain sign-up
-    - Explain Backend code using AWS Amplify
-    - Explain CorbadoConnectAppend UI Component integration
-- Explain login flow
-    - Explain login with AWS Amplify initAuth()
-    - Explain CorbadoConnectLogin UI Component integration
-    - Explain 3 Cognito lambdas to get a Cognito Session
-    - Explain AWS Systems Manager Parameter Store
-    - Show sequence-diagram
-    - Show source-code of 3 Cognito lambdas
-    - Explain setup/configuration in AWS Console (Lambdas in Cognito userpool)
-    - Explain that those lambdas can be "hosted" in Corbado AWS Account or "your" AWS Account (depending on chosen setup/deployment options, link to deployment)
+
+## User Sign-up
+
+- Explain sign-up Implementation
+- Explain Backend code using AWS Amplify
+- Explain CorbadoConnectAppend UI Component integration
+
+## User Login
+
+- Write little introduction that we now need our 3 custom lambda functions
+- We need it to open a Cognito session or more precisely get Cognito tokens after successful authentication with Corbado Connect using a passkey
+
+### Sequence chart
+
+- Explain user login flow using a sequence chart
+- Explain that the sequence chart starts AFTER successfull paykey authentication and thus focusses on the interaction between Cognito and Corbado Connect
+- start with Amplify signIn, with it Cognito is going to execute define_auth_challenge and create_auth_challenge
+- explain Amplify confirmSignIn, with it Cognito is going to execute verify_auth_challenge_respone
+- explain how verify_auth_challenge_respone is using Corbado Backend API to verify signedPasskeyData
+
+### Storing Secrets
+
+- Explain that for our lambdas we need to store Secrets
+- We use AWS Systems Manager Parameter Store for this
+
+### Lambda functions in detail
+
+- Explain all 3 lambda functions
+- Show source-code of each of them
+- Use Mintlify tabs to show the 3 lambdas
+- Explain where to configure the 3 lambdas in the AWS Console at Cognito userpool (I will add a screenshot later)
+
+### Hosting Lambda functions
+
+- Explain that those lambdas can be "hosted" in Corbado AWS Account or "your" AWS Account (depending on chosen setup/deployment options, link to deployment)
+
+### Implementation
+
+- Explain Implementation of user login
+- Explain CorbadoConnectLogin UI Component integration
