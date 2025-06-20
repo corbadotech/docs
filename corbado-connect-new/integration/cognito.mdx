@@ -6,25 +6,129 @@ sidebarTitle: "Amazon Cognito"
 
 ## Introduction
 
-- Write introduction that Corbado Connect can be integrated with Amazon Cognito
-- Link to Amazon Cognito
+**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing Amazon Cognito user pools. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Cognito for user management.
+
+This guide will walk you through the process of integrating **Corbado Connect** with Amazon Cognito, using a sample Next.js application to demonstrate the key concepts.
+
+Amazon Cognito is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Amazon Cognito website](https://aws.amazon.com/cognito/).
 
 ## How it Works
 
-- Explain Amazon Cognito and that we need to use custom auth (see /local-context/cognito-custom-auth.md)
-- Make a list of the needed 3 lambda functions and explain its functions (do not show source-code, we do this later)
+The integration between **Corbado Connect** and Amazon Cognito leverages a powerful feature known as a **Custom Authentication Flow**. This feature allows developers to create their own challenge-and-response models using AWS Lambda functions, which is ideal for integrating external authentication mechanisms like Corbado's passkey-first solution.
+
+Instead of a traditional username and password, we will define a custom flow that uses a passkey signature as the challenge.
+
+To implement this, we need to configure the Cognito User Pool to use three specific AWS Lambda triggers:
+
+- **`DefineAuthChallenge`**: This Lambda acts as the orchestrator of our custom flow. It determines which challenge to present to the user at each step of the authentication process.
+- **`CreateAuthChallenge`**: This Lambda is responsible for creating the challenge itself. In our case, it won't be creating a secret, but rather preparing for the verification that happens in the next step.
+- **`VerifyAuthChallengeResponse`**: This is where the core verification logic resides. This Lambda takes the signed passkey data from the frontend (provided by **Corbado Connect**), and verifies it against Corbado's Backend API to confirm the user's identity. If verification is successful, it informs Cognito to issue the session tokens.
+
+Later in this guide, we will dive deep into the source code and configuration of each of these functions.
 
 ## Example Application
 
-- Explain that we are going to explain the integration with an example application
-- Explain that this example uses Next.js, AWS Amplify to simplify access to Amazon Cognito and Amazon Cognito itself
-- Explain that we will demonstrate the integration along the two defined user flows: sign-up flow and login flow (link to flow pages)
+To best illustrate the integration, we will refer to a complete example application. This application is built with the following technologies:
+
+- **Next.js**: A popular React framework for building server-rendered applications.
+- **AWS Amplify**: A library that simplifies interacting with AWS services like Cognito from a frontend application.
+
+We will walk through the implementation of two key user journeys, showing how **Corbado Connect** is integrated at each stage:
+- **[User Sign-up](/corbado-connect-new/flows/user-sign-up)**
+- **[User Login](/corbado-connect-new/flows/user-login)**
 
 ## User Sign-up
 
-- Explain sign-up Implementation
-- Explain Backend code using AWS Amplify
-- Explain CorbadoConnectAppend UI Component integration
+In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by Amazon Cognito. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
+
+### Implementation Overview
+
+After a successful sign-up and initial login, the user is navigated to a page where the `CorbadoConnectAppend` UI component is displayed. This component handles the entire passkey creation and association process.
+
+The implementation relies on a client component that fetches a special token and then renders the `CorbadoConnectAppend` component.
+
+### Obtaining the ConnectToken
+
+Before rendering the component, we need a short-lived `connectToken` (see [here](/corbado-connect-new/ui-components/overview#3-connecttokens-ctk)) from Corbado's Backend API. This token authorizes the creation of a passkey for a specific, authenticated user.
+
+To get this token, the frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with Cognito.
+
+```typescript
+// In your frontend component:
+import { fetchAuthSession } from 'aws-amplify/auth';
+import { getCorbadoConnectTokenAppend } from './actions'; // Server Action
+
+// ...
+const session = await fetchAuthSession();
+const idToken = session.tokens?.idToken?.toString();
+const connectToken = await getCorbadoConnectTokenAppend(idToken);
+// ...
+```
+
+The `idToken` is then sent to a Next.js Server Action, which securely handles the communication with Corbado's API. The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken`.
+
+```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
+'use server';
+
+import {getCorbadoConnectToken, verifyAmplifyToken} from "@/lib/utils";
+
+export async function getCorbadoConnectTokenAppend(idToken?: string) {
+    if (!idToken) {
+        throw new Error('idToken is required');
+    }
+
+    const {displayName, identifier} = await verifyAmplifyToken(idToken);
+
+    return getCorbadoConnectToken('passkey-append', displayName, identifier);
+}
+```
+
+### UI Component Integration
+
+With the `appendTokenProvider` logic in place, we can now integrate the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
+
+Here's how it's used in our example application's `post-login` page:
+
+```tsx /application/cognito/app/(auth-required)/post-login/page.tsx
+'use client';
+
+import {CorbadoConnectAppend} from "@corbado/connect-react";
+import {useRouter} from "next/navigation";
+import {getCorbadoConnectTokenAppend, postPasskeyAppend} from "@/app/(auth-required)/post-login/actions";
+import {fetchAuthSession} from "aws-amplify/auth";
+import {AppendStatus} from "@corbado/types";
+
+export default function Page() {
+    const router = useRouter();
+
+    return (
+        <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
+            <div className="z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-gray-100 shadow-xl">
+                <div className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 sm:px-8">
+                    <CorbadoConnectAppend
+                        onSkip={async () => router.push('/profile')}
+                        appendTokenProvider={async () => {
+                            const session = await fetchAuthSession();
+                            const idToken = session.tokens?.idToken?.toString();
+
+                            return await getCorbadoConnectTokenAppend(idToken);
+                        }}
+                        onComplete={async (appendStatus: AppendStatus, clientState: string) => {
+                            await postPasskeyAppend(appendStatus, clientState);
+                            router.push('/profile');
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+```
+
+Key props:
+- **`appendTokenProvider`**: A function that provides the ConnectToken we discussed earlier. It's called automatically by the component.
+- **`onComplete`**: A callback that runs after the passkey has been successfully created. Here you can perform actions like updating your own backend or redirecting the user.
+- **`onSkip`**: Allows the user to opt-out of creating a passkey at this time.
 
 ## User Login
 
