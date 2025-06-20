@@ -7,7 +7,7 @@ sidebarTitle: "Amazon Cognito"
 - Write introduction that Corbado Connect can be integrated with Amazon Cognito
 - Explain Amazon Cognito and that we need to use custom auth (see /local-context/cognito-custom-auth.md) including 3 custom Lambdas to create a Cognito session (more details later)
 - Explain that we are going to explain the integration with an example application
-- Explain that this example uses Next.js, AWS Amplify to simplify access to Amazon Cognito and Amazon Cognito of course
+- Explain that this example uses Next.js, AWS Amplify to simplify access to Amazon Cognito and Amazon Cognito itself
 - Explain that we will demonstrate the integration along the two defined user flows: sign-up flow and login flow (link to flow pages)
 - Explain sign-up flow
     - Explain sign-up
@@ -17,12 +17,8 @@ sidebarTitle: "Amazon Cognito"
     - Explain login with AWS Amplify initAuth()
     - Explain CorbadoConnectLogin UI Component integration
     - Explain 3 Cognito lambdas to get a Cognito Session
+    - Explain AWS Systems Manager Parameter Store
     - Show sequence-diagram
     - Show source-code of 3 Cognito lambdas
     - Explain setup/configuration in AWS Console (Lambdas in Cognito userpool)
     - Explain that those lambdas can be "hosted" in Corbado AWS Account or "your" AWS Account (depending on chosen setup/deployment options, link to deployment)
-
-Open TODOS for this documentation:
-
-- Improve/finish Lambdas in connect-demo repository
-- Wait for new BAPI verifySignedPasskeyData endpoint to be released on cloud-production
