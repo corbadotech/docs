@@ -173,15 +173,204 @@ The `signedPasskeyData` is a short-lived, single-use JSON Web Token (JWT) that p
 
 ### Storing Secrets
 
-- Explain that for our lambdas we need to store Secrets
-- We use AWS Systems Manager Parameter Store for this
+Our custom Lambda functions need to communicate securely with Corbado's Backend API. To do this, they require access to sensitive credentials, namely your **Project ID** and **API Secret**.
+
+It is critical to never hard-code secrets directly into your Lambda function's source code. Instead, you should use a dedicated service for managing secrets. For our example application, and as a recommended best practice, we use **AWS Systems Manager (SSM) Parameter Store**.
+
+By storing credentials as `SecureString` parameters in the SSM Parameter Store, you ensure that they are encrypted at rest. You can then grant the Lambda function's IAM role the necessary permissions to read these specific parameters at runtime. This approach provides a secure and scalable way to manage your secrets, separating them from your application code.
 
 ### Lambda functions in detail
 
-- Explain all 3 lambda functions
-- Show source-code of each of them
-- Use Mintlify tabs to show the 3 lambdas
-- Explain where to configure the 3 lambdas in the AWS Console at Cognito userpool (I will add a screenshot later)
+Here we will examine the code for each of the three Lambda functions required for the custom authentication flow.
+
+<Tabs>
+<Tab title="define_auth_challenge">
+This is the first and last Lambda to be called in the flow. It acts as the orchestrator or state machine.
+
+```javascript
+// This is the 1st lambda function in the Cognito custom auth flow
+export const handler = async(event) => {
+  console.log('Received event:', event);
+
+  if (!event.request.session.length) {
+    // The auth flow just started, send a custom challenge
+    return customChallenge(event);
+  }
+
+  const lastResponse = event.request.session.slice(-1)[0];
+  if (lastResponse.challengeResult === true) {
+    return allow(event);
+  } else if (countAttempts(event, false) === 0) {
+    return customChallenge(event);
+  }
+
+  return customChallenge(event)
+};
+
+function allow(event) {
+  console.log("Authentication allowed!");
+
+  event.response.issueTokens = true;
+  event.response.failAuthentication = false;
+
+  return event;
+}
+
+function customChallenge(event) {
+  event.response.issueTokens = false;
+  event.response.failAuthentication = false;
+  event.response.challengeName = "CUSTOM_CHALLENGE";
+
+  return event;
+}
+
+function countAttempts(event, excludeProvideAuthParameters = true) {
+  if (!excludeProvideAuthParameters) {
+    return event.request.session.length;
+  }
+
+  return event.request.session.filter(
+    (entry) => entry.challengeMetadata !== "PROVIDE_AUTH_PARAMETERS"
+  ).length;
+}
+```
+
+</Tab>
+<Tab title="create_auth_challenge">
+This Lambda is responsible for creating the actual challenge. In a typical custom auth flow (like sending an OTP), this function would generate a secret and send it to the user.
+
+In our passkey flow, however, the "secret" is created and signed on the client side during the WebAuthn ceremony handled by **Corbado Connect**. Therefore, the only job of this Lambda is to pass the user's `cognitoID` securely to the next step via `privateChallengeParameters`. This ID is essential for the verification step.
+
+```javascript
+// This is the 2nd lambda in the Cognito custom auth flow
+export const handler = async(event) => {
+    console.log('Received event:', event);
+
+    event.response = {
+        challengeMetadata: 'CORBADO_CHALLENGE_COGNITO_CLAIM',
+        // At least one public challenge parameter is required
+        publicChallengeParameters: {
+            "dummy": "dummy"
+        },
+        privateChallengeParameters: {
+            "cognitoID": event.userName,
+        }
+    };
+
+    console.log(event.response);
+
+    return event;
+};
+```
+
+</Tab>
+<Tab title="verify_auth_challenge_response">
+This is the final and most critical Lambda in the chain. It's responsible for verifying the user's response to the challenge.
+
+Its key responsibilities are:
+1.  **Get Secret**: It securely fetches the secret from AWS Systems Manager Parameter Store.
+2.  **Call Corbado Backend API**: It takes the `signedPasskeyData` (which is the user's `challengeAnswer`) and the `cognitoID` and sends them to Corbado's `/v2/passkey/verifySignedData` endpoint.
+3.  **Return Result**: Based on the response from Corbado's API, it sets `event.response.answerCorrect` to `true` or `false`, telling Cognito whether the user's passkey authentication was successful.
+
+```javascript
+// This is the 3rd lambda in the Cognito custom auth flow
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+
+// Full URL of Backend API (e.g. https://backendapi.cloud.corbado.io)
+const corbadoBackendApiUrl = process.env.BAPI_URL;
+
+// Name/path of Backend API secret in AWS Systems Manager Parameter Store
+const corbadoBackendApiSecretPath = process.env.BAPI_SECRET_PATH;
+
+// Backend API secret (base64-encoded projectID:API Secret for usage in Basic Auth header)
+let corbadoBackendApiSecret = null;
+
+// Fetch Backend API secret from AWS Systems Manager Parameter Store
+const getCorbadoBackendApiSecret = async () => {
+    if (corbadoBackendApiSecret) {
+        return corbadoBackendApiSecret;
+    }
+
+    try {
+        const ssm = new SSMClient();
+        const command = new GetParameterCommand({
+            Name: corbadoBackendApiSecretPath,
+            WithDecryption: true
+        });
+
+        const response = await ssm.send(command);
+        corbadoBackendApiSecret = response.Parameter.Value;
+
+        return corbadoBackendApiSecret;
+    } catch (error) {
+        throw new Error(`Failed to fetch ${corbadoBackendApiSecretPath} from AWS Systems Manager Parameter Store: ${error.message}`);
+    }
+};
+
+// Main handler function
+export const handler = async (event) => {
+    console.log('Received event:', event);
+
+    // Check if all required fields are present
+    if (!event.request.challengeAnswer || !event.request.privateChallengeParameters || !event.request.privateChallengeParameters.cognitoID) {
+        console.log('Important event fields are missing');
+        event.response.answerCorrect = false;
+
+        return event;
+    }
+
+    const cognitoID = event.request.privateChallengeParameters.cognitoID;
+    const signedPasskeyData = event.request.challengeAnswer;
+
+    try {
+        // Execute call to Backend API
+        const basicAuth = await getCorbadoBackendApiSecret();
+        const verifySignedDataRes = await fetch(`${corbadoBackendApiUrl}/v2/passkey/verifySignedData`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${basicAuth}`,
+                'Connection': 'close'
+            },
+            body: JSON.stringify({
+                signedPasskeyData: signedPasskeyData,
+                username: cognitoID
+            })
+        });
+
+        // Check if call to Backend API was successful
+        if (!verifySignedDataRes.ok) {
+            console.log(`Call to ${corbadoBackendApiUrl}/v2/passkey/verifySignedData failed with status ${verifySignedDataRes.status} (Cognito ID: ${cognitoID})`);
+            event.response.answerCorrect = false;
+
+            return event;
+        }
+
+        // Check verification result
+        const verifySignedDataResData = await verifySignedDataRes.json();
+        if (verifySignedDataResData.verificationResult === "success") {
+            console.log(`Verification successful (Cognito ID: ${cognitoID})`);
+            event.response.answerCorrect = true;
+        } else {
+            console.log(`Verification failed (Cognito ID: ${cognitoID})`);
+            event.response.answerCorrect = false;
+        }
+
+        return event;
+    } catch (error) {
+        console.error('Caught exception:', error);
+        event.response.answerCorrect = false;
+
+        return event;
+    }
+}
+```
+</Tab>
+</Tabs>
+
+<Info>
+You need to configure these three Lambdas in your Cognito User Pool's settings under **User pool properties** > **Lambda triggers**.
+</Info>
 
 ### Hosting Lambda functions
 
