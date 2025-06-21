@@ -339,7 +339,8 @@
                         "pages": [
                             "corbado-connect-new/architecture/overview",
                             "corbado-connect-new/architecture/deployment",
-                            "corbado-connect-new/architecture/actions"
+                            "corbado-connect-new/architecture/actions",
+                            "corbado-connect-new/architecture/scalability-performance"
                         ]
                     },
                     {

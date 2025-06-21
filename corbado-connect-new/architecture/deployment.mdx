@@ -6,17 +6,6 @@ sidebarTitle: "Deployment"
 
 import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
 
-# TODOS
-
-- Add Scalability & performance
-  - Backend written in high-performance Go
-  - Handles hundreds of authentcation transactions per second
-  - Prooven with load testing using k6
-  - Link to k6 passkey extension
-  - Auto-scaling in cloud provider based on CPU and Memory consumption
-- Add break-glass user
-- Add Escrow-->
-
 # Corbado Deployment Options
 
 When deploying the **Corbado Connect** solution, you have two primary hosting models to choose from - our **public cloud** (Shared AWS Instance) or a **private cloud** (Dedicated AWS Instance). Each model offers different levels of customization, security and availability, depending on your organization's requirements. Within the private cloud model, there are multiple high-availability configurations to handle different disaster scenarios.
@@ -33,7 +22,11 @@ If your focus is on rapid deployment without extensive customization or regulato
 
 ## Private Cloud (Dedicated AWS Instance)
 
-For organizations requiring tighter controls or more advanced compliance measures, Corbado can be deployed in a private cloud (dedicated AWS instance). This deployment model provides full control over data residency, customized security policies, and network configuration. Within a private cloud setup, you can choose from three levels of high availability and disaster recovery:
+For organizations requiring tighter controls or more advanced compliance measures, Corbado can be deployed in a private cloud (dedicated AWS instance). This deployment model provides full control over data residency, customized security policies, and network configuration. 
+
+The dedicated AWS instance can be managed either by you or by Corbado. If Corbado manages it, we will provide break-glass user access for emergency situations.
+
+Within a private cloud setup, you can choose from three levels of high availability and disaster recovery:
 
 ### 1. Multi-AZ Single-Region (Standard)
 
