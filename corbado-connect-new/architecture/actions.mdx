@@ -1,0 +1,21 @@
+---
+title: "Actions"
+description: "Leverage Actions to seamlessly integrate your existing systems with Corbado Connect, enabling custom logic at key stages of the creation and login process."
+sidebarTitle: "Actions"
+---
+
+Actions are custom logic scripts written in JavaScript or TypeScript that execute at specific points within the **Corbado Connect** journey. They act as hooks, allowing you to deeply customize and extend **Corbado Connect's** functionality to fit your specific needs.
+
+By using Actions, you can integrate your own business logic, connect to external systems, and enrich user data in real-time. These actions can vary widely, but they will most likely interact with your backend to execute specific tasks.
+
+### Pre-login: Identifier Translation
+
+This action runs *before* a login ceremony begins. Its primary purpose is to translate the identifier a user provides (e.g., an email address) into the canonical user identifier that your external Identity Provider (IDP) and **Corbado Connect's** system use internally (e.g., a username or `sub`). This is necessary when the public-facing login identifier differs from the system's primary key for a user.
+
+### Post-login: Session Bridging and Data Enrichment
+
+This action runs *after* a passkey ceremony is successfully completed. Its main purpose is to convert a successful **Corbado Connect** authentication into a session in your external IDP. It receives `signedPasskeyData` from **Corbado Connect**, calls your external backend (e.g., at a `/passkey/postLogin` endpoint), which in turn calls your IDP to establish the final user session.
+
+### Post-append: Post-Registration Hook
+
+This action is triggered immediately *after* a new passkey is successfully created and associated with a user's account. It serves as a synchronous hook to execute business logic that must follow a passkey registration. A key use case is updating a user's profile in your external IDP, for example, by setting an "MFA enabled" flag once the user has registered their first passkey.

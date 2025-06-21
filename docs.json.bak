@@ -324,15 +324,9 @@
                         "group": "Overview",
                         "pages": [
                             "corbado-connect-new/overview/welcome",
-                            "corbado-connect-new/overview/getting-started"
-                        ]
-                    },
-                    {
-                        "group": "Flows",
-                        "pages": [
-                            "corbado-connect-new/flows/user-sign-up",
-                            "corbado-connect-new/flows/user-login",
-                            "corbado-connect-new/flows/passkey-management"
+                            "corbado-connect-new/overview/getting-started",
+                            "corbado-connect-new/overview/use-cases",
+                            "corbado-connect-new/overview/demo"
                         ]
                     },
                     {
@@ -340,8 +334,7 @@
                         "pages": [
                             "corbado-connect-new/architecture/overview",
                             "corbado-connect-new/architecture/deployment",
-                            "corbado-connect-new/architecture/actions",
-                            "corbado-connect-new/architecture/scalability-performance"
+                            "corbado-connect-new/architecture/actions"
                         ]
                     },
                     {
@@ -356,8 +349,8 @@
                     {
                         "group": "Integration",
                         "pages": [
-                            "corbado-connect-new/integration/cognito",
                             "corbado-connect-new/integration/generic",
+                            "corbado-connect-new/integration/cognito",
                             "corbado-connect-new/integration/keycloak",
                             "corbado-connect-new/integration/duende",
                             "corbado-connect-new/integration/support"
@@ -366,15 +359,9 @@
                     {
                         "group": "Features",
                         "pages": [
+                            "corbado-connect-new/features/passkey-intelligence",
                             "corbado-connect-new/features/gradual-rollout",
-                            "corbado-connect-new/features/split-tests",
-                            "corbado-connect-new/features/passkey-intelligence"
-                        ]
-                    },
-                    {
-                        "group": "Concepts",
-                        "pages": [
-                            "corbado-connect-new/concepts/client-state"
+                            "corbado-connect-new/features/split-tests"
                         ]
                     },
                     {
@@ -390,11 +377,7 @@
                 "groups": [
                     {
                         "group": "API Reference",
-                        "pages": [
-                            "api-reference/overview",
-                            "api-reference/authentication",
-                            "api-reference/error-types"
-                        ]
+                        "pages": ["api-reference/overview"]
                     },
                     {
                         "group": "Frontend API",

@@ -1,0 +1,190 @@
+---
+title: "Gradual Rollout"
+description: "Gradual rollout allows you to control which users get to see and use passkey-related UI components, enabling you to introduce passkeys to your user base incrementally."
+sidebarTitle: "Gradual Rollout"
+---
+
+## What is Gradual Rollout?
+
+Gradual rollout is a feature that allows you to control which users are able to interact with the passkey UI components. This gives you the flexibility to introduce passkeys to your users in a phased manner, for example, by first enabling it for a small percentage of users and then gradually rolling it out to a wider audience.
+
+This is managed through a set of rules that determine whether a user should be presented with a passkey component for appending a new passkey, logging in with a passkey, or viewing their list of passkeys.
+
+## How does it work?
+
+Whenever one of the UI components is about to be displayed to a user, it checks with Corbado's backend to see if the user is eligible based on the configured rules. Based on the response, the component will either render or stay hidden.
+
+These rules can be managed in the Corbado developer panel.
+
+## Configuration Options
+
+You can define rules based on a variety of factors to precisely target user segments:
+
+-   **IP Address**: You can restrict access to a certain IP range, which is useful for internal testing.
+-   **Operating System**: You can target users on specific operating systems and versions, like showing a component only to iOS users.
+-   **Browser**: Similarly, you can target specific browsers, like Chrome, and even specific versions.
+-   **Random Percentage**: You can roll out a feature to a random subset of your users, for example, enabling it for just 1% of them initially.
+
+## Example Scenario
+
+Here's a possible scenario for a phased rollout during the first week after launching passkeys:
+
+-   **Appending passkeys**: Enabled for only 5% of iOS users. This lets a small group of users start creating passkeys.
+-   **Logging in with passkeys**: Enabled for 100% of users. This ensures that anyone who has a passkey can use it to log in.
+-   **Managing passkeys**: Disabled for everyone initially.
+
+With this setup, you can gather feedback and monitor the system with a small group of users before making passkey creation more widely available. Subsequently, you could enable the passkey management component and then gradually increase the percentage of users who can create passkeys.
+
+## Example Ruleset: append-allowed
+
+Here is a comprehensive example of a ruleset for the `append-allowed` feature, broken into two phases to show how a rollout can evolve.
+
+### Phase 1: Invitation-Only Rollout
+
+Initially, you can use a very simple ruleset to ensure only internal team members or designated testers can access the new feature in production. This is done using a secret invitation token.
+
+```bash
+rule WLInvitationToken "wl-invitation-token" salience 1000 {
+  when
+	ClientInfo.RequireInvitationToken("secret-token")
+  then
+	Result.Allow("whitelisted-invitation-token");
+	Complete();
+}
+
+rule DefaultDeny "default-deny" salience 10 {
+  when
+	True
+  then
+	Result.Block("default-deny");
+	Complete();
+}
+```
+
+This configuration provides maximum safety:
+1.  **Invitation Token**: The `WLInvitationToken` rule uses a high `salience` (priority) to immediately allow access only to someone with the token. For web, this can be a URL parameter (`?invitation-token=secret-token`), and for native apps, it can be triggered by a specific gesture.
+2.  **Default Deny**: The `DefaultDeny` rule acts as a safety net, blocking everyone else.
+
+### Phase 2: Extended Rollout with Platform and Canary Rules
+
+After initial testing, you can extend the ruleset to roll the feature out to specific platforms, versions, and eventually a random percentage of your users.
+
+```bash
+rule BLWebDriver "bl-web-driver" salience 900 {
+  when
+	ClientInfo.IsWebdriver
+  then
+	Result.Block("bl-web-driver");
+	Complete();
+}
+
+rule BLBrowser "bl-browser" salience 800 {
+  when
+	ClientInfo.Browser != "Safari" && ClientInfo.Browser != "Chrome" && ClientInfo.Browser != "Edge" && ClientInfo.Browser != "Samsung Internet"
+  then
+	Result.Block("bl-browser");
+	Complete();
+}
+
+rule WLIOS18 "wl-ios-18" salience 750 {
+  when
+	ClientInfo.Platform == "iOS" && ClientInfo.PlatformVersionGreaterThanOrEqual("18.0")
+  then
+	Result.Allow("wl-ios-18");
+	Complete();
+}
+
+rule WLIOS17 "wl-ios-17" salience 710 {
+  when
+	 ClientInfo.Platform == "iOS" && ClientInfo.PlatformVersionBetween("17.0", "18.0")
+  then
+	Result.Allow("wl-ios-17");
+	Complete();
+}
+
+rule WLIOS16 "wl-ios-16" salience 700 {
+  when
+	 ClientInfo.Platform == "iOS" && ClientInfo.PlatformVersionBetween("16.4", "17.0")
+  then
+	Result.Allow("wl-ios-16");
+	Complete();
+}
+
+rule WLIWin11 "wl-win-11" salience 650 {
+  when
+	False && ClientInfo.Platform == "Windows" && ClientInfo.PlatformVersionEqual("11.0")
+  then
+	Result.Allow("wl-win-11");
+	Complete();
+}
+
+rule WLIWin10 "wl-win-10" salience 600 {
+  when
+	ClientInfo.Platform == "Windows" && ClientInfo.PlatformVersionEqual("10.0")
+  then
+	Result.Allow("wl-win-10");
+	Complete();
+}
+
+rule WLAndroid151413 "wl-android-15-14-13" salience 550 {
+  when
+	ClientInfo.Platform == "Android" && ClientInfo.PlatformVersionBetween("13.0", "16.0")
+  then
+	Result.Allow("wl-android-15-14-13");
+	Complete();
+}
+
+rule WLAndroid13_9 "wl-android-13-9" salience 500 {
+  when
+	False && ClientInfo.Platform == "Android" && ClientInfo.PlatformVersionGreaterThanOrEqual("9.0")
+  then
+	Result.Allow("wl-android-13-9");
+	Complete();
+}
+
+rule WLMac15 "wl-mac-15" salience 450 {
+  when
+	ClientInfo.Platform == "macOS" && ClientInfo.PlatformVersionGreaterThanOrEqual("15.0")
+  then
+	Result.Allow("wl-mac-15");
+	Complete();
+}
+
+rule WLMac14 "wl-mac-14" salience 410 {
+  when
+	ClientInfo.Platform == "macOS" && ClientInfo.PlatformVersionBetween("14.0", "15.0")
+  then
+	Result.Allow("wl-mac-14");
+	Complete();
+}
+
+rule WLMac13 "wl-mac-13" salience 400 {
+  when
+	ClientInfo.Platform == "macOS" && ClientInfo.PlatformVersionBetween("13.0", "14.0")
+  then
+	Result.Allow("wl-mac-13");
+	Complete();
+}
+
+rule WLCanary5 "wl-canary-5" salience 300 {
+  when
+	True
+  then
+    Result.AllowWithSampling("wl-canary-5", 0.05);
+	Complete();
+}
+
+rule DefaultDeny "default-deny" salience 10 {
+  when
+	True
+  then
+	Result.Block("default-deny");
+	Complete();
+}
+```
+
+This extended ruleset adds more layers:
+1.  **Block Unsupported Environments**: It blocks automated test frameworks and unsupported browsers.
+2.  **Platform & Version Whitelisting**: It explicitly allows the feature on specific operating systems and versions that are known to work well. Note that some rules are disabled with `when False`, allowing you to prepare them for future activation.
+3.  **Canary Rollout**: The `WLCanary5` rule introduces a 5% random sampling (as reflected in the rule name). This is a powerful way to ramp up exposure and detect any potential issues with a smaller user group. This percentage can be gradually increased over time (e.g., to 10%, 25%, 50%, and finally 100%) directly in the configuration without requiring any app releases or deployments, allowing for a controlled and safe rollout.
+4.  **Default Deny**: The final rule continues to act as a safety net.

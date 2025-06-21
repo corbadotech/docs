@@ -1,0 +1,69 @@
+---
+title: "Overview"
+description: "Overview of Corbado Connect UI Components for Passkey Integration"
+sidebarTitle: "Overview"
+---
+
+import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
+
+**TODO LifeCycles of Components (-init) etc.**
+
+Enterprise passkey integrations can be complex especially when you have multiple systems, existing authentication flows, and varied compliance requirements. **Corbado Connect** aims to simplify this by providing JavaScript-based UI components that work seamlessly in any front-end environment. These components handle the heavy lifting of passkey ceremonies, fallback logic, and user interactions, letting you focus on building great user experiences.
+
+Corbado's approach is lightweight: you embed our JavaScript library or use npm packages to mount passkey related components in your code. This guide shows a short introduction to the two core components **CorbadoConnectAppend** and **CorbadoConnectLogin** and also briefly introduces **CorbadoConnectPasskeyList** for passkey management.
+
+This article [**focuses primarily on the automatic login approach tailored for identifier-first implementations**](https://www.corbado.com/blog/passkey-login-best-practices#61-automatic-passkey-login-approach-with-corbado). If you're interested in learning more about implementing passkeys using our [passkey button approach](https://www.corbado.com/blog/passkey-login-best-practices#62-separate-passkey-button-approach-with-corbado) with Corbado's UI components, feel free to contact us directly for further details.
+
+## 1. Components as one part of the Enterprise Passkey Platform
+
+![Corbado Explainer](https://www.corbado.com/_next/image?url=%2Fimages%2Fexplainer-light.png&w=1920&q=75&dpl=dpl_4ovviZ3vSKgAivqKcBdeDed4xVNM)
+
+Frontend Components are only one part of the integration options provided by Corbado. In addition to their primary passkey functionality, all components also collect Passkey Intelligence and Tracking Signals. This allows for optimized decision-making and enhances the overall security and user experience.
+
+## 2. Configuration Supported by All Components
+
+Each **Corbado Connect** UI component supports a common set of configuration parameters:
+
+| **Name**               | **Description**                                                                                                                                                                             | **Required** | **Type**  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------- |
+| `projectId`            | The ID of the Corbado project. See the integration guide (TODO where?) for an explanation of how to handle situations where multiple project IDs are needed.                                              | ✅            | `string`  |
+| `frontendApiUrlSuffix` | The Corbado Frontend API to connect to. You can specify whether the component connects to the staging or production environment.                                                            | ✅            | `string`  |
+| `isDebug`              | If set to `true`, the **Corbado Connect** UI components will log debug information to the console. Useful for development, but should be disabled in production.                                |              | `boolean` |
+| `enableHighlight`      | If set to `true`, components are visually surrounded by a red box—helpful in development to understand the scope of each component in your layout.                                          |              | `boolean` |
+| `flags`                | An object that defines default flags to include in requests to Corbado's Frontend API. Currently, only `"conditional-ui-allowed"` is used; more flags may be added in the future as needed. |              | `object`  |
+
+
+# 3. ConnectTokens (CTK)
+
+For security reasons, some of our UI components require so-called ConnectTokens (CTKs) to authorize actions that modify user data. Specifically, you will need to provide a CTK for the following components:
+
+- **CorbadoConnectAppend**: To authorize the creation of a new passkey for a user.
+- **CorbadoConnectPasskeyList**: To authorize listing and deleting passkeys for a user.
+
+The **CorbadoConnectLogin** component does **not** require a CTK, as it is used for authentication, not for modifying user data.
+
+Below is a detailed explanation of **how ConnectTokens are generated** and **why** they are necessary.
+
+A **Corbado ConnectToken (CTK)** is a **short-lived, single-use token** that securely ties user context (e.g., which account is being updated) to a particular**Corbado Connect** UI component action (such as passkey creation, passkey listing, or passkey deletion).
+
+Whenever a front-end flow with `CorbadoConnectAppend` or `CorbadoConnectPasskeyList` needs to safely reference a specific user's account, a CTK is required. These tokens are created on the server side (server-to-server via the Corbado Backend API) and then passed to the relevant front-end component:
+
+1. **Server generates a CTK**
+   Your server (e.g., "Customer Backend") makes a secure API call to Corbado's `POST /v2/connectTokens` endpoint. This endpoint identifies the user (for example, through a `CustomerIdentifier`) and specifies the intended action (`"passkey-append"`, `"passkey-list"`, `"passkey-delete"`, etc.).
+2. **Token includes user-specific data**
+   The response from Corbado includes a unique ConnectToken (e.g., `ctk-123...`). This token tells the **Corbado Connect** UI component precisely which user and which action it is authorized to perform (e.g., "create a new passkey for user 123").
+3. **Frontend (UI component) consumes the CTK**
+   On the frontend, a **Corbado Connect** UI component (such as **CorbadoConnectAppend** or **CorbadoConnectPasskeyList**) receives the token, validates it, and initiates the passkey flow. During the process, Corbado checks the token's validity (expiration time, intended user, single use, etc.).
+4. **Single use & short-lived**
+   Each CTK is valid for **one passkey change operation** (e.g., a single passkey creation) and expires after a short period of time (configurable in Corbado's systems). Once used or expired, it can't be reused. This design helps prevent replay attacks or unauthorized reuse.
+
+**In summary**, every time a passkey change flow runs (like _passkey creation_ or _passkey deletion_), your backend will need to:
+
+1. Verify the user is authenticated (or authorized) to update their passkeys.
+2. **Generate a CTK** via the Corbado Backend API for the specific user and action.
+3. **Deliver the CTK** to the frontend (e.g., embed it in your response or SSR).
+4. **Consume the CTK** in the relevant **Corbado Connect** UI component, ensuring a secure, single-use passkey change operation.
+
+# 4. Next steps: Get in touch
+
+<GetInTouch></GetInTouch>
