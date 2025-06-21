@@ -331,7 +331,8 @@
                         "group": "Flows",
                         "pages": [
                             "corbado-connect-new/flows/user-sign-up",
-                            "corbado-connect-new/flows/user-login"
+                            "corbado-connect-new/flows/user-login",
+                            "corbado-connect-new/flows/passkey-management"
                         ]
                     },
                     {
