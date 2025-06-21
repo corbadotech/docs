@@ -39,7 +39,7 @@ We will guide you through the implementation of two primary user flows: sign-up 
 
 In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by Amazon Cognito. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
 
-The flow is illustrated [here](/corbado-connect-new/flows/user-sign-up).
+The flow is illustrated in detail [here](/corbado-connect-new/flows/user-sign-up).
 
 ### Implementation Overview
 
@@ -49,7 +49,7 @@ The implementation relies on a client component that fetches a special token and
 
 ### Obtaining the ConnectToken
 
-Before rendering the component, we need a short-lived `connectToken` (see [here](/corbado-connect-new/ui-components/overview#3-connecttokens-ctk)) from Corbado's Backend API. This token authorizes the creation of a passkey for a specific, authenticated user.
+Before rendering the component, we need a short-lived `connectToken` (see [here](/corbado-connect-new/ui-components/overview#3-connecttokens-ctk) for more details) from Corbado's Backend API. This token authorizes the creation of a passkey for a specific, authenticated user.
 
 To get this token, the frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with Cognito.
 
@@ -65,7 +65,7 @@ const connectToken = await getCorbadoConnectTokenAppend(idToken);
 // ...
 ```
 
-The `idToken` is then sent to a Next.js Server Action, which securely handles the communication with Corbado's API. The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken`.
+The `idToken` is then sent to a Next.js Server Action, which securely handles the communication with Corbado's Backend API. The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken`.
 
 ```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
 'use server';
@@ -135,7 +135,7 @@ Now that users can associate passkeys with their accounts, we can enable a truly
 
 The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with Amazon Cognito. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from Cognito.
 
-The flow is illustrated [here](/corbado-connect-new/flows/user-login).
+The flow is illustrated in detail [here](/corbado-connect-new/flows/user-login).
 
 ### Implementation Overview
 
@@ -143,29 +143,45 @@ The user login flow involves a sequence of interactions between the client appli
 
 This chart illustrates the flow that begins **after** the user has successfully authenticated with their passkey using a **Corbado Connect** UI component. The focus here is on how the successful passkey authentication is used to establish a session with Cognito.
 
-TODO Use/adapt chart from Kostas
-
 ```mermaid
 sequenceDiagram
     autonumber
-    participant C as Client (e.g., Next.js with Amplify)
-    participant IDP as Amazon Cognito
-    participant FAPI as Corbado Connect UI
-    participant BAPI as Corbado Backend API
+    participant Client
+    participant Cognito
+    participant Lambda as verify_auth_challenge_response
+    box "Corbado Backend"
+        participant BAPI
+        participant Service
+        participant DB
+    end
 
-    C->>IDP: 1. Initiate Login (Amplify signIn)
-    Note over C, IDP: AuthFlow: 'CUSTOM_AUTH'
-    IDP-->>C: 2. Return Custom Challenge
+    Client->>+Cognito: InitiateAuth (CUSTOM_AUTH)
+    Note over Cognito: Runs define_auth then create_auth lambdas (DefineAuthChallenge → CreateAuthChallenge).<br/>cognitoID stored in private parameters.
+    Cognito-->>-Client: Return CUSTOM_CHALLENGE
 
-    C->>FAPI: 3. Authenticate with Passkey
-    FAPI-->>C: 4. Return signedPasskeyData
+    Note over Client: Performs WebAuthn ceremony with FAPI<br/>to get signedPasskeyData token.
+
+    Client->>+Cognito: RespondToAuthChallenge<br/>(Answer: signedPasskeyData)
+    Cognito->>+Lambda: Invoke with token and private cognitoID
+    Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, cognitoID)
+
+    BAPI->>+Service: Call internal service to verify data
+    Service->>Service: Validate token cryptographic signature & claims (exp)
     
-    C->>IDP: 5. Respond to Challenge (Amplify confirmSignIn)
-    Note over C, IDP: Answer: signedPasskeyData
-    IDP->>BAPI: 6. Verify signedPasskeyData
-    BAPI-->>IDP: 7. Validation OK
-
-    IDP-->>C: 8. Return Cognito Session Tokens
+    Service->>+DB: Start Database Transaction
+    Note over Service: Extracts challengeId/jti and user 'sub' from token
+    Service->>DB: Find challenge by ID with status 'completed'
+    DB->>Service: Return challenge session from DB
+    Note over Service: If session is invalid or not found, reject
+    Service->>DB: Update challenge status to 'consumed'
+    DB-->>-Service: Commit Database Transaction
+    
+    Note over Service: Match cognitoID from Lambda with user 'sub' from token
+    Service-->>-BAPI: Return success
+    BAPI-->>-Lambda: Return verification result
+    Lambda-->>-Cognito: Return answerCorrect: true
+    Note over Cognito: Final define_auth run sees success (challengeResult: true)
+    Cognito-->>-Client: Issue final Cognito tokens (Access, Refresh, ID)
 ```
 
 <Info>
