@@ -370,6 +370,12 @@
                         ]
                     },
                     {
+                        "group": "Concepts",
+                        "pages": [
+                            "corbado-connect-new/concepts/client-state"
+                        ]
+                    },
+                    {
                         "group": "Security & Compliance",
                         "pages": [
                             "corbado-connect-new/security-compliance/overview"
