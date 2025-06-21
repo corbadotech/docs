@@ -146,41 +146,22 @@ This chart illustrates the flow that begins **after** the user has successfully 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Client
-    participant Cognito
-    participant Lambda as verify_auth_challenge_response
-    box "Corbado Backend"
-        participant BAPI
-        participant Service
-        participant DB
-    end
+    participant Client as Example application
+    participant Cognito as Amazon Cognito
+    participant Lambda as verify_auth_challenge_response lambda
+    participant BAPI as Corbado Backend API
 
-    Client->>+Cognito: InitiateAuth (CUSTOM_AUTH)
-    Note over Cognito: Runs define_auth then create_auth lambdas (DefineAuthChallenge → CreateAuthChallenge).<br/>cognitoID stored in private parameters.
+    Client->>+Cognito: AWS Amplify signIn() (CUSTOM_WITHOUT_SRP)
+    Note over Cognito: Runs define_auth_challenge and create_auth_challenge lambdas<br/>(cognitoID stored in private parameters).
     Cognito-->>-Client: Return CUSTOM_CHALLENGE
 
-    Note over Client: Performs WebAuthn ceremony with FAPI<br/>to get signedPasskeyData token.
-
-    Client->>+Cognito: RespondToAuthChallenge<br/>(Answer: signedPasskeyData)
-    Cognito->>+Lambda: Invoke with token and private cognitoID
+    Client->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
+    Cognito->>+Lambda: Invoke with signedPasskeyData and private cognitoID
     Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, cognitoID)
 
-    BAPI->>+Service: Call internal service to verify data
-    Service->>Service: Validate token cryptographic signature & claims (exp)
-    
-    Service->>+DB: Start Database Transaction
-    Note over Service: Extracts challengeId/jti and user 'sub' from token
-    Service->>DB: Find challenge by ID with status 'completed'
-    DB->>Service: Return challenge session from DB
-    Note over Service: If session is invalid or not found, reject
-    Service->>DB: Update challenge status to 'consumed'
-    DB-->>-Service: Commit Database Transaction
-    
-    Note over Service: Match cognitoID from Lambda with user 'sub' from token
-    Service-->>-BAPI: Return success
     BAPI-->>-Lambda: Return verification result
     Lambda-->>-Cognito: Return answerCorrect: true
-    Note over Cognito: Final define_auth run sees success (challengeResult: true)
+    Note over Cognito: Final define_auth_challenge lambda run sees success (challengeResult: true)
     Cognito-->>-Client: Issue final Cognito tokens (Access, Refresh, ID)
 ```
 
