@@ -6,24 +6,32 @@ sidebarTitle: "Error Types"
 
 Corbado's Backend API uses standard HTTP status codes along with specific error types to provide detailed information about what went wrong with your request. Each error response includes an error type and a descriptive message to help you understand and resolve the issue.
 
-| Error Type | Description | HTTP Status | Common Causes |
-|------------|-------------|-------------|---------------|
-| `internal_error` | Internal server error at Corbado | 500 | Server-side issues. You can retry your request. |
-| `not_found` | Resource not found | 404 | Wrong ID or resource doesn't exist |
-| `method_not_allowed` | HTTP method not supported | 405 | Using GET on an endpoint that only supports POST |
-| `validation_error` | Invalid request data | 400 | Invalid data in request payload or path |
-| `project_id_mismatch` | Project ID mismatch | 400 | Incorrect project ID provided |
-| `login_error` | Authentication failed | 401 | Wrong project ID and API secret pair |
-| `invalid_json` | Invalid JSON in request body | 400 | Malformed JSON in request body |
-| `rate_limited` | Rate limit exceeded | 429 | More than 2000 requests within 10 seconds from a single IP |
-| `invalid_origin` | Unauthorized origin | 403 | API called from unauthorized origin (CORS) |
-| `already_exists` | Resource already exists | 409 | Attempting to create a resource that already exists |
+## internal_error
+The error type `internal_error` is used when some internal error occurred at Corbado. You can retry your request but usually there is nothing you can do about it. All internal errors get logged and will trigger an alert to our operations team which takes care of the situation as soon as possible.
 
-<Warning>
-The Corbado Backend API has a rate limit of 2000 requests within 10 seconds from a single IP. If you need a higher rate limit, please contact support@corbado.com.
-</Warning>
+## not_found
+The error type `not_found` is used when you try to get a resource which cannot be found. Most common case is that you provided a wrong ID.
 
+## method_not_allowed
+The error type `method_not_allowed` is used when you use a HTTP method (GET for example) on a resource/endpoint which it not supports.
 
-<Note>
-To resolve `invalid_origin` errors, add your origin to your project's authorized origins at https://app.corbado.com/app/settings/credentials/authorized-origins.
-</Note>
+## validation_error
+The error type `validation_error` is used when there is validation error on the data you provided in the request payload or path. There will be detailed information in the JSON response about the validation error like what exactly went wrong on what field.
+
+## project_id_mismatch
+The error type `project_id_mismatch` is used when there is a project ID you provided mismatch.
+
+## login_error
+The error type `login_error` is used when the authentication failed. Most common case is that you provided a wrong pair of project ID and API secret. As mentioned above we use HTTP Basic Auth for authentication.
+
+## invalid_json
+The error type `invalid_json` is used when you send invalid JSON as request body. There will be detailed information in the JSON response about what went wrong.
+
+## rate_limited
+The error type `rate_limited` is used when ran into rate limiting of the Corbado Backend API. Right now you can do a maximum of **2000 requests** within **10 seconds** from a **single IP**. Throttle your requests and try again. If you think you need more contact support@corbado.com.
+
+## invalid_origin
+The error type `invalid_origin` is used when the API has been called from a origin which is not authorized (CORS). Add the origin to your project at https://app.corbado.com/app/settings/credentials/authorized-origins.
+
+## already_exists
+The error type `already_exists` is used when you try create a resource which already exists. Most common case is that there is some unique constraint on one of the fields.
