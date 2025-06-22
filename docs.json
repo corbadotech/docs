@@ -305,19 +305,6 @@
                 ]
             },
             {
-                "tab": "Corbado Connect",
-                "groups": [
-                    {
-                        "group": "Overview",
-                        "pages": [
-                            "corbado-connect/overview/welcome",
-                            "corbado-connect/overview/components",
-                            "corbado-connect/overview/deployment"
-                        ]
-                    }
-                ]
-            },
-            {
                 "tab": "Corbado Connect NEW",
                 "groups": [
                     {
