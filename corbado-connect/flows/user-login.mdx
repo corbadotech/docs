@@ -1,0 +1,35 @@
+---
+title: "User Login"
+description: "Learn how Corbado Connect enhances the user login process by seamlessly integrating passkeys."
+sidebarTitle: "User Login"
+mode: "wide"
+---
+
+The following flow chart shows a typical user login flow and how it can be enhanced with **Corbado Connect**. The basic flow involves logging in with an email and password, with options for multi-factor authentication (MFA) like SMS OTP or an authenticator app.
+
+<Frame caption="User Login flow including Gradual Rollout and Passkey Intelligence">
+  <img
+    src="/images/corbado-connect/user-login-flow.png"
+    alt="User Login flow"    
+  />
+</Frame>
+
+**Corbado Connect** integrates into this login process to introduce passkeys, leveraging three powerful features to maximize adoption and ensure a smooth user experience: Gradual Rollout, Passkey Intelligence, and Split Tests:
+
+- [Gradual Rollout](/corbado-connect/features/gradual-rollout) allows you to control which users are eligible for passkey functionality, enabling a phased introduction. By defining rules based on attributes like IP address, OS, or a percentage of users, you can introduce passkeys at your own pace and gather feedback from a smaller audience first.
+- [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is a smart decision-making engine that creates the most seamless experience possible. It analyzes the user's context, like device capabilities and available authenticators, to determine the optimal moment and method for offering a passkey login, ensuring a smooth journey.
+- [Split Tests](/corbado-connect/features/split-tests) are used by **Corbado Connect** to experiment with different user experiences. While not shown in the flow chart for simplicity, this feature allows you to A/B test different approaches to encouraging passkey usage.
+
+
+
+## Keeping Your Existing Session Management
+
+A significant advantage of **Corbado Connect** is that it complements your existing authentication infrastructure without requiring a complete overhaul. After a user successfully authenticates (whether with a password, MFA, or a passkey via **Corbado Connect**), your system takes over session management as it always has.
+
+This means you can:
+
+- **Keep your session and token system:** There's no need to replace your current session handling logic. Whether you use JWTs, session cookies, or another method, it remains unchanged.
+- **Keep your concepts for protecting routes:** Your existing middleware or route guards that check for valid sessions or tokens will continue to work as before.
+- **Keep your concepts for getting user state:** The way your application retrieves information about the logged-in user remains the same.
+
+**Corbado Connect** acts as an enhancement to your login process, not a replacement for your entire authentication and session management system. This allows for a much faster and less disruptive integration.
