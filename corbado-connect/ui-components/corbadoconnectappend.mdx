@@ -1,0 +1,159 @@
+---
+title: "CorbadoConnectAppend: Add Passkeys to Accounts"
+description: "CorbadoConnectAppend component lets users add passkeys to existing accounts. Enhance security and provide a passwordless experience for your users."
+sidebarTitle: "CorbadoConnectAppend"
+---
+
+import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
+
+**CorbadoConnectAppend** is used after a user has been authenticated (e.g., they've just logged in with a password or have an active session). Its role is to guide the user through creating (or "appending") a passkey to their account if the user and their device meet the eligibility requirements.
+![CorbadoConnectAppend Component](https://www.corbado.com/_next/image?url=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fcorbado-cloud-staging-website-assets%2FImage_11_03_25_at_13_34_9c883cf482.jpeg&w=750&q=75&dpl=dpl_B1BvxMgoZpGVDaa5gQri9YWwY9ju)
+
+# When to Use This Component
+
+This component should be loaded on any page that is shown to a user **immediately after they have successfully logged in**, such as a dashboard or a dedicated welcome page.
+
+### Rendering Logic
+
+The component is not always visible. Before rendering its UI, it performs two critical checks. If either check fails, the component will not render, and the `onSkip` callback will be triggered.
+
+1.  **Initial Check (Gradual Rollout)**: It first determines if the current user should be offered the option to create a passkey. This is controlled by the [Gradual Rollout](/corbado-connect/features/gradual-rollout) feature, which allows you to enable passkey creation for specific user segments.
+2.  **Device Suitability (Passkey Intelligence)**: It checks if creating a passkey on the current device makes sense. This is determined by [Passkey Intelligence](/corbado-connect/features/passkey-intelligence), which assesses factors like browser support and whether the user already has a passkey on the device.
+3.  **User Confirmation (Explainer)**: If the above checks pass, it shows an "explainer" screen. This screen informs the user about the benefits of passkeys and asks for their consent before proceeding. The content of this screen can be customized.
+4.  **Passkey Creation**: Once the user agrees, the component initiates the WebAuthn API to create and register the passkey.
+
+# User Experience
+
+When the component is visible, it provides a clear call-to-action inviting the user to create a passkey for faster, more secure logins. Once rendered, the user has three possible interactions:
+
+1. **Create a Passkey**: The user can start the native browser flow to create and save a passkey.
+2. **Skip for Now**: The user can dismiss the prompt.
+3. **Learn More**: The user can view additional information about what passkeys are.
+
+# Error Handling
+
+The component features built-in error handling. If an issue occurs during the passkey creation process (e.g., the user accidentally closes the browser prompt), the UI will display an informative error message and give the user the option to retry the operation.
+
+# Example
+
+> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a secure ConnectToken (see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk)) on your backend to validate that the user session is legitimate. This token is then passed to the component.
+
+```js
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+  <script type="module">
+    // This connect token must be generated on the server side
+    // and passed to the component (e.g. by embedding it during server-side rendering).
+    const connectToken = 'ctk-xxxxxxxxxxxxxxxxxxxxxxxxxx';
+
+    const passkeyAppendElement = document.getElementById('passkey-append');
+    Corbado.mountCorbadoConnectAppend(passkeyAppendElement, {
+      projectId: "pro-9991871320976140999", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
+
+      // Called when the user decides not to create a passkey or passkey creation
+      // is skipped. Add custom logic like logging and analytics.
+      onSkip: (status) => { 
+        console.log('Append skipped with status:', status);
+      },
+
+      // Provide the connect token to the component at runtime
+      appendTokenProvider: async () => connectToken,
+
+      // Called when passkey creation is completed successfully. Use to
+      // refresh page or show success UI for example.
+      onComplete: (status, clientState) => { 
+        console.log('Append complete with status:', status);
+      },
+    });
+  </script>
+</head>
+
+<body>
+  <!-- The passkey append UI will render into this div -->
+  <div id="passkey-append"></div>
+</body>
+```
+
+# Available Configuration Parameters
+
+| **Name**              | **Description**                                                                                                                                                                                                                                                                                                                                          | **Required** | **Type**                                                    |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------- |
+| `onSkip`              | Called when the component skips rendering or the user actively dismisses it. The `status` string provides the reason, which can be `gradual-rollout-denied` (user not eligible), `passkey-intelligence-denied` (device not suitable), or `user-skipped` (user clicked skip). | ✅            | `(status: string) => void`                      |
+| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use `ConnectToken` needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
+| `onComplete`          | Called when a passkey has been successfully appended. It provides the `status` (`user-completed`) and a `clientState` string, which should be stored client-side (e.g., in a cookie) to accelerate future passkey flows.                                                            | ✅            | `(status: string, clientState: string) => void` |
+
+# Customization
+
+You can customize the component's appearance to match your application's design in two ways:
+
+### 1. Through CSS Theme Variables
+
+The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet.
+
+| **Variable Name** | **Purpose/Use** | **Default Value** |
+| --- | --- | --- |
+| `--cb-color-primary` | Primary color | rgb(79 91 146) |
+| `--cb-color-surface-tint` | Surface tint color | rgb(79 91 146) |
+| `--cb-color-on-primary` | Text color on primary | rgb(255 255 255) |
+| `--cb-color-primary-container` | Container color for primary elements | rgb(221 225 255) |
+| `--cb-color-on-primary-container` | Text color on primary container | rgb(7 22 75) |
+| `--cb-color-secondary` | Secondary color | rgb(90 93 114) |
+| `--cb-color-on-secondary` | Text color on secondary | rgb(255 255 255) |
+| `--cb-color-secondary-container` | Container color for secondary elements | rgb(223 225 249) |
+| `--cb-color-on-secondary-container` | Text color on secondary container | rgb(23 27 44) |
+| `--cb-color-error` | Error message color | rgb(186 26 26) |
+| `--cb-color-on-error` | Text color on error | rgb(255 255 255) |
+| `--cb-color-error-container` | Container color for error elements | rgb(255 218 214) |
+| `--cb-color-on-error-container` | Text color on error container | rgb(65 0 2) |
+| `--cb-color-background` | Background color | rgb(251 248 255) |
+| `--cb-color-on-background` | Text color on background | rgb(27 27 33) |
+| `--cb-color-surface` | Surface color | rgb(251 248 255) |
+| `--cb-color-on-surface` | Text color on surface | rgb(27 27 33) |
+| `--cb-color-surface-variant` | Variant surface color | rgb(226 225 236) |
+| `--cb-color-on-surface-variant` | Text color on surface variant | rgb(69 70 79) |
+| `--cb-color-outline` | Outline color | rgb(118 118 128) |
+| `--cb-font-family-primary` | Primary font family | 'Space Grotesk', sans-serif |
+| `--cb-border-radius` | Border radius for elements | 0rem |
+
+### 2. Through CSS Classes
+
+For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
+
+#### Shared CSS Classes
+
+These classes are used across multiple **Corbado Connect** components.
+
+| **Class Name** | **Usage** |
+| --- | --- |
+| `.cb-h2` | Used for heading level 2 styling |
+| `.cb-p` | Used for paragraph text styling |
+| `.cb-bold` | Used for bold text |
+| `.cb-link-button` | Used for link-style buttons |
+| `.cb-connect-container` | The top-level container for the component |
+| `.cb-primary-button` | Used for primary buttons |
+| `.cb-secondary-button` | Used for secondary buttons |
+| `.cb-notification-container` | Used for notification containers |
+| `.loader` | Used for loader/spinner animations |
+
+#### Component Specific CSS Classes
+
+These classes are specific to the `CorbadoConnectAppend` component.
+
+| **Class Name** | **Usage** |
+| --- | --- |
+| `.cb-passkey-info-list-item` | Styles for items in the passkey info list |
+| `.cb-append-benefits-icons` | Container for displaying benefit icons |
+| `.cb-append-info-list` | Styles for the append information list |
+| `.cb-append-header` | Styles for the header section |
+| `.cb-append-benefits-container` | Container for organizing append benefits |
+| `.cb-connect-append-cta` | Styles for call-to-action elements container |
+| `.cb-append-button` | Styles for append buttons |
+| `.cb-append-icon` | Styles for icons in append features |
+| `.cb-append-skip` | Styles for the skip option |
+| `.cb-append-skip-container` | Container for skip option elements |
+
+# Next steps: Get in touch
+
+<GetInTouch></GetInTouch>

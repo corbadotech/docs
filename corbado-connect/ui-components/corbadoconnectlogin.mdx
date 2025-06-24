@@ -1,0 +1,152 @@
+---
+title: "CorbadoConnectLogin: Seamless Passkey Login"
+description: "CorbadoConnectLogin is a UI component for passkey login. Enable smooth and secure passkey-based authentication for your users with ease."
+sidebarTitle: "CorbadoConnectLogin"
+---
+
+import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
+
+**CorbadoConnectLogin** handles passkey logins. You might embed this component in a modal or on a dedicated login page. It's responsible for prompting the user to log in with a passkey and managing fallback if no passkey is available or if the passkey flow fails.
+
+# When to Use This Component
+
+This component should be loaded at the **beginning of any login flow** where you want to offer passkeys as an authentication method.
+
+# Rendering Logic & User Experience
+
+The component's initial appearance can vary, creating a tailored experience for the user. There are three possible scenarios when the component loads:
+
+### Scenario 1: Immediate Fallback
+
+The component immediately triggers the `onFallback` callback without rendering any UI. This happens if **Gradual Rollout** rules are configured to deny passkey login for the current user. This allows you to seamlessly direct them to your existing login method (e.g., password) without showing them a passkey option they can't use.
+
+### Scenario 2: Standard Login Form
+
+This is the default state. The component renders a form asking for an identifier (like an email address). In this state, the user can:
+1.  Type their identifier and click the button to initiate a passkey login.
+2.  Use **Conditional UI**, a browser feature that autofills the input with a passkey-associated account. Clicking this suggestion directly triggers the passkey login, saving the user a step.
+
+### Scenario 3: One-Tap Login
+
+The component renders a "Sign in with a passkey" button for a specific user. This streamlined experience occurs if the component detects a `clientState` value (from a previous `onComplete` callback) stored in the browser's `localStorage`. It allows returning users on the same device to log in with a single click.
+
+# Error Handling
+
+The component is designed to handle errors gracefully and provide the best possible user experience. It uses two main strategies:
+
+### 1. Automatic Fallback
+
+In some cases, the component will automatically trigger the `onFallback` callback. This is the preferred behavior when:
+
+-   The user is not part of a group that is allowed to see the passkey login prompt (as determined by [Gradual Rollout](/corbado-connect/features/gradual-rollout)).
+-   [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines that the user has a very low chance of successfully using a passkey (e.g., after they have provided an identifier but no passkey is associated with it).
+-   A critical, non-recoverable error occurs.
+
+This prevents users from getting stuck and directs them to an alternative login method. The `errorMessage` in the callback will provide context.
+
+### 2. Retryable Error Screen
+
+In other cases, such as when a user instinctively closes the browser's passkey prompt, the error is likely recoverable. Instead of triggering the fallback, the component will display an informative message inside its own UI, explaining what happened and offering a "Try again" button. This helps guide users who might be unfamiliar with the passkey experience.
+
+# Example
+
+```js
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+
+  <script type="module">
+    const passkeyLoginElement = document.getElementById('authorize-with-passkey');
+    Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
+      projectId: "pro-9991871320976140999", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
+
+      // Called when passkey login is completed successfully
+      onComplete: (signedPasskeyData, clientState) => {
+        // 1. Send the signedPasskeyData to your backend for verification
+        fetch(SYSTEM_BE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ signedPasskeyData: signedPasskeyData }),
+        }).then(() => {
+          // 2. Store clientState in localStorage to enable One-Tap Login next time
+          localStorage.setItem('corbadoClientState', clientState);
+          // 3. Proceed with the application flow (e.g., redirect to dashboard)
+        });
+      },
+
+      // Called when passkey login is not possible or fails critically. Show your
+      // fallback UI (e.g., a password field). The identifier might be pre-filled if
+      // the user provided one.
+      onFallback: (identifier, errorMessage) => {
+        console.log(`Fallback triggered for '${identifier}' with message: ${errorMessage}`);
+      },
+    });
+  </script>
+</head>
+
+<body>
+  <div id="authorize-with-passkey"></div>
+  <div id="authorize-with-fallback" style="display: none;">
+    <!-- Your existing fallback authentication (e.g. password) comes here -->
+  </div>
+</body>
+```
+
+# Available Configuration Parameters
+
+| **Name**     | **Description**                                                                                                                                                                                                                                                                                                                                                     | **Required** | **Type**                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------- |
+| `onComplete` | Invoked upon a successful passkey login. Receives `signedPasskeyData` (a signed JWT to be verified by your backend) and a `clientState` string. **Storing the `clientState` in localStorage is crucial for enabling the One-Tap Login experience on subsequent visits.**                                                                                            | ✅            | `(signedPasskeyData: string, clientState: string) => void` |
+| `onFallback` | Called if passkey login isn't possible (due to gradual rollout, [passkey intelligence](/corbado-connect/features/passkey-intelligence)) or fails with a non-recoverable error. Provides an `identifier` (if the user entered one) and a descriptive `errorMessage`. Your logic should show an alternative login method (e.g., password) when this is called.                                                                       | ✅            | `(identifier: string, errorMessage: string) => void`       |
+
+# Customization
+
+You can customize the component's appearance to match your application's design in two ways:
+
+### 1. Through CSS Theme Variables
+
+The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet. (See the Customization section of the `CorbadoConnectAppend` component for a full list of variables).
+
+### 2. Through CSS Classes
+
+For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
+
+#### Shared CSS Classes
+
+These classes are used across multiple **Corbado Connect** components.
+
+| **Class Name** | **Usage** |
+| --- | --- |
+| `.cb-h2` | Used for heading level 2 styling |
+| `.cb-p` | Used for paragraph text styling |
+| `.cb-bold` | Used for bold text |
+| `.cb-link-button` | Used for link-style buttons |
+| `.cb-connect-container` | The top-level container for the component |
+| `.cb-primary-button` | Used for primary buttons |
+| `.cb-secondary-button` | Used for secondary buttons |
+| `.cb-notification-container` | Used for notification containers |
+| `.loader` | Used for loader/spinner animations |
+
+#### Component-Specific CSS Classes
+
+These classes are specific to the `CorbadoConnectLogin` component.
+
+| **Class Name** | **Usage** |
+| --- | --- |
+| `.cb-login-init-signup` | Styles for the signup initialization section |
+| `.cb-login-init-forgot-password` | Styles for the forgot password initialization section |
+| `.cb-login-error-hard-icons` | Container for displaying hard error icons |
+| `.cb-login-error-hard-fallback` | Fallback styles for hard error messages |
+| `.cb-login-error-soft-icons` | Container for displaying soft error icons |
+| `.cb-login-error-soft-fallback` | Fallback styles for soft error messages |
+| `.cb-login-loader-container` | Container for loader elements |
+| `.cb-login-init-passkey-button` | Styles for the passkey button |
+| `.cb-login-error-hard-cta` | Styles for call-to-action elements in hard error |
+| `.cb-login-success-icons` | Container for displaying success icons |
+| `.cb-switch` | Styles for switch account button |
+| `.cb-login-error-hard-help` | Styles for help messages in hard error section |
+
+# Next steps: Get in touch
+
+<GetInTouch></GetInTouch>

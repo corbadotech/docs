@@ -1,14 +1,16 @@
 ---
-title: "Deployment options"
-description: "Corbado deployment options: public cloud or private cloud (with various high-availability configurations)"
+title: "Deploying Corbado Connect for Passkeys"
+description: "A guide on the steps and best practices for deploying Corbado Connect in your environment. Enable secure passkey authentication for all your users."
 sidebarTitle: "Deployment"
 ---
 
+import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
+
 # Corbado Deployment Options
 
-When deploying the Corbado Connect solution, you have two primary hosting models to choose from - our **public cloud** or a **private cloud **(**dedicated AWS) instance**. Each model offers different levels of customization, security and availability, depending on your organization's requirements. Within the private cloud model, there are multiple high-availability configurations to handle different disaster scenarios.
+When deploying the **Corbado Connect** solution, you have two primary hosting models to choose from - our **public cloud** (Shared AWS Instance) or a **private cloud** (Dedicated AWS Instance). Each model offers different levels of customization, security and availability, depending on your organization's requirements. Within the private cloud model, there are multiple high-availability configurations to handle different disaster scenarios.
 
-## Public Cloud (Shared Instance)
+## Public Cloud (Shared AWS Instance)
 
 For organizations aiming for simplicity and speed, Corbado offers a **public cloud instance** hosted on shared AWS infrastructure. This is a cost-effective, fully managed environment where Corbado handles all maintenance, security updates, and scaling.
 
@@ -20,7 +22,11 @@ If your focus is on rapid deployment without extensive customization or regulato
 
 ## Private Cloud (Dedicated AWS Instance)
 
-For organizations requiring tighter controls or more advanced compliance measures, Corbado can be deployed in a private cloud (dedicated AWS instance). This deployment model provides full control over data residency, customized security policies, and network configuration. Within a private cloud setup, you can choose from three levels of high availability and disaster recovery:
+For organizations requiring tighter controls or more advanced compliance measures, Corbado can be deployed in a private cloud (dedicated AWS instance). This deployment model provides full control over data residency, customized security policies, and network configuration. 
+
+The dedicated AWS instance is fully managed by Corbado. We provide break-glass user access for emergency situations, ensuring you retain ultimate control when needed.
+
+Within a private cloud setup, you can choose from three levels of high availability and disaster recovery:
 
 ### 1. Multi-AZ Single-Region (Standard)
 
@@ -84,11 +90,4 @@ The following table provides a high-level comparison of Recovery Time Objectives
 
 ## Get in Touch
 
-> **Corbado Connect is currently not offered as self-service option.** For inquiries, demonstrations, or to discuss enterprise deployment options, please contact us:
->
-> - [Email](mailto:vincent.delitz@corbado.com)
-> - [Talk to a Passkey Expert](https://www.corbado.com/contact-sales)
-> - [Download our Whitepaper](https://www.corbado.com/passkeys/enterprise)
-> - [Slack](https://bit.ly/passkeys-community)
-
-We look forward to helping you deploy passkeys seamlessly—while protecting your existing investments and infrastructure.
+<GetInTouch></GetInTouch>

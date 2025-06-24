@@ -1,0 +1,21 @@
+---
+title: "Scalability & Performance of Corbado Connect"
+description: "Learn how Corbado Connect is designed for high scalability and performance. Ensure a reliable, fast passkey authentication experience for all users."
+sidebarTitle: "Scalability & Performance"
+---
+
+**Corbado Connect** is designed from the ground up to provide a highly available, scalable, and performant authentication solution. This ensures a seamless and fast user experience, even under heavy load. Our architecture leverages modern technologies and best practices to meet the demands of growing applications.
+
+## High-Performance Backend
+
+Our backend is developed in Go (Golang), a language renowned for its efficiency and concurrency capabilities. This choice allows us to build a lightweight and fast system that excels at handling numerous simultaneous requests with low latency. Go's performance characteristics are a cornerstone of our ability to deliver a responsive authentication service.
+
+## Proven Load Handling
+
+We have rigorously tested **Corbado Connect** to ensure it can manage high-traffic scenarios. Our system is proven to handle hundreds of authentication transactions per second, making it suitable for applications with large user bases and frequent logins.
+
+To validate our performance claims, we use `k6`, a powerful open-source load testing tool. We have even developed and open-sourced a `k6` extension specifically for testing passkey-based authentication flows. You can find our `xk6-passkeys` extension on GitHub: [corbado/xk6-passkeys](https://github.com/corbado/xk6-passkeys). This demonstrates our commitment to robust testing and transparency.
+
+## Cloud-Native Auto-Scaling
+
+**Corbado Connect** is built to run in the cloud and take full advantage of cloud-native infrastructure. The service is designed to auto-scale based on real-time demand. By monitoring metrics like CPU and memory consumption, our infrastructure automatically adjusts the allocated resources to maintain optimal performance and availability. This elastic scaling ensures that you only pay for the resources you need, while being prepared for traffic spikes at any time.
