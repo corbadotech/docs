@@ -6,8 +6,6 @@ sidebarTitle: "Overview"
 
 import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
 
-**TODO LifeCycles of Components (-init) etc.**
-
 Enterprise passkey integrations can be complex especially when you have multiple systems, existing authentication flows, and varied compliance requirements. **Corbado Connect** aims to simplify this by providing JavaScript-based UI components that work seamlessly in any front-end environment. These components handle the heavy lifting of passkey ceremonies, fallback logic, and user interactions, letting you focus on building great user experiences.
 
 Corbado's approach is lightweight: you embed our JavaScript library or use npm packages to mount passkey related components in your code. This guide shows a short introduction to the two core components **CorbadoConnectAppend** and **CorbadoConnectLogin** and also briefly introduces **CorbadoConnectPasskeyList** for passkey management.
@@ -26,9 +24,9 @@ Each **Corbado Connect** UI component supports a common set of configuration par
 
 | **Name**               | **Description**                                                                                                                                                                             | **Required** | **Type**  |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------- |
-| `projectId`            | The ID of the Corbado project. See the integration guide (TODO where?) for an explanation of how to handle situations where multiple project IDs are needed.                                              | ✅            | `string`  |
+| `projectId`            | The ID of the Corbado project.                                                                                                                                                              | ✅            | `string`  |
 | `frontendApiUrlSuffix` | The Corbado Frontend API to connect to. You can specify whether the component connects to the staging or production environment.                                                            | ✅            | `string`  |
-| `isDebug`              | If set to `true`, the **Corbado Connect** UI components will log debug information to the console. Useful for development, but should be disabled in production.                                |              | `boolean` |
+| `isDebug`              | If set to `true`, the **Corbado Connect** UI components will log debug information to the console. Useful for development, but should be disabled in production.                            |              | `boolean` |
 | `enableHighlight`      | If set to `true`, components are visually surrounded by a red box—helpful in development to understand the scope of each component in your layout.                                          |              | `boolean` |
 | `flags`                | An object that defines default flags to include in requests to Corbado's Frontend API. Currently, only `"conditional-ui-allowed"` is used; more flags may be added in the future as needed. |              | `object`  |
 
