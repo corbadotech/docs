@@ -126,13 +126,12 @@ export const ArchitectureDiagram = () => {
         )}
         <img 
             src={imageSrc} 
-            alt="Architecture Diagram" 
+            alt="Architecture Diagram"
             style={{ 
                 display: imageLoading ? 'none' : 'block', 
                 width: '100%', 
                 margin: 0 
-            }} 
-            loading="lazy" 
+            }}
             onLoad={() => setImageLoading(false)}
         />
         {!imageLoading && areas.map(area => (
