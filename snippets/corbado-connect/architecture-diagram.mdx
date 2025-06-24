@@ -2,7 +2,10 @@ import { useState, useCallback } from 'react';
 
 export const ArchitectureDiagram = () => {
   const visualize = false;
-  const imageSrc = '/images/corbado-connect/architecture.webp';
+
+  // Hardcoded production CDN URL because Mintlify does not properly handle 
+  // relative image paths
+  const imageSrc = 'https://mintlify.s3.us-west-1.amazonaws.com/corbado-43';
   const [imageLoading, setImageLoading] = useState(true);
   const areas = [
     {
