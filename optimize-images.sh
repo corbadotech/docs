@@ -7,7 +7,7 @@ convert_to_webp() {
 
     if [ "$input_file" != "$output_file" ]; then
         echo "Converting $input_file to WebP..."
-        cwebp "$input_file" -o "$output_file"
+        cwebp -q 90 "$input_file" -o "$output_file"
 
         if [ $? -eq 0 ]; then
             echo "Conversion successful: $output_file"
