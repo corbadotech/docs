@@ -17,8 +17,10 @@ This component should be loaded on any page that is shown to a user **immediatel
 
 The component is not always visible. Before rendering its UI, it performs two critical checks. If either check fails, the component will not render, and the `onSkip` callback will be triggered.
 
-1. **Eligibility (Gradual Rollout)**: It checks if the current user is part of a group that is allowed to see the passkey append prompt. This is controlled by a powerful feature called **Gradual Rollout**.
-2. **Device Suitability (Passkey Intelligence)**: It checks if creating a passkey on the current device makes sense. This is determined by **Passkey Intelligence**, which assesses factors like browser support and whether the user already has a passkey on the device.
+1.  **Initial Check (Gradual Rollout)**: It first determines if the current user should be offered the option to create a passkey. This is controlled by the [Gradual Rollout](/corbado-connect/features/gradual-rollout) feature, which allows you to enable passkey creation for specific user segments.
+2.  **Device Suitability (Passkey Intelligence)**: It checks if creating a passkey on the current device makes sense. This is determined by [Passkey Intelligence](/corbado-connect/features/passkey-intelligence), which assesses factors like browser support and whether the user already has a passkey on the device.
+3.  **User Confirmation (Explainer)**: If the above checks pass, it shows an "explainer" screen. This screen informs the user about the benefits of passkeys and asks for their consent before proceeding. The content of this screen can be customized.
+4.  **Passkey Creation**: Once the user agrees, the component initiates the WebAuthn API to create and register the passkey.
 
 # User Experience
 

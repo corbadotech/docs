@@ -37,8 +37,10 @@ The component is designed to handle errors gracefully and provide the best possi
 ### 1. Automatic Fallback
 
 In some cases, the component will automatically trigger the `onFallback` callback. This is the preferred behavior when:
+
+-   The user is not part of a group that is allowed to see the passkey login prompt (as determined by [Gradual Rollout](/corbado-connect/features/gradual-rollout)).
+-   [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines that the user has a very low chance of successfully using a passkey (e.g., after they have provided an identifier but no passkey is associated with it).
 -   A critical, non-recoverable error occurs.
--   **Passkey Intelligence** determines that the user has a very low chance of successfully using a passkey (e.g., after they have provided an identifier but no passkey is associated with it).
 
 This prevents users from getting stuck and directs them to an alternative login method. The `errorMessage` in the callback will provide context.
 
@@ -96,7 +98,7 @@ In other cases, such as when a user instinctively closes the browser's passkey p
 | **Name**     | **Description**                                                                                                                                                                                                                                                                                                                                                     | **Required** | **Type**                                                   |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------- |
 | `onComplete` | Invoked upon a successful passkey login. Receives `signedPasskeyData` (a signed JWT to be verified by your backend) and a `clientState` string. **Storing the `clientState` in localStorage is crucial for enabling the One-Tap Login experience on subsequent visits.**                                                                                            | ✅            | `(signedPasskeyData: string, clientState: string) => void` |
-| `onFallback` | Called if passkey login isn't possible (due to gradual rollout, passkey intelligence) or fails with a non-recoverable error. Provides an `identifier` (if the user entered one) and a descriptive `errorMessage`. Your logic should show an alternative login method (e.g., password) when this is called.                                                                       | ✅            | `(identifier: string, errorMessage: string) => void`       |
+| `onFallback` | Called if passkey login isn't possible (due to gradual rollout, [passkey intelligence](/corbado-connect/features/passkey-intelligence)) or fails with a non-recoverable error. Provides an `identifier` (if the user entered one) and a descriptive `errorMessage`. Your logic should show an alternative login method (e.g., password) when this is called.                                                                       | ✅            | `(identifier: string, errorMessage: string) => void`       |
 
 # Customization
 
