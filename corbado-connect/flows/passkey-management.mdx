@@ -5,49 +5,16 @@ sidebarTitle: "Passkey Management"
 mode: "wide"
 ---
 
-This section describes the flow for users to manage their passkeys. After logging in, users can access a dedicated settings area where they can see all their registered passkeys, add new ones, and remove those they no longer need. This gives users full control over their credentials, enhancing security and usability.
+The following chart describes the flow for users to manage their passkeys. After logging in, users can access a dedicated settings area where they can see all their registered passkeys, add new ones, and remove those they no longer need. This gives users full control over their credentials, enhancing security and usability.
 
-**Corbado Connect** provides the underlying logic for these management features and allows you to introduce them safely and at your own pace.
+<Frame caption="Passkey management flow including Gradual Rollout and Passkey Intelligence">
+  <img
+    src="/images/corbado-connect/passkey-management-flow.webp"
+    alt="Passkey management flow"    
+  />
+</Frame>
+
+**Corbado Connect** provides the underlying logic for these management features and allows you to introduce them safely and at your own pace, utilizing the following features:
 
 - [Gradual Rollout](/corbado-connect/features/gradual-rollout) allows you to control which users have access to passkey management features. For example, the ability to add new passkeys from the settings page can be enabled for a small percentage of users initially and then progressively rolled out to your entire user base.
-
-## Technical Flow
-
-The following sequence diagram illustrates the technical flow for a passkey management operation, using deletion as an example. The process for adding or listing passkeys follows a similar pattern, where the mobile app securely obtains a one-time token from your backend to perform the action directly with Corbado's APIs. This ensures that no sensitive operations occur without proper user authentication.
-
-<Frame caption="Sequence diagram for a passkey management operation (e.g., deletion)">
-```mermaid
-sequenceDiagram
-    actor "End User"
-    participant App
-    participant BFF
-    participant CorbadoFrontendAPI as Corbado Frontend API
-    participant CorbadoBackendAPI as Corbado Backend API
-
-    box Dedicated Corbado Instance
-        participant CorbadoFrontendAPI
-        participant CorbadoBackendAPI
-    end
-
-    "End User"->>App: Selects "Delete Passkey"
-    App->>+BFF: Request ConnectToken for deletion<br/>(sends JWT, tokenType="passkey-delete")
-    BFF->>BFF: Validate JWT
-    BFF->>BFF: Extract user identifier from JWT
-    BFF->>+CorbadoBackendAPI: POST /v2/connectTokens<br/>(Body: {"type": "passkey-delete", "data": {"identifier": "{user_identifier}"}})
-    CorbadoBackendAPI-->>-BFF: Return ConnectToken (secret)
-    BFF-->>-App: Return ConnectToken (secret) for deletion
-
-    App->>+CorbadoFrontendAPI: Request Passkey Deletion<br/>(uses ConnectToken and passkey ID)
-    CorbadoFrontendAPI->>+CorbadoBackendAPI: Validate ConnectToken and User Action
-    CorbadoBackendAPI->>CorbadoBackendAPI: Perform passkey deletion
-    CorbadoBackendAPI-->>-CorbadoFrontendAPI: Return Deletion Result
-    CorbadoFrontendAPI-->>-App: Return Deletion Result
-    App->>"End User": Show Deletion Status
-```
-</Frame> 
-
-Chart Notizen:
-
-- Wir zeigen CREATE und DELETE (TBD ob 1 Chart oder 2)
-- Gradual Rollout läuft als erstes, falls enabled wird CREATE Button in Liste angezeigt, falls nicht wird CREATE Button nicht angezeigt, Liste wird aber immer angezeigt
-- Passkey Intelligence läuft erst NACH Klick auf CREATE Button
+- [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is a smart decision-making engine that creates the most seamless experience possible. It analyzes the user's context, like device capabilities and available authenticators, to determine if passkey creation is possible, ensuring a smooth experience.
