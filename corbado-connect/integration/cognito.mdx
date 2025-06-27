@@ -47,6 +47,10 @@ After a successful sign-up and initial login, the user is navigated to a page wh
 
 The implementation relies on a client component that fetches a special token and then renders the `CorbadoConnectAppend` component.
 
+TODO:
+- Squence chart einbauen (bei Connect Token starten und wahrscheinlich mit post-append Action enden)
+- post-login Action kurz anreißen und Source-Code zeigen
+
 ### Obtaining the ConnectToken
 
 Before rendering the component, we need a short-lived `connectToken` (see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details) from Corbado's Backend API. This token authorizes the creation of a passkey for a specific, authenticated user.
@@ -139,17 +143,24 @@ The flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
 ### Implementation Overview
 
+TODO: Wording zu Sequence-Chart anpassen, weil es oben schon einen gibt (d.h. eher so "Again, it is most easiest to show this with a sequence chart" oder so)
+
 The user login flow involves a sequence of interactions between the client application (using AWS Amplify), Amazon Cognito, and Corbado's backend services. To best visualize this, we can use a sequence chart.
 
 This chart illustrates the flow that begins **after** the user has successfully authenticated with their passkey using a **Corbado Connect** UI component. The focus here is on how the successful passkey authentication is used to establish a session with Cognito.
 
+TODO:
+- Squence chart doch von ganz vorne anfangen lassen (also Component/Login und Interaction FAPI/BAPI)
+- pre-login Action einbauen
+- Dann folgende Docu komplett anhand der Nummern des Squence Charts durchziehen
+
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Client as Example application
-    participant Cognito as Amazon Cognito
-    participant Lambda as verify_auth_challenge_response lambda
-    participant BAPI as Corbado Backend API
+    participant Client as Example<br />application
+    participant Cognito as Amazon<br />Cognito
+    participant Lambda as verify_auth_challenge_response<br />lambda
+    participant BAPI as Corbado<br />Backend API
 
     Client->>+Cognito: AWS Amplify signIn() (CUSTOM_WITHOUT_SRP)
     Note over Cognito: Runs define_auth_challenge and create_auth_challenge lambdas<br/>(cognitoID stored in private parameters).
