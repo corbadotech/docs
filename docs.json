@@ -20,6 +20,75 @@
                 ]
             },
             {
+                "tab": "Corbado Connect",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": [
+                            "corbado-connect/overview/welcome",
+                            "corbado-connect/overview/getting-started"
+                        ]
+                    },
+                    {
+                        "group": "Flows",
+                        "pages": [
+                            "corbado-connect/flows/user-sign-up",
+                            "corbado-connect/flows/user-login",
+                            "corbado-connect/flows/passkey-management"
+                        ]
+                    },
+                    {
+                        "group": "Architecture",
+                        "pages": [
+                            "corbado-connect/architecture/overview",
+                            "corbado-connect/architecture/deployment",
+                            "corbado-connect/architecture/actions",
+                            "corbado-connect/architecture/scalability-performance"
+                        ]
+                    },
+                    {
+                        "group": "UI Components",
+                        "pages": [
+                            "corbado-connect/ui-components/overview",
+                            "corbado-connect/ui-components/corbadoconnectappend",
+                            "corbado-connect/ui-components/corbadoconnectlogin",
+                            "corbado-connect/ui-components/corbadoconnectpasskeylist"
+                        ]
+                    },
+                    {
+                        "group": "Integration",
+                        "pages": [
+                            "corbado-connect/integration/cognito",
+                            "corbado-connect/integration/generic",
+                            "corbado-connect/integration/keycloak",
+                            "corbado-connect/integration/duende",
+                            "corbado-connect/integration/support"
+                        ]
+                    },
+                    {
+                        "group": "Features",
+                        "pages": [
+                            "corbado-connect/features/gradual-rollout",
+                            "corbado-connect/features/split-tests",
+                            "corbado-connect/features/passkey-intelligence",
+                            "corbado-connect/features/one-tap-login"
+                        ]
+                    },
+                    {
+                        "group": "Concepts",
+                        "pages": [
+                            "corbado-connect/concepts/client-state"
+                        ]
+                    },
+                    {
+                        "group": "Security & Compliance",
+                        "pages": [
+                            "corbado-connect/security-compliance/overview"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Corbado Complete",
                 "groups": [
                     {
@@ -301,74 +370,6 @@
                     {
                         "group": "Other",
                         "pages": ["corbado-complete/other/telemetry"]
-                    }
-                ]
-            },
-            {
-                "tab": "Corbado Connect",
-                "groups": [
-                    {
-                        "group": "Overview",
-                        "pages": [
-                            "corbado-connect/overview/welcome",
-                            "corbado-connect/overview/getting-started"
-                        ]
-                    },
-                    {
-                        "group": "Flows",
-                        "pages": [
-                            "corbado-connect/flows/user-sign-up",
-                            "corbado-connect/flows/user-login",
-                            "corbado-connect/flows/passkey-management"
-                        ]
-                    },
-                    {
-                        "group": "Architecture",
-                        "pages": [
-                            "corbado-connect/architecture/overview",
-                            "corbado-connect/architecture/deployment",
-                            "corbado-connect/architecture/actions",
-                            "corbado-connect/architecture/scalability-performance"
-                        ]
-                    },
-                    {
-                        "group": "UI Components",
-                        "pages": [
-                            "corbado-connect/ui-components/overview",
-                            "corbado-connect/ui-components/corbadoconnectappend",
-                            "corbado-connect/ui-components/corbadoconnectlogin",
-                            "corbado-connect/ui-components/corbadoconnectpasskeylist"
-                        ]
-                    },
-                    {
-                        "group": "Integration",
-                        "pages": [
-                            "corbado-connect/integration/cognito",
-                            "corbado-connect/integration/generic",
-                            "corbado-connect/integration/keycloak",
-                            "corbado-connect/integration/duende",
-                            "corbado-connect/integration/support"
-                        ]
-                    },
-                    {
-                        "group": "Features",
-                        "pages": [
-                            "corbado-connect/features/gradual-rollout",
-                            "corbado-connect/features/split-tests",
-                            "corbado-connect/features/passkey-intelligence"
-                        ]
-                    },
-                    {
-                        "group": "Concepts",
-                        "pages": [
-                            "corbado-connect/concepts/client-state"
-                        ]
-                    },
-                    {
-                        "group": "Security & Compliance",
-                        "pages": [
-                            "corbado-connect/security-compliance/overview"
-                        ]
                     }
                 ]
             },
