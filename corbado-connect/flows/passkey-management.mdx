@@ -5,16 +5,16 @@ sidebarTitle: "Passkey Management"
 mode: "wide"
 ---
 
-The following chart describes the flow for users to manage their passkeys. After logging in, users can access a dedicated settings area where they can see all their registered passkeys, add new ones, and remove those they no longer need. This gives users full control over their credentials, enhancing security and usability.
+The following flow chart shows a typical passkey management flow and how it can be enhanced with **Corbado Connect**. The basic flow involves users accessing a dedicated settings area after logging in, where they can view all their registered passkeys, add new ones, and remove those they no longer use.
 
 <Frame caption="Passkey management flow including Gradual Rollout and Passkey Intelligence">
   <img
     src="/images/corbado-connect/passkey-management-flow.webp"
-    alt="Passkey management flow"    
+    alt="Passkey management flow"
   />
 </Frame>
 
-**Corbado Connect** provides the underlying logic for these management features and allows you to introduce them safely and at your own pace, utilizing the following features:
+**Corbado Connect** integrates into this passkey management process, leveraging powerful features to maximize adoption and ensure a smooth user experience:
 
-- [Gradual Rollout](/corbado-connect/features/gradual-rollout) allows you to control which users have access to passkey management features. For example, the ability to add new passkeys from the settings page can be enabled for a small percentage of users initially and then progressively rolled out to your entire user base.
-- [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is a smart decision-making engine that creates the most seamless experience possible. It analyzes the user's context, like device capabilities and available authenticators, to determine if passkey creation is possible, ensuring a smooth experience.
+- [Gradual Rollout](/corbado-connect/features/gradual-rollout) allows you to control which users have access to passkey management features, enabling a phased introduction. By defining rules based on attributes like IP address, OS, or a percentage of users, you can introduce passkey management at your own pace and gather feedback from a smaller audience first.
+- [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is a smart decision-making engine that creates the most seamless experience possible. It analyzes the user's context, like device capabilities and available authenticators, to determine if passkey creation is possible from the settings page, ensuring a smooth journey.
