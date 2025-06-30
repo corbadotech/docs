@@ -45,7 +45,7 @@ The flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
 After a successful sign-up and initial login, the user is navigated to a page where the `CorbadoConnectAppend` UI component is displayed. This component handles the entire passkey creation and association process.
 
-The implementation relies on a client component that fetches a special token and then renders the `CorbadoConnectAppend` component.
+The complete process is best described using sequence charts (note: the process depicted begins after the user has successfully logged in):
 
 ```mermaid
 sequenceDiagram
@@ -57,7 +57,7 @@ sequenceDiagram
     participant BAPI as Corbado<br />Backend API
     participant Actions as Corbado<br />Actions
 
-    Note over ExampleFrontend: CorbadoConnectAppend component<br />renders
+    Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
     ExampleFrontend->>+ExampleBackend: Requests Corbado Connect Token
     ExampleBackend->>ExampleBackend: Verifies user session
     ExampleBackend->>+BAPI: POST /connectToken
@@ -73,75 +73,11 @@ sequenceDiagram
     FAPI-->>-ExampleFrontend: Returns success
 ```
 
-OLD: 
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Client as Example<br />application
-    participant Cognito as Amazon<br />Cognito
-    participant Lambda as verify_auth_challenge_response<br />lambda
-    participant BAPI as Corbado<br />Backend API
-
-    Client->>+Cognito: AWS Amplify signIn() (CUSTOM_WITHOUT_SRP)
-    Note over Cognito: Runs define_auth_challenge and create_auth_challenge lambdas<br/>(cognitoID stored in private parameters).
-    Cognito-->>-Client: Return CUSTOM_CHALLENGE
-
-    Client->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
-    Cognito->>+Lambda: Invoke with signedPasskeyData and private cognitoID
-    Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, cognitoID)
-
-    BAPI-->>-Lambda: Return verification result
-    Lambda-->>-Cognito: Return answerCorrect: true
-    Note over Cognito: Final define_auth_challenge lambda run sees success (challengeResult: true)
-    Cognito-->>-Client: Issue final Cognito tokens (Access, Refresh, ID)
-```
-
-TODO:
-- Squence chart einbauen (bei Connect Token starten und wahrscheinlich mit post-append Action enden)
-- post-append Action kurz anreißen und Source-Code zeigen
-
-### Obtaining the ConnectToken
-
-TODO Deeplink to API Reference
-
-Before rendering the component, we need a short-lived `connectToken` (see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details) from Corbado's Backend API. This token authorizes the creation of a passkey for a specific, authenticated user.
-
-To get this token, the frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with Cognito.
-
-```typescript
-// In your frontend component:
-import { fetchAuthSession } from 'aws-amplify/auth';
-import { getCorbadoConnectTokenAppend } from './actions'; // Server Action
-
-// ...
-const session = await fetchAuthSession();
-const idToken = session.tokens?.idToken?.toString();
-const connectToken = await getCorbadoConnectTokenAppend(idToken);
-// ...
-```
-
-The `idToken` is then sent to a Next.js Server Action, which securely handles the communication with Corbado's Backend API. The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken`.
-
-```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
-'use server';
-
-import {getCorbadoConnectToken, verifyAmplifyToken} from "@/lib/utils";
-
-export async function getCorbadoConnectTokenAppend(idToken?: string) {
-    if (!idToken) {
-        throw new Error('idToken is required');
-    }
-
-    const {displayName, identifier} = await verifyAmplifyToken(idToken);
-
-    return getCorbadoConnectToken('passkey-append', displayName, identifier);
-}
-```
+In the following sections, we will explain each step in detail.
 
 ### UI Component Integration
 
-With the `appendTokenProvider` logic in place, we can now integrate the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
+We start by integrating the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
 Here's how it's used in our example application's `post-login` page:
 
@@ -184,6 +120,174 @@ export default function Page() {
 <Info>
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect/ui-components/corbadoconnectappend).
 </Info>
+
+### Obtaining the ConnectToken
+
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
+
+The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with Cognito. The `idToken` is then sent to a Next.js Server Action:
+
+```typescript
+appendTokenProvider={async () => {
+    const session = await fetchAuthSession();
+    const idToken = session.tokens?.idToken?.toString();
+
+    return await getCorbadoConnectTokenAppend(idToken);
+}}
+```
+
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken` by calling the utility function `getCorbadoConnectToken()`:
+
+```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
+'use server';
+
+import {getCorbadoConnectToken, verifyAmplifyToken} from "@/lib/utils";
+
+export async function getCorbadoConnectTokenAppend(idToken?: string) {
+    if (!idToken) {
+        throw new Error('idToken is required');
+    }
+
+    const {displayName, identifier} = await verifyAmplifyToken(idToken);
+
+    return getCorbadoConnectToken('passkey-append', displayName, identifier);
+}
+```
+
+The utility function subsequently manages the request to the Corbado Backend API:
+
+```typescript
+export const getCorbadoConnectToken = async (connectTokenType: string, displayName: string, identifier: string): Promise<string> => {
+    const payload = {
+        type: connectTokenType,
+        data: {
+            displayName: displayName,
+            identifier: identifier,
+        },
+    };
+
+    const body = JSON.stringify(payload);
+
+    const url = `${process.env.CORBADO_BACKEND_API_URL}/v2/connectTokens`;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            Authorization: `Basic ${process.env.CORBADO_BACKEND_API_BASIC_AUTH}`,
+            'Content-Type': 'application/json',
+        },
+        cache: 'no-cache',
+        body: body,
+    });
+
+    const out = await response.json();
+
+    return out.secret;
+}
+```
+
+### Updating MFA Settings
+
+After a passkey is created, it's necessary to update the MFA settings in AWS Cognito. This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
+
+The `post-append` action utilizes the `AdminGetUser` command from AWS Cognito to verify if MFA is already configured. If it is not, the `AdminSetUserMFAPreference` command is executed to update the settings:
+
+```javascript
+import { AdminGetUserCommand, AdminSetUserMFAPreferenceCommand, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
+
+// ID of Cognito user pool
+const userPoolId = process.env.USER_POOL_ID;
+
+// ARN of role to assume
+const roleArn = process.env.ASSUME_ROLE_ARN;
+
+let cognitoClientCache = null;
+let credentialsExpiryTime = null;
+
+const assumeRole = async () => {
+    const command = new AssumeRoleCommand({
+        RoleArn: roleArn,
+        RoleSessionName: 'LambdaSession',
+        DurationSeconds: 3600
+    });
+
+    const client = new STSClient();
+    const response = await client.send(command);
+    const { AccessKeyId, SecretAccessKey, SessionToken, Expiration } = response.Credentials;
+    credentialsExpiryTime = new Date(Expiration).getTime();
+
+    return new CognitoIdentityProviderClient({
+        credentials: {
+            accessKeyId: AccessKeyId,
+            secretAccessKey: SecretAccessKey,
+            sessionToken: SessionToken,
+        }
+    });
+};
+
+const getCognitoClient = async () => {
+    const currentTime = Date.now();
+
+    if (!cognitoClientCache || !credentialsExpiryTime || currentTime >= credentialsExpiryTime) {
+        cognitoClientCache = await assumeRole();
+    }
+
+    return cognitoClientCache;
+};
+
+// Main handler function
+export const handler = async (event) => {
+    console.log('Received event:', event);
+
+    try {
+        const cognitoClient = await getCognitoClient();
+        const username = event.username;
+
+        // Get user and check MFA settings
+        const getUserCommand = new AdminGetUserCommand({
+            UserPoolId: userPoolId,
+            Username: username,
+        });
+
+        const user = await cognitoClient.send(getUserCommand);
+        if (user.UserMFASettingList && user.UserMFASettingList.length > 0) {
+            console.log('User has MFA settings already set', user.UserMFASettingList);
+
+            return {
+                statusCode: 200,
+                body: {},
+            };
+        }
+
+        // Set MFA preference because not done yet (see above)
+        const command = new AdminSetUserMFAPreferenceCommand({
+            UserPoolId: userPoolId,
+            Username: username,
+            SMSMfaSettings: {
+                Enabled: true,
+                PreferredMfa: true,
+            }
+        });
+
+        await cognitoClient.send(command);
+
+        return {
+            statusCode: 200,
+            body: {}
+        };
+    } catch (error) {
+        console.error('Caught exception:', error);
+
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                message: 'Caught exception',
+                error: error.message,
+            }),
+        };
+    }
+};
+```
 
 ## User Login
 
