@@ -47,11 +47,63 @@ After a successful sign-up and initial login, the user is navigated to a page wh
 
 The implementation relies on a client component that fetches a special token and then renders the `CorbadoConnectAppend` component.
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ExampleFrontend as Example<br />Frontend
+    participant ExampleBackend as Example<br />Backend
+    participant Cognito as Amazon<br />Cognito
+    participant FAPI as Corbado<br />Frontend API
+    participant BAPI as Corbado<br />Backend API
+    participant Actions as Corbado<br />Actions
+
+    Note over ExampleFrontend: CorbadoConnectAppend component<br />renders
+    ExampleFrontend->>+ExampleBackend: Requests Corbado Connect Token
+    ExampleBackend->>ExampleBackend: Verifies user session
+    ExampleBackend->>+BAPI: POST /connectToken
+    BAPI-->>-ExampleBackend: Returns Connect Token
+    ExampleBackend-->>-ExampleFrontend: Returns Connect Token
+
+    ExampleFrontend->>+FAPI: Executes Passkey Ceremony (WebAuthn)
+    Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
+    FAPI->>+Actions: Execute post-append action
+    Actions->>+Cognito: Set MFA settings (AdminGetUser + AdminSetUserMFAPreference)
+    Cognito-->>-Actions: Returns success
+    Actions-->>-FAPI: Returns success
+    FAPI-->>-ExampleFrontend: Returns success
+```
+
+OLD: 
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client as Example<br />application
+    participant Cognito as Amazon<br />Cognito
+    participant Lambda as verify_auth_challenge_response<br />lambda
+    participant BAPI as Corbado<br />Backend API
+
+    Client->>+Cognito: AWS Amplify signIn() (CUSTOM_WITHOUT_SRP)
+    Note over Cognito: Runs define_auth_challenge and create_auth_challenge lambdas<br/>(cognitoID stored in private parameters).
+    Cognito-->>-Client: Return CUSTOM_CHALLENGE
+
+    Client->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
+    Cognito->>+Lambda: Invoke with signedPasskeyData and private cognitoID
+    Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, cognitoID)
+
+    BAPI-->>-Lambda: Return verification result
+    Lambda-->>-Cognito: Return answerCorrect: true
+    Note over Cognito: Final define_auth_challenge lambda run sees success (challengeResult: true)
+    Cognito-->>-Client: Issue final Cognito tokens (Access, Refresh, ID)
+```
+
 TODO:
 - Squence chart einbauen (bei Connect Token starten und wahrscheinlich mit post-append Action enden)
-- post-login Action kurz anreißen und Source-Code zeigen
+- post-append Action kurz anreißen und Source-Code zeigen
 
 ### Obtaining the ConnectToken
+
+TODO Deeplink to API Reference
 
 Before rendering the component, we need a short-lived `connectToken` (see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details) from Corbado's Backend API. This token authorizes the creation of a passkey for a specific, authenticated user.
 
