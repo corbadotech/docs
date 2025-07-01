@@ -299,13 +299,9 @@ The flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
 ### Implementation Overview
 
-{/*
-TODO: Wording zu Sequence-Chart anpassen, weil es oben schon einen gibt (d.h. eher so "Again, it is most easiest to show this with a sequence chart" oder so)
-*/}
+The user login flow involves a sequence of interactions between the client application (using AWS Amplify), Amazon Cognito, and Corbado's backend services.
 
-The user login flow involves a sequence of interactions between the client application (using AWS Amplify), Amazon Cognito, and Corbado's backend services. To best visualize this, we can use a sequence chart.
-
-This chart illustrates the flow that begins **after** the user has successfully authenticated with their passkey using a **Corbado Connect** UI component. The focus here is on how the successful passkey authentication is used to establish a session with Cognito.
+This following sequence chart illustrates the flow that begins **after** the user has successfully authenticated with their passkey using a **Corbado Connect** UI component. The focus here is on how the successful passkey authentication is used to establish a session with Cognito.
 
 {/*
 TODO:
