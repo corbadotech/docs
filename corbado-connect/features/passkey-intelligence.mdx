@@ -6,7 +6,7 @@ sidebarTitle: "Passkey Intelligence"
 
 ## What is Passkey Intelligence?
 
-Passkey Intelligence is a smart authentication logic layer provided by Corbado that optimizes when and how passkeys are used in your application. It ensures a smooth user experience by only initiating passkey login or creation ceremonies when success is likely, and by gracefully falling back when not. 
+Passkey Intelligence is a smart authentication logic layer provided by **Corbado Connect** that optimizes when and how passkeys are used in your application. It ensures a smooth user experience by only initiating passkey login or creation ceremonies when success is likely, and by gracefully falling back when not. 
 
 By leveraging a wealth of signals from the user's device, behavior, and environment, Passkey Intelligence dynamically adapts the authentication flow to each situation, boosting both security and user convenience. In short, Passkey Intelligence is the engine that makes high passkey adoption possible – providing one-tap logins, seamless cross-device sign-ins, and context-aware prompts that significantly improve the user experience.
 
@@ -67,21 +67,11 @@ Passkey Intelligence works hand-in-hand with such browser features. However, whe
 
 ## One-Tap Login
 
-One of the flagship features enabled by Passkey Intelligence is **One-Tap Login** – a mechanism that allows returning users to authenticate with a single tap (plus biometric) without needing to re-enter their identifier. This is implemented via the **One-Tap Passkey Button**, a dynamic UI element that Corbado injects into your login page when appropriate.
+One of the flagship features enabled by Passkey Intelligence is **One-Tap Login**. It's a mechanism that allows returning users to authenticate with a single tap (plus a biometric check) without needing to re-enter their identifier like an email address.
 
-<Steps>
-<Step title="Initial Passkey Use or Enrollment">
-A user either logs in with a passkey or creates a new passkey for their account. At this moment, Passkey Intelligence records that this user (identifier) now has a passkey on the current device. It stores this information in the browser (`localStorage`) and in Corbado's backend.
-</Step>
-<Step title="Next Login – One-Tap Activates">
-When the user returns to the login page, the Corbado front-end component detects the prior passkey usage and automatically renders a **One-Tap Passkey Login** button at the top of the login form. This button is labeled with the user's identifier, e.g. "Login with Passkey as **alice@example.com**". The user simply clicks that button, and immediately the passkey authentication is initiated – prompting for Face ID / Touch ID.
-</Step>
-<Step title="Handling Multiple Accounts or New Devices">
-If the user has multiple accounts on the same device, the One-Tap button will default to the last used one, but Corbado also provides a way to switch accounts. On completely new devices, One-Tap won't show up initially. However, after the first passkey use on the new device, the feature spreads to it without hassle.
-</Step>
-</Steps>
+This is achieved via a dynamic **One-Tap Passkey Button** that is intelligently displayed to users who have used a passkey before on their device. This transforms the login experience into a simple, fast, and secure action. Because it's so easy, it's a powerful tool for boosting passkey adoption.
 
-One-Tap Login is particularly powerful for improving adoption in the "separate passkey button" scenario. While a separate button might be ignored, as soon as a user has used a passkey once, the login page transforms – the One-Tap passkey option becomes the highlighted default.
+To learn more about how it works and its benefits, see our dedicated page on [One-Tap Login](/corbado-connect/features/one-tap-login).
 
 ## Additional Resources
 

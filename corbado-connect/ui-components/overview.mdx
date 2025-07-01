@@ -42,12 +42,17 @@ The **CorbadoConnectLogin** component does **not** require a CTK, as it is used 
 
 Below is a detailed explanation of **how ConnectTokens are generated** and **why** they are necessary.
 
-A **Corbado ConnectToken (CTK)** is a **short-lived, single-use token** that securely ties user context (e.g., which account is being updated) to a particular**Corbado Connect** UI component action (such as passkey creation, passkey listing, or passkey deletion).
+A **Corbado ConnectToken (CTK)** is a **short-lived, single-use token** that securely ties user context (e.g., which account is being updated) to a particular **Corbado Connect** UI component action (such as passkey creation, passkey listing, or passkey deletion).
 
 Whenever a front-end flow with `CorbadoConnectAppend` or `CorbadoConnectPasskeyList` needs to safely reference a specific user's account, a CTK is required. These tokens are created on the server side (server-to-server via the Corbado Backend API) and then passed to the relevant front-end component:
 
+{/* 
+IMPORTANT: we have to use an absolute link to the API Reference POST /connectToken endpoint below because those pages are generated
+"on the fly" by Mintlify and we can not link to them relatively because then the Mintlify broken-links checker will complain!
+*/}
+
 1. **Server generates a CTK**
-   Your server (e.g., "Customer Backend") makes a secure API call to Corbado's `POST /v2/connectTokens` endpoint. This endpoint identifies the user (for example, through a `CustomerIdentifier`) and specifies the intended action (`"passkey-append"`, `"passkey-list"`, `"passkey-delete"`, etc.).
+   Your server (e.g., "Customer Backend") makes a secure API call to Corbado's `POST /v2/connectTokens` endpoint (see [API Reference](htpps://docs.corbado.com/api-reference/backend-api/connecttokens/post-connecttokens)). This endpoint identifies the user (for example, through a `CustomerIdentifier`) and specifies the intended action (`"passkey-append"`, `"passkey-list"`, `"passkey-delete"`, etc.).
 2. **Token includes user-specific data**
    The response from Corbado includes a unique ConnectToken (e.g., `ctk-123...`). This token tells the **Corbado Connect** UI component precisely which user and which action it is authorized to perform (e.g., "create a new passkey for user 123").
 3. **Frontend (UI component) consumes the CTK**
