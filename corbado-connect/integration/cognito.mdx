@@ -58,19 +58,19 @@ sequenceDiagram
     participant Actions as Corbado<br />Actions
 
     Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Requests Corbado Connect Token
-    ExampleBackend->>ExampleBackend: Verifies user session
+    ExampleFrontend->>+ExampleBackend: Request Corbado Connect Token
+    ExampleBackend->>ExampleBackend: Verify user session
     ExampleBackend->>+BAPI: POST /connectToken
-    BAPI-->>-ExampleBackend: Returns Connect Token
-    ExampleBackend-->>-ExampleFrontend: Returns Connect Token
+    BAPI-->>-ExampleBackend: Return Connect Token
+    ExampleBackend-->>-ExampleFrontend: Return Connect Token
 
-    ExampleFrontend->>+FAPI: Executes Passkey Ceremony (WebAuthn)
+    ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
     FAPI->>+Actions: Execute post-append action
     Actions->>+Cognito: Set MFA settings (AdminGetUser + AdminSetUserMFAPreference)
-    Cognito-->>-Actions: Returns success
-    Actions-->>-FAPI: Returns success
-    FAPI-->>-ExampleFrontend: Returns success
+    Cognito-->>-Actions: Return success
+    Actions-->>-FAPI: Return success
+    FAPI-->>-ExampleFrontend: Return success
 ```
 
 In the following sections, we will explain each step in detail.
@@ -299,37 +299,39 @@ The flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
 ### Implementation Overview
 
-The user login flow involves a sequence of interactions between the client application (using AWS Amplify), Amazon Cognito, and Corbado's backend services.
-
-This following sequence chart illustrates the flow that begins **after** the user has successfully authenticated with their passkey using a **Corbado Connect** UI component. The focus here is on how the successful passkey authentication is used to establish a session with Cognito.
-
-{/*
-TODO:
-- Squence chart doch von ganz vorne anfangen lassen (also Component/Login und Interaction FAPI/BAPI)
-- pre-login Action einbauen
-- Dann folgende Docu komplett anhand der Nummern des Squence Charts durchziehen
-*/}
+The user login flow involves a sequence of interactions between the example application (using AWS Amplify), Amazon Cognito, Lambda functions and Corbado API's:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Client as Example<br />application
+    participant ExampleFrontend as Example<br />Frontend
     participant Cognito as Amazon<br />Cognito
     participant Lambda as verify_auth_challenge_response<br />lambda
+    participant FAPI as Corbado<br />Frontend API
     participant BAPI as Corbado<br />Backend API
+    participant Actions as Corbado<br />Actions
 
-    Client->>+Cognito: AWS Amplify signIn() (CUSTOM_WITHOUT_SRP)
-    Note over Cognito: Runs define_auth_challenge and create_auth_challenge lambdas<br/>(cognitoID stored in private parameters).
-    Cognito-->>-Client: Return CUSTOM_CHALLENGE
+    ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over ExampleFrontend: CorbadoConnectLogin component<br />handles passkey login
+    FAPI->>+Actions: Execute pre-login action
+    Actions->>+Cognito: User lookup by email<br />(AdminGetUser)
+    Cognito-->>-Actions: Return Cognito username<br />(e.g. 83942812-f091-7083-8632-7b8052ece3e5)
+    Actions-->>-FAPI: Return Cognito username
+    FAPI->>FAPI: Verify passkey login
+    FAPI-->>-ExampleFrontend: Return signedPasskeyData
 
-    Client->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
-    Cognito->>+Lambda: Invoke with signedPasskeyData and private cognitoID
-    Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, cognitoID)
+    ExampleFrontend->>+Cognito: AWS Amplify signIn()<br/>(CUSTOM_WITHOUT_SRP)
+    Note over Cognito: Runs define_auth_challenge and<br/>create_auth_challenge lambdas<br/>(Cognito username stored in private parameters).
+    Cognito-->>-ExampleFrontend: Return CUSTOM_CHALLENGE
+
+    ExampleFrontend->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
+    Cognito->>+Lambda: Invoke with signedPasskeyData<br/>and private Cognito username
+    Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, Cognito username)
 
     BAPI-->>-Lambda: Return verification result
     Lambda-->>-Cognito: Return answerCorrect: true
-    Note over Cognito: Final define_auth_challenge lambda run sees success (challengeResult: true)
-    Cognito-->>-Client: Issue final Cognito tokens (Access, Refresh, ID)
+    Note over Cognito: Final define_auth_challenge lambda run sees<br/>success (challengeResult: true)
+    Cognito-->>-ExampleFrontend: Issue final Cognito tokens<br/>(Access, Refresh, ID)
 ```
 
 <Info>
