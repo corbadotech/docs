@@ -191,7 +191,7 @@ After a passkey is created, it's necessary to update the MFA settings in **Amazo
 
 The `post-append` action utilizes the `AdminGetUser` command from **Amazon Cognito** to verify if MFA is already configured. If it is not, the `AdminSetUserMFAPreference` command is executed to update the settings:
 
-```javascript
+```javascript index.mjs
 import { AdminGetUserCommand, AdminSetUserMFAPreferenceCommand, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
@@ -337,6 +337,339 @@ sequenceDiagram
 <Info>
 The `signedPasskeyData` is a short-lived, single-use JSON Web Token (JWT) that proves a successful passkey authentication with Corbado. It is the key artifact that connects the two systems.
 </Info>
+
+In the following sections, we will explain each step in detail.
+
+### UI Component Integration
+
+Again, we start by integrating the `CorbadoConnectLogin` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with Cognito.
+
+The core logic resides in a client component that wraps the `CorbadoConnectLogin` component:
+
+```tsx /application/cognito/app/login/WrappedLogin.tsx
+'use client';
+
+import {useRouter} from "next/navigation";
+import useDevBox from "@/components/useDevBox";
+import React, {useState} from "react";
+import {confirmSignIn, signIn} from "aws-amplify/auth";
+import ConventionalLogin from "@/app/login/ConventionalLogin";
+import {CorbadoConnectLogin} from "@corbado/connect-react";
+import Link from "next/link";
+import {postPasskeyLogin} from "@/app/login/actions";
+
+export type Props = {
+    clientState: string | undefined;
+};
+
+const decodeJwt = (token: string) => {
+    const [, payload] = token.split('.');
+    return JSON.parse(atob(payload));
+}
+
+type WithWebauthnId = {
+    webauthnId: string;
+}
+
+const WrappedLogin = ({clientState}: Props) => {
+    const router = useRouter();
+    const {integratePasskeys} = useDevBox();
+
+    const [conventionalLoginVisible, setConventionalLoginVisible] = useState(false);
+    const [email, setEmail] = useState('');
+    const [fallbackErrorMessage, setFallbackErrorMessage] = useState('');
+
+    console.log('fallbackErrorMessage', fallbackErrorMessage);
+
+    const postPasskeyLoginNew = async (signedPasskeyData: string, clientState: string) => {
+
+        // decode JWT
+        const decoded = decodeJwt(signedPasskeyData) as WithWebauthnId;
+
+        try {
+            await signIn({
+                username: decoded.webauthnId,
+                options: {authFlowType: 'CUSTOM_WITHOUT_SRP'}
+            });
+
+            const resultConfirm = await confirmSignIn({
+                challengeResponse: signedPasskeyData,
+            });
+            console.log('resultConfirm', resultConfirm);
+
+            await postPasskeyLogin(clientState);
+
+            if (integratePasskeys) {
+                await router.push('/post-login');
+            } else {
+                await router.push('/profile');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    return (
+        <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
+            <div className="z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-gray-100 shadow-xl m-4">
+                {!integratePasskeys || conventionalLoginVisible ? (
+                    <ConventionalLogin integratePasskeys={integratePasskeys}
+                                       initialUserProvidedIdentifier={email}/>
+                ) : null}
+                {integratePasskeys && !conventionalLoginVisible ? (
+                    <>
+                        <div
+                            className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-8">
+                            <h3 className="text-xl font-semibold">Login with passkeys</h3>
+                            <p className="text-sm text-gray-500">
+                                A simple and secure way to log in.
+                            </p>
+                        </div>
+                        <div className='login-area bg-gray-50 px-4 py-8 sm:px-8 justify-center'>
+                            <CorbadoConnectLogin
+                                onFallback={(identifier: string, message: string) => {
+                                    setEmail(identifier);
+                                    setConventionalLoginVisible(true);
+                                    setFallbackErrorMessage(message);
+                                }}
+                                onFallbackCustom={(identifier: string, code: string) => {
+                                    setEmail(identifier);
+                                    setConventionalLoginVisible(true);
+                                    setFallbackErrorMessage(code);
+                                }}
+                                onError={(error: string) => console.log('error', error)}
+                                onLoaded={(msg: string) => console.log('component has loaded: ' + msg)}
+                                onComplete={async (signedPasskeyData: string, newClientState: string) => {
+                                    await postPasskeyLoginNew(signedPasskeyData, newClientState);
+                                }}
+                                onSignupClick={() => router.push('/signup')}
+                                clientState={clientState}
+                            />
+                        </div>
+                    </>
+                ) : null}
+                <p className="text-center text-sm text-gray-600 mb-10">
+                    {"Don't have an account? "}
+                    <Link href="/signup" className="font-semibold text-gray-800">
+                        Sign up
+                    </Link>
+                    {' for free.'}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export default WrappedLogin;
+```
+
+<Info>
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/ui-components/corbadoconnectlogin).
+</Info>
+
+The `onComplete` handler triggers our `postPasskeyLoginNew` function, which performs the final steps to log the user into Cognito:
+
+1.  **Decode the JWT**: The `signedPasskeyData` is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for Cognito's custom flow.
+2.  **`signIn`**: We call `signIn` from the AWS Amplify library, passing the `webauthnId` as the `username` and specifying `authFlowType: 'CUSTOM_WITHOUT_SRP'`. This initiates the custom authentication flow and triggers our `define_auth_challenge` and `create_auth_challenge` Lambdas.
+3.  **`confirmSignIn`**: We then immediately call `confirmSignIn`, providing the entire `signedPasskeyData` as the `challengeResponse`. This is the answer to the custom challenge, which triggers our `verify_auth_challenge_response` Lambda.
+4.  **Redirection**: Once `confirmSignIn` completes successfully, Cognito has issued valid session tokens to the Amplify library. The user is now fully authenticated, and we can redirect them to a protected page, like their profile.
+
+### Identifier Translation
+
+Because **Corbado Connect** only stores the **Amazon Cognito** username and not the users email address we need to translate the user-given email address during login to the **Amazon Cognito** username. This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
+
+The `pre-login` action utilizes the `AdminGetUser` command from **Amazon Cognito** to search for a user by the given email address and return it to **Corbado Connect**:
+
+```javascript index.mjs
+import { AdminGetUserCommand, CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
+
+// ID of Cognito user pool
+const userPoolId = process.env.USER_POOL_ID;
+
+// ARN of role to assume 
+const roleArn = process.env.ASSUME_ROLE_ARN;
+
+let cognitoClientCache = null;
+let credentialsExpiryTime = null;
+
+const errorUserNotFound = () => {
+    console.log('Returned error with code "user_not_found"');
+
+    return {
+        statusCode: 200,
+        body: {
+            identifier: '',
+            error: {
+                return: true,
+                code: 'user_not_found',
+                message: 'There is no account registered to that email address.',
+            },
+        },
+    };
+};
+
+const errorUntyped = (message) => {
+    console.log(`Returned error code "untyped" and message "${message}"`);
+
+    return {
+        statusCode: 200,
+        body: {
+            identifier: '',
+            error: {
+                return: true,
+                code: 'untyped',
+                message
+            },
+        },
+    };
+}
+
+const errorCustom = (code, payload) => {
+    console.log(`Returned error code "${code}" and payload "${payload}"`);
+
+    return {
+        statusCode: 200,
+        body: {
+            identifier: '',
+            error: {
+                return: true,
+                code,
+                payload,
+            },
+        },
+    };
+}
+
+const success = (identifier) => {
+    console.log(`Returned success with identifier "${identifier}"`);
+
+    return {
+        statusCode: 200,
+        body: {
+            identifier,
+        },
+    };
+}
+
+const errorSilent = (code) => {
+    console.log(`Returned error with code "${code}"`);
+
+    return {
+        statusCode: 200,
+        body: {
+            identifier: '',
+            error: {
+                return: false,
+                code,
+            },
+        },
+    };
+}
+
+const assumeRole = async () => {
+    const command = new AssumeRoleCommand({
+        RoleArn: roleArn,
+        RoleSessionName: 'LambdaSession',
+        DurationSeconds: 3600
+    });
+
+    const client = new STSClient();
+    const response = await client.send(command);
+    const { AccessKeyId, SecretAccessKey, SessionToken, Expiration } = response.Credentials;
+    credentialsExpiryTime = new Date(Expiration).getTime();
+
+    return new CognitoIdentityProviderClient({
+        credentials: {
+            accessKeyId: AccessKeyId,
+            secretAccessKey: SecretAccessKey,
+            sessionToken: SessionToken,
+        }
+    });
+};
+
+const getCognitoClient = async () => {
+    const currentTime = Date.now();
+
+    if (!cognitoClientCache || !credentialsExpiryTime || currentTime >= credentialsExpiryTime) {
+        cognitoClientCache = await assumeRole();
+    }
+
+    return cognitoClientCache;
+};
+
+const handleUserNotFoundException = async (userPoolId, identifier) => {
+    console.log('Falling back to search by email...');
+
+    // users that have not confirmed their email will not be found by 
+    // the AdminGetUserCommand => we need to search by email using the ListUsersCommand
+    const listUsersCommand = new ListUsersCommand({
+        UserPoolId: userPoolId,
+        Filter: `email = "${identifier}"`,
+    });
+
+    const listUsersData = await cognitoClientCache.send(listUsersCommand);
+    if (listUsersData.Users.length > 0) {
+        const user = listUsersData.Users[0];
+        if (user.UserStatus === 'FORCE_CHANGE_PASSWORD') {
+            return errorSilent('force_change_password');
+        } else {
+            return errorUntyped('unhandled user status');
+        }
+    }
+
+    return errorUserNotFound();
+};
+
+// Main handler function
+export const handler = async (event) => {
+    console.log('Received event:', event);
+
+    try {
+        const cognitoClient = await getCognitoClient();
+
+        // The given identifier (in our Cognito demo this is an email address)
+        const identifier = event.identifier;
+        
+        const getUserCommand = new AdminGetUserCommand({
+            UserPoolId: userPoolId,
+            Username: identifier,
+        });
+
+        const data = await cognitoClient.send(getUserCommand);
+        
+        const userStatus = data.UserStatus;
+        const userEnabled = data.Enabled;
+
+        // The Cognito username (e.g. 83942812-f091-7083-8632-7b8052ece3e5) that
+        // will get returned in success case (see below). The Cognito username will 
+        // be set by Cognito because we only configured "email" as sign-in identifier
+        // at the Cognito user pool.
+        const foreignID = data.Username;
+
+        if (userStatus === 'CONFIRMED' && userEnabled) {
+            return success(foreignID);
+        } else if (userStatus === 'CONFIRMED' && !userEnabled) {
+            // account has been deactivated or locked
+            return errorSilent('account_disabled');
+        } else if (userStatus === 'FORCE_CHANGE_PASSWORD') {
+            return errorSilent('force_change_password');
+        } else if (userStatus === 'RESET_REQUIRED') {
+            return errorCustom('reset_required', '');
+        } else {
+            return errorUntyped('unhandled user status');
+        }
+    } catch (error) {
+        console.error('Caught exception:', error);
+
+        if (error.name === 'UserNotFoundException') {
+            return await handleUserNotFoundException(userPoolId, identifier);
+        }
+
+        return errorUntyped(error.message);
+    }
+};
+```
 
 ### Storing Secrets
 
@@ -545,137 +878,3 @@ The three custom authentication Lambda functions can be deployed in two differen
 
 *   **Corbado-Hosted**: For ease of use and quicker setup, Corbado can manage and host these Lambda functions on your behalf within our secure AWS environment. This model simplifies maintenance and operations.
 *   **Self-Hosted**: For organizations that require full control over their infrastructure for security, compliance, or customization reasons, you can deploy and manage these Lambda functions directly within your own AWS account.
-
-### UI Component Integration
-
-Now, let's tie everything together and look at the client-side implementation. The login process is orchestrated by the `CorbadoConnectLogin` UI component, which handles the passkey ceremony and then passes the result to our application logic to complete the sign-in with Cognito.
-
-The core logic resides in a client component that wraps the `CorbadoConnectLogin` component.
-
-```tsx /application/cognito/app/login/WrappedLogin.tsx
-'use client';
-
-import {useRouter} from "next/navigation";
-import useDevBox from "@/components/useDevBox";
-import React, {useState} from "react";
-import {confirmSignIn, signIn} from "aws-amplify/auth";
-import ConventionalLogin from "@/app/login/ConventionalLogin";
-import {CorbadoConnectLogin} from "@corbado/connect-react";
-import Link from "next/link";
-import {postPasskeyLogin} from "@/app/login/actions";
-
-export type Props = {
-    clientState: string | undefined;
-};
-
-const decodeJwt = (token: string) => {
-    const [, payload] = token.split('.');
-    return JSON.parse(atob(payload));
-}
-
-type WithWebauthnId = {
-    webauthnId: string;
-}
-
-const WrappedLogin = ({clientState}: Props) => {
-    const router = useRouter();
-    const {integratePasskeys} = useDevBox();
-
-    const [conventionalLoginVisible, setConventionalLoginVisible] = useState(false);
-    const [email, setEmail] = useState('');
-    const [fallbackErrorMessage, setFallbackErrorMessage] = useState('');
-
-    console.log('fallbackErrorMessage', fallbackErrorMessage);
-
-    const postPasskeyLoginNew = async (signedPasskeyData: string, clientState: string) => {
-
-        // decode JWT
-        const decoded = decodeJwt(signedPasskeyData) as WithWebauthnId;
-
-        try {
-            await signIn({
-                username: decoded.webauthnId,
-                options: {authFlowType: 'CUSTOM_WITHOUT_SRP'}
-            });
-
-            const resultConfirm = await confirmSignIn({
-                challengeResponse: signedPasskeyData,
-            });
-            console.log('resultConfirm', resultConfirm);
-
-            await postPasskeyLogin(clientState);
-
-            if (integratePasskeys) {
-                await router.push('/post-login');
-            } else {
-                await router.push('/profile');
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    return (
-        <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
-            <div className="z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-gray-100 shadow-xl m-4">
-                {!integratePasskeys || conventionalLoginVisible ? (
-                    <ConventionalLogin integratePasskeys={integratePasskeys}
-                                       initialUserProvidedIdentifier={email}/>
-                ) : null}
-                {integratePasskeys && !conventionalLoginVisible ? (
-                    <>
-                        <div
-                            className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-8">
-                            <h3 className="text-xl font-semibold">Login with passkeys</h3>
-                            <p className="text-sm text-gray-500">
-                                A simple and secure way to log in.
-                            </p>
-                        </div>
-                        <div className='login-area bg-gray-50 px-4 py-8 sm:px-8 justify-center'>
-                            <CorbadoConnectLogin
-                                onFallback={(identifier: string, message: string) => {
-                                    setEmail(identifier);
-                                    setConventionalLoginVisible(true);
-                                    setFallbackErrorMessage(message);
-                                }}
-                                onFallbackCustom={(identifier: string, code: string) => {
-                                    setEmail(identifier);
-                                    setConventionalLoginVisible(true);
-                                    setFallbackErrorMessage(code);
-                                }}
-                                onError={(error: string) => console.log('error', error)}
-                                onLoaded={(msg: string) => console.log('component has loaded: ' + msg)}
-                                onComplete={async (signedPasskeyData: string, newClientState: string) => {
-                                    await postPasskeyLoginNew(signedPasskeyData, newClientState);
-                                }}
-                                onSignupClick={() => router.push('/signup')}
-                                clientState={clientState}
-                            />
-                        </div>
-                    </>
-                ) : null}
-                <p className="text-center text-sm text-gray-600 mb-10">
-                    {"Don't have an account? "}
-                    <Link href="/signup" className="font-semibold text-gray-800">
-                        Sign up
-                    </Link>
-                    {' for free.'}
-                </p>
-            </div>
-        </div>
-    );
-}
-
-export default WrappedLogin;
-```
-
-<Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/ui-components/corbadoconnectlogin).
-</Info>
-
-The `onComplete` handler triggers our `postPasskeyLoginNew` function, which performs the final steps to log the user into Cognito:
-
-1.  **Decode the JWT**: The `signedPasskeyData` is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for Cognito's custom flow.
-2.  **`signIn`**: We call `signIn` from the AWS Amplify library, passing the `webauthnId` as the `username` and specifying `authFlowType: 'CUSTOM_WITHOUT_SRP'`. This initiates the custom authentication flow and triggers our `define_auth_challenge` and `create_auth_challenge` Lambdas.
-3.  **`confirmSignIn`**: We then immediately call `confirmSignIn`, providing the entire `signedPasskeyData` as the `challengeResponse`. This is the answer to the custom challenge, which triggers our `verify_auth_challenge_response` Lambda.
-4.  **Redirection**: Once `confirmSignIn` completes successfully, Cognito has issued valid session tokens to the Amplify library. The user is now fully authenticated, and we can redirect them to a protected page, like their profile.
