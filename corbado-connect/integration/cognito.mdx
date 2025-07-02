@@ -58,7 +58,7 @@ sequenceDiagram
     Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
     ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
     ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /v2/connectToken
+    ExampleBackend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-ExampleBackend: Return ConnectToken
     ExampleBackend-->>-ExampleFrontend: Return ConnectToken
 
@@ -910,7 +910,7 @@ sequenceDiagram
     Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
     ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
     ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /v2/connectToken
+    ExampleBackend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-ExampleBackend: Return ConnectToken
     ExampleBackend-->>-ExampleFrontend: Return ConnectToken
 
