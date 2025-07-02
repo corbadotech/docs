@@ -6,15 +6,15 @@ sidebarTitle: "Amazon Cognito"
 
 ## Introduction
 
-**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing Amazon Cognito user pools. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Cognito for user management.
+**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Amazon Cognito** user pools. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Cognito for user management.
 
-This guide will walk you through the process of integrating **Corbado Connect** with Amazon Cognito, using a sample Next.js application to demonstrate the key concepts.
+This guide will walk you through the process of integrating **Corbado Connect** with **Amazon Cognito**, using a sample Next.js application to demonstrate the key concepts.
 
-Amazon Cognito is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Amazon Cognito website](https://aws.amazon.com/cognito/).
+**Amazon Cognito** is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Amazon Cognito website](https://aws.amazon.com/cognito/).
 
 ## How it Works
 
-The integration between **Corbado Connect** and Amazon Cognito leverages a powerful feature known as a **Custom Authentication Flow**. This feature allows developers to create their own challenge-and-response models using AWS Lambda functions, which is ideal for integrating external authentication mechanisms like Corbado's passkey-first solution.
+The integration between **Corbado Connect** and **Amazon Cognito** leverages a powerful feature known as a **Custom Authentication Flow**. This feature allows developers to create their own challenge-and-response models using AWS Lambda functions, which is ideal for integrating external authentication mechanisms like Corbado's passkey-first solution.
 
 Instead of a traditional username and password, we will define a custom flow that uses a passkey signature as the challenge.
 
@@ -37,7 +37,7 @@ We will guide you through the implementation of two primary user flows: sign-up 
 
 ## User Sign-up
 
-In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by Amazon Cognito. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
+In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by **Amazon Cognito**. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
 
 The flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
@@ -187,9 +187,9 @@ export const getCorbadoConnectToken = async (connectTokenType: string, displayNa
 
 ### Updating MFA Settings
 
-After a passkey is created, it's necessary to update the MFA settings in AWS Cognito. This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
+After a passkey is created, it's necessary to update the MFA settings in **Amazon Cognito**. This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
 
-The `post-append` action utilizes the `AdminGetUser` command from AWS Cognito to verify if MFA is already configured. If it is not, the `AdminSetUserMFAPreference` command is executed to update the settings:
+The `post-append` action utilizes the `AdminGetUser` command from **Amazon Cognito** to verify if MFA is already configured. If it is not, the `AdminSetUserMFAPreference` command is executed to update the settings:
 
 ```javascript
 import { AdminGetUserCommand, AdminSetUserMFAPreferenceCommand, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
@@ -291,15 +291,15 @@ export const handler = async (event) => {
 
 ## User Login
 
-Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the Amazon Cognito custom authentication flow we outlined in the "How it Works" section becomes essential.
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **Amazon Cognito** custom authentication flow we outlined in the "How it Works" section becomes essential.
 
-The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with Amazon Cognito. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from Cognito.
+The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Amazon Cognito**. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from Cognito.
 
 The flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
 ### Implementation Overview
 
-The user login flow involves a sequence of interactions between the example application (using AWS Amplify), Amazon Cognito, Lambda functions and Corbado API's:
+The user login flow involves a sequence of interactions between the example application (using AWS Amplify), **Amazon Cognito**, Lambda functions and Corbado API's:
 
 ```mermaid
 sequenceDiagram
