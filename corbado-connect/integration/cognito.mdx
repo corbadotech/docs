@@ -476,9 +476,9 @@ The `onComplete` handler triggers our `postPasskeyLoginNew` function, which perf
 
 ### Identifier Translation
 
-Because **Corbado Connect** only stores the **Amazon Cognito** username and not the users email address we need to translate the user-given email address during login to the **Amazon Cognito** username. This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
+Since **Corbado Connect** only stores the **Amazon Cognito** username and not the user's email address, we need to translate between these identifiers during login. This translation is handled through Corbado [actions](/corbado-connect/architecture/actions), which provide extensive customization capabilities for **Corbado Connect** to meet your specific requirements.
 
-The `pre-login` action utilizes the `AdminGetUser` command from **Amazon Cognito** to search for a user by the given email address and return it to **Corbado Connect**:
+The `pre-login` action utilizes the `AdminGetUser` command from **Amazon Cognito** to search for a user by their email address and return the corresponding Cognito username to **Corbado Connect**:
 
 ```javascript index.mjs
 import { AdminGetUserCommand, CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
