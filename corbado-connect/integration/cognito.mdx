@@ -125,7 +125,7 @@ For a detailed explanation of all available props for this component, please see
 
 When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
 
-The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with Cognito. The `idToken` is then sent to a Next.js Server Action:
+The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
 ```typescript
 appendTokenProvider={async () => {
@@ -293,7 +293,7 @@ export const handler = async (event) => {
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **Amazon Cognito** custom authentication flow we outlined in the "How it Works" section becomes essential.
 
-The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Amazon Cognito**. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from Cognito.
+The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Amazon Cognito**. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from **Amazon Cognito**.
 
 The flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
@@ -342,7 +342,7 @@ In the following sections, we will explain each step in detail.
 
 ### UI Component Integration
 
-Again, we start by integrating the `CorbadoConnectLogin` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with Cognito.
+Again, we start by integrating the `CorbadoConnectLogin` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
 
 The core logic resides in a client component that wraps the `CorbadoConnectLogin` component:
 
@@ -469,16 +469,16 @@ For a detailed explanation of all available props for this component, please see
 
 The `onComplete` handler triggers our `postPasskeyLoginNew` function, which performs the final steps to log the user into Cognito:
 
-1.  **Decode the JWT**: The `signedPasskeyData` is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for Cognito's custom flow.
+1.  **Decode the JWT**: The `signedPasskeyData` is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for **Amazon Cognito's** custom flow.
 2.  **`signIn`**: We call `signIn` from the AWS Amplify library, passing the `webauthnId` as the `username` and specifying `authFlowType: 'CUSTOM_WITHOUT_SRP'`. This initiates the custom authentication flow and triggers our `define_auth_challenge` and `create_auth_challenge` Lambdas.
 3.  **`confirmSignIn`**: We then immediately call `confirmSignIn`, providing the entire `signedPasskeyData` as the `challengeResponse`. This is the answer to the custom challenge, which triggers our `verify_auth_challenge_response` Lambda.
-4.  **Redirection**: Once `confirmSignIn` completes successfully, Cognito has issued valid session tokens to the Amplify library. The user is now fully authenticated, and we can redirect them to a protected page, like their profile.
+4.  **Redirection**: Once `confirmSignIn` completes successfully, **Amazon Cognito** has issued valid session tokens to the Amplify library. The user is now fully authenticated, and we can redirect them to a protected page, like their profile.
 
 ### Identifier Translation
 
 Since **Corbado Connect** only stores the **Amazon Cognito** username and not the user's email address, we need to translate between these identifiers during login. This translation is handled through Corbado [actions](/corbado-connect/architecture/actions), which provide extensive customization capabilities for **Corbado Connect** to meet your specific requirements.
 
-The `pre-login` action utilizes the `AdminGetUser` command from **Amazon Cognito** to search for a user by their email address and return the corresponding Cognito username to **Corbado Connect**:
+The `pre-login` action utilizes the `AdminGetUser` command from **Amazon Cognito** to search for a user by their email address and return the corresponding **Amazon Cognito** username to **Corbado Connect**:
 
 ```javascript index.mjs
 import { AdminGetUserCommand, CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
@@ -671,7 +671,13 @@ export const handler = async (event) => {
 };
 ```
 
-### Storing Secrets
+### Custom Lambda functions
+
+As introduced in the "How it Works" section, the integration between **Corbado Connect** and **Amazon Cognito** relies on three custom Lambda functions to handle the authentication flow.
+
+These functions work together to verify passkey authentications and manage the challenge-response cycle in **Amazon Cognito**. Let's dive deeper into each function's implementation and configuration.
+
+#### Secrets
 
 Our custom Lambda functions need to communicate securely with Corbado's Backend API. To do this, they require access to sensitive credentials, namely your **Project ID** and **API Secret**.
 
@@ -679,7 +685,7 @@ It is critical to never hard-code secrets directly into your Lambda function's s
 
 By storing credentials as `SecureString` parameters in the SSM Parameter Store, you ensure that they are encrypted at rest. You can then grant the Lambda function's IAM role the necessary permissions to read these specific parameters at runtime. This approach provides a secure and scalable way to manage your secrets, separating them from your application code.
 
-### Lambda functions in detail
+#### Implementation
 
 Here we will examine the code for each of the three Lambda functions required for the custom authentication flow.
 
@@ -770,7 +776,7 @@ This is the final and most critical Lambda in the chain. It's responsible for ve
 Its key responsibilities are:
 1.  **Get Secret**: It securely fetches the secret from AWS Systems Manager Parameter Store.
 2.  **Call Corbado Backend API**: It takes the `signedPasskeyData` (which is the user's `challengeAnswer`) and the `cognitoID` and sends them to Corbado's `/v2/passkey/verifySignedData` endpoint.
-3.  **Return Result**: Based on the response from Corbado's Backend API, it sets `event.response.answerCorrect` to `true` or `false`, telling Cognito whether the user's passkey authentication was successful.
+3.  **Return Result**: Based on the response from Corbado's Backend API, it sets `event.response.answerCorrect` to `true` or `false`, telling **Amazon Cognito** whether the user's passkey authentication was successful.
 
 ```javascript index.mjs
 // This is the 3rd lambda in the Cognito custom auth flow
@@ -869,10 +875,10 @@ export const handler = async (event) => {
 </Tabs>
 
 <Info>
-You need to configure these three Lambdas in your Cognito User Pool's settings under **User pool** > **Authentication** > **Extensions**.
+You need to configure these three Lambdas in your **Amazon Cognito** User Pool's settings under **User pool** > **Authentication** > **Extensions**.
 </Info>
 
-### Hosting Lambda functions
+#### Hosting
 
 The three custom authentication Lambda functions can be deployed in two different ways, depending on your chosen setup and requirements:
 
