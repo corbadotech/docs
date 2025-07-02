@@ -20,9 +20,9 @@ Instead of a traditional username and password, we will define a custom flow tha
 
 To implement this, we need to configure the Cognito User Pool to use three specific AWS Lambda triggers:
 
-- **`DefineAuthChallenge`**: This Lambda acts as the orchestrator of our custom flow. It determines which challenge to present to the user at each step of the authentication process.
-- **`CreateAuthChallenge`**: This Lambda is responsible for creating the challenge itself. In our case, it won't be creating a secret, but rather preparing for the verification that happens in the next step.
-- **`VerifyAuthChallengeResponse`**: This is where the core verification logic resides. This Lambda takes the signed passkey data from the frontend (provided by **Corbado Connect**), and verifies it against Corbado's Backend API to confirm the user's identity. If verification is successful, it informs Cognito to issue the session tokens.
+- **`define_auth_challenge`**: This Lambda acts as the orchestrator of our custom flow. It determines which challenge to present to the user at each step of the authentication process.
+- **`create_auth_challenge`**: This Lambda is responsible for creating the challenge itself. In our case, it won't be creating a secret, but rather preparing for the verification that happens in the next step.
+- **`verify_auth_challenge_response`**: This is where the core verification logic resides. This Lambda takes the signed passkey data from the frontend (provided by **Corbado Connect**), and verifies it against Corbado's Backend API to confirm the user's identity. If verification is successful, it informs Cognito to issue the session tokens.
 
 Later in this guide, we will dive deep into the source code and configuration of each of these functions.
 
@@ -58,7 +58,7 @@ sequenceDiagram
     Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
     ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
     ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /connectToken
+    ExampleBackend->>+BAPI: POST /v2/connectToken
     BAPI-->>-ExampleBackend: Return ConnectToken
     ExampleBackend-->>-ExampleFrontend: Return ConnectToken
 
@@ -324,7 +324,7 @@ sequenceDiagram
 
     ExampleFrontend->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
     Cognito->>+Lambda: Invoke with signedPasskeyData<br/>and private Cognito username
-    Lambda->>+BAPI: POST /passkey/verifySignedData<br/>(signedPasskeyData, Cognito username)
+    Lambda->>+BAPI: POST /v2/passkey/verifySignedData<br/>(signedPasskeyData, Cognito username)
 
     BAPI-->>-Lambda: Return verification result
     Lambda-->>-Cognito: Return answerCorrect: true
@@ -910,7 +910,7 @@ sequenceDiagram
     Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
     ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
     ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /connectToken
+    ExampleBackend->>+BAPI: POST /v2/connectToken
     BAPI-->>-ExampleBackend: Return ConnectToken
     ExampleBackend-->>-ExampleFrontend: Return ConnectToken
 
