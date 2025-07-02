@@ -39,13 +39,11 @@ We will guide you through the implementation of two primary user flows: sign-up 
 
 In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by **Amazon Cognito**. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
 
-The flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
+The complete flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
 ### Implementation Overview
 
-After a successful sign-up and initial login, the user is navigated to a page where the `CorbadoConnectAppend` UI component is displayed. This component handles the entire passkey creation and association process.
-
-The complete process is best described using sequence charts (note: the process depicted begins after the user has successfully logged in):
+The user sign-up process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
 ```mermaid
 sequenceDiagram
@@ -58,11 +56,11 @@ sequenceDiagram
     participant Actions as Corbado<br />Actions
 
     Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado Connect Token
+    ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
     ExampleBackend->>ExampleBackend: Verify user session
     ExampleBackend->>+BAPI: POST /connectToken
-    BAPI-->>-ExampleBackend: Return Connect Token
-    ExampleBackend-->>-ExampleFrontend: Return Connect Token
+    BAPI-->>-ExampleBackend: Return ConnectToken
+    ExampleBackend-->>-ExampleFrontend: Return ConnectToken
 
     ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
@@ -123,7 +121,7 @@ For a detailed explanation of all available props for this component, please see
 
 ### Obtaining the ConnectToken
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `ConnectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
 
 The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
@@ -136,7 +134,7 @@ appendTokenProvider={async () => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken` by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `ConnectToken` by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
 'use server';
@@ -295,11 +293,11 @@ Now that users can associate passkeys with their accounts, we can enable a truly
 
 The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Amazon Cognito**. To achieve this, we will use our three custom AWS Lambda functions to bridge the gap between the two systems and ultimately receive valid session tokens from **Amazon Cognito**.
 
-The flow is illustrated in detail [here](/corbado-connect/flows/user-login).
+The complete flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
 ### Implementation Overview
 
-The user login flow involves a sequence of interactions between the example application (using AWS Amplify), **Amazon Cognito**, Lambda functions and Corbado API's:
+The user login process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, Lambda functions, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
 ```mermaid
 sequenceDiagram
@@ -884,3 +882,47 @@ The three custom authentication Lambda functions can be deployed in two differen
 
 *   **Corbado-Hosted**: For ease of use and quicker setup, Corbado can manage and host these Lambda functions on your behalf within our secure AWS environment. This model simplifies maintenance and operations.
 *   **Self-Hosted**: For organizations that require full control over their infrastructure for security, compliance, or customization reasons, you can deploy and manage these Lambda functions directly within your own AWS account.
+
+## Passkey Management
+
+After users have created their initial passkeys during sign-up and used them for login, they need a way to manage their existing passkeys. Passkey management encompasses three main operations:
+
+1. Viewing existing passkeys
+2. Creating additional passkeys
+3. Deleting unused passkeys
+
+All these operations follow a similar pattern: they require obtaining a `ConnectToken` for the **Corbado Connect** UI component, which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
+
+The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
+
+### Implementation Overview
+
+The passkey deletion process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ExampleFrontend as Example<br />Frontend
+    participant ExampleBackend as Example<br />Backend
+    participant FAPI as Corbado<br />Frontend API
+    participant BAPI as Corbado<br />Backend API
+
+    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
+    ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
+    ExampleBackend->>ExampleBackend: Verify user session
+    ExampleBackend->>+BAPI: POST /connectToken
+    BAPI-->>-ExampleBackend: Return ConnectToken
+    ExampleBackend-->>-ExampleFrontend: Return ConnectToken
+
+    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses ConnectToken and passkey ID)
+    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />handles passkey deletion
+    FAPI-->>-ExampleFrontend: Return success
+```
+
+### UI Component Integration
+
+TODO
+
+### Obtaining the ConnectToken
+
+TODO
