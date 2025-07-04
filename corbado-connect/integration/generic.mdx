@@ -2,9 +2,91 @@
 title: "Generic IdP Integration with Corbado Connect"
 description: "Integrate any generic Identity Provider (IdP) with Corbado Connect. Bring passkey authentication to your users without major system overhauls."
 sidebarTitle: "Generic"
-groups: ["admin"]
 ---
 
-- Explain generic implementation
-- Show sequence charts
-- Organize everything around 3 key processes
+## Introduction
+
+- write generic Introduction
+- we have no example application
+- explain that corbado connect can be integrated into any authentication system, either fully custom-build or using other IdPs/solutions
+- mention that there is a specific integration guide for Cognito
+- this one is kept generic so it can be applied to any usecase
+
+## User Sign-up
+
+- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+
+### Implementation Overview
+
+- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+
+### UI Component Integration
+
+- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+
+### Obtaining the ConnectToken
+
+- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+
+## User Login
+
+- transfer same section of cognito documentation to this generic case
+
+### Implementation Overview
+
+- explain signedPasskeyData (JWT) that everything "concentrates" around this jwt when we need to hand-over authentication state between Corbado Connect and the external system
+- there are multiple options which will be explained next
+
+#### Option 1: Serverless
+
+- signedPasskeyData will be passed to the external IdP and will be handled there
+- first signedPasskeyData must get verified by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
+- if successfully a session is created and returned (or own tokens JWT, access token etc.)
+- transfer mermaid chart from "User Login > Implementation Overview" @/corbado-connect/integrations/cognito.mdx to this generic case (use a "External IdP" participant)
+
+#### Option 2: Own endpoint
+
+- implement own endpoint
+- send signedPasskeyData to own endpoint
+- verify signedPasskeyData by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
+- - if successfully a session is created and returned (or own tokens JWT, access token etc.)
+- transfer mermaid chart from "User Login > Implementation Overview" @/corbado-connect/integrations/cognito.mdx to this generic case (use a "ExampleBackend" participant)
+
+#### Option 3: Corbado Action
+
+TODO
+
+- Unser Login Finish call returned direkt eine Session/Token (ist im Grunde unser "v1" Flow von früher bei VR), Post-Login Action etc. (oder vllt auch "create-token" Lambda oder sowas)
+
+### UI Component Integration
+
+- explain UI component integration/source-code from @/corbado-connect/ui-components/corbadoconnectlogin.mdx
+- leave out the oncomplete callback and explain that is it option-depended and will be explained next
+
+#### Option 1: Serverless
+
+TODO
+
+#### Option 2: Own endpoint
+
+TODO
+
+#### Option 3: Corbado Action
+
+TODO
+
+## Passkey Management
+
+TODO
+
+### Implementation Overview
+
+TODO
+
+### UI Component Integration
+
+TODO
+
+### Obtaining the ConnectToken
+
+TODO
