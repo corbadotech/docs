@@ -30,7 +30,7 @@ sidebarTitle: "Generic"
 
 ## User Login
 
-- transfer same section of cognito documentation to this generic case
+- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
 
 ### Implementation Overview
 
@@ -49,7 +49,7 @@ sidebarTitle: "Generic"
 - implement own endpoint
 - send signedPasskeyData to own endpoint
 - verify signedPasskeyData by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
-- - if successfully a session is created and returned (or own tokens JWT, access token etc.)
+- if successfully a session is created and returned (or own tokens JWT, access token etc.)
 - transfer mermaid chart from "User Login > Implementation Overview" @/corbado-connect/integrations/cognito.mdx to this generic case (use a "ExampleBackend" participant)
 
 #### Option 3: Corbado Action
@@ -65,11 +65,14 @@ TODO
 
 #### Option 1: Serverless
 
-TODO
+- just redirect to profile page
 
 #### Option 2: Own endpoint
 
-TODO
+- make call to own endpoint (ExampleBackend)
+- explain that this new endpoint makes a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData (see sequence-chart)
+- if successfully a session is created (response contains session cookie for example)
+- explain session cookie case and jwt in response that you then can set as cookie or local storage or keep in memory
 
 #### Option 3: Corbado Action
 
