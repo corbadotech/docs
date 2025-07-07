@@ -77,8 +77,48 @@ In the following sections, we will explain each step in detail.
 
 ### UI Component Integration
 
-- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
-- use component integration source code from @/corbado-connect/ui-components/corbadoconnectappend.mdx
+The integration starts with the `CorbadoConnectAppend` component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
+
+Here's an example integration:
+
+```js
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+  <script type="module">
+    const passkeyAppendElement = document.getElementById('passkey-append');
+    Corbado.mountCorbadoConnectAppend(passkeyAppendElement, {
+      projectId: "pro-XXXX", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
+
+      // Called when the user decides not to create a passkey or passkey creation
+      // is skipped. Add custom logic like logging and analytics.
+      onSkip: (status) => { 
+        console.log('Append skipped with status:', status);
+      },
+
+      appendTokenProvider: async () => {
+        // Get Corbado ConnectToken from your backend, see next section
+      },
+
+      // Called when passkey creation is completed successfully. Use to
+      // refresh page or show success UI for example.
+      onComplete: (status, clientState) => { 
+        console.log('Append complete with status:', status);
+      },
+    });
+  </script>
+</head>
+
+<body>
+  <!-- The passkey append UI will render into this div -->
+  <div id="passkey-append"></div>
+</body>
+```
+
+<Info>
+For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend component documentation](/corbado-connect/ui-components/corbadoconnectappend).
+</Info>
 
 ### Obtaining the ConnectToken
 
