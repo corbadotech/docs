@@ -4,6 +4,12 @@ description: "Integrate any generic Identity Provider (IdP) with Corbado Connect
 sidebarTitle: "Generic"
 ---
 
+{/*
+TODOS:
+- extend flows with links to this generic guide
+- mark option 3 somehow? "(planned)"? "(beta)"?
+*/}
+
 ## Introduction
 
 - write generic Introduction
@@ -37,8 +43,10 @@ sidebarTitle: "Generic"
 - explain signedPasskeyData (JWT) that everything "concentrates" around this jwt when we need to hand-over authentication state between Corbado Connect and the external system
 - there are multiple options which will be explained next
 
-#### Option 1: Serverless
+#### Option 1: IdP extension
 
+- this option is implemented by extending the existing IdP (with configuration or writing a plugin for example)
+- refer to cognito custom auth flow/lambda functions
 - signedPasskeyData will be passed to the external IdP and will be handled there
 - first signedPasskeyData must get verified by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
 - if successfully a session is created and returned (or own tokens JWT, access token etc.)
@@ -46,7 +54,7 @@ sidebarTitle: "Generic"
 
 #### Option 2: Own endpoint
 
-- implement own endpoint
+- this option is implemented by implementing your own endpoint
 - send signedPasskeyData to own endpoint
 - verify signedPasskeyData by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
 - if successfully a session is created and returned (or own tokens JWT, access token etc.)
@@ -54,16 +62,15 @@ sidebarTitle: "Generic"
 
 #### Option 3: Corbado Action
 
-TODO
-
-- Unser Login Finish call returned direkt eine Session/Token (ist im Grunde unser "v1" Flow von früher bei VR), Post-Login Action etc. (oder vllt auch "create-token" Lambda oder sowas)
+- this option is implemented by implementing the post-login Corbado Action
+- here you can create your own session and return a session id and/or token to the finish call
 
 ### UI Component Integration
 
 - explain UI component integration/source-code from @/corbado-connect/ui-components/corbadoconnectlogin.mdx
 - leave out the oncomplete callback and explain that is it option-depended and will be explained next
 
-#### Option 1: Serverless
+#### Option 1: IdP extension
 
 - just redirect to profile page
 
@@ -76,7 +83,7 @@ TODO
 
 #### Option 3: Corbado Action
 
-TODO
+- just redirect to profile page
 
 ## Passkey Management
 
