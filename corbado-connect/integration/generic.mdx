@@ -122,7 +122,9 @@ For comprehensive information on configuration options, detailed styling choices
 
 ### Obtaining the ConnectToken
 
-- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `ConnectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see the [ConnectToken documentation](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
+
+To achieve this, you must implement a new endpoint in your system. This endpoint must first verify the user's session and then make the final request to the Corbado Backend API to obtain the `ConnectToken`.
 
 ## User Login
 
