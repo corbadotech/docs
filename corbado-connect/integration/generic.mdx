@@ -201,23 +201,67 @@ For more information about Corbado actions and how to implement them, see the [A
 
 ## User Login
 
-- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
+
+The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
 ### Implementation Overview
 
-- explain signedPasskeyData (JWT) that everything "concentrates" around this jwt when we need to hand-over authentication state between Corbado Connect and the external system
-- there are multiple options which will be explained next
+The key to user login integration is the `signedPasskeyData` - a short-lived, single-use JSON Web Token (JWT) that proves a successful passkey authentication with Corbado. This token serves as the bridge between Corbado's passkey verification and your authentication system.
 
-#### Option 1: IdP extension
+There are multiple ways to integrate the passkey login flow with your authentication system:
 
-- this option is implemented by extending the existing IdP (with configuration or writing a plugin for example)
-- refer to cognito custom auth flow/lambda functions
-- signedPasskeyData will be passed to the external IdP and will be handled there
-- first signedPasskeyData must get verified by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
-- if successfully a session is created and returned (or own tokens JWT, access token etc.)
-- transfer mermaid chart from "User Login > Implementation Overview" @/corbado-connect/integrations/cognito.mdx to this generic case (use a "External IdP" participant)
+1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to handle passkey verification and create a session.
+2. **Custom Endpoint**: Implement a new endpoint in your backend that verifies the passkey authentication and creates a session.
+3. **Corbado Action**: Use Corbado's action system to handle the authentication flow directly.
 
-#### Option 2: Own endpoint
+We will explain each option in the next sections.
+
+#### Option 1: System Extension
+
+This option involves extending your existing authentication system through its plugin architecture or custom authentication method support. Many modern authentication systems provide ways to add new authentication methods or customize the authentication flow.
+
+Here's how the flow typically works:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Frontend as Your<br/>Frontend
+    participant IdP as Your<br/>Auth System
+    participant Plugin as Your Auth System<br/>Plugin/Extension
+    participant FAPI as Corbado<br/>Frontend API
+    participant BAPI as Corbado<br/>Backend API
+    participant Actions as Corbado<br/>Actions
+
+    Frontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over Frontend: CorbadoConnectLogin component<br/>handles passkey login
+    FAPI->>+Actions: Execute pre-login action
+    Actions->>+IdP: User lookup by email
+    IdP-->>-Actions: Return user ID
+    Actions-->>-FAPI: Return user ID
+    FAPI->>FAPI: Verify passkey login
+    FAPI-->>-Frontend: Return signedPasskeyData
+
+    Frontend->>+IdP: Login with signedPasskeyData
+    IdP->>+Plugin: Handle passkey authentication
+    Plugin->>+BAPI: POST /v2/passkeys/verifySignedData
+    BAPI-->>-Plugin: Return verification result
+    Plugin-->>-IdP: Return verification success
+    IdP-->>-Frontend: Issue session tokens
+```
+
+This approach is ideal when:
+
+- Your authentication system has a plugin architecture
+- You want to maintain all authentication logic within your existing system
+- You need tight integration with your system's session management
+- You want to leverage your system's existing user management features
+
+<Info>
+The exact implementation details will depend on your authentication system's extension capabilities. Some systems might require implementing specific interfaces or following certain patterns.
+</Info>
+
+#### Option 2: Custom Endpoint
 
 - this option is implemented by implementing your own endpoint
 - send signedPasskeyData to own endpoint
