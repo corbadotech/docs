@@ -349,8 +349,82 @@ Remember to implement proper error handling and security measures in your endpoi
 
 #### Option 3: Corbado Action
 
-- this option is implemented by implementing the post-login Corbado Action
-- here you can create your own session and return a session id and/or token to the finish call
+This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic in your system, you can use a post-login action to create and return a session. This approach minimizes the integration effort while maintaining security.
+
+Here's how the flow typically works:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Frontend as Your<br/>Frontend
+    participant IdP as Your<br/>Auth System
+    participant FAPI as Corbado<br/>Frontend API
+    participant BAPI as Corbado<br/>Backend API
+    participant Actions as Corbado<br/>Actions
+
+    Frontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over Frontend: CorbadoConnectLogin component<br/>handles passkey login
+    FAPI->>+Actions: Execute pre-login action
+    Actions->>+IdP: User lookup by email
+    IdP-->>-Actions: Return user ID
+    Actions-->>-FAPI: Return user ID
+    FAPI->>FAPI: Verify passkey login
+    FAPI->>+Actions: Execute post-login action
+    Actions->>+IdP: Create user session
+    IdP-->>-Actions: Return session tokens
+    Actions-->>-FAPI: Return session tokens
+    FAPI-->>-Frontend: Return session tokens
+```
+
+The implementation involves creating a post-login action:
+
+```javascript
+export const handler = async (event) => {
+    console.log('Received event:', event);
+
+    try {
+        // Get user information from the event
+        const username = event.username;
+        
+        // Your authentication system's client/SDK
+        const authClient = await getAuthClient();
+
+        // Create a session in your auth system
+        const session = await authClient.createSession({
+            username: username,
+            // Additional session parameters
+        });
+
+        // Return session information
+        return {
+            statusCode: 200,
+            body: {
+                sessionToken: session.token
+            }
+        };
+    } catch (error) {
+        console.error('Session creation failed:', error);
+
+        return {
+            statusCode: 500,
+            body: {
+                message: 'Failed to create session',
+                error: error.message,
+            },
+        };
+    }
+};
+```
+
+This approach is ideal when:
+- You want minimal changes to your existing system
+- You prefer to handle authentication logic in Corbado's environment
+- You need a quick integration path
+- Your authentication system has a simple session creation API
+
+<Info>
+The action environment provides secure access to your authentication system's API. Make sure to configure the necessary credentials and permissions in your Corbado project settings.
+</Info>
 
 ### UI Component Integration
 
