@@ -45,7 +45,35 @@ The complete user sign-up and passkey append flow is illustrated in detail in ou
 
 ### Implementation Overview
 
-- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+The user sign-up and passkey append process consists of a series of coordinated interactions between your application's frontend and backend, your authentication system, and Corbado's APIs. Here's a high-level overview of the flow:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Frontend as Your<br/>Frontend
+    participant Backend as Your<br/>Backend
+    participant IdP as Your<br/>Auth System
+    participant FAPI as Corbado<br/>Frontend API
+    participant BAPI as Corbado<br/>Backend API
+    participant Actions as Corbado<br/>Actions
+
+    Note over Frontend: CorbadoConnectAppend component<br/>initiates
+    Frontend->>+Backend: Request Corbado ConnectToken
+    Backend->>Backend: Verify user session
+    Backend->>+BAPI: POST /v2/connectTokens
+    BAPI-->>-Backend: Return ConnectToken
+    Backend-->>-Frontend: Return ConnectToken
+
+    Frontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over Frontend: CorbadoConnectAppend component<br/>handles passkey creation
+    FAPI->>+Actions: Execute post-append action
+    Actions->>+IdP: Set user preferences/flags
+    IdP-->>-Actions: Return success
+    Actions-->>-FAPI: Return success
+    FAPI-->>-Frontend: Return success
+```
+
+In the following sections, we will explain each step in detail.
 
 ### UI Component Integration
 
