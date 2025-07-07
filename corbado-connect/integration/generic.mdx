@@ -126,6 +126,79 @@ When the component is initialized, it executes the function given in `appendToke
 
 To achieve this, you must implement a new endpoint in your system. This endpoint must first verify the user's session and then make the final request to the Corbado Backend API to obtain the `ConnectToken`.
 
+### Updating MFA Settings
+
+After a passkey is created, you may need to update settings in your authentication system to reflect this change. This could include:
+
+- Marking the user as having MFA enabled
+- Setting passkey as the preferred authentication method
+- Updating user preferences or flags
+- Recording the passkey creation timestamp
+
+This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
+
+The `post-append` action is triggered after successful passkey creation. Here's an example of how you might implement this action:
+
+```javascript
+// Main handler function
+export const handler = async (event) => {
+    console.log('Received event:', event);
+
+    try {
+        // Get user information from the event
+        const username = event.username;
+        
+        // Your authentication system's client/SDK
+        const authClient = await getAuthClient();
+
+        // First check if MFA settings are already configured
+        const user = await authClient.getUser(username);
+        if (user.hasMfaEnabled) {
+            console.log('User already has MFA settings configured');
+            
+            return {
+                statusCode: 200,
+                body: {},
+            };
+        }
+
+        // Update MFA settings in your authentication system
+        await authClient.updateUser(username, {
+            mfaEnabled: true,
+            preferredMfaMethod: 'passkey',
+            lastMfaUpdate: new Date().toISOString()
+        });
+
+        return {
+            statusCode: 200,
+            body: {}
+        };
+    } catch (error) {
+        console.error('Caught exception:', error);
+
+        return {
+            statusCode: 500,
+            body: {
+                message: 'Failed to update MFA settings',
+                error: error.message,
+            },
+        };
+    }
+};
+```
+
+The exact implementation will depend on your authentication system's API or SDK, but the general flow remains the same:
+
+1. Receive the event with user information from Corbado
+2. Connect to your authentication system
+3. Check current MFA settings (optional)
+4. Update the settings as needed
+5. Return success or error response
+
+<Info>
+For more information about Corbado actions and how to implement them, see the [Actions documentation](/corbado-connect/architecture/actions).
+</Info>
+
 ## User Login
 
 - transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
