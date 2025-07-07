@@ -26,7 +26,22 @@ While we provide specific integration guides for popular authentication provider
 
 ## User Sign-up
 
-- transfer same section of cognito documentation @/corbado-connect/integrations/cognito.mdx to this generic case
+In a typical integration scenario, the initial user sign-up is handled through your existing authentication system's standard registration process. This could be through:
+
+- Email and password registration
+- Social login providers
+- Enterprise SSO
+
+Once a user has successfully created an account and is logged in, **Corbado Connect** provides the ability to add a passkey to their account for future passwordless logins. This process is often called "passkey append" and represents the bridge between your existing user management system and Corbado's passkey infrastructure.
+
+This approach offers several advantages:
+
+- Maintains compatibility with your existing user registration flow
+- Allows for gradual adoption of passkeys
+- Preserves existing user data and relationships
+- Enables a smooth transition for your users
+
+The complete user sign-up and passkey append flow is illustrated in detail in our [User Sign-up Flow documentation](/corbado-connect/flows/user-sign-up). In the following sections, we'll break down each component of the implementation and explore different integration patterns to suit your specific needs.
 
 ### Implementation Overview
 
