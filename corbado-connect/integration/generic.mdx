@@ -8,6 +8,7 @@ sidebarTitle: "Generic"
 TODOS:
 - extend flows with links to this generic guide
 - mark option 3 somehow? "(planned)"? "(beta)"?
+- Replace "Corbado" with "Corbado Connect"
 */}
 
 ## Introduction
@@ -207,15 +208,17 @@ The complete flow is illustrated in detail in our [User Login Flow documentation
 
 ### Implementation Overview
 
-The key to user login integration is the `signedPasskeyData` - a short-lived, single-use JSON Web Token (JWT) that proves a successful passkey authentication with Corbado. This token serves as the bridge between Corbado's passkey verification and your authentication system.
+The cornerstone of user login integration is the `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with Corbado. This token acts as the link between Corbado's passkey authentication and your authentication system, which ultimately needs to establish a session.
 
-There are multiple ways to integrate the passkey login flow with your authentication system:
+There are several ways to integrate the passkey login flow with your authentication system:
 
-1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to handle passkey verification and create a session.
-2. **Custom Endpoint**: Implement a new endpoint in your backend that verifies the passkey authentication and creates a session.
-3. **Corbado Action**: Use Corbado's action system to handle the authentication flow directly.
+1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage `signedPasskeyData` verification and session creation (refer to our dedicated [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
+2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies `signedPasskeyData` and establishes a session.
+3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and establish a session.
 
-We will explain each option in the next sections.
+In each option, you must create a session in your authentication system at the end. For simplicity and documentation purposes, we use the term "session token" here. However, you have complete flexibility and can use opaque session IDs or JWTs, for example. The storage of the session identifier, whether as a cookie, in local storage, or in memory, is beyond the scope of this documentation.
+
+We will now elaborate on each option in the following sections.
 
 #### Option 1: System Extension
 
