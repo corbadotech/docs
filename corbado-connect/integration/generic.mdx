@@ -247,7 +247,7 @@ sequenceDiagram
     Plugin->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Plugin: Return verification result
     Plugin-->>-IdP: Return verification success
-    IdP-->>-Frontend: Issue session tokens
+    IdP-->>-Frontend: Return session tokens
 ```
 
 This approach is ideal when:
@@ -263,11 +263,89 @@ The exact implementation details will depend on your authentication system's ext
 
 #### Option 2: Custom Endpoint
 
-- this option is implemented by implementing your own endpoint
-- send signedPasskeyData to own endpoint
-- verify signedPasskeyData by doing a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData
-- if successfully a session is created and returned (or own tokens JWT, access token etc.)
-- transfer mermaid chart from "User Login > Implementation Overview" @/corbado-connect/integrations/cognito.mdx to this generic case (use a "ExampleBackend" participant)
+This option involves implementing a dedicated endpoint in your backend that handles passkey verification and session creation. This approach gives you full control over the authentication flow and is suitable when your authentication system doesn't support extensions or when you need custom session handling.
+
+Here's how the flow typically works:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Frontend as Your<br/>Frontend
+    participant Backend as Your<br/>Backend
+    participant IdP as Your<br/>Auth System
+    participant FAPI as Corbado<br/>Frontend API
+    participant BAPI as Corbado<br/>Backend API
+    participant Actions as Corbado<br/>Actions
+
+    Frontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over Frontend: CorbadoConnectLogin component<br/>handles passkey login
+    FAPI->>+Actions: Execute pre-login action
+    Actions->>+IdP: User lookup by email
+    IdP-->>-Actions: Return user ID
+    Actions-->>-FAPI: Return user ID
+    FAPI->>FAPI: Verify passkey login
+    FAPI-->>-Frontend: Return signedPasskeyData
+
+    Frontend->>+Backend: POST /auth/passkey/verify<br/>(signedPasskeyData)
+    Backend->>+BAPI: POST /v2/passkeys/verifySignedData
+    BAPI-->>-Backend: Return verification result
+    Backend->>+IdP: Create user session
+    IdP-->>-Backend: Return session tokens
+    Backend-->>-Frontend: Return session tokens
+```
+
+The implementation typically involves creating a new endpoint in your backend:
+
+```typescript
+// Example using Express.js
+app.post('/auth/passkey/verify', async (req, res) => {
+    try {
+        const { signedPasskeyData } = req.body;
+
+        // 1. Verify signedPasskeyData with Corbado Backend API
+        const verifyResult = await fetch('https://backendapi.cloud.corbado.io/v2/passkeys/verifySignedData', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${CORBADO_API_SECRET}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ signedPasskeyData })
+        });
+
+        const data = await verifyResult.json();
+        if (data.verificationResult !== "success") {
+            return res.status(401).json({ error: 'Invalid signedPasskeyData' });
+        }
+
+        // 2. Extract user information
+        const userInfo = extractUserInfo(signedPasskeyData);
+
+        // 3. Create a session in your auth system
+        const session = await yourAuthSystem.createSession({
+            userId: userInfo.sub,
+        });
+
+        // 4. Return session information to the client
+        res.json({
+            sessionToken: session.token,
+        });
+    } catch (error) {
+        console.error('Verification failed:', error);
+        res.status(500).json({ error: 'Authentication failed' });
+    }
+});
+```
+
+This approach is ideal when:
+
+- Your authentication system doesn't support plugins/extensions
+- You need complete control over the authentication flow
+- You want to implement custom session management
+- You're building a new authentication system from scratch
+
+<Info>
+Remember to implement proper error handling and security measures in your endpoint, such as rate limiting and logging.
+</Info>
 
 #### Option 3: Corbado Action
 
