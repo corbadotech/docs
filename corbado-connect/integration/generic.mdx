@@ -14,7 +14,7 @@ TODOS:
 
 ## Introduction
 
-**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing Identity Provider (IdP) or authentication system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging your existing user management infrastructure.
+**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing Identity Provider (IdP) or authentication system. This approach allows you to offer your users a secure, convenient, and passwordless login experience while leveraging your current user management infrastructure. You can enhance your security and user experience without performing a complex migration or replacing your established authentication stack.
 
 This guide provides a generic approach to integrating **Corbado Connect** with any authentication system, whether it's:
 
@@ -423,7 +423,7 @@ app.post('/auth/passkey/verify', async (req, res) => {
 
         const data = await verifyResult.json();
         if (data.verificationResult !== "success") {
-            return res.status(400).json({ error: 'Invalid signedPasskeyData' });
+            return res.status(401).json({ error: 'Invalid signedPasskeyData' });
         }
 
         // 2. Extract user information
