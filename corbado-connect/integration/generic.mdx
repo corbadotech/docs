@@ -216,7 +216,7 @@ There are several ways to integrate the passkey login flow with your authenticat
 2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies `signedPasskeyData` and establishes a session.
 3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and establish a session.
 
-In each option, you must create a session in your authentication system at the end. For simplicity and documentation purposes, we use the term "session token" here. However, you have complete flexibility and can use opaque session IDs or JWTs, for example. The storage of the session identifier, whether as a cookie, in local storage, or in memory, is beyond the scope of this documentation.
+In each option, it is necessary to create a session within your authentication system at the conclusion of the process. For simplicity, we demonstrate creating a session in the database and returning a session ID. However, you have complete flexibility to implement sessions in any manner you prefer, such as using tokens implemented with a JWT. The specifics of session storage, whether as a cookie, in local storage, or in memory, are beyond the scope of this documentation.
 
 We will now elaborate on each option in the following sections.
 
@@ -250,7 +250,8 @@ sequenceDiagram
     Plugin->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Plugin: Return verification result
     Plugin-->>-IdP: Return verification success
-    IdP-->>-Frontend: Return session tokens
+    IdP->>IdP: Create user session
+    IdP-->>-Frontend: Return session ID
 ```
 
 This approach is ideal when:
@@ -293,8 +294,8 @@ sequenceDiagram
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
     Backend->>+IdP: Create user session
-    IdP-->>-Backend: Return session tokens
-    Backend-->>-Frontend: Return session tokens
+    IdP-->>-Backend: Return session ID
+    Backend-->>-Frontend: Return session ID
 ```
 
 The implementation typically involves creating a new endpoint in your backend:
@@ -323,14 +324,14 @@ app.post('/auth/passkey/verify', async (req, res) => {
         // 2. Extract user information
         const userInfo = extractUserInfo(signedPasskeyData);
 
-        // 3. Create a session in your auth system
+        // 3. Create user session in your auth system
         const session = await yourAuthSystem.createSession({
             userId: userInfo.sub,
         });
 
-        // 4. Return session token to the client
+        // 4. Return session ID to the client
         res.json({
-            sessionToken: session.token,
+            sessionId: session.Id,
         });
     } catch (error) {
         console.error('Verification failed:', error);
@@ -374,9 +375,9 @@ sequenceDiagram
     FAPI->>FAPI: Verify passkey login
     FAPI->>+Actions: Execute post-login action
     Actions->>+IdP: Create user session
-    IdP-->>-Actions: Return session tokens
-    Actions-->>-FAPI: Return session tokens
-    FAPI-->>-Frontend: Return session tokens
+    IdP-->>-Actions: Return session ID
+    Actions-->>-FAPI: Return session ID
+    FAPI-->>-Frontend: Return session ID
 ```
 
 The implementation involves creating a `post-login` action:
@@ -388,16 +389,16 @@ export const handler = async (event) => {
     try {
         const userId = event.userId;
 
-        // 1. Create a session in your auth system
+        // 1. Create user session in your auth system
         const session = await yourAuthSystem.createSession({
             userId: userId,
         });
 
-        // 2. Return session token to the client
+        // 2. Return session ID to the client
         return {
             statusCode: 200,
             body: {
-                sessionToken: session.token
+                sessionId: session.Id
             }
         };
     } catch (error) {
