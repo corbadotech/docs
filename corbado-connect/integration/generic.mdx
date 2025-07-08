@@ -208,7 +208,7 @@ The complete flow is illustrated in detail in our [User Login Flow documentation
 
 ### Implementation Overview
 
-The cornerstone of user login integration is the `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with Corbado. This token acts as the link between Corbado's passkey authentication and your authentication system, which ultimately needs to establish a session.
+The cornerstone of user login integration is `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with **Corbado Connect**. This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
 
 There are several ways to integrate the passkey login flow with your authentication system:
 
@@ -328,7 +328,7 @@ app.post('/auth/passkey/verify', async (req, res) => {
             userId: userInfo.sub,
         });
 
-        // 4. Return session information to the client
+        // 4. Return session token to the client
         res.json({
             sessionToken: session.token,
         });
@@ -379,26 +379,21 @@ sequenceDiagram
     FAPI-->>-Frontend: Return session tokens
 ```
 
-The implementation involves creating a post-login action:
+The implementation involves creating a `post-login` action:
 
 ```javascript
 export const handler = async (event) => {
     console.log('Received event:', event);
 
     try {
-        // Get user information from the event
-        const username = event.username;
-        
-        // Your authentication system's client/SDK
-        const authClient = await getAuthClient();
+        const userId = event.userId;
 
-        // Create a session in your auth system
-        const session = await authClient.createSession({
-            username: username,
-            // Additional session parameters
+        // 1. Create a session in your auth system
+        const session = await yourAuthSystem.createSession({
+            userId: userId,
         });
 
-        // Return session information
+        // 2. Return session token to the client
         return {
             statusCode: 200,
             body: {
@@ -420,13 +415,14 @@ export const handler = async (event) => {
 ```
 
 This approach is ideal when:
+
 - You want minimal changes to your existing system
-- You prefer to handle authentication logic in Corbado's environment
+- You prefer to handle authentication logic in **Corbado Connect's** environment
 - You need a quick integration path
 - Your authentication system has a simple session creation API
 
 <Info>
-The action environment provides secure access to your authentication system's API. Make sure to configure the necessary credentials and permissions in your Corbado project settings.
+The action environment provides secure access to your authentication system's API. Make sure to configure the necessary credentials and permissions in your **Corbado Connect** project settings.
 </Info>
 
 ### UI Component Integration
