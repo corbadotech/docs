@@ -34,12 +34,12 @@ graph TD
     B -- No --> C[Classic Sign-Up<br/>Your System];
     C --> D[Classic Login<br/>Your System];
     B -- Yes --> H["S2: Passkey Login<br/>(CorbadoConnectLogin)"];
-    H -- Success --> AuthSession["Authenticated MFA Session"];
+    H -- Success --> AuthSession["Authenticated MFA Session Created"];
     H -- Not available / Fallback --> D;
     D -- Success --> AuthSession;
-    AuthSession --> F["S1: Passkey Enrollment<br/>(CorbadoConnectAppend)"];
-    F -- "Complete / Skip" --> Dashboard["Dashboard / Start Page"];
-    Dashboard -- "Navigate to Settings" --> I["S3: Passkey Management<br/>(CorbadoConnectPasskeyList)"];
+    AuthSession -- always redirect first to --> F["S1: Passkey Enrollment<br/>(CorbadoConnectAppend)"];
+    F -- "then redirects to target" --> Dashboard["Start Page / Deeplink"];
+    Dashboard -- "Navigate to settings <br/>(optional)" --> I["S3: Passkey Management<br/>(CorbadoConnectPasskeyList)"];
 
     classDef corbadoStep fill:#7B61FF,color:#fff,stroke:#6A52E1,stroke-width:2px
     class H,F,I corbadoStep
