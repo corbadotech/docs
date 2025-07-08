@@ -4,6 +4,14 @@ description: "Integrate any generic Identity Provider (IdP) with Corbado Connect
 sidebarTitle: "Generic"
 ---
 
+{/*
+TODOS:
+- Copy passkey management from Kostas
+- Add "How it Works" sections (Kostas user journey)
+- Rename steps
+- Implement session handling with session ID and cookie storage
+*/}
+
 ## Introduction
 
 **Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing Identity Provider (IdP) or authentication system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging your existing user management infrastructure.
@@ -18,7 +26,32 @@ The integration patterns described here can be adapted to work with virtually an
 
 While we provide specific integration guides for popular authentication providers like [Amazon Cognito](/corbado-connect/integration/cognito), this guide serves as a foundation for integrating with any other authentication system.
 
-## User Sign-up
+## How it Works
+
+Integrating **Corbado Connect** means layering passkey functionality on top of your existing system. Most enterprise clients already have a robust, often multi-step, sign-up process. Therefore, we recommend leaving your classic sign-up flow untouched and introducing passkeys **after** the user has successfully authenticated.
+
+This post-login enrollment strategy ensures that a stable user identity (e.g. UUID) exists and an authenticated session is active — both are prerequisites for securely generating the tokens required for passkey operations. It also provides a natural path for your existing users to adopt passkeys. Once a user has created a passkey, they can use it to login without passwords.
+
+Here is a visual overview of the recommended user journey, outlining each step where you need to implement **Corbado Connect** using our [UI components](/corbado-connect/ui-components):
+
+```mermaid
+graph TD
+    A[Start] --> B{Existing User?};
+    B -- No --> C[Classic Sign-Up<br/>Your System];
+    C --> D[Classic Login<br/>Your System];
+    B -- Yes --> D;
+    D --> E[Authenticated MFA Session];
+    E --> F["S1: Passkey Enrollment<br/>(CorbadoConnectAppend)"];
+    F --> G{Passkey Available};
+    G -- Subsequent Visits --> H["S2: Passkey Login<br/>(CorbadoConnectLogin)"];
+    H --> E;
+    G -- Manage --> I["S3: Passkey Management<br/>(CorbadoConnectPasskeyList)"];
+    I --> G;
+```
+
+This guide will walk you through the implementation of each necessary step.
+
+## Step 1: Passkey Enrollment
 
 In a typical integration scenario, the initial user sign-up is handled through your existing authentication system's standard registration process. This could be through:
 
@@ -269,7 +302,7 @@ The exact implementation will depend on your authentication system's API or SDK,
 For more information about Corbado actions and how to implement them, see the [Actions documentation](/corbado-connect/architecture/actions).
 </Info>
 
-## User Login
+## Step 2: Passkey Login
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
 
@@ -285,7 +318,7 @@ There are several ways to integrate the passkey login flow with your authenticat
 2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies `signedPasskeyData` and establishes a session.
 3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and establish a session.
 
-In each option, it is necessary to create a session within your authentication system at the conclusion of the process. For simplicity, we demonstrate creating a session in the database and returning a session ID. However, you have complete flexibility to implement sessions in any manner you prefer, such as using tokens implemented with a JWT. The specifics of session storage, whether as a cookie, in local storage, or in memory, are beyond the scope of this documentation.
+In each option, it is necessary to create a session within your authentication system at the conclusion of the process. For simplicity, we demonstrate creating a server-side session and storing its session ID in a cookie. However, you have complete flexibility to implement sessions in any manner you prefer, such as using tokens implemented with a JWT and storing them in local storage.
 
 We will now elaborate on each option in the following sections.
 
@@ -387,7 +420,7 @@ app.post('/auth/passkey/verify', async (req, res) => {
 
         const data = await verifyResult.json();
         if (data.verificationResult !== "success") {
-            return res.status(401).json({ error: 'Invalid signedPasskeyData' });
+            return res.status(400).json({ error: 'Invalid signedPasskeyData' });
         }
 
         // 2. Extract user information
@@ -398,9 +431,18 @@ app.post('/auth/passkey/verify', async (req, res) => {
             userId: userInfo.sub,
         });
 
-        // 4. Return session ID to the client
+        // 4. Store session ID in a cookie
+        res.cookie('session_id', session.id, {
+            httpOnly: true,             // Prevents JavaScript access
+            secure: true,               // Only sent over HTTPS
+            sameSite: 'strict',         // CSRF protection
+            maxAge: 3 * 60 * 60 * 1000, // 3 hours
+            path: '/'                   // Available across the site
+        });
+
+        // 5. Send success response
         res.json({
-            sessionId: session.Id,
+            success: true,
         });
     } catch (error) {
         console.error('Verification failed:', error);
@@ -543,63 +585,57 @@ The implementation details for the `onComplete` callback will be provided in the
 
 #### Option 1: System Extension
 
-As we have integrated with the existing authentication system, session creation and storage are managed by it. Therefore, after a successful passkey login, we only need to redirect:
+As we have integrated with the existing authentication system, session creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
 
 ```js
 onComplete: (signedPasskeyData, clientState) => {
-    // Redirect to profile page
-    window.location.href = '/profile';
+    handlePasskeyLogin(signedPasskeyData);
 }
 ```
 
 #### Option 2: Custom Endpoint
 
-When using the custom endpoint approach, the `onComplete` callback needs to send the `signedPasskeyData` to your verification endpoint and handle the session creation:
+When using the custom endpoint approach, the `onComplete` callback needs to send the `signedPasskeyData` to your verification endpoint and redirect to the profile page:
 
 ```js
 onComplete: async (signedPasskeyData, clientState) => {
-    try {
-        // 1. Send signedPasskeyData to your verification endpoint
-        const response = await fetch('/auth/passkey/verify', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ signedPasskeyData })
-        });
+    // 1. Send signedPasskeyData to your verification endpoint
+    const response = await fetch('/auth/passkey/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ signedPasskeyData })
+    });
 
-        if (!response.ok) {
-            throw new Error('Verification failed');
-        }
-
-        const result = await response.json();
-
-        // 2. Handle the session based on your chosen storage method
-        if (result.sessionId) {
-            // Storage method A: Store session ID in an HTTP-only cookie (recommended)
-            // This is typically set by the backend in the response headers
-            
-            // Storage method B: Store session ID in localStorage
-            localStorage.setItem('sessionId', result.sessionId);
-            
-            // Storage method C: Store session ID in memory
-            window.sessionId = result.sessionId;
-        }
-
-        // 3. Redirect to authenticated area
-        window.location.href = '/profile';
-    } catch (error) {
-        console.error('Authentication failed:', error);
-        // Handle error (show error message, trigger fallback, etc.)
+    if (!response.ok) {
+        throw new Error('Verification failed');
     }
+
+    // 2. The session ID has been stored in a cookie (see above)
+
+    // 3. Redirect to profile page
+    window.location.href = '/profile';
 }
 ```
 
 #### Option 3: Corbado Action
 
-- just redirect to profile page
+When using a Corbado Action, the session ID is returned directly in the `result` object, simplifying the frontend logic:
 
-## Passkey Management
+```javascript
+onComplete: async (result, clientState) => {
+    const sessionId = result.sessionId;
+
+    // 1. Store session ID in a cookie
+    document.cookie = `session_id=${sessionId}; path=/; secure; SameSite=Strict`;
+
+    // 2. Redirect to profile page
+    window.location.href = '/profile';
+}
+```
+
+## Step 3: Passkey Management
 
 TODO
 
