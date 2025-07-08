@@ -548,7 +548,14 @@ The implementation details for the `onComplete` callback will be provided in the
 
 #### Option 1: System Extension
 
-- just redirect to profile page
+As we have integrated with the existing authentication system, session creation and storage are managed by it. Therefore, after a successful passkey login, we only need to redirect:
+
+```js
+onComplete: (signedPasskeyData, clientState) => {
+    // Redirect to profile page
+    window.location.href = '/profile';
+}
+```
 
 #### Option 2: Custom Endpoint
 
