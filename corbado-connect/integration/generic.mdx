@@ -87,7 +87,7 @@ Here's an example integration:
   <script type="module">
     const passkeyAppendElement = document.getElementById('passkey-append');
     Corbado.mountCorbadoConnectAppend(passkeyAppendElement, {
-      projectId: "pro-XXXX", // Your Corbado Project ID
+      projectId: "pro-XXX", // Your Corbado Project ID
       frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
 
       // Called when the user decides not to create a passkey or passkey creation
@@ -502,8 +502,49 @@ The action environment provides secure access to your authentication system's AP
 
 ### UI Component Integration
 
-- explain UI component integration/source-code from @/corbado-connect/ui-components/corbadoconnectlogin.mdx
-- leave out the oncomplete callback and explain that is it option-depended and will be explained next
+The integration starts with the `CorbadoConnectLogin` component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
+
+Here's an example integration:
+
+```js
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+
+  <script type="module">
+    const passkeyLoginElement = document.getElementById('authorize-with-passkey');
+    Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
+      projectId: "pro-XXX", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
+
+      // Called when passkey login is completed successfully
+      onComplete: (signedPasskeyData, clientState) => {
+        // This callback varies depending on the option chosen; see the following sections for details
+      },
+
+      // Called when passkey login is not possible or fails critically. Show your
+      // fallback UI (e.g., a password field). The identifier might be pre-filled if
+      // the user provided one.
+      onFallback: (identifier, errorMessage) => {
+        console.log(`Fallback triggered for '${identifier}' with message: ${errorMessage}`);
+      },
+    });
+  </script>
+</head>
+
+<body>
+  <div id="authorize-with-passkey"></div>
+  <div id="authorize-with-fallback" style="display: none;">
+    <!-- Your existing fallback authentication (e.g. password) comes here -->
+  </div>
+</body>
+```
+
+<Info>
+For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectLogin component documentation](/corbado-connect/ui-components/corbadoconnectlogin).
+</Info>
+
+The implementation details for the `onComplete` callback will be provided in the subsequent sections.
 
 #### Option 1: System Extension
 
