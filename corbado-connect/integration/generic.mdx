@@ -100,7 +100,7 @@ The integration starts with the `CorbadoConnectAppend` component, which is desig
 
 Here's an example integration:
 
-```js
+```html
 <head>
   <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
   <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
@@ -122,7 +122,7 @@ Here's an example integration:
 
         // Get Corbado ConnectToken from your backend (see next section)
         const response = await fetch('/auth/corbadoConnectToken', {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${sessionId}`
@@ -166,7 +166,7 @@ When the component is initialized, it executes the function given in `appendToke
 
 Here's an example implementation in your backend:
 
-```js
+```javascript
 // Example using Express.js
 app.post('/auth/corbadoConnectToken', async (req, res) => {
     try {
@@ -305,7 +305,7 @@ The complete flow is illustrated in detail in our [User Login Flow documentation
 
 ### Implementation Overview
 
-The cornerstone of user login integration is `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with **Corbado Connect**. This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
+The cornerstone of user login integration is `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with **Corbado Connect** (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
 
 There are several ways to integrate the passkey login flow with your authentication system:
 
@@ -427,7 +427,7 @@ app.post('/auth/passkey/verify', async (req, res) => {
         });
 
         // 4. Store session ID in a cookie
-        res.cookie('session_id', session.id, {
+        res.cookie('session_id', session.Id, {
             httpOnly: true,             // Prevents JavaScript access
             secure: true,               // Only sent over HTTPS
             sameSite: 'strict',         // CSRF protection
@@ -538,7 +538,7 @@ The integration starts with the `CorbadoConnectLogin` component. The component t
 
 Here's an example integration:
 
-```js
+```html
 <head>
   <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
   <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
@@ -582,7 +582,7 @@ The implementation details for the `onComplete` callback will be provided in the
 
 As we have integrated with the existing authentication system, session creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
 
-```js
+```javascript
 onComplete: (signedPasskeyData, clientState) => {
     handlePasskeyLogin(signedPasskeyData);
 }
@@ -592,7 +592,7 @@ onComplete: (signedPasskeyData, clientState) => {
 
 When using the custom endpoint approach, the `onComplete` callback needs to send the `signedPasskeyData` to your verification endpoint and redirect to the profile page:
 
-```js
+```javascript
 onComplete: async (signedPasskeyData, clientState) => {
     // 1. Send signedPasskeyData to your verification endpoint
     const response = await fetch('/auth/passkey/verify', {
@@ -622,9 +622,9 @@ When using a Corbado Action, the session ID is returned directly in the `result`
 onComplete: async (result, clientState) => {
     const sessionId = result.sessionId;
 
-    // 1. Store session ID in a cookie (this is vulnerable to XSS 
-    // attacks which is a disadvantage of this approach compared 
-    // to option 2 for example)
+    // 1. Store the session ID in a cookie (note that setting 
+    // the cookie from JavaScript makes it vulnerable to XSS 
+    // attacks, unlike option 2 which uses an httpOnly cookie)
     document.cookie = `session_id=${sessionId}; path=/; secure; SameSite=Strict`;
 
     // 2. Redirect to profile page
