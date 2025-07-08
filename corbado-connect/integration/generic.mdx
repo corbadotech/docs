@@ -6,9 +6,7 @@ sidebarTitle: "Generic"
 
 {/*
 TODOS:
-- extend flows with links to this generic guide
 - mark option 3 somehow? "(planned)"? "(beta)"?
-- Replace "Corbado" with "Corbado Connect"
 */}
 
 ## Introduction
@@ -353,7 +351,7 @@ Remember to implement proper error handling and security measures in your endpoi
 
 #### Option 3: Corbado Action
 
-This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic in your system, you can use a `post-login` action to create and return a session. This approach minimizes the integration effort while maintaining security.
+This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of `signedPasskeyData` in your system, you can use a `post-login` action to create and return a session. This approach minimizes the integration effort while maintaining security.
 
 Here's how the flow typically works:
 
@@ -431,11 +429,11 @@ The action environment provides secure access to your authentication system's AP
 - explain UI component integration/source-code from @/corbado-connect/ui-components/corbadoconnectlogin.mdx
 - leave out the oncomplete callback and explain that is it option-depended and will be explained next
 
-#### Option 1: IdP extension
+#### Option 1: System Extension
 
 - just redirect to profile page
 
-#### Option 2: Own endpoint
+#### Option 2: Custom Endpoint
 
 - make call to own endpoint (ExampleBackend)
 - explain that this new endpoint makes a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData (see sequence-chart)
