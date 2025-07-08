@@ -4,11 +4,6 @@ description: "Integrate any generic Identity Provider (IdP) with Corbado Connect
 sidebarTitle: "Generic"
 ---
 
-{/*
-TODOS:
-- mark option 3 somehow? "(planned)"? "(beta)"?
-*/}
-
 ## Introduction
 
 **Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing Identity Provider (IdP) or authentication system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging your existing user management infrastructure.
@@ -559,10 +554,46 @@ onComplete: (signedPasskeyData, clientState) => {
 
 #### Option 2: Custom Endpoint
 
-- make call to own endpoint (ExampleBackend)
-- explain that this new endpoint makes a call to Corbado Backend API /v2/passkeys/verifySignedPasskeyData (see sequence-chart)
-- if successfully a session is created (response contains session cookie for example)
-- explain session cookie case and jwt in response that you then can set as cookie or local storage or keep in memory
+When using the custom endpoint approach, the `onComplete` callback needs to send the `signedPasskeyData` to your verification endpoint and handle the session creation:
+
+```js
+onComplete: async (signedPasskeyData, clientState) => {
+    try {
+        // 1. Send signedPasskeyData to your verification endpoint
+        const response = await fetch('/auth/passkey/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ signedPasskeyData })
+        });
+
+        if (!response.ok) {
+            throw new Error('Verification failed');
+        }
+
+        const result = await response.json();
+
+        // 2. Handle the session based on your chosen storage method
+        if (result.sessionId) {
+            // Storage method A: Store session ID in an HTTP-only cookie (recommended)
+            // This is typically set by the backend in the response headers
+            
+            // Storage method B: Store session ID in localStorage
+            localStorage.setItem('sessionId', result.sessionId);
+            
+            // Storage method C: Store session ID in memory
+            window.sessionId = result.sessionId;
+        }
+
+        // 3. Redirect to authenticated area
+        window.location.href = '/profile';
+    } catch (error) {
+        console.error('Authentication failed:', error);
+        // Handle error (show error message, trigger fallback, etc.)
+    }
+}
+```
 
 #### Option 3: Corbado Action
 
