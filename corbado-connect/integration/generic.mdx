@@ -20,7 +20,7 @@ While we provide specific integration guides for popular authentication provider
 
 ## How it Works
 
-Integrating **Corbado Connect** means layering passkey functionality on top of your existing system. Most enterprise clients already have a robust, often multi-step, sign-up process. Therefore, we recommend leaving your classic sign-up flow untouched and introducing passkeys **after** the user has successfully authenticated.
+Integrating **Corbado Connect** means layering passkey functionality on top of your existing system. Most enterprise clients already have a robust, often multi-step, sign-up process for account creation. Therefore, we recommend leaving your classic sign-up flow untouched and introducing passkeys **after** the user has successfully authenticated.
 
 This post-login enrollment strategy ensures that a stable user identity (e.g. UUID) exists and an authenticated session is active — both are prerequisites for securely generating the tokens required for passkey operations. It also provides a natural path for your existing users to adopt passkeys. Once a user has created a passkey, they can use it to login without passwords.
 
