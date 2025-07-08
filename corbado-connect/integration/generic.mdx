@@ -33,7 +33,7 @@ graph TD
     A[Start] --> B{Existing User?};
     B -- No --> C[Classic Sign-Up<br/>Your System];
     C --> D[Classic Login<br/>Your System];
-    B -- Yes --> H["S2: Attempt Passkey Login<br/>(CorbadoConnectLogin)"];
+    B -- Yes --> H["S2: Passkey Login<br/>(CorbadoConnectLogin)"];
     H -- Success --> AuthSession["Authenticated MFA Session"];
     H -- Not available / Fallback --> D;
     D -- Success --> AuthSession;
