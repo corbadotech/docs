@@ -134,7 +134,10 @@ Here's an example integration:
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${sessionId}`
-            }
+            },
+            body: JSON.stringify({
+                type: 'passkey-append',
+            })
         });
 
         if (!response.ok) {
@@ -194,7 +197,7 @@ app.post('/auth/corbadoConnectToken', async (req, res) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                type: 'passkey-append',
+                type: req.body.type, // e.g., 'passkey-append'
                 data: {
                     displayName: user.displayName,
                     identifier: user.email,
@@ -627,7 +630,9 @@ When using a Corbado Action, the session ID is returned directly in the `result`
 onComplete: async (result, clientState) => {
     const sessionId = result.sessionId;
 
-    // 1. Store session ID in a cookie
+    // 1. Store session ID in a cookie (this is vulnerable to XSS 
+    // attacks which is a disadvantage of this approach compared 
+    // to option 2 for example)
     document.cookie = `session_id=${sessionId}; path=/; secure; SameSite=Strict`;
 
     // 2. Redirect to profile page
@@ -637,16 +642,69 @@ onComplete: async (result, clientState) => {
 
 ## Step 3: Passkey Management
 
-TODO
+Providing users with a way to manage their passkeys is a critical part of the experience. The `CorbadoConnectPasskeyList` component offers a complete, pre-built UI for users to list, add, and delete passkeys associated with their account.
+
+This component should be placed in a secure, authenticated area of your application, such as a user profile or account settings page.
 
 ### Implementation Overview
 
-TODO
+The `CorbadoConnectPasskeyList` component requires a distinct `ConnectToken` to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
 ### UI Component Integration
 
-TODO
+Integrate the `CorbadoConnectPasskeyList` component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
+
+```html
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+
+  <script type="module">
+    const passkeyListElement = document.getElementById('passkey-list');
+
+    // This function provides ConnectTokens for all actions (list, append, delete)
+    const connectTokenProvider = async (type) => {
+      // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
+      const sessionId = await getCurrentSessionId();
+
+      const response = await fetch('/auth/corbadoConnectToken', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionId}`
+        },
+        body: JSON.stringify({ type }), 
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get ConnectToken for type: ${type}`);
+      }
+
+      const { connectToken } = await response.json();
+
+      return connectToken;
+    };
+
+    Corbado.mountCorbadoConnectPasskeyList(passkeyListElement, {
+      projectId: "pro-XXX", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
+      connectTokenProvider: connectTokenProvider
+    });
+  </script>
+</head>
+
+<body>
+  <!-- The passkey list UI will render into this div -->
+  <div id="passkey-list"></div>
+</body>
+```
+
+<Info>
+For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/ui-components/corbadoconnectpasskeylist).
+</Info>
 
 ### Obtaining the ConnectToken
 
-TODO
+The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a `ConnectToken` for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. You can use the same backend endpoint created for the enrollment step, as it's already set up to handle different token types.
+
+When a user opens the page, the component will call `connectTokenProvider('passkey-list')` to get a token to display the existing passkeys. If they try to delete a passkey, it will call `connectTokenProvider('passkey-delete')`, and so on. This ensures every action is explicitly authorized by your backend for the currently authenticated user.
