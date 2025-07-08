@@ -117,15 +117,12 @@ Here's an example integration:
       },
 
       appendTokenProvider: async () => {
-        // Get current user's session ID
-        const sessionId = await getCurrentSessionId();
-
-        // Get Corbado ConnectToken from your backend (see next section)
+        // Get Corbado ConnectToken from your backend (see next
+        // section), session ID is sent as cookie
         const response = await fetch('/auth/corbadoConnectToken', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sessionId}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 type: 'passkey-append',
@@ -171,11 +168,7 @@ Here's an example implementation in your backend:
 app.post('/auth/corbadoConnectToken', async (req, res) => {
     try {
         // 1. Verify the current user's session
-        const sessionId = req.headers.authorization?.split(' ')[1];
-        if (!sessionId) {
-            return res.status(401).json({ error: 'No session ID provided' });
-        }
-
+        const sessionId = req.cookies.session_id;
         const user = await yourAuthSystem.verifySession(sessionId);
         if (!user) {
             return res.status(401).json({ error: 'Invalid session' });
@@ -657,13 +650,12 @@ Integrate the `CorbadoConnectPasskeyList` component on a profile or settings pag
     // This function provides ConnectTokens for all actions (list, append, delete)
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
-      const sessionId = await getCurrentSessionId();
 
+      // Session ID is sent as cookie
       const response = await fetch('/auth/corbadoConnectToken', {
         method: 'POST',
         headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionId}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({ type }), 
       });
