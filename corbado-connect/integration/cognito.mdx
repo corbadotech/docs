@@ -121,7 +121,7 @@ For a detailed explanation of all available props for this component, please see
 
 ### Obtaining the ConnectToken
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `ConnectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `ConnectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [ConnectToken documentation](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
 
 The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
