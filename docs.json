@@ -445,6 +445,14 @@
             "linkedin": "https://www.linkedin.com/company/corbado"
         }
     },
+    "contextual": {
+        "options": [
+            "copy",
+            "view",
+            "chatgpt",
+            "claude"
+        ]
+    },
     "integrations": {
         "hotjar": {
             "hjid": "3375029",
