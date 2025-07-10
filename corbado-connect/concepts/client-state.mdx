@@ -4,6 +4,10 @@ description: "The clientState in Corbado Connect helps manage state for a smooth
 sidebarTitle: "clientState"
 ---
 
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
 Whenever a user completes a passkey ceremony (e.g., appending or logging in with a passkey), the **Corbado Connect UI components** return a string called `clientState`. This `clientState` contains environment-related information (e.g., details used to optimize One-tap, passkey usage and detect environments) so that future interactions can be streamlined and personalized.
 
 - **Purpose**: The `clientState` lets Corbado remember certain details from the user's current device and environment. For example, if passkey usage was already confirmed, or if certain One-tap flows are possible on this device, re-running all checks can be skipped the next time the user interacts with your passkey UI.

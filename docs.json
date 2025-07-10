@@ -26,7 +26,8 @@
                         "group": "Overview",
                         "pages": [
                             "corbado-connect/overview/welcome",
-                            "corbado-connect/overview/getting-started"
+                            "corbado-connect/overview/getting-started",
+                            "corbado-connect/overview/demo"
                         ]
                     },
                     {
