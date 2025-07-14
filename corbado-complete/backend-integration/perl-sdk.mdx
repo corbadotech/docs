@@ -9,6 +9,63 @@ import NoSdkSessionHandling from "/snippets/corbado-complete/no-sdk-session-hand
 
 <NoSdkSupportIntro language="Perl"></NoSdkSupportIntro>
 
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as described below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
+## Token validation (JWT)
+
+Since there is no official Corbado Perl SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication.
+
+To validate a Corbado session token (JWT) in Perl, use a JWT library such as [Crypt::JWT](https://metacpan.org/pod/Crypt::JWT). You need to fetch the JWKS (public keys) from Corbado and verify the token's signature and claims.
+
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
+
+### How to use
+
+```perl
+use Crypt::JWT qw(decode_jwt);
+use LWP::Simple;
+use JSON;
+
+# Fetch the session token from a cookie or Authorization header.
+# See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
+my $sessionToken = '...';
+
+# Fetch JWKS from Corbado and cache it
+my $jwks_url = 'https://<your-project-id>.frontendapi.corbado.io/.well-known/jwks.json';
+my $jwks_json = get($jwks_url);
+my $jwks = decode_json($jwks_json);
+
+# Extract the public key (see Crypt::JWT docs for details)
+# ...
+
+# Verify the token
+my $claims;
+eval {
+    $claims = decode_jwt(
+        token => $sessionToken,
+        key => $public_key_from_jwks,
+        accepted_alg => 'RS256',
+        verify_exp => 1,
+        verify_aud => 1,
+        # ... other claim checks ...
+    );
+};
+if ($@) {
+    # Token is invalid
+} else {
+    # Token is valid, $claims contains the payload
+}
+```
+
+### Why is this important?
+- Ensures only valid, untampered tokens are accepted.
+- Protects your backend endpoints from unauthorized access.
+- Handles key rotation and validation logic for you.
+
+See [session token handling](/corbado-complete/sessions/session-token-handling) for more details.
+
 You need to take care of the following steps:
 
 - [OpenAPI client generation](#openapi-client-generation)

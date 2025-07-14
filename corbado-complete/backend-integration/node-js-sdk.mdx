@@ -5,5 +5,44 @@ description: "Use the official Corbado Node.js SDK to simplify the passkey and s
 
 The Corbado Node.js SDK can be found on [GitHub](https://github.com/corbado/corbado-nodejs). The [README](https://github.com/corbado/corbado-nodejs) there contains detailed information on how to install and use the Corbado Node.js SDK.
 
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
+---
+
+## Token Validation with `validateToken()`
+
+The Corbado Node.js SDK provides a `validateToken()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
+
+### What does `validateToken()` do?
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
+
+### How to use
+
+```js
+import { SDK, Config } from '@corbado/node-sdk';
+
+const projectID = process.env.CORBADO_PROJECT_ID;
+const apiSecret = process.env.CORBADO_API_SECRET;
+const frontendAPI = process.env.CORBADO_FRONTEND_API;
+const backendAPI = process.env.CORBADO_BACKEND_API;
+
+const config = new Config(projectID, apiSecret, frontendAPI, backendAPI);
+const sdk = new SDK(config);
+
+// Get sessionToken from cookie or Authorization header
+// See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
+const sessionToken = '...';
+const user = await sdk.sessions().validateToken(sessionToken);
+// user.userId etc. are now available
+```
+
+### Why is this important?
+- Ensures only valid, untampered tokens are accepted.
+- Protects your backend endpoints from unauthorized access.
+- Handles key rotation and validation logic for you.
+
+For more details, see the [Corbado Node.js SDK documentation](https://github.com/corbado/corbado-nodejs).
 
 Find a full tutorial on how to implement passkeys in our [blog post](https://www.corbado.com/blog/nodejs-passkeys).

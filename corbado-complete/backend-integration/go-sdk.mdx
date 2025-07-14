@@ -4,3 +4,47 @@ description: "Use the official Corbado Go SDK to simplify the passkey and sessio
 ---
 
 The Corbado Go SDK can be found on [GitHub](https://github.com/corbado/corbado-go). The [README](https://github.com/corbado/corbado-go) there contains detailed information on how to install and use the Corbado Go SDK.
+
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
+---
+
+## Token Validation with `ValidateToken()`
+
+The Corbado Go SDK provides a `ValidateToken()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
+
+### What does `ValidateToken()` do?
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or an error otherwise.
+
+### How to use
+
+```go
+import "github.com/corbado/corbado-go/v2"
+
+config, err := corbado.NewConfig("<Your Project ID>", "<Your API secret>", "<Your Frontend API URL>", "<Your Backend API URL>")
+if err != nil {
+    panic(err)
+}
+sdk, err := corbado.NewSDK(config)
+if err != nil {
+    panic(err)
+}
+
+// Get sessionToken from cookie or Authorization header
+// See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
+sessionToken := "..."
+user, err := sdk.Sessions().ValidateToken(sessionToken)
+if err != nil {
+    // handle invalid token
+}
+// user.UserID etc. are now available
+```
+
+### Why is this important?
+- Ensures only valid, untampered tokens are accepted.
+- Protects your backend endpoints from unauthorized access.
+- Handles key rotation and validation logic for you.
+
+For more details, see the [Corbado Go SDK documentation](https://github.com/corbado/corbado-go).

@@ -4,3 +4,38 @@ description: "Use the official Corbado Python SDK to simplify the passkey and se
 ---
 
 The Corbado Python SDK can be found on [GitHub](https://github.com/corbado/corbado-python). The [README](https://github.com/corbado/corbado-python) there contains detailed information on how to install and use the Corbado Python SDK.
+
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
+---
+
+## Token Validation with `validate_token()`
+
+The Corbado Python SDK provides a `validate_token()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
+
+### What does `validate_token()` do?
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
+
+### How to use
+
+```python
+from corbado import Config, CorbadoSDK
+
+config = Config(project_id="<project_id>", api_secret="<api_secret>")
+sdk = CorbadoSDK(config=config)
+
+# Get sessionToken from cookie or Authorization header
+# See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
+session_token = '...'
+user = sdk.sessions().validate_token(session_token)
+# user.user_id etc. are now available
+```
+
+### Why is this important?
+- Ensures only valid, untampered tokens are accepted.
+- Protects your backend endpoints from unauthorized access.
+- Handles key rotation and validation logic for you.
+
+For more details, see the [Corbado Python SDK documentation](https://github.com/corbado/corbado-python).

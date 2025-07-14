@@ -9,6 +9,62 @@ import NoSdkSessionHandling from "/snippets/corbado-complete/no-sdk-session-hand
 
 <NoSdkSupportIntro language="Ruby"></NoSdkSupportIntro>
 
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as described below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
+## Token validation (JWT)
+
+Since there is no official Corbado Ruby SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication.
+
+To validate a Corbado session token (JWT) in Ruby, use a JWT library such as [ruby-jwt](https://github.com/jwt/ruby-jwt). You need to fetch the JWKS (public keys) from Corbado and verify the token's signature and claims.
+
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
+
+### How to use
+
+```ruby
+require 'jwt'
+require 'net/http'
+require 'json'
+
+# Fetch the session token from a cookie or Authorization header.
+# See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
+session_token = '...'
+
+# Fetch JWKS from Corbado and cache it
+jwks_uri = URI('https://<your-project-id>.frontendapi.corbado.io/.well-known/jwks.json')
+jwks_raw = Net::HTTP.get(jwks_uri)
+jwks_keys = JSON.parse(jwks_raw)['keys']
+
+# Extract the public key (see ruby-jwt docs for details)
+# ...
+
+begin
+  decoded_token = JWT.decode(
+    session_token,
+    public_key_from_jwks, # Replace with actual key extraction
+    true,
+    {
+      algorithm: 'RS256',
+      iss: 'https://<your-project-id>.frontendapi.corbado.io',
+      verify_iss: true,
+      # ... other claim checks ...
+    }
+  )
+  # Token is valid, decoded_token contains the payload
+rescue JWT::DecodeError => e
+  # Token is invalid
+end
+```
+
+### Why is this important?
+- Ensures only valid, untampered tokens are accepted.
+- Protects your backend endpoints from unauthorized access.
+- Handles key rotation and validation logic for you.
+
+See [session token handling](/corbado-complete/sessions/session-token-handling) for more details.
+
 You need to take care of the following steps:
 
 - [OpenAPI client generation](#openapi-client-generation)
