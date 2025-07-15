@@ -3,20 +3,22 @@ title: "PHP"
 description: "Use the official Corbado PHP SDK to simplify the passkey and session management integration in your PHP applications."
 ---
 
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
 The Corbado PHP SDK can be found on [GitHub](https://github.com/corbado/corbado-php). The [README](https://github.com/corbado/corbado-php) there contains detailed information on how to install and use the Corbado PHP SDK.
 
-After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+To help you securely validate session tokens in your PHP backend, the following sections explain how the `validateToken()` function works and how to use it in practice.
 
 ---
 
-## Token Validation with `validateToken()`
+## Token Validation with `ValidateToken()`
 
-The Corbado PHP SDK provides a `validateToken()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
+The Corbado Go SDK provides a `ValidateToken()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
 
-### What does `validateToken()` do?
+### What does `ValidateToken()` do?
 - Verifies the JWT signature using Corbado's public keys (JWKS).
 - Checks the token's expiration and validity.
-- Returns the decoded claims if the token is valid, or throws an error otherwise.
+- Returns the decoded claims if the token is valid, or an error otherwise.
 
 ### How to use
 

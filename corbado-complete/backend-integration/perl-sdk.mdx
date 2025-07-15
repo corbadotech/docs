@@ -11,17 +11,19 @@ import NoSdkSessionHandling from "/snippets/corbado-complete/no-sdk-session-hand
 
 After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as described below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
 
-## Token validation (JWT)
+Since there is no official Corbado Perl SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication. We recommend using a JWT library such as [Crypt::JWT](https://metacpan.org/pod/Crypt::JWT).
 
-Since there is no official Corbado Perl SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication.
+The following sections show how to perform this validation and explain what each step does.
 
-To validate a Corbado session token (JWT) in Perl, use a JWT library such as [Crypt::JWT](https://metacpan.org/pod/Crypt::JWT). You need to fetch the JWKS (public keys) from Corbado and verify the token's signature and claims.
+<Note>
+You will also need to take care of the following steps:
+- [OpenAPI client generation](#openapi-client-generation)
+- [Session handling](#session-handling)
+</Note>
 
-- Verifies the JWT signature using Corbado's public keys (JWKS).
-- Checks the token's expiration and validity.
-- Returns the decoded claims if the token is valid, or throws an error otherwise.
+---
 
-### How to use
+## How to manually validate a Corbado session token (JWT) in Perl
 
 ```perl
 use Crypt::JWT qw(decode_jwt);
@@ -59,28 +61,30 @@ if ($@) {
 }
 ```
 
+### What does this validation do?
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
+
 ### Why is this important?
 - Ensures only valid, untampered tokens are accepted.
 - Protects your backend endpoints from unauthorized access.
 - Handles key rotation and validation logic for you.
-
-See [session token handling](/corbado-complete/sessions/session-token-handling) for more details.
-
-You need to take care of the following steps:
-
-- [OpenAPI client generation](#openapi-client-generation)
-- [Session handling](#session-handling)
-
-# OpenAPI client generation
-
-<NoSdkOpenapiClientGeneration language="Perl"></NoSdkOpenapiClientGeneration>
-
-# Session handling
-
-<NoSdkSessionHandling language="Perl"></NoSdkSessionHandling>
 
 ## JWT libraries
 
 There are multiple JWT libraries available for Perl. Here is one of them:
 
 https://github.com/DCIT/perl-Crypt-JWT
+
+---
+
+# OpenAPI client generation
+
+<NoSdkOpenapiClientGeneration language="Perl"></NoSdkOpenapiClientGeneration>
+
+---
+
+# Session handling
+
+<NoSdkSessionHandling language="Perl"></NoSdkSessionHandling>

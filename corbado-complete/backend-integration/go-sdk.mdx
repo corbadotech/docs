@@ -3,9 +3,11 @@ title: "Go"
 description: "Use the official Corbado Go SDK to simplify the passkey and session management integration in your Go applications."
 ---
 
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
 The Corbado Go SDK can be found on [GitHub](https://github.com/corbado/corbado-go). The [README](https://github.com/corbado/corbado-go) there contains detailed information on how to install and use the Corbado Go SDK.
 
-After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+To help you securely validate session tokens in your Go backend, the following sections explain how the `ValidateToken()` function works and how to use it in practice.
 
 ---
 

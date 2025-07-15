@@ -7,40 +7,23 @@ import NoSdkSupportIntro from "/snippets/corbado-complete/no-sdk-support-intro.m
 import NoSdkOpenapiClientGeneration from "/snippets/corbado-complete/no-sdk-openapi-client-generation.mdx"
 import NoSdkSessionHandling from "/snippets/corbado-complete/no-sdk-session-handling.mdx"
 
-<NoSdkSupportIntro language="C#/.NET"></NoSdkSupportIntro>
+<NoSdkSupportIntro language="C#/.NET" />
 
 After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as described below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
 
-You need to take care of the following steps:
+Since there is no official Corbado C#/.NET SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication. We recommend using a JWT library such as [System.IdentityModel.Tokens.Jwt](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/).
 
+The following sections show how to perform this validation and explain what each step does.
+
+<Note>
+You will also need to take care of the following steps:
 - [OpenAPI client generation](#openapi-client-generation)
 - [Session handling](#session-handling)
+</Note>
 
-# OpenAPI client generation
+---
 
-<NoSdkOpenapiClientGeneration language="C#/.NET"></NoSdkOpenapiClientGeneration>
-
-# Session handling
-
-<NoSdkSessionHandling language="C#/.NET"></NoSdkSessionHandling>
-
-## JWT libraries
-
-There are multiple JWT libraries available for C#/.NET. Here is one of them:
-
-https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/
-
-## Token validation (JWT)
-
-Since there is no official Corbado C#/.NET SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication.
-
-To validate a Corbado session token (JWT) in C#, use a JWT library such as [System.IdentityModel.Tokens.Jwt](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/). You need to fetch the JWKS (public keys) from Corbado and verify the token's signature and claims.
-
-- Verifies the JWT signature using Corbado's public keys (JWKS).
-- Checks the token's expiration and validity.
-- Returns the decoded claims if the token is valid, or throws an error otherwise.
-
-### How to use
+## How to manually validate a Corbado session token (JWT) in C#
 
 ```csharp
 using System.IdentityModel.Tokens.Jwt;
@@ -83,9 +66,32 @@ catch (Exception ex)
 }
 ```
 
+### What does this validation do?
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
+
 ### Why is this important?
 - Ensures only valid, untampered tokens are accepted.
 - Protects your backend endpoints from unauthorized access.
 - Handles key rotation and validation logic for you.
 
+## JWT libraries
+
+There are multiple JWT libraries available for C#/.NET. Here is one of them:
+
+https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/
+
 See [session token handling](/corbado-complete/sessions/session-token-handling) for more details.
+
+---
+
+# OpenAPI client generation
+
+<NoSdkOpenapiClientGeneration language="C#/.NET" />
+
+---
+
+# Session handling
+
+<NoSdkSessionHandling language="C#/.NET" />

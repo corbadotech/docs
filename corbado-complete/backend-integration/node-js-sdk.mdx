@@ -3,22 +3,15 @@ title: "Node.js"
 description: "Use the official Corbado Node.js SDK to simplify the passkey and session management integration in your Node.js applications."
 ---
 
+After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+
 The Corbado Node.js SDK can be found on [GitHub](https://github.com/corbado/corbado-nodejs). The [README](https://github.com/corbado/corbado-nodejs) there contains detailed information on how to install and use the Corbado Node.js SDK.
 
-After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+To help you securely validate session tokens in your Node.js backend, the following sections explain how the `validateToken()` function works and how to use it in practice.
 
 ---
 
 ## Token Validation with `validateToken()`
-
-The Corbado Node.js SDK provides a `validateToken()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
-
-### What does `validateToken()` do?
-- Verifies the JWT signature using Corbado's public keys (JWKS).
-- Checks the token's expiration and validity.
-- Returns the decoded claims if the token is valid, or throws an error otherwise.
-
-### How to use
 
 ```js
 import { SDK, Config } from '@corbado/node-sdk';
@@ -37,6 +30,11 @@ const sessionToken = '...';
 const user = await sdk.sessions().validateToken(sessionToken);
 // user.userId etc. are now available
 ```
+
+### What does `validateToken()` do?
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration and validity.
+- Returns the decoded claims if the token is valid, or throws an error otherwise.
 
 ### Why is this important?
 - Ensures only valid, untampered tokens are accepted.
