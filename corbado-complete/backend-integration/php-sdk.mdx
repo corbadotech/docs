@@ -3,24 +3,27 @@ title: "PHP"
 description: "Use the official Corbado PHP SDK to simplify the passkey and session management integration in your PHP applications."
 ---
 
-After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as shown below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+Once Corbado is integrated into your frontend, users can log in using passkeys. Upon successful login, they will receive a **session-token**.
 
-The Corbado PHP SDK can be found on [GitHub](https://github.com/corbado/corbado-php). The [README](https://github.com/corbado/corbado-php) there contains detailed information on how to install and use the Corbado PHP SDK.
+By default, this **session-token** is stored in a cookie and sent to your backend with every request (if same-origin; refer to [session-token handling](/corbado-complete/sessions/session-token-handling) for more details).
 
-To help you securely validate session tokens in your PHP backend, the following sections explain how the `validateToken()` function works and how to use it in practice.
+To verify if a user is authenticated and to retrieve user data, you must validate the **session-token** in your backend. The official [Corbado PHP SDK](https://github.com/corbado/corbado-php) facilitates this process with its `validateToken()` function.
 
----
+## Token Validation
 
-## Token Validation with `ValidateToken()`
+The **session-token** is a JWT that requires validation. The `validateToken()` function performs the following tasks:
 
-The Corbado Go SDK provides a `ValidateToken()` function to help you securely validate session tokens (JWTs) issued by Corbado. This is essential for verifying the authenticity and integrity of user sessions in your backend.
-
-### What does `ValidateToken()` do?
 - Verifies the JWT signature using Corbado's public keys (JWKS).
-- Checks the token's expiration and validity.
-- Returns the decoded claims if the token is valid, or an error otherwise.
+- Checks the token's expiration, validity, and other claims.
+- Returns the decoded claims if the token is valid, or throws an error if it is not.
 
-### How to use
+## Implementation
+
+<Info>
+  You can find instructions for installing and initializing the Corbado PHP SDK in the official [README](https://github.com/corbado/corbado-php).
+</Info>
+
+Below is an example of how to use the `validateToken()` function. You will need to retrieve the session-token from a cookie or header, depending on your HTTP framework.
 
 ```php
 require 'vendor/autoload.php';
@@ -31,16 +34,19 @@ use Corbado\SDK;
 $config = new Config('<Project ID>', '<API secret>', '<Frontend API URL>', '<Backend API URL>');
 $sdk = new SDK($config);
 
-// Get sessionToken from cookie or Authorization header
-// See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
+// Retrieve session-token (e.g., from a cookie or header)
 $sessionToken = '...';
+
+// Validate session-token
 $user = $sdk->sessions()->validateToken($sessionToken);
 // $user->getUserId() etc. are now available
 ```
+## Why is this important?
 
-### Why is this important?
 - Ensures only valid, untampered tokens are accepted.
 - Protects your backend endpoints from unauthorized access.
 - Handles key rotation and validation logic for you.
 
 For more details, see the [Corbado PHP SDK documentation](https://github.com/corbado/corbado-php).
+
+
