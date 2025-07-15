@@ -3,17 +3,13 @@ title: "Go"
 description: "Use the official Corbado Go SDK to simplify integrating passkey authentication and session management into your Go applications."
 ---
 
-Once Corbado is integrated into your frontend, users can log in using passkeys. Upon successful login, they will receive a **session-token**. By default, this **session-token** is stored in a cookie and sent to your backend with every request (if same-origin; refer to [session-token handling](/corbado-complete/sessions/session-token-handling) for more details).
+import SessionTokenIntro from "/snippets/corbado-complete/session-token-intro.mdx"
+import SessionTokenValidation from "/snippets/corbado-complete/session-token-validation.mdx"
+import SessionTokenWhyImportant from "/snippets/corbado-complete/session-token-why-important.mdx"
 
-To verify if a user is authenticated and to retrieve user data, you must validate the **session-token** in your backend. The official [Corbado Go SDK](https://github.com/corbado/corbado-go) facilitates this process with its `ValidateToken()` function.
+<SessionTokenIntro />
 
-## Token Validation
-
-The **session-token** is a JWT that requires validation. The `ValidateToken()` function performs the following tasks:
-
-- It verifies the JWT signature using Corbado's public keys (JWKS).
-- It checks the token's expiration, validity, and other claims.
-- It returns the decoded claims if the token is valid, or an error if it is not.
+<SessionTokenValidation />
 
 ## Implementation
 
@@ -49,10 +45,6 @@ if err != nil {
 fmt.Println(user.UserID)
 ```
 
-## Why is this important?
-
-- Ensures only valid, untampered tokens are accepted.
-- Protects your backend endpoints from unauthorized access.
-- Handles key rotation and validation logic for you.
+<SessionTokenWhyImportant />
 
 For more details, see the [Corbado Go SDK documentation](https://github.com/corbado/corbado-go).
