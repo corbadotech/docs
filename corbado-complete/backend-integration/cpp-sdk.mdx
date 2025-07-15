@@ -6,81 +6,27 @@ description: "Learn how to use Corbado in your C++ application even without an o
 import NoSdkSupportIntro from "/snippets/corbado-complete/no-sdk-support-intro.mdx"
 import NoSdkOpenapiClientGeneration from "/snippets/corbado-complete/no-sdk-openapi-client-generation.mdx"
 import NoSdkSessionHandling from "/snippets/corbado-complete/no-sdk-session-handling.mdx"
-import SessionTokenIntro from "/snippets/corbado-complete/session-token-intro.mdx"
-import SessionTokenValidation from "/snippets/corbado-complete/session-token-validation.mdx"
-import SessionTokenWhyImportant from "/snippets/corbado-complete/session-token-why-important.mdx"
 
-<NoSdkSupportIntro language="C++" />
+<NoSdkSupportIntro language="C++"></NoSdkSupportIntro>
 
-After integrating Corbado in your frontend, your users authenticate and receive a session token. Pass this token (from a cookie or header) to your backend and validate it as described below. [Learn more about session token handling.](/corbado-complete/sessions/session-token-handling)
+You need to take care of the following steps:
 
-Since there is no official Corbado C++ SDK, you need to validate session tokens (JWTs) manually in your backend. This ensures that only valid, untampered tokens are accepted for authentication. We recommend using a JWT library such as [jwt-cpp](https://github.com/Thalhammer/jwt-cpp).
-
-The following sections show how to perform this validation and explain what each step does.
-
-<Info>
-You will also need to take care of the following steps:
 - [OpenAPI client generation](#openapi-client-generation)
 - [Session handling](#session-handling)
-</Info>
 
----
+# OpenAPI client generation
 
-# Token Validation
+<NoSdkOpenapiClientGeneration language="C++"></NoSdkOpenapiClientGeneration>
 
-The session-token is a JWT that requires validation. So we need to :
+# Session handling
 
-- Verify the JWT signature using Corbado’s public keys (JWKS).
-- Check the token’s expiration, validity, and other claims.
-- Return the decoded claims if the token is valid, or throw an error if it is not.
-
-## Implementation
-
-```cpp
-#include <jwt-cpp/jwt.h>
-#include <string>
-
-// Fetch the session token from a cookie or Authorization header.
-// See session token handling for details: https://docs.corbado.com/corbado-complete/sessions/session-token-handling
-std::string token = /* the JWT from the client */;
-std::string jwks_json = /* fetch and cache JWKS from Corbado */;
-
-// Parse JWKS and get the public key (see jwt-cpp docs for details)
-// ...
-
-try {
-    auto decoded = jwt::decode(token);
-    // Use the public key from JWKS to verify
-    auto verifier = jwt::verify()
-        .allow_algorithm(jwt::algorithm::rs256(public_key_from_jwks, "", ""))
-        .with_issuer("https://<your-project-id>.frontendapi.corbado.io");
-    verifier.verify(decoded);
-    // Token is valid
-} catch (const std::exception& e) {
-    // Token is invalid
-}
-```
-
-<SessionTokenWhyImportant />
+<NoSdkSessionHandling language="C++"></NoSdkSessionHandling>
 
 ## JWT libraries
-
+  
 There are multiple JWT libraries available for C++. Here is one of them:
-
 https://github.com/Thalhammer/jwt-cpp
 
 Help for JWKS:
 
 https://github.com/search?q=repo%3AThalhammer%2Fjwt-cpp%20parse_jwks&type=code
-
---- 
-
-# OpenAPI client generation
-
-<NoSdkOpenapiClientGeneration language="C++" />
-
----
-
-# Session handling
-
-<NoSdkSessionHandling language="C++" />
