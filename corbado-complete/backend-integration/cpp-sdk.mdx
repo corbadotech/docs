@@ -6,6 +6,9 @@ description: "Learn how to use Corbado in your C++ application even without an o
 import NoSdkSupportIntro from "/snippets/corbado-complete/no-sdk-support-intro.mdx"
 import NoSdkOpenapiClientGeneration from "/snippets/corbado-complete/no-sdk-openapi-client-generation.mdx"
 import NoSdkSessionHandling from "/snippets/corbado-complete/no-sdk-session-handling.mdx"
+import SessionTokenIntro from "/snippets/corbado-complete/session-token-intro.mdx"
+import SessionTokenValidation from "/snippets/corbado-complete/session-token-validation.mdx"
+import SessionTokenWhyImportant from "/snippets/corbado-complete/session-token-why-important.mdx"
 
 <NoSdkSupportIntro language="C++" />
 
@@ -15,15 +18,23 @@ Since there is no official Corbado C++ SDK, you need to validate session tokens 
 
 The following sections show how to perform this validation and explain what each step does.
 
-<Note>
+<Info>
 You will also need to take care of the following steps:
 - [OpenAPI client generation](#openapi-client-generation)
 - [Session handling](#session-handling)
-</Note>
+</Info>
 
 ---
 
-## How to manually validate a Corbado session token (JWT) in C++
+# Token Validation
+
+The session-token is a JWT that requires validation. So we need to :
+
+- Verify the JWT signature using Corbado’s public keys (JWKS).
+- Check the token’s expiration, validity, and other claims.
+- Return the decoded claims if the token is valid, or throw an error if it is not.
+
+## Implementation
 
 ```cpp
 #include <jwt-cpp/jwt.h>
@@ -50,15 +61,7 @@ try {
 }
 ```
 
-### What does this validation do?
-- Verifies the JWT signature using Corbado's public keys (JWKS).
-- Checks the token's expiration and validity.
-- Returns the decoded claims if the token is valid, or throws an error otherwise.
-
-### Why is this important?
-- Ensures only valid, untampered tokens are accepted.
-- Protects your backend endpoints from unauthorized access.
-- Handles key rotation and validation logic for you.
+<SessionTokenWhyImportant />
 
 ## JWT libraries
 
