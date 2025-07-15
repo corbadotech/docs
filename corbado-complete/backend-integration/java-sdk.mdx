@@ -19,13 +19,9 @@ Below is an example of how to use the `validateToken()` function. As previously 
   You can find instructions for installing and initializing the Corbado Java SDK in the official [README](https://github.com/corbado/corbado-java).
 </Info>
 
-
 ```java
-import com.corbado.Corbado;
-import com.corbado.CorbadoConfig;
-
 // Initialize SDK with your project ID, API secret, and optionally backend API URL
-Config config = Config.builder().apiSecret(apiSecret).projectId(projectId).build();
+Config config = Config.builder().apiSecret("<Your API Secret>").projectId("<Your Project ID>").build();
 CorbadoSDK sdk = new CorbadoSDK(config);
 
 // Retrieve session-token (e.g., from a cookie or header)
@@ -34,7 +30,10 @@ String sessionToken = "...";
 // Validate session-token
 User user = sdk.sessions().validateToken(sessionToken);
 // user.getUserId() etc. are now available
+
+System.out.println(user.getUserId());
 ```
+
 <SessionTokenWhyImportant />
 
 For more details, see the [Corbado Java SDK documentation](https://github.com/corbado/corbado-java).

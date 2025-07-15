@@ -20,9 +20,7 @@ Below is an example of how to use the `validate_token()` function. As previously
 </Info>
 
 ```python
-from corbado import Config, CorbadoSDK
-
-config = Config(project_id="<project_id>", api_secret="<api_secret>")
+config = Config(project_id="<Your Project ID>", api_secret="<Your API Secret>")
 sdk = CorbadoSDK(config=config)
 
 # Retrieve session-token (e.g., from a cookie or header)
@@ -31,7 +29,10 @@ session_token = '...'
 # Validate session-token
 user = sdk.sessions().validate_token(session_token)
 # user.user_id etc. are now available
+
+print(user.user_id)
 ```
+
 <SessionTokenWhyImportant />
 
 For more details, see the [Corbado Python SDK documentation](https://github.com/corbado/corbado-python).
