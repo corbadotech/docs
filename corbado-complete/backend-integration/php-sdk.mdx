@@ -1,6 +1,39 @@
 ---
-title: "PHP SDK"
+title: "PHP"
 description: "Use the official Corbado PHP SDK to simplify the passkey and session management integration in your PHP applications."
 ---
 
-The Corbado PHP SDK can be found on [GitHub](https://github.com/corbado/corbado-php). The [README](https://github.com/corbado/corbado-php) there contains detailed information on how to install and use the Corbado PHP SDK.
+import SessionTokenIntro from "/snippets/corbado-complete/session-token-intro.mdx"
+import SessionTokenValidation from "/snippets/corbado-complete/session-token-validation.mdx"
+import SessionTokenWhyImportant from "/snippets/corbado-complete/session-token-why-important.mdx"
+
+<SessionTokenIntro />
+
+<SessionTokenValidation />
+
+## Implementation
+
+Below is an example of how to use the `validateToken()` function. As previously mentioned, by default, the **session-token** is stored in a cookie and sent to your backend. You will need to retrieve this cookie based on the HTTP framework you are using.
+
+<Info>
+  You can find instructions for installing and initializing the Corbado PHP SDK in the official [README](https://github.com/corbado/corbado-php).
+</Info>
+
+```php
+// Initialize SDK with your project ID, API secret, frontend API URL, and backend API URL
+$config = new Config('<Project ID>', '<API secret>', '<Frontend API URL>', '<Backend API URL>');
+$sdk = new SDK($config);
+
+// Retrieve session-token (e.g., from a cookie or header)
+$sessionToken = '...';
+
+// Validate session-token
+$user = $sdk->sessions()->validateToken($sessionToken);
+
+echo $user->getUserId();
+```
+<SessionTokenWhyImportant />
+
+For more details, see the [Corbado PHP SDK documentation](https://github.com/corbado/corbado-php).
+
+

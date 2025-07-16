@@ -1,6 +1,40 @@
 ---
-title: "Python SDK"
+title: "Python"
 description: "Use the official Corbado Python SDK to simplify the passkey and session management integration in your Python applications."
 ---
 
-The Corbado Python SDK can be found on [GitHub](https://github.com/corbado/corbado-python). The [README](https://github.com/corbado/corbado-python) there contains detailed information on how to install and use the Corbado Python SDK.
+import SessionTokenIntro from "/snippets/corbado-complete/session-token-intro.mdx"
+import SessionTokenValidation from "/snippets/corbado-complete/session-token-validation.mdx"
+import SessionTokenWhyImportant from "/snippets/corbado-complete/session-token-why-important.mdx"
+
+<SessionTokenIntro />
+
+<SessionTokenValidation />
+
+## Implementation
+
+Below is an example of how to use the `validate_token()` function. As previously mentioned, by default, the **session-token** is stored in a cookie and sent to your backend. You will need to retrieve this cookie based on the HTTP framework you are using.
+
+<Info>
+  You can find instructions for installing and initializing the Corbado Python SDK in the official [README](https://github.com/corbado/corbado-python).
+</Info>
+
+```python
+# Initialize SDK with your project ID, API secret, and optionally backend API URL
+config = Config(project_id="<Your Project ID>", api_secret="<Your API Secret>")
+sdk = CorbadoSDK(config=config)
+
+# Retrieve session-token (e.g., from a cookie or header)
+session_token = '...'
+
+# Validate session-token
+user = sdk.sessions().validate_token(session_token)
+
+print(user.user_id)
+```
+
+<SessionTokenWhyImportant />
+
+For more details, see the [Corbado Python SDK documentation](https://github.com/corbado/corbado-python).
+
+

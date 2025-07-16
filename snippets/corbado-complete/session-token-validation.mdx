@@ -1,0 +1,7 @@
+## Token Validation
+
+The **session-token** is a JWT that requires validation. The `validateToken()` (or similar) function performs the following tasks:
+
+- Verifies the JWT signature using Corbado's public keys (JWKS).
+- Checks the token's expiration, validity, and other claims.
+- Returns the decoded claims if the token is valid, or throws an error if it is not. 

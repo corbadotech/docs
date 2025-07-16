@@ -1,0 +1,5 @@
+Once Corbado is integrated into your frontend, users can log in using passkeys. Upon successful login, they will receive a **session-token**.
+
+By default, this **session-token** is stored in a cookie and sent to your backend with every request (if same-origin; refer to [session-token handling](/corbado-complete/sessions/session-token-handling) for more details).
+
+To verify if a user is authenticated and to retrieve user data, you must validate the **session-token** in your backend. The official SDK for your language facilitates this process with its `validateToken()` (or similar) function. 
