@@ -294,7 +294,7 @@
                             "corbado-complete/sessions/overview",
                             "corbado-complete/sessions/protecting-routes",
                             {
-                                "group": "Session-token Handling",
+                                "group": "session-token Handling",
                                 "pages": [
                                     "corbado-complete/sessions/session-token-handling",
                                     "corbado-complete/sessions/session-token-handling/write",

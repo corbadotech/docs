@@ -20,6 +20,7 @@ Below is an example of how to use the `validateToken()` function. As previously 
 </Info>
 
 ```php
+// Initialize SDK with your project ID, API secret, frontend API URL, and backend API URL
 $config = new Config('<Project ID>', '<API secret>', '<Frontend API URL>', '<Backend API URL>');
 $sdk = new SDK($config);
 
@@ -28,7 +29,6 @@ $sessionToken = '...';
 
 // Validate session-token
 $user = $sdk->sessions()->validateToken($sessionToken);
-// $user->getUserId() etc. are now available
 
 echo $user->getUserId();
 ```

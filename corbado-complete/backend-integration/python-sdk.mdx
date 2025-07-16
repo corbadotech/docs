@@ -20,6 +20,7 @@ Below is an example of how to use the `validate_token()` function. As previously
 </Info>
 
 ```python
+// Initialize SDK with your project ID, API secret, and optionally backend API URL
 config = Config(project_id="<Your Project ID>", api_secret="<Your API Secret>")
 sdk = CorbadoSDK(config=config)
 
@@ -28,7 +29,6 @@ session_token = '...'
 
 # Validate session-token
 user = sdk.sessions().validate_token(session_token)
-# user.user_id etc. are now available
 
 print(user.user_id)
 ```

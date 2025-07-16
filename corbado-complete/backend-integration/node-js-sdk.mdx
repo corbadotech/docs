@@ -21,6 +21,7 @@ Below is an example of how to use the `validateToken()` function. As previously 
 </Info>
 
 ```js
+// Initialize SDK with your project ID, API secret, frontend API URL, and backend API URL
 const config = new Config("<Your Project ID>", "<Your API secret>", "<Your Frontend API URL>", "<Your Backend API URL>");
 const sdk = new SDK(config);
 
@@ -29,7 +30,6 @@ const sessionToken = '...';
 
 // Validate session-token
 const user = await sdk.sessions().validateToken(sessionToken);
-// user.userId etc. are now available
 
 console.log(user.userId);
 ```
