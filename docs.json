@@ -403,14 +403,14 @@
                     {
                         "group": "Frontend API",
                         "openapi": {
-                            "source": "api-reference/frontend-api/openapi.yml",
+                            "source": "https://frontendapi.cloud.corbado.io/v2/openapi.yaml",
                             "directory": "api-reference/frontend-api"
                         }
                     },
                     {
                         "group": "Backend API",
                         "openapi": {
-                            "source": "api-reference/backend-api/openapi.yml",
+                            "source": "https://backendapi.cloud.corbado.io/v2/openapi.yaml",
                             "directory": "api-reference/backend-api"
                         }
                     }
