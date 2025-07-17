@@ -59,7 +59,16 @@
                     {
                         "group": "Integration",
                         "pages": [
-                            "corbado-connect/integration/generic",
+                            {
+                                "group": "Generic",
+                                "pages": [
+                                    "corbado-connect/integration/generic/overview",
+                                    "corbado-connect/integration/generic/backend",
+                                    "corbado-connect/integration/generic/web",
+                                    "corbado-connect/integration/generic/ios",
+                                    "corbado-connect/integration/generic/android"
+                                ]
+                            },
                             "corbado-connect/integration/cognito",
                             "corbado-connect/integration/keycloak",
                             "corbado-connect/integration/duende",
@@ -394,14 +403,14 @@
                     {
                         "group": "Frontend API",
                         "openapi": {
-                            "source": "https://frontendapi.cloud.corbado.io/v2/openapi.yaml",
+                            "source": "api-reference/frontend-api/openapi.yml",
                             "directory": "api-reference/frontend-api"
                         }
                     },
                     {
                         "group": "Backend API",
                         "openapi": {
-                            "source": "https://backendapi.cloud.corbado.io/v2/openapi.yaml",
+                            "source": "api-reference/backend-api/openapi.yml",
                             "directory": "api-reference/backend-api"
                         }
                     }
