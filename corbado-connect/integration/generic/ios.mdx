@@ -319,6 +319,56 @@ sequenceDiagram
     Backend-->>-App: Return session ID
 ```
 
+In the following sections, we will explain each step in detail.
+
+### App Integration
+
+Integrating passkey login into your app is a little bit more complex than passkey enrollment because we have to directly integrate with your existing login screen and there are more cases to handle including multiple screens.
+
+#### Before Rendering
+
+Before rendering the login screen, you should call the `isLoginAllowed()` method from the **Corbado iOS SDK**. This function is crucial for determining if the current user is eligible to use a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
+
+```swift
+let nextStep = await corbado.isLoginAllowed()
+switch nextStep {
+case .initTextField(let cuiChallenge, _):
+    // If cuiChallenge is not nil, handle "Conditional UI Login",
+    // otherwise handle "Textfield Login" (see below)
+    
+case .initOneTap(let email):
+    // Handle "OneTap Login" (see below)
+case .initFallback(_, _):
+    // Handle "Fallback Login" (see below)
+}
+```
+
+#### Conditional UI Login
+
+- Explain CUI
+- Link to glossary
+- Show screen
+- Show code/methods
+
+#### Textfield Login
+
+- Explain textfield
+- Show screen
+- Show code/methods
+
+#### OneTap Login
+
+- Explain OneTap
+- Link to OneTap feature
+- Show screen
+- Show code/methods
+
+#### Fallback Login
+
+- Explain Fallback
+- Show screen
+- Explain that own code runs
+
 ## Step 3: Passkey Management
 
 TODO
