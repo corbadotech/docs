@@ -46,7 +46,7 @@ sequenceDiagram
     participant Actions as Corbado<br/>Actions
 
     Note over Frontend: CorbadoConnectAppend component<br/>initiates
-    Frontend->>+Backend: Request Corbado ConnectToken
+    Frontend->>+Backend: POST /auth/createConnectToken
     Backend->>Backend: Verify user session
     Backend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-Backend: Return ConnectToken
@@ -88,7 +88,7 @@ Here's an example integration:
       appendTokenProvider: async () => {
         // Get Corbado ConnectToken from your backend (see next
         // section), session ID is sent as cookie
-        const response = await fetch('/auth/corbadoConnectToken', {
+        const response = await fetch('/auth/createConnectToken', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -134,7 +134,7 @@ Here's an example implementation in your backend:
 
 ```javascript
 // Example using Express.js
-app.post('/auth/corbadoConnectToken', async (req, res) => {
+app.post('/auth/createConnectToken', async (req, res) => {
     try {
         // 1. Verify the current user's session
         const sessionId = req.cookies.session_id;
@@ -349,7 +349,7 @@ sequenceDiagram
     FAPI->>FAPI: Verify passkey login
     FAPI-->>-Frontend: Return signedPasskeyData
 
-    Frontend->>+Backend: POST /auth/passkey/verify<br/>(signedPasskeyData)
+    Frontend->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
     Backend->>+IdP: Create user session
@@ -361,7 +361,7 @@ The implementation typically involves creating a new endpoint in your backend:
 
 ```typescript
 // Example using Express.js
-app.post('/auth/passkey/verify', async (req, res) => {
+app.post('/auth/verifySignedPasskeyData', async (req, res) => {
     try {
         const { signedPasskeyData } = req.body;
 
@@ -557,7 +557,7 @@ When using the custom endpoint approach, the `onComplete` callback needs to send
 ```javascript
 onComplete: async (signedPasskeyData, clientState) => {
     // 1. Send signedPasskeyData to your verification endpoint
-    const response = await fetch('/auth/passkey/verify', {
+    const response = await fetch('/auth/verifySignedPasskeyData', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -621,7 +621,7 @@ Integrate the `CorbadoConnectPasskeyList` component on a profile or settings pag
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
 
       // Session ID is sent as cookie
-      const response = await fetch('/auth/corbadoConnectToken', {
+      const response = await fetch('/auth/createConnectToken', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json'

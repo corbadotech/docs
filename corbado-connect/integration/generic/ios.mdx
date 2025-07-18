@@ -129,7 +129,7 @@ sequenceDiagram
     participant Actions as Corbado<br/>Actions
 
     Note over App: Corbado iOS SDK
-    App->>+Backend: Request Corbado ConnectToken
+    App->>+Backend: POST /auth/createConnectToken
     Backend->>Backend: Verify user session
     Backend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-Backend: Return ConnectToken
