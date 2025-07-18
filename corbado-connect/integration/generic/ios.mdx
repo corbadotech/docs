@@ -148,54 +148,69 @@ In the following sections, we will explain each step in detail.
 
 ### App Integration
 
-To integratate passkey creation into the app, we need to create a new screen advertising passkeys and a button to create a new passkey. As mentioned in the beginning, the user must have logged in first.
+Integrating passkey enrollment into your app involves presenting a new screen that encourages authenticated users to create a passkey for future passwordless logins.
 
 ![Passkey creation screen](/images/corbado-connect/passkey-append-mobile.png)
 
-This screens interacts with **Corbado Connect** using the **Corbado iOS SDK** at two different situations which we will explain next.
+The interaction with the **Corbado iOS SDK** on this screen occurs at two key moments: before the screen is rendered and when the user taps the creation button.
 
 #### Before Rendering
 
-Before you render the screen above, you need to call `isAppendAllowed()` from the **Corbado iOS SDK**. This method checks [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to determine if the user is allowed to append a passkey.
+Before rendering the passkey enrollment screen, you should call the `isAppendAllowed()` method from the **Corbado iOS SDK**. This function is crucial for determining if the current user is eligible to add a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
-We will use the utility function explained above to provide a `connectToken` to the method. We need to provide the `sessionId` of the user's session to enable the backend to verify the user's authentication status. This of course depends on your authentication and session management system (e.g., you might use a JWT instead of a `sessionId`).
+The method requires a `connectTokenProvider`, a closure that fetches a short-lived `connectToken` from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current session identifier (e.g., a session ID or JWT) so your backend can verify their authenticated state before generating the token.
 
 ```swift
+// In your ViewModel or screen logic
 let nextStep = await corbado.isAppendAllowed { _ in
-    return try await AppBackend.getConnectToken(connectTokenType: .append, sessionId: "...")
+    // Provide the session ID of the currently logged-in user.
+    return try await AppBackend.getConnectToken(connectTokenType: .append, sessionId: "your-user-session-id")
 }
 
 switch nextStep {
 case .askUserForAppend(let autoAppend, _):
     if autoAppend {
-        // Start passkey creation ceremony
-    } else {
-        // Render the screen above
+        // Passkey Intelligence determined the user is highly likely to convert.
+        // You can immediately trigger the passkey creation ceremony or adjust the UI
+        // to encourage immediate action. For now, we'll simply show the screen.
     }
+    
+    // Render the screen as shown above, allowing the user to initiate.
 case .skip:
-    // Skip passkey creation, route to next screen
+    // The user is not eligible for passkey append at this time.
+    // You should skip this screen and navigate them to the main part of your app.
 }
 ```
 
 #### On Button Click
 
-If the user wants to create a passkey, he clicks on the create button. Then you need to call `completeAppend()` from the **Corbado iOS SDK**. This method will start the passkey creation ceremony that interacts with the iPhone and **Corbado Connect** (standard WebAuthn ceremony).
+When the user taps the button to create a passkey, you must call the `completeAppend()` method from the **Corbado iOS SDK**. This function initiates the native iOS passkey creation ceremony, which securely interacts with the device's hardware and Corbado's backend.
+
+The method returns a status indicating the outcome of the ceremony, which you should handle accordingly.
 
 ```swift
-let rsp = await corbado.completeAppend()
-switch rsp {
+// In your button's action handler
+let response = await corbado.completeAppend()
+
+switch response {
 case .completed:
-    // Passkey creation completed
+    // Success! The passkey was created and associated with the user's account.
+    // Navigate to a success screen or the next part of your app.
+    print("Passkey creation successful!")
 case .cancelled:
-    // Passkey creation cancelled
+    // The user manually cancelled the native iOS prompt.
+    // No action is typically needed; the user remains on the current screen.
+    print("Passkey creation was cancelled by the user.")
 case .excludeCredentialsMatch:
-    // Passkey creation failed
+    // A passkey from this device already exists for the user.
+    // This is not an error. Inform the user gracefully.
+    print("A passkey already exists on this device.")
 case .error:
-    // Passkey creation failed
+    // An unexpected error occurred during the process.
+    // Display an error message to the user.
+    print("An error occurred during passkey creation.")
 }
 ```
-
-You need to decide what to do in the different cases, for example just routing to the next screen or showing a message.
 
 ## Step 2: Passkey Login
 
