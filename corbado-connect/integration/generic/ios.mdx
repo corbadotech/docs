@@ -350,24 +350,27 @@ case .initFallback(_, _):
 
 TODO Show screen
 
-With [Conditional UI](https://www.corbado.com/glossary/conditional-ui), a user can login with an existing passkey without providing her login identifer (e.g. email). To handle this case you need to call the `loginWithoutIdentifier()` method from the **Corbado iOS SDK**.
+With [Conditional UI](https://www.corbado.com/glossary/conditional-ui), a user can log in with an existing passkey without providing their login identifier (e.g., email). The passkey prompt appears automatically. To handle this case, you need to call the `loginWithoutIdentifier()` method from the **Corbado iOS SDK**.
 
-If the login has been successful (`.done`), we need to verify the `signedPasskeyData` with the backend using the helper method `verifySignedPasskeyData()` we implemented above.
+If the login has been successful (`.done`), you must verify the returned `signedPasskeyData` with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
 
 ```swift
 // Take cuiChallenge from .initTextField(), see above
 let nextStep = await corbado.loginWithoutIdentifier(cuiChallenge: cuiChallenge, conditionalUI: false) {
-    // Handle loading state for example
+    // This closure is called when the Corbado iOS SDK is waiting for a user interaction.
+    // You can use it to show a loading indicator.
 }
 
 switch nextStep {
 case .done(let signedPasskeyData, let username):
+    // The passkey ceremony was successful.
     do {
         let (success, sessionId) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Login has been successful, create session using sessionId
+            // Backend verification successful. Create a session using the returned 
+            // session ID and navigate the user to the logged-in area of your app.
         } else {
-            // Login has not been successful, show error message
+            // Backend verification failed. Show an appropriate error message.
         }
     } catch (let error) {
         // Handle error
@@ -377,20 +380,22 @@ case .ignore(_):
     // You could start CUI here (TODO ???)
     
 case .initSilentFallback(let email, _):
-    // Fallback is set, show own login screen
+    // Passkey login failed silently, and a fallback is configured. The user
+    // should now proceed with a different authentication method on your
+    // fallback login screen.
     
 case .error(let error, let triggerFallback, _, let username):
     if triggerFallback {
-        // Fallback is set, show own login screen
+        // A fallback has been triggered due to an error.
+        // Redirect to your fallback login screen.
     }
         
     switch error {
     case .PasskeyDeletedOnServer(let message):
-        // Passkey has been deleted on server-side but still exists
-        // on client-side (otherwise we would not have got here). Show
-        // message e.g. "Passkey was deleted on server".
+        // This passkey still exists on the device but was deleted 
+        // from the server. Inform the user about this situation.
     default:
-        // Show generic error message
+        // A generic error occurred. Show a generic error message.
     }
 }
 ```
@@ -399,43 +404,46 @@ case .error(let error, let triggerFallback, _, let username):
 
 TODO Show screen
 
-With textfield login, the user provides her login identifier (e.g. email). To handle this case you need to call the `loginWithIdentifier()` method from the **Corbado iOS SDK**.
+This is the standard identifier-first login flow. The user provides their login identifier (e.g., email), and your app uses it to initiate the passkey ceremony. To handle this case, you call the `loginWithIdentifier()` method from the **Corbado iOS SDK**.
 
-Again, if the login has been successful (`.done`), we need to verify the `signedPasskeyData` with the backend using the helper method `verifySignedPasskeyData()` we implemented above.
+Just like with other flows, a successful login returns `.done` with `signedPasskeyData`, which you must verify with your backend.
 
 ```swift
-// Take email from .initTextField(), see above
+// Take email from textfield input
 let nextStep = await corbado.loginWithIdentifier(identifier: email)
 
 switch nextStep {
 case .done(let signedPasskeyData, let username):
+    // The passkey ceremony was successful.
     do {
         let (success, sessionId) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Login has been successful, create session using sessionId
+            // Backend verification successful. Create a session using the returned 
+            // session ID and navigate the user to the logged-in area of your app.
         } else {
-            // Login has not been successful, show error message
+            // Backend verification failed. Show an error message.
         }
     } catch (let error) {
         // Handle error
     }
 case .initSilentFallback(let email, _):
-    // Fallback is set, show own login screen
+    // A fallback is configured. Route to your fallback login screen.
     
 case .error(let error, let triggerFallback, _, let username):
     if triggerFallback {
-        // Fallback is set, show own login screen
+        // A fallback has been triggered. Route to your fallback login screen.
     }
     
     switch error {
     case .UserNotFound:
-        // Show error message e.g. "There is no account registered to that email address."
+        // No user account matches the provided identifier.
+        // Show an error message like "There is no account registered to that email address."
     default:
-        // Show generic error message
+        // A generic error occurred.
     }
     
 case .initRetry:
-    // Retry handling
+    // The operation can be retried. You might want to show a retry button to the user.
 }
 ```
 
@@ -443,21 +451,22 @@ case .initRetry:
 
 TODO Show screen
 
-[OneTap](/corbado-connect/features/one-tap-login) login is an additional feature of **Corbado Connect** where the login identifier (e.g. email) has been stored client-side so that the user does not have to provide it. To handle this case you need to call the `loginWithOneTap()` method from the **Corbado iOS SDK**.
+[One-Tap Login](/corbado-connect/features/one-tap-login) offers the most frictionless experience. When the **Corbado iOS SDK** has a stored identifier for the user, it can initiate the passkey login with a single tap, skipping the need for the user to type anything. You handle this case by calling `loginWithOneTap()`.
 
-After this it is exactly like textfield login, you need to verify `signedPasskeyData`.
+The subsequent steps for handling the response are identical to the **Textfield Login** flow: you will need to handle the different cases returned by the method and ultimately verify the `signedPasskeyData` with your backend.
 
 ```swift
 let nextStep = await corbado.loginWithOneTap()
 
-// Handle nextStep as in textfield login (see above)
+// Handle the 'nextStep' response just as you would for the 'Textfield Login'
+// flow. The possible cases (.done, .error, etc.) are the same.
 ```
 
 #### Fallback Login
 
 TODO Show screen
 
-Fallback login means that passkey login did not work out (for multiple reasons explained above) and you need to show your own login screen. This setup adds a lot of robustnest to the overall solution: no matter what if there is somethign wrong you show your own login screen and your users login in using traditional methods like email and password.
+A fallback login is your safety net. It ensures that if passkey authentication cannot proceed for any reason (e.g., an unexpected error, no passkey available, or a failed ceremony), the user is seamlessly directed to your traditional login screen (e.g., using email and password). This mechanism provides exceptional robustness, guaranteeing that your users always have a path to authenticate.
 
 ## Step 3: Passkey Management
 
