@@ -6,6 +6,7 @@ sidebarTitle: "iOS Native App"
 
 TODO Link code snippets to GitHub files (example app)?
 TODO Explain that example app uses Cognito but all "cases" are the same
+TODO Exchange pngs
 
 ## Introduction
 
@@ -223,7 +224,7 @@ In the following sections, we will explain each step in detail.
 
 Integrating passkey enrollment into your app involves presenting a new screen that encourages authenticated users to create a passkey for future passwordless logins.
 
-![Passkey creation screen](/images/corbado-connect/passkey-append-mobile.png)
+![Passkey creation screen](/images/corbado-connect/mobile/passkey-append.png)
 
 The interaction with the **Corbado iOS SDK** on this screen occurs at two key moments: before the screen is rendered and when the user taps the creation button.
 
@@ -402,7 +403,7 @@ case .error(let error, let triggerFallback, _, let username):
 
 #### Textfield Login
 
-TODO Show screen
+![Textfield Login](/images/corbado-connect/mobile/passkey-login-textfield.png)
 
 This is the standard identifier-first login flow. The user provides their login identifier (e.g., email), and your app uses it to initiate the passkey ceremony. To handle this case, you call the `loginWithIdentifier()` method from the **Corbado iOS SDK**.
 
@@ -449,7 +450,7 @@ case .initRetry:
 
 #### OneTap Login
 
-TODO Show screen
+![OneTap Login](/images/corbado-connect/mobile/passkey-login-onetap.png)
 
 [One-Tap Login](/corbado-connect/features/one-tap-login) offers the most frictionless experience. When the **Corbado iOS SDK** has a stored identifier for the user, it can initiate the passkey login with a single tap, skipping the need for the user to type anything. You handle this case by calling `loginWithOneTap()`.
 
@@ -464,7 +465,7 @@ let nextStep = await corbado.loginWithOneTap()
 
 #### Fallback Login
 
-TODO Show screen
+![Fallback Login](/images/corbado-connect/mobile/passkey-login-fallback.png)
 
 A fallback login is your safety net. It ensures that if passkey authentication cannot proceed for any reason (e.g., an unexpected error, no passkey available, or a failed ceremony), the user is seamlessly directed to your traditional login screen (e.g., using email and password). This mechanism provides exceptional robustness, guaranteeing that your users always have a path to authenticate.
 
