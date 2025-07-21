@@ -4,7 +4,7 @@ description: "Learn how to integrate passkey authentication into your native iOS
 sidebarTitle: "iOS Native App"
 ---
 
-## Introduction
+## 1. Introduction
 
 **Corbado Connect** provides a native iOS SDK that simplifies the integration of passkey authentication into your iOS native apps. By using our SDK, you can offer a seamless and secure user experience with passkeys, without needing to replace your existing Identity Provider (IdP). The SDK handles the complexities of the WebAuthn standard and our backend APIs, allowing you to focus on your app's core functionality.
 
@@ -16,7 +16,7 @@ For a comprehensive, working example, please refer to our example app available 
   See the Corbado iOS SDK in action.
 </Card>
 
-## SDK Installation
+## 2. SDK Installation
 
 For the most up-to-date instructions on requirements, installation, and initialization, please refer to the official `README` in our GitHub repository. The `README` provides a comprehensive guide to getting the SDK set up in your project.
 
@@ -24,7 +24,7 @@ For the most up-to-date instructions on requirements, installation, and initiali
   Learn how to install the Corbado iOS SDK.
 </Card>
 
-## Backend Integration
+## 3. Backend Integration
 
 The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application, an iOS native app, or an Android native app.
 
@@ -165,7 +165,7 @@ For `getConnectToken()`, you must provide the `sessionId` of the user's session 
 
 <Info>We use a `sessionId` for demonstration purposes only. Any other method, such as a JWT, would also be suitable.</Info>
 
-## Step 1: Passkey Enrollment
+## 4. Passkey Enrollment
 
 In a typical integration scenario, the initial user sign-up is handled through your existing authentication system's standard registration process. This could be through:
 
@@ -184,7 +184,7 @@ This approach offers several advantages:
 
 The complete user sign-up and passkey append flow is illustrated in detail in our [User Sign-up Flow documentation](/corbado-connect/flows/user-sign-up). In the following sections, we'll break down each component of the implementation.
 
-### Implementation Overview
+### 4.1 Implementation Overview
 
 The user sign-up and passkey append process consists of a series of coordinated interactions between your iOS native app and backend, your authentication system, and Corbado's APIs. Here's a high-level overview of the flow:
 
@@ -216,7 +216,7 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### App Integration
+### 4.2 App Integration
 
 Integrating passkey enrollment into your app involves presenting a new screen that encourages authenticated users to create a passkey for future passwordless logins.
 
@@ -224,7 +224,7 @@ Integrating passkey enrollment into your app involves presenting a new screen th
 
 The interaction with the **Corbado iOS SDK** on this screen occurs at two key moments: before the screen is rendered and when the user taps the creation button.
 
-#### Before Rendering
+#### 4.2.1 Before Rendering
 
 Before rendering the passkey enrollment screen, you should call the `isAppendAllowed()` method from the **Corbado iOS SDK**. This function is crucial for determining if the current user is eligible to add a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
@@ -252,7 +252,7 @@ case .skip:
 }
 ```
 
-#### On Button Click
+#### 4.2.2 On Button Click
 
 When the user taps the button to create a passkey, you must call the `completeAppend()` method from the **Corbado iOS SDK**. This function initiates the native iOS passkey creation ceremony, which securely interacts with the device's hardware and Corbado's backend.
 
@@ -281,13 +281,13 @@ case .error:
 }
 ```
 
-## Step 2: Passkey Login
+## 5. Passkey Login
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
-### Implementation Overview
+### 5.1 Implementation Overview
 
 The user login process consists of a series of coordinated interactions between your iOS native app and backend, your authentication system, and Corbado's APIs. Here's a high-level overview of the flow:
 
@@ -320,11 +320,11 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### App Integration
+### 5.2 App Integration
 
 Integrating passkey login into your app is slightly more complex than passkey enrollment because it requires direct integration with your existing login screen and involves handling several different cases and potential UI states across multiple screens.
 
-#### Before Rendering
+#### 5.2.1 Before Rendering
 
 Before rendering the login screen, you should call the `isLoginAllowed()` method from the **Corbado iOS SDK**. This function is crucial for determining if the current user is eligible to use a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
@@ -343,7 +343,7 @@ case .initFallback(_, _):
 }
 ```
 
-#### Conditional UI Login
+#### 5.2.2 Conditional UI Login
 
 ![Conditional Login](/images/corbado-connect/mobile/passkey-login-cui.webp)
 
@@ -397,7 +397,7 @@ case .error(let error, let triggerFallback, _, let username):
 }
 ```
 
-#### Textfield Login
+#### 5.2.3 Textfield Login
 
 ![Textfield Login](/images/corbado-connect/mobile/passkey-login-textfield.webp)
 
@@ -444,7 +444,7 @@ case .initRetry:
 }
 ```
 
-#### One-Tap Login
+#### 5.2.4 One-Tap Login
 
 ![One-Tap Login](/images/corbado-connect/mobile/passkey-login-onetap.webp)
 
@@ -459,19 +459,19 @@ let nextStep = await corbado.loginWithOneTap()
 // flow. The possible cases (.done, .error, etc.) are the same.
 ```
 
-#### Fallback Login
+#### 5.2.5 Fallback Login
 
 ![Fallback Login](/images/corbado-connect/mobile/passkey-login-fallback.webp)
 
 A fallback login is your safety net. It ensures that if passkey authentication cannot proceed for any reason (e.g., an unexpected error, no passkey available, or a failed ceremony), the user is seamlessly directed to your traditional login screen (e.g., using email and password). This mechanism provides exceptional robustness, guaranteeing that your users always have a path to authenticate.
 
-## Step 3: Passkey Management
+## 6. Passkey Management
 
 Providing users with a way to manage their passkeys is a critical part of the experience. Your application should offer a secure, authenticated area (like a profile or settings page) where users can list, delete, and add new passkeys.
 
 The **Corbado iOS SDK** provides all the necessary methods to build this functionality into your app. The complete passkey management flow is also illustrated in detail in our [Passkey Management Flow documentation](/corbado-connect/flows/passkey-management).
 
-### Implementation Overview
+### 6.1 Implementation Overview
 
 The passkey management process consists of a series of coordinated interactions between your iOS native app, your backend, and Corbado's APIs. Here's a high-level overview of the flow for listing passkeys. The flows for deleting and creating a new passkey are similar.
 
@@ -497,13 +497,13 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### App Integration
+### 6.2 App Integration
 
 All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS SDK** uses a short-lived `connectToken` that you generate on your backend for an authenticated user. This token proves to Corbado's APIs that the user performing the action has a valid session with your system.
 
 To provide this token to the **Corbado iOS SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh `connectToken`. You can reuse the `AppBackend` helper class for this.
 
-#### List Passkeys
+#### 6.2.1 List Passkeys
 
 ![Passkey Management List](/images/corbado-connect/mobile/passkey-list.webp)
 
@@ -536,7 +536,7 @@ case .error(let error):
 }
 ```
 
-#### Delete Passkey
+#### 6.2.2 Delete Passkey
 
 ![Passkey Management Delete](/images/corbado-connect/mobile/passkey-list-delete.webp)
 
@@ -567,7 +567,7 @@ default:
 }
 ```
 
-#### Create Passkey
+#### 6.2.3 Create Passkey
 
 ![Passkey Management Create](/images/corbado-connect/mobile/passkey-list-create.webp)
 
