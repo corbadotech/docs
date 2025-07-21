@@ -148,7 +148,7 @@ class AppBackend {
 
 struct GetConnectTokenRequest: Codable {
     let connectTokenType: String
-    let idToken: String
+    let sessionId: String
 }
 
 struct GetConnectTokenResponse: Codable {
@@ -234,11 +234,11 @@ Before rendering the passkey enrollment screen, you should call the `isAppendAll
 
 The method requires a `connectTokenProvider`, a closure that fetches a short-lived `connectToken` from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current session identifier (e.g., a session ID or JWT) so your backend can verify their authenticated state before generating the token.
 
-```swift
+```swift Swift example
 // In your ViewModel or screen logic
 let nextStep = await corbado.isAppendAllowed { _ in
     // Provide the session ID of the currently logged-in user.
-    return try await AppBackend.getConnectToken(connectTokenType: .append, sessionId: "your-user-session-id")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, sessionId: "your-user-session-id")
 }
 
 switch nextStep {
@@ -262,7 +262,7 @@ When the user taps the button to create a passkey, you must call the `completeAp
 
 The method returns a status indicating the outcome of the ceremony, which you should handle accordingly.
 
-```swift
+```swift Swift example
 // In your button's action handler
 let response = await corbado.completeAppend()
 
@@ -333,7 +333,7 @@ Integrating passkey login into your app is slightly more complex than passkey en
 
 Before rendering the login screen, you should call the `isLoginAllowed()` method from the **Corbado iOS SDK**. This function is crucial for determining if the current user is eligible to use a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
-```swift
+```swift Swift example
 let nextStep = await corbado.isLoginAllowed()
 switch nextStep {
 case .initTextField(let cuiChallenge, _):
@@ -355,7 +355,7 @@ With [Conditional UI](https://www.corbado.com/glossary/conditional-ui), a user c
 
 If the login has been successful (`.done`), you must verify the returned `signedPasskeyData` with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
 
-```swift
+```swift Swift example
 // Take cuiChallenge from .initTextField(), see above
 let nextStep = await corbado.loginWithoutIdentifier(cuiChallenge: cuiChallenge, conditionalUI: false) {
     // This closure is called when the Corbado iOS SDK is waiting for a user interaction.
@@ -409,7 +409,7 @@ This is the standard identifier-first login flow. The user provides their login 
 
 Just like with other flows, a successful login returns `.done` with `signedPasskeyData`, which you must verify with your backend.
 
-```swift
+```swift Swift example
 // Take email from textfield input
 let nextStep = await corbado.loginWithIdentifier(identifier: email)
 
@@ -456,7 +456,7 @@ case .initRetry:
 
 The subsequent steps for handling the response are identical to the **Textfield Login** flow: you will need to handle the different cases returned by the method and ultimately verify the `signedPasskeyData` with your backend.
 
-```swift
+```swift Swift example
 let nextStep = await corbado.loginWithOneTap()
 
 // Handle the 'nextStep' response just as you would for the 'Textfield Login'
@@ -505,7 +505,7 @@ In the following sections, we will explain each step in detail.
 
 All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS SDK** uses a short-lived `connectToken` that you generate on your backend for an authenticated user. This token proves to Corbado's APIs that the user performing the action has a valid session with your system.
 
-To provide this token to the **Corbado iOS SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh `connectToken`. You can reuse the `AppBackend` helper class for this, simply ensuring you request a token of type `manage`.
+To provide this token to the **Corbado iOS SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh `connectToken`. You can reuse the `AppBackend` helper class for this.
 
 #### List Passkeys
 
@@ -513,7 +513,7 @@ To build a passkey management screen, you need to know two things: what passkeys
 
 This eligibility check is governed by your project's settings for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence). The method returns the list of existing passkeys along with a status indicating if the "Add new passkey" button should be displayed.
 
-```swift
+```swift Swift example
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
@@ -544,7 +544,7 @@ To allow a user to delete a passkey, you first need to identify which passkey th
 
 This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh `connectToken` of type `PasskeyDelete`.
 
-```swift
+```swift Swift example
 // This assumes 'passkey' is the PasskeyInfo object selected by the user from your UI list.
 let status = await corbado.deletePasskey(passkeyId: passkey.id) { _ in
     // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
@@ -573,7 +573,7 @@ If the user is allowed to add a new passkey (as determined by the `isManageAppen
 
 This function initiates the native iOS passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a `connectToken` of type `PasskeyAppend` from your backend.
 
-```swift
+```swift Swift example
 // This would be called when the user taps the "Add new passkey" button in your UI.
 let status = await corbado.completePasskeyListAppend { _ in
     // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
