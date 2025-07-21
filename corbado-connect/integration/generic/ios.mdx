@@ -165,7 +165,7 @@ struct VerifySignedPasskeyDataResponse: Codable {
 }
 ```
 
-For `getConnectToken()`, you must provide the `sessionId` of the user's session to enable the backend to verify the user's authentication status.
+For `getConnectToken()`, you must provide the `sessionId` of the user's session to enable the backend to verify the user's authenticated state.
 
 <Info>We use a `sessionId` for demonstration purposes only. Any other method, such as a JWT, would also be suitable.</Info>
 
@@ -471,4 +471,131 @@ A fallback login is your safety net. It ensures that if passkey authentication c
 
 ## Step 3: Passkey Management
 
-TODO
+Providing users with a way to manage their passkeys is a critical part of the experience. Your application should offer a secure, authenticated area (like a profile or settings page) where users can list, delete, and add new passkeys.
+
+The **Corbado iOS SDK** provides all the necessary methods to build this functionality into your app. The complete passkey management flow is also illustrated in detail in our [Passkey Management Flow documentation](/corbado-connect/flows/passkey-management).
+
+### Implementation Overview
+
+The passkey management process consists of a series of coordinated interactions between your iOS native app, your backend, and Corbado's APIs. Here's a high-level overview of the flow for listing passkeys. The flows for deleting and creating a new passkey are similar.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant App as Your<br/>iOS Native App
+    participant Backend as Your<br/>Backend
+    participant FAPI as Corbado<br />Frontend API
+    participant BAPI as Corbado<br />Backend API
+
+    Note over App: Corbado iOS SDK
+    App->>+Backend: POST /auth/createConnectToken
+    Backend->>Backend: Verify user session
+    Backend->>+BAPI: POST /v2/connectTokens
+    BAPI-->>-Backend: Return ConnectToken
+    Backend-->>-App: Return ConnectToken
+
+    App->>+FAPI: Request passkey list<br/>(uses ConnectToken)
+    Note over App: Corbado iOS SDK<br />handles passkey list
+    FAPI-->>-App: Return success
+```
+
+In the following sections, we will explain each step in detail.
+
+### App Integration
+
+All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS SDK** uses a short-lived `connectToken` that you generate on your backend for an authenticated user. This token proves to Corbado's APIs that the user performing the action has a valid session with your system.
+
+To provide this token to the **Corbado iOS SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh `connectToken`. You can reuse the `AppBackend` helper class for this, simply ensuring you request a token of type `manage`.
+
+#### List Passkeys
+
+To build a passkey management screen, you need to know two things: what passkeys the user currently has, and whether they are allowed to add a new one. The `isManageAppendAllowed()` method from the **Corbado iOS SDK** conveniently provides both pieces of information in a single call.
+
+This eligibility check is governed by your project's settings for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence). The method returns the list of existing passkeys along with a status indicating if the "Add new passkey" button should be displayed.
+
+```swift
+// This single method both fetches the list of current passkeys and checks
+// if the user is eligible to add a new one.
+let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
+    // The SDK needs a connectToken of type 'PasskeyList' to authorize this action.
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, sessionId: "your-user-session-id")
+})
+
+switch nextStep {
+case .allowed(let passkeys):
+    // Success. The user is allowed to add a new passkey.
+    // Update your UI state with the `passkeys` array to display them.
+    // Your UI should also show an "Add new passkey" button.
+
+case .notAllowed(let passkeys):
+    // Success, but with a condition. The user is *not* allowed to add a new passkey.
+    // Update your UI state with the `passkeys` array to display them.
+    // The "Add new passkey" button should be hidden.
+
+case .error(let error):
+    // An error occurred during the process.
+    // Handle the error, for example by showing an alert to the user.
+}
+```
+
+#### Delete Passkey
+
+To allow a user to delete a passkey, you first need to identify which passkey they wish to remove. Typically, this is done by having the user select one from the list you populated in the previous step. Once you have the passkey's ID, you call the `deletePasskey()` method from the **Corbado iOS SDK**.
+
+This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh `connectToken` of type `PasskeyDelete`.
+
+```swift
+// This assumes 'passkey' is the PasskeyInfo object selected by the user from your UI list.
+let status = await corbado.deletePasskey(passkeyId: passkey.id) { _ in
+    // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyDelete, sessionId: "your-user-session-id")
+}
+
+switch status {
+case .done(let passkeys):
+    // Deletion was successful.
+    // The SDK conveniently returns the updated list of passkeys.
+    // You should refresh your UI with this new list.
+    
+case .error(let error):
+    // An error occurred during the deletion process.
+    // You should handle the specific error and show an appropriate message to the user.
+    
+default:
+    // A fallback for any other unhandled cases.
+    // You could show a generic error message here.
+}
+```
+
+#### Create Passkey
+
+If the user is allowed to add a new passkey (as determined by the `isManageAppendAllowed()` method), your UI should present an "Add new passkey" button. When the user taps this button, you call the `completePasskeyListAppend()` method from the **Corbado iOS SDK**.
+
+This function initiates the native iOS passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a `connectToken` of type `PasskeyAppend` from your backend.
+
+```swift
+// This would be called when the user taps the "Add new passkey" button in your UI.
+let status = await corbado.completePasskeyListAppend { _ in
+    // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, sessionId: "your-user-session-id")
+}
+
+switch status {
+case .done(let passkeys):
+    // Success! The new passkey was created.
+    // The SDK returns the updated list of passkeys, including the new one.
+    // You should refresh your UI with this new list.
+    
+case .passkeyOperationCancelled:
+    // The user manually cancelled the native iOS prompt.
+    // No action is typically needed, but you could show a transient message.
+    
+case .error(_):
+    // An unexpected error occurred during the process.
+    // Display a clear error message to the user.
+    
+case .passkeyOperationExcludeCredentialsMatch:
+    // A passkey from this device already exists for the user.
+    // This is not an error. Inform the user gracefully.
+}
+```
