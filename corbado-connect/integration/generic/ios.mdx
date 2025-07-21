@@ -337,7 +337,7 @@ case .initTextField(let cuiChallenge, _):
     
 case .initOneTap(let email):
     // Handle "One-Tap Login" (see below)
-    
+
 case .initFallback(_, _):
     // Handle "Fallback Login" (see below)
 }
@@ -505,6 +505,8 @@ To provide this token to the **Corbado iOS SDK** in a secure and timely manner, 
 
 #### List Passkeys
 
+![Passkey Management List](/images/corbado-connect/mobile/passkey-list.webp)
+
 To build a passkey management screen, you need to know two things: what passkeys the user currently has, and whether they are allowed to add a new one. The `isManageAppendAllowed()` method from the **Corbado iOS SDK** conveniently provides both pieces of information in a single call.
 
 This eligibility check is governed by your project's settings for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence). The method returns the list of existing passkeys along with a status indicating if the "Add new passkey" button should be displayed.
@@ -536,6 +538,8 @@ case .error(let error):
 
 #### Delete Passkey
 
+![Passkey Management Delete](/images/corbado-connect/mobile/passkey-list-delete.webp)
+
 To allow a user to delete a passkey, you first need to identify which passkey they wish to remove. Typically, this is done by having the user select one from the list you populated in the previous step. Once you have the passkey's ID, you call the `deletePasskey()` method from the **Corbado iOS SDK**.
 
 This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh `connectToken` of type `PasskeyDelete`.
@@ -564,6 +568,8 @@ default:
 ```
 
 #### Create Passkey
+
+![Passkey Management Create](/images/corbado-connect/mobile/passkey-list-create.webp)
 
 If the user is allowed to add a new passkey (as determined by the `isManageAppendAllowed()` method), your UI should present an "Add new passkey" button. When the user taps this button, you call the `completePasskeyListAppend()` method from the **Corbado iOS SDK**.
 
