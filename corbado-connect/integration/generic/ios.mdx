@@ -266,19 +266,18 @@ switch response {
 case .completed:
     // Success! The passkey was created and associated with the user's account.
     // Navigate to a success screen or the next part of your app.
-    print("Passkey creation successful!")
+
 case .cancelled:
     // The user manually cancelled the native iOS prompt.
     // No action is typically needed; the user remains on the current screen.
-    print("Passkey creation was cancelled by the user.")
+
 case .excludeCredentialsMatch:
     // A passkey from this device already exists for the user.
     // This is not an error. Inform the user gracefully.
-    print("A passkey already exists on this device.")
+
 case .error:
     // An unexpected error occurred during the process.
     // Display an error message to the user.
-    print("An error occurred during passkey creation.")
 }
 ```
 
@@ -338,6 +337,7 @@ case .initTextField(let cuiChallenge, _):
     
 case .initOneTap(let email):
     // Handle "One-Tap Login" (see below)
+    
 case .initFallback(_, _):
     // Handle "Fallback Login" (see below)
 }
