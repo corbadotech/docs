@@ -190,11 +190,11 @@ object AppBackend {
     // Get connectToken from backend (which gets it from Corbado Backend API)
     suspend fun getConnectToken(
         connectTokenType: ConnectTokenType,
-        idToken: String
+        accessToken: String
     ): Result<String> {
         return try {
             // 1. Set up request
-            val request = ConnectTokenRequest(connectTokenType, idToken)
+            val request = GetConnectTokenRequest(connectTokenType, accessToken)
             val jsonRequest = Json.encodeToString(ConnectTokenRequest.serializer(), request)
 
             // 2. Perform request
@@ -214,7 +214,7 @@ object AppBackend {
             val response = reader.readText()
 
             // 4. Decode the JSON response
-            val jsonResponse = Json.decodeFromString(ConnectTokenResponse.serializer(), response)
+            val jsonResponse = Json.decodeFromString(GetConnectTokenResponse.serializer(), response)
 
             Result.success(jsonResponse.token)
         } catch (e: Exception) {
@@ -283,7 +283,7 @@ data class VerifySignedPasskeyDataResponse(
 
 For `getConnectToken()`, you must provide the user's `accessToken` to enable the backend to verify their authenticated state.
 
-<Info>We use an `accessToken` for demonstration purposes. This token is typically a JWT issued by your Identity Provider (IdP) after a user anuthenticates.</Info>
+<Info>We use an `accessToken` for demonstration purposes. This token is typically a JWT issued by your Identity Provider (IdP) after a user authenticates.</Info>
 
 ## 4. Passkey Enrollment
 
@@ -868,7 +868,7 @@ default:
 ```
 ```kotlin Kotlin example
 // This assumes 'passkeyId' is the ID of the passkey selected by the user from your UI list.
-val deleteStatus = corbado.deletePasskey(connectTokenProvider = { connectTokenType ->
+val deleteStatus = corbado.deletePasskey(connectTokenProvider = { _ ->
     // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyDelete, "access-token-of-user")
     if (result.isFailure) {
@@ -929,7 +929,7 @@ case .passkeyOperationExcludeCredentialsMatch:
 ```
 ```kotlin Kotlin example
 // This would be called when the user taps the "Add new passkey" button in your UI.
-val appendStatus = corbado.completePasskeyListAppend(activityContext, { connectTokenType ->
+val appendStatus = corbado.completePasskeyListAppend(activityContext, { _ ->
     // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyAppend, "access-token-of-user")
     if (result.isFailure) {
