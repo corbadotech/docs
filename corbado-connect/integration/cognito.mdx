@@ -8,7 +8,7 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
-## Introduction
+## 1. Introduction
 
 **Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Amazon Cognito** user pools. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Cognito for user management.
 
@@ -16,7 +16,7 @@ This guide will walk you through the process of integrating **Corbado Connect** 
 
 **Amazon Cognito** is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Amazon Cognito website](https://aws.amazon.com/cognito/).
 
-## How it Works
+## 2. How it Works
 
 The integration between **Corbado Connect** and **Amazon Cognito** leverages a powerful feature known as a **Custom Authentication Flow**. This feature allows developers to create their own challenge-and-response models using AWS Lambda functions, which is ideal for integrating external authentication mechanisms like Corbado's passkey-first solution.
 
@@ -30,7 +30,7 @@ To implement this, we need to configure the Cognito User Pool to use three speci
 
 Later in this guide, we will dive deep into the source code and configuration of each of these functions.
 
-## Example Application
+## 3. Example Application
 
 To best illustrate the integration, we will refer to a complete example application. This application is built with the following technologies:
 
@@ -39,13 +39,13 @@ To best illustrate the integration, we will refer to a complete example applicat
 
 We will guide you through the implementation of two primary user flows: sign-up and login.
 
-## User Sign-up
+## 4. User Sign-up
 
 In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by **Amazon Cognito**. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
-### Implementation Overview
+### 4.1 Implementation Overview
 
 The user sign-up process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
@@ -77,7 +77,7 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### UI Component Integration
+### 4.2 UI Component Integration
 
 We start by integrating the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
@@ -123,9 +123,9 @@ export default function Page() {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
 </Info>
 
-### Obtaining the ConnectToken
+### 4.3 Obtaining the ConnectToken
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [connectToken documentation](/corbado-connect/concepts/connect-token) for more details).
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user).
 
 The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
@@ -138,7 +138,7 @@ appendTokenProvider={async () => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken` by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connectToken](/corbado-connectconnect-token) by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
 'use server';
@@ -187,7 +187,7 @@ export const getCorbadoConnectToken = async (connectTokenType: string, displayNa
 }
 ```
 
-### Updating MFA Settings
+### 4.4 Updating MFA Settings
 
 After a passkey is created, it's necessary to update the MFA settings in **Amazon Cognito**. This can be achieved using Corbado [actions](/corbado-connect/architecture/actions), which enable you to extensively customize **Corbado Connect** to suit your specific requirements.
 
@@ -291,7 +291,7 @@ export const handler = async (event) => {
 };
 ```
 
-## User Login
+## 5. User Login
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **Amazon Cognito** custom authentication flow we outlined in the "How it Works" section becomes essential.
 
@@ -299,7 +299,7 @@ The goal is to authenticate a user with their passkey using **Corbado Connect** 
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
-### Implementation Overview
+### 5.1 Implementation Overview
 
 The user login process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, Lambda functions, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
@@ -337,12 +337,12 @@ sequenceDiagram
 ```
 
 <Info>
-The `signedPasskeyData` is a short-lived, single-use JSON Web Token (JWT) that proves a successful passkey authentication with Corbado. It is the key artifact that connects the two systems.
+The [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) proves a successful passkey authentication with Corbado. It is the key artifact that connects the two systems.
 </Info>
 
 In the following sections, we will explain each step in detail.
 
-### UI Component Integration
+### 5.2 Web UI Component Integration
 
 Again, we start by integrating the `CorbadoConnectLogin` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
 
@@ -471,12 +471,12 @@ For a detailed explanation of all available props for this component, please see
 
 The `onComplete` handler triggers our `postPasskeyLoginNew` function, which performs the final steps to log the user into Cognito:
 
-1.  **Decode the JWT**: The `signedPasskeyData` is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for **Amazon Cognito's** custom flow.
+1.  **Decode the JWT**: The [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) is a JWT. We decode it to extract the `webauthnId`, which is a stable identifier for the user in Corbado's system. We will use this as the `username` for **Amazon Cognito's** custom flow.
 2.  **`signIn`**: We call `signIn` from the AWS Amplify library, passing the `webauthnId` as the `username` and specifying `authFlowType: 'CUSTOM_WITHOUT_SRP'`. This initiates the custom authentication flow and triggers our `define_auth_challenge` and `create_auth_challenge` Lambdas.
-3.  **`confirmSignIn`**: We then immediately call `confirmSignIn`, providing the entire `signedPasskeyData` as the `challengeResponse`. This is the answer to the custom challenge, which triggers our `verify_auth_challenge_response` Lambda.
+3.  **`confirmSignIn`**: We then immediately call `confirmSignIn`, providing the entire [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) as the `challengeResponse`. This is the answer to the custom challenge, which triggers our `verify_auth_challenge_response` Lambda.
 4.  **Redirection**: Once `confirmSignIn` completes successfully, **Amazon Cognito** has issued valid session tokens to the Amplify library. The user is now fully authenticated, and we can redirect them to a protected page, like their profile.
 
-### Identifier Translation
+### 5.3 Identifier Translation
 
 Since **Corbado Connect** only stores the **Amazon Cognito** username and not the user's email address, we need to translate between these identifiers during login. This translation is handled through Corbado [actions](/corbado-connect/architecture/actions), which provide extensive customization capabilities for **Corbado Connect** to meet your specific requirements.
 
@@ -673,13 +673,13 @@ export const handler = async (event) => {
 };
 ```
 
-### Custom Lambda functions
+### 5.4 Custom Lambda functions
 
 As introduced in the "How it Works" section, the integration between **Corbado Connect** and **Amazon Cognito** relies on three custom Lambda functions to handle the authentication flow.
 
 These functions work together to verify passkey authentications and manage the challenge-response cycle in **Amazon Cognito**. Let's dive deeper into each function's implementation and configuration.
 
-#### Secrets
+#### 5.4.1 Secrets
 
 Our custom Lambda functions need to communicate securely with Corbado's Backend API. To do this, they require access to sensitive credentials, namely your **Project ID** and **API Secret**.
 
@@ -687,7 +687,7 @@ It is critical to never hard-code secrets directly into your Lambda function's s
 
 By storing credentials as `SecureString` parameters in the SSM Parameter Store, you ensure that they are encrypted at rest. You can then grant the Lambda function's IAM role the necessary permissions to read these specific parameters at runtime. This approach provides a secure and scalable way to manage your secrets, separating them from your application code.
 
-#### Implementation
+#### 5.4.2 Implementation
 
 Here we will examine the code for each of the three Lambda functions required for the custom authentication flow.
 
@@ -777,7 +777,7 @@ This is the final and most critical Lambda in the chain. It's responsible for ve
 
 Its key responsibilities are:
 1.  **Get Secret**: It securely fetches the secret from AWS Systems Manager Parameter Store.
-2.  **Call Corbado Backend API**: It takes the `signedPasskeyData` (which is the user's `challengeAnswer`) and the `cognitoID` and sends them to Corbado's `/v2/passkey/verifySignedData` endpoint.
+2.  **Call Corbado Backend API**: It takes the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) (which is the user's `challengeAnswer`) and the `cognitoID` and sends them to Corbado's `/v2/passkey/verifySignedData` endpoint.
 3.  **Return Result**: Based on the response from Corbado's Backend API, it sets `event.response.answerCorrect` to `true` or `false`, telling **Amazon Cognito** whether the user's passkey authentication was successful.
 
 ```javascript index.mjs
@@ -880,14 +880,14 @@ export const handler = async (event) => {
 You need to configure these three Lambdas in your **Amazon Cognito** User Pool's settings under **User pool** > **Authentication** > **Extensions**.
 </Info>
 
-#### Hosting
+#### 5.4.3 Hosting
 
 The three custom authentication Lambda functions can be deployed in two different ways, depending on your chosen setup and requirements:
 
 *   **Corbado-Hosted**: For ease of use and quicker setup, Corbado can manage and host these Lambda functions on your behalf within our secure AWS environment. This model simplifies maintenance and operations.
 *   **Self-Hosted**: For organizations that require full control over their infrastructure for security, compliance, or customization reasons, you can deploy and manage these Lambda functions directly within your own AWS account.
 
-## Passkey Management
+## 6. Passkey Management
 
 After users have created their initial passkeys during sign-up and used them for login, they need a way to manage their existing passkeys. Passkey management encompasses three main operations:
 
@@ -895,11 +895,11 @@ After users have created their initial passkeys during sign-up and used them for
 2. Creating additional passkeys
 3. Deleting unused passkeys
 
-All these operations follow a similar pattern: they require obtaining a `ConnectToken` for the **Corbado Connect** UI component, which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
+All these operations follow a similar pattern: they require obtaining a [connectToken](/corbado-connect/concepts/connect-token) for the **Corbado Connect** Web UI component, which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
-### Implementation Overview
+### 6.1 Implementation Overview
 
 The passkey deletion process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
@@ -923,7 +923,7 @@ sequenceDiagram
     FAPI-->>-ExampleFrontend: Return success
 ```
 
-### UI Component Integration
+### 6.2 UI Component Integration
 
 We integrate the `CorbadoConnectPasskeyList` component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
@@ -969,9 +969,9 @@ export const PasskeySection = ({integratePasskeys}: Props) => {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
 </Info>
 
-### Obtaining the ConnectToken
+### 6.3 Obtaining the ConnectToken
 
-When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a short-lived `ConnectToken` from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
+When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
 
 The frontend first gets the `idToken` for the currently logged-in user from AWS Amplify. This JWT proves the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
@@ -984,7 +984,7 @@ connectTokenProvider={async (connectTokenType: string) => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `ConnectToken` by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connectToken](/corbado-connect/concepts/connect-token) by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/profile/actions.tsx
 'use server';

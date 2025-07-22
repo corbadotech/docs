@@ -81,7 +81,7 @@ The component is designed to show clear, helpful error messages to the user with
 
 | **Name**                 | **Description**                                                                                                                                                                                                                                                                 | **Required** | **Type**                               |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------- |
-| `connectTokenProvider`   | A function that asynchronously returns a `ConnectToken`. It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
+| `connectTokenProvider`   | A function that asynchronously returns a [connectToken](/corbado-connect/concepts/connect-token). It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
 
 # Customization
 
