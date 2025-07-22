@@ -782,7 +782,7 @@ This eligibility check is governed by your project's settings for [Gradual Rollo
 // if the user is eligible to add a new one.
 let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
     // The SDK needs a connectToken of type 'PasskeyList' to authorize this action.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, accessToken: "your-user-access-token")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, accessToken: "access-token-of-user")
 })
 
 switch nextStep {
@@ -847,7 +847,7 @@ This operation also requires authorization, so you must provide the same `connec
 // This assumes 'passkey' is the PasskeyInfo object selected by the user from your UI list.
 let status = await corbado.deletePasskey(passkeyId: passkey.id) { _ in
     // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyDelete, accessToken: "your-user-access-token")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyDelete, accessToken: "access-token-of-user")
 }
 
 switch status {
@@ -903,7 +903,7 @@ This function initiates the native passkey creation ceremony. It requires a `con
 // This would be called when the user taps the "Add new passkey" button in your UI.
 let status = await corbado.completePasskeyListAppend { _ in
     // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "your-user-access-token")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "access-token-of-user")
 }
 
 switch status {
