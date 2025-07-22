@@ -85,7 +85,11 @@
                     },
                     {
                         "group": "Concepts",
-                        "pages": ["corbado-connect/concepts/client-state"]
+                        "pages": [
+                            "corbado-connect/concepts/connect-token",
+                            "corbado-connect/concepts/signed-passkey-data",
+                            "corbado-connect/concepts/client-state"
+                        ]
                     },
                     {
                         "group": "Security & Compliance",

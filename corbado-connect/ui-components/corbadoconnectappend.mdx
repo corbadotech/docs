@@ -39,16 +39,16 @@ The component features built-in error handling. If an issue occurs during the pa
 
 # Example
 
-> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a secure ConnectToken (see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk)) on your backend to validate that the user session is legitimate. This token is then passed to the component.
+> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a `connectToken` (see [here](/corbado-connect/concepts/connect-token)) on your backend to validate that the user session is legitimate. This token is then passed to the component.
 
 ```js
 <head>
   <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
   <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
   <script type="module">
-    // This connect token must be generated on the server side
+    // This connectToken must be generated on the server side
     // and passed to the component (e.g. by embedding it during server-side rendering).
-    const connectToken = 'ctk-xxxxxxxxxxxxxxxxxxxxxxxxxx';
+    const connectToken = 'ctk1_xxx';
 
     const passkeyAppendElement = document.getElementById('passkey-append');
     Corbado.mountCorbadoConnectAppend(passkeyAppendElement, {

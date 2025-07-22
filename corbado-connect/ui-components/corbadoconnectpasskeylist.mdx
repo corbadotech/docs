@@ -36,7 +36,7 @@ The component is designed to show clear, helpful error messages to the user with
 
 # Example
 
-> **Important:** This component is designed for users who are already logged in. You must generate secure ConnectTokens (see [here](/corbado-connect/ui-components/overview#3-connecttokens-ctk)) on your backend for listing, appending, and deleting passkeys to validate that the user session is legitimate.
+> **Important:** This component is designed for users who are already logged in. You must generate `connectTokens` (see [here](/corbado-connect/concepts/connect-token)) on your backend for listing, appending, and deleting passkeys to validate that the user session is legitimate.
 
 ```js
 <head>
@@ -65,7 +65,7 @@ The component is designed to show clear, helpful error messages to the user with
       projectId: "pro-XXX", // Your Corbado Project ID
       frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
 
-      // Asynchronously provides ConnectTokens for all actions (list, append, delete)
+      // Asynchronously provides connectTokens for all actions (list, append, delete)
       connectTokenProvider: connectTokenProvider
     });
   </script>

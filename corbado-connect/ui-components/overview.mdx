@@ -33,43 +33,6 @@ Each **Corbado Connect** UI component supports a common set of configuration par
 | `enableHighlight`      | If set to `true`, components are visually surrounded by a red box—helpful in development to understand the scope of each component in your layout.                                          |              | `boolean` |
 | `flags`                | An object that defines default flags to include in requests to Corbado's Frontend API. Currently, only `"conditional-ui-allowed"` is used; more flags may be added in the future as needed. |              | `object`  |
 
-
-# 3. ConnectTokens (CTK)
-
-For security reasons, some of our UI components require so-called ConnectTokens (CTKs) to authorize actions that modify user data. Specifically, you will need to provide a CTK for the following components:
-
-- **CorbadoConnectAppend**: To authorize the creation of a new passkey for a user.
-- **CorbadoConnectPasskeyList**: To authorize listing and deleting passkeys for a user.
-
-The **CorbadoConnectLogin** component does **not** require a CTK, as it is used for authentication, not for modifying user data.
-
-Below is a detailed explanation of **how ConnectTokens are generated** and **why** they are necessary.
-
-A **Corbado ConnectToken (CTK)** is a **short-lived, single-use token** that securely ties user context (e.g., which account is being updated) to a particular **Corbado Connect** UI component action (such as passkey creation, passkey listing, or passkey deletion).
-
-Whenever a front-end flow with `CorbadoConnectAppend` or `CorbadoConnectPasskeyList` needs to safely reference a specific user's account, a CTK is required. These tokens are created on the server side (server-to-server via the Corbado Backend API) and then passed to the relevant front-end component:
-
-{/* 
-IMPORTANT: we have to use an absolute link to the API Reference POST /connectToken endpoint below because those pages are generated
-"on the fly" by Mintlify and we can not link to them relatively because then the Mintlify broken-links checker will complain!
-*/}
-
-1. **Server generates a CTK**
-   Your server (e.g., "Customer Backend") makes a secure API call to Corbado's `POST /v2/connectTokens` endpoint (see [API Reference](htpps://docs.corbado.com/api-reference/backend-api/connecttokens/post-connecttokens)). This endpoint identifies the user (for example, through a `CustomerIdentifier`) and specifies the intended action (`"passkey-append"`, `"passkey-list"`, `"passkey-delete"`, etc.).
-2. **Token includes user-specific data**
-   The response from Corbado includes a unique ConnectToken (e.g., `ctk-123...`). This token tells the **Corbado Connect** UI component precisely which user and which action it is authorized to perform (e.g., "create a new passkey for user 123").
-3. **Frontend (UI component) consumes the CTK**
-   On the frontend, a **Corbado Connect** UI component (such as **CorbadoConnectAppend** or **CorbadoConnectPasskeyList**) receives the token, validates it, and initiates the passkey flow. During the process, Corbado checks the token's validity (expiration time, intended user, single use, etc.).
-4. **Single use & short-lived**
-   Each CTK is valid for **one passkey change operation** (e.g., a single passkey creation) and expires after a short period of time (configurable in Corbado's systems). Once used or expired, it can't be reused. This design helps prevent replay attacks or unauthorized reuse.
-
-**In summary**, every time a passkey change flow runs (like _passkey creation_ or _passkey deletion_), your backend will need to:
-
-1. Verify the user is authenticated (or authorized) to update their passkeys.
-2. **Generate a CTK** via the Corbado Backend API for the specific user and action.
-3. **Deliver the CTK** to the frontend (e.g., embed it in your response or SSR).
-4. **Consume the CTK** in the relevant **Corbado Connect** UI component, ensuring a secure, single-use passkey change operation.
-
-# 4. Next steps: Get in touch
+## 3. Next steps: Get in touch
 
 <GetInTouch></GetInTouch>
