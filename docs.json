@@ -48,18 +48,26 @@
                         ]
                     },
                     {
-                        "group": "UI Components",
+                        "group": "Web UI Components",
                         "pages": [
-                            "corbado-connect/ui-components/overview",
-                            "corbado-connect/ui-components/corbadoconnectappend",
-                            "corbado-connect/ui-components/corbadoconnectlogin",
-                            "corbado-connect/ui-components/corbadoconnectpasskeylist"
+                            "corbado-connect/web-ui-components/overview",
+                            "corbado-connect/web-ui-components/corbadoconnectappend",
+                            "corbado-connect/web-ui-components/corbadoconnectlogin",
+                            "corbado-connect/web-ui-components/corbadoconnectpasskeylist"
                         ]
                     },
                     {
                         "group": "Integration",
                         "pages": [
-                            "corbado-connect/integration/generic",
+                            {
+                                "group": "Generic",
+                                "pages": [
+                                    "corbado-connect/integration/generic/overview",
+                                    "corbado-connect/integration/generic/backend",
+                                    "corbado-connect/integration/generic/web",
+                                    "corbado-connect/integration/generic/native-mobile"
+                                ]
+                            },
                             "corbado-connect/integration/cognito",
                             "corbado-connect/integration/keycloak",
                             "corbado-connect/integration/duende",
@@ -77,7 +85,11 @@
                     },
                     {
                         "group": "Concepts",
-                        "pages": ["corbado-connect/concepts/client-state"]
+                        "pages": [
+                            "corbado-connect/concepts/connect-token",
+                            "corbado-connect/concepts/signed-passkey-data",
+                            "corbado-connect/concepts/client-state"
+                        ]
                     },
                     {
                         "group": "Security & Compliance",

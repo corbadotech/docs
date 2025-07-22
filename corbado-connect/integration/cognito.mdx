@@ -60,11 +60,11 @@ sequenceDiagram
     participant Actions as Corbado<br />Actions
 
     Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
+    ExampleFrontend->>+ExampleBackend: Request Corbado connectToken
     ExampleBackend->>ExampleBackend: Verify user session
     ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return ConnectToken
-    ExampleBackend-->>-ExampleFrontend: Return ConnectToken
+    BAPI-->>-ExampleBackend: Return connectToken
+    ExampleBackend-->>-ExampleFrontend: Return connectToken
 
     ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
@@ -120,12 +120,12 @@ export default function Page() {
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect/ui-components/corbadoconnectappend).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
 </Info>
 
 ### Obtaining the ConnectToken
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `ConnectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [ConnectToken documentation](/corbado-connect/ui-components/overview#3-connecttokens-ctk) for more details).
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user, see [connectToken documentation](/corbado-connect/concepts/connect-token) for more details).
 
 The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
@@ -138,7 +138,7 @@ appendTokenProvider={async () => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `ConnectToken` by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the `connectToken` by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
 'use server';
@@ -466,7 +466,7 @@ export default WrappedLogin;
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/ui-components/corbadoconnectlogin).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
 </Info>
 
 The `onComplete` handler triggers our `postPasskeyLoginNew` function, which performs the final steps to log the user into Cognito:
@@ -912,13 +912,13 @@ sequenceDiagram
     participant BAPI as Corbado<br />Backend API
 
     Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado ConnectToken
+    ExampleFrontend->>+ExampleBackend: Request Corbado connectToken
     ExampleBackend->>ExampleBackend: Verify user session
     ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return ConnectToken
-    ExampleBackend-->>-ExampleFrontend: Return ConnectToken
+    BAPI-->>-ExampleBackend: Return connectToken
+    ExampleBackend-->>-ExampleFrontend: Return connectToken
 
-    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses ConnectToken and passkey ID)
+    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses connectToken and passkey ID)
     Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />handles passkey deletion
     FAPI-->>-ExampleFrontend: Return success
 ```
@@ -966,7 +966,7 @@ export const PasskeySection = ({integratePasskeys}: Props) => {
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/ui-components/corbadoconnectpasskeylist).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
 </Info>
 
 ### Obtaining the ConnectToken

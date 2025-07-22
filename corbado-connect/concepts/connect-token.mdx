@@ -1,0 +1,36 @@
+---
+title: "connectToken"
+description: "Learn what a connectToken is, why it's needed, and how it's used to secure passkey management actions in your application."
+sidebarTitle: "connectToken"
+---
+
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
+For security reasons, some of our Web UI components and SDK methods require a so-called `connectToken` to authorize actions that modify user data. Specifically, you will need to provide a `connectToken` for the following:
+
+- **Corbado Web UI Components**: `CorbadoConnectAppend` and `CorbadoConnectPasskeyList`
+- **Corbado iOS/Android SDK**: Methods for creating, listing, and deleting passkeys
+
+A `connectToken` is a **short-lived, single-use** token that securely ties a user's context (e.g., which account is being updated) to a particular action (such as passkey creation, listing, or deletion).
+
+Whenever a flow needs to safely reference a specific user's account for passkey management, a `connectToken` is required. These tokens are created on your server (server-to-server via the Corbado Backend API) and then passed to the relevant front-end component or SDK method.
+
+{/* 
+IMPORTANT: we have to use an absolute link to the API Reference POST /connectToken endpoint below because those pages are generated
+"on the fly" by Mintlify and we can not link to them relatively because then the Mintlify broken-links checker will complain!
+*/}
+
+1.  **Frontend requests a `connectToken`**:
+    Your web or native/mobile application makes a secure API call to your backend to request a `connectToken`.
+2.  **Backend generates a `connectToken`**:
+    Your backend makes a secure API call to Corbado's `/v2/connectTokens` endpoint (see [API Reference](https://docs.corbado.com/api-reference/backend-api/connecttokens/create-a-connecttoken)). This call identifies the user (for example, through a `customerIdentifier`) and specifies the intended action (`"passkey-append"`, `"passkey-list"`, or `"passkey-delete"`).
+2.  **Token includes user-specific data**:
+    The response from Corbado includes a unique `connectToken` (e.g., `ctk1_sxmexzS7RFBaJSA4V4kBFPs45bkxMK`). This token tells the UI component or SDK method precisely which user and action it is authorized for (e.g., "create a new passkey for user 123").
+3.  **Frontend consumes the `connectToken`**:
+    On the frontend or native/mobile application, a Web UI component or SDK method receives the token and initiates the passkey flow. During this process, Corbado checks the token's validity.
+4.  **Short-lived & single use**:
+    Each `connectToken` expires after a short period (configurable in Corbado's systems) and is valid for **one passkey operation** (e.g., a single passkey creation). Once expired or used, it cannot be reused. This design helps prevent replay attacks and unauthorized reuse.
+
+**In summary**, every time a passkey management flow runs (like _passkey creation_ or _passkey deletion_), your backend will need to generate a `connectToken` for the specific user and action.

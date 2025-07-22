@@ -1,0 +1,123 @@
+---
+title: "Prepare your backend for Corbado Connect"
+description: "Learn how to prepare your backend to support passkey authentication with Corbado Connect by implementing two essential endpoints."
+sidebarTitle: "Backend Setup"
+---
+
+## Introduction
+
+To enable passkey-based authentication with **Corbado Connect**, your backend needs to support your web and mobile applications by providing two essential endpoints:
+
+1.  **Create [connectTokens](/corbado-connect/concepts/connect-token)**: This endpoint generates [connectTokens](/corbado-connect/concepts/connect-token) that authorize specific passkey operations.
+2.  **Verify [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data)**: This endpoint validates the cryptographic proof of a successful passkey authentication, which is then used to establish a session in your system.
+
+In the following sections, we will detail the implementation of both endpoints.
+
+## Create connectToken
+
+Your backend must expose an endpoint that your frontend applications (web and mobile) can call to obtain a [connectToken](/corbado-connect/concepts/connect-token). This endpoint will in turn call **Corbado's** Backend API to generate the actual token.
+
+Here is an example implementation using Node.js and Express:
+
+```javascript
+app.post('/auth/createConnectToken', async (req, res) => {
+    try {
+        // 1. Verify the current user's session
+        const sessionId = req.cookies.session_id;
+        const user = await yourAuthSystem.verifySession(sessionId);
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid session' });
+        }
+
+        // 2. Request ConnectToken from Corbado Backend API
+        const response = await fetch('https://backendapi.cloud.corbado.io/v2/connectTokens', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${CORBADO_API_SECRET}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: req.body.type, // e.g., 'passkey-append'
+                data: {
+                    displayName: user.displayName,
+                    identifier: user.email,
+                }
+            })
+        });
+        if (!response.ok) {
+            console.error('Failed to get connectToken:', await response.text());
+
+            return res.status(500).json({ error: 'Failed to get connectToken' });
+        }
+
+        const data = await response.json();
+        
+        // 3. Return the ConnectToken to the frontend
+        res.json({
+            connectToken: data.secret
+        });
+    } catch (error) {
+        console.error('Error getting connectToken:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+```
+
+## Verify signedPasskeyData
+
+After a user successfully authenticates with a passkey, **Corbado Connect** generates [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data). You can find out more about it in our [concepts section](/corbado-connect/concepts/signed-passkey-data).
+
+Your backend needs to verify this [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) to confirm the user's identity before creating a session in your system.
+
+Here's an example of an endpoint that verifies the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and creates a session using Node.js and Express:
+
+```typescript
+app.post('/auth/verifySignedPasskeyData', async (req, res) => {
+    try {
+        const { signedPasskeyData } = req.body;
+
+        // 1. Verify signedPasskeyData with Corbado Backend API
+        const verifyResult = await fetch('https://backendapi.cloud.corbado.io/v2/passkeys/verifySignedData', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${CORBADO_API_SECRET}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ signedPasskeyData })
+        });
+
+        const data = await verifyResult.json();
+        if (data.verificationResult !== "success") {
+            return res.status(401).json({ error: 'Invalid signedPasskeyData' });
+        }
+
+        // 2. Extract user information
+        const userInfo = extractUserInfo(signedPasskeyData);
+
+        // 3. Create user session in your auth system
+        const session = await yourAuthSystem.createSession({
+            userId: userInfo.sub,
+        });
+
+        // TODO Adapt this to native app cases where we don't have a cookie, just return
+        // in payload? Then we need to adapt web and mention that this is insecure because
+        // of missing HTTPOnly cookie.
+        // 4. Store session ID in a cookie
+        res.cookie('session_id', session.Id, {
+            httpOnly: true,             // Prevents JavaScript access
+            secure: true,               // Only sent over HTTPS
+            sameSite: 'strict',         // CSRF protection
+            maxAge: 3 * 60 * 60 * 1000, // 3 hours
+            path: '/'                   // Available across the site
+        });
+
+        // 5. Send success response
+        res.json({
+            success: true,
+        });
+    } catch (error) {
+        console.error('Verification failed:', error);
+        res.status(500).json({ error: 'Verification failed' });
+    }
+});
+```
