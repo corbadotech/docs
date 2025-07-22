@@ -334,7 +334,7 @@ Before rendering the login screen, you should call the `isLoginAllowed()` method
 let nextStep = await corbado.isLoginAllowed()
 switch nextStep {
 case .initTextField(let cuiChallenge, _):
-    // If cuiChallenge is not nil, handle "Conditional UI Login",
+    // If cuiChallenge is not nil, handle "Overlay Login",
     // otherwise handle "Textfield Login" (see below)
     
 case .initOneTap(let email):
@@ -345,11 +345,11 @@ case .initFallback(_, _):
 }
 ```
 
-#### 5.2.2 Conditional UI Login
+#### 5.2.2 Overlay Login
 
-![Conditional Login](/images/corbado-connect/mobile/passkey-login-cui.webp)
+![Overlay Login](/images/corbado-connect/mobile/passkey-login-overlay.webp)
 
-With [Conditional UI](https://www.corbado.com/glossary/conditional-ui), a user can log in with an existing passkey without providing their login identifier (e.g., email). The passkey prompt appears automatically. To handle this case, you need to call the `loginWithoutIdentifier()` method from the **Corbado iOS SDK**.
+With **Overlay Login**, a user can log in with an existing passkey without providing their login identifier (e.g., email). The passkey prompt appears automatically. To handle this case, you need to call the `loginWithoutIdentifier()` method from the **Corbado iOS SDK**.
 
 If the login has been successful (`.done`), you must verify the returned `signedPasskeyData` with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
 
@@ -376,7 +376,7 @@ case .done(let signedPasskeyData, let username):
     }
     
 case .ignore(_):
-    // You could start CUI here (TODO ???)
+    // Passkey login was ignored. This is not an error.
     
 case .initSilentFallback(let email, _):
     // Passkey login failed silently, and a fallback is configured. The user
