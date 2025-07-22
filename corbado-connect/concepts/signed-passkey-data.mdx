@@ -8,7 +8,41 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
-The `signedPasskeyData` is a **short-lived, single-use** JSON Web Token (JWT) that confirms a successful passkey authentication with **Corbado Connect**. This token acts as the crucial link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session for the user. It is returned by the Corbado Frontend API upon a successful passkey login.
+The `signedPasskeyData` is a **short-lived, single-use** JSON Web Token (JWT) that confirms a successful passkey authentication with **Corbado Connect**:
+
+<CodeGroup>
+```text Example JWT
+eyJhbGciOiJSUzI1NiIsImtpZCI6InBraS01MTc3MzQ2NzY5MTkxNjgyNTg5IiwidHlwIjoiSldUIn0.eyJpc3MiOiJwcm8tNzgxNTI5NjI5Mzk0MDg4MTYyMCIsInN1YiI6InVzci02NzYxMzgwNzg3MzIzNDUzMTciLCJleHAiOjE3NTMyMDkwNzMsIm5iZiI6MTc1MzIwODc2MywiaWF0IjoxNzUzMjA4NzczLCJqdGkiOiJiTWpveWJnRENCQVhvbEh0bWlvTnN5dHlWQ2FSS24iLCJwcm9jZXNzSWQiOiJKY1ptbWFTUlFJMVZQRFRaTW1WMSIsInVzZXJuYW1lIjoiIiwiY3JlZGVudGlhbCI6ImNyZS0xMzU2NjYzMDA1MjA0MDQ2MDc3NCIsImNoYWxsZW5nZUlkIjoid2FzLTU0MzYzNzg4NTAxNzYzNzYyMTgiLCJ3ZWJhdXRobklkIjoiYzM2NGE4NTItMDA3MS03MGE0LTBmZTgtZWQ1NzI4YWE5NTIyIiwiaXNDVUkiOmZhbHNlfQ.dFvzxf7t0rdFueaLXLRD0K4hNIXhpm-vMWOaq_PRM_S3J4EO8TYg5fglAPHtdaMhvKPsKxxXtiOVt2DR5t7-AZSmlxdqyRJavV-ffRflJ5ZihfAqGrSMvD8-eN6xv81Nv46SSTKvWvDvImeCwxIvLxzuz4uOPGOVbqRqFYBgXJ4OMkXEN9SiS2ygA-KSvkJ7W1mdgumI4nWjHxNXn_BbtKZihQur6rf4WuZq1heo_SACvAZ8JJPSlUOMRESrjn1RhbBnhAL3v-0ppaMnHlLiLB5tLcvmdohJ6Ws9kcebVJE9d53Hfrzm2thyyg3MgFj0gZdjBzF-0ugqhsjXKIzLrQ
+```
+
+```json Decoded Header
+{
+  "alg": "RS256",
+  "kid": "pki-5177346769191682589",
+  "typ": "JWT"
+}
+```
+
+```json Decoded Payload
+{
+  "iss": "pro-7815296293940881620",
+  "sub": "usr-676138078732345317",
+  "exp": 1753209073,
+  "nbf": 1753208763,
+  "iat": 1753208773,
+  "jti": "bMjoybgDCBAXolHtmioNsytyVCaRKn",
+  "processId": "JcZmmaSRQI1VPDTZMmV1",
+  "username": "",
+  "credential": "cre-13566630052040460774",
+  "challengeId": "was-5436378850176376218",
+  "webauthnId": "c364a852-0071-70a4-0fe8-ed5728aa9522",
+  "isCUI": false
+}
+```
+
+</CodeGroup>
+
+This token acts as the crucial link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session for the user. It is returned by the Corbado Frontend API upon a successful passkey login.
 
 After the frontend receives the `signedPasskeyData`, it should be sent to your application's backend for verification. Your backend then calls a Corbado Backend API endpoint to verify the token's authenticity. If the verification is successful, your backend can proceed to create a session for the user.
 
@@ -17,11 +51,11 @@ This process ensures that the passkey login is valid and securely transfers the 
 The flow looks as follows:
 
 1.  **Corbado Connect login**:
-    A user logs in using their passkey in a web or mobile application.
+    A user logs in using their passkey in a web or native/mobile application.
 2.  **`signedPasskeyData` is returned**:
-    Upon successful passkey authentication, Corbado's Frontend API returns a `signedPasskeyData` token to your web or mobile application.
+    Upon successful passkey authentication, Corbado's Frontend API returns a `signedPasskeyData` token to your web or native/mobile application.
 3.  **Backend verification**:
-    Your web or mobile application sends the `signedPasskeyData` to your backend. Your backend then makes a secure server-to-server API call to Corbado's `/v2/passkeys/verifySignedData` endpoint to verify the token (see [API Reference](https://docs.corbado.com/api-reference/backend-api/passkeys/verify-signedpasskeydata-from-a-passkey-login)).
+    Your web or native/mobile application sends the `signedPasskeyData` to your backend. Your backend then makes a secure server-to-server API call to Corbado's `/v2/passkeys/verifySignedData` endpoint to verify the token (see [API Reference](https://docs.corbado.com/api-reference/backend-api/passkeys/verify-signedpasskeydata-from-a-passkey-login)).
 4.  **Session creation**:
     If Corbado's Backend API confirms that the token is valid, your backend creates a session for the user, completing the login process.
 5.  **Short-lived & single use**:

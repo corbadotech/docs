@@ -1,7 +1,7 @@
 ---
-title: "Mobile Native App Integration with Corbado Connect"
+title: "Native/Mobile Application Integration with Corbado Connect"
 description: "Learn how to integrate passkey authentication into your native iOS and Android apps using the Corbado iOS SDK and Corbado Android SDK. This guide covers setup, passkey enrollment, login, and management."
-sidebarTitle: "Mobile Application"
+sidebarTitle: "Native/Mobile Application"
 ---
 
 ## 1. Introduction
@@ -13,10 +13,10 @@ This guide provides a step-by-step approach to integrating the **Corbado iOS SDK
 For a comprehensive, working example, please refer to our example apps available on GitHub. They are an excellent resource to observe the SDKs in action and to use as a reference during your own implementation. Please note that the example apps use Cognito as an Identity Provider, but the implementation is similar for any other IdP.
 
 <CardGroup>
-    <Card title="iOS Example App" href="https://github.com/corbado/corbado-ios/tree/main/ConnectExample">
+    <Card title="iOS example App" href="https://github.com/corbado/corbado-ios/tree/main/ConnectExample">
     See the Corbado iOS SDK in action.
     </Card>
-    <Card title="Android Example App" href="https://github.com/corbado/corbado-android/tree/main/example">
+    <Card title="Android example App" href="https://github.com/corbado/corbado-android/tree/main/example">
     See the Corbado Android SDK in action.
     </Card>
 </CardGroup>
@@ -36,7 +36,7 @@ For the most up-to-date instructions on requirements, installation, and initiali
 
 ## 3. Backend Integration
 
-The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application, an iOS native app, or an Android native app.
+The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application or an native/mobile application.
 
 To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required API endpoints in your backend:
 
@@ -351,7 +351,7 @@ Before rendering the passkey enrollment screen, you should call the `isAppendAll
 The method requires a `connectTokenProvider`, a closure that fetches a short-lived `connectToken` from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current `accessToken` so your backend can verify their authenticated state before generating the token.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // In your ViewModel or screen logic
 let nextStep = await corbado.isAppendAllowed { _ in
     // Provide the accessToken of the currently logged-in user.
@@ -372,7 +372,7 @@ case .skip:
     // You should skip this screen and navigate them to the main part of your app.
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // In your ViewModel or screen logic
 val nextStep = corbado.isAppendAllowed { _ ->
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyAppend, "access-token-of-user")
@@ -409,7 +409,7 @@ When the user taps the button to create a passkey, you must call the `completeAp
 The method returns a status indicating the outcome of the ceremony, which you should handle accordingly.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // In your button's action handler
 let response = await corbado.completeAppend()
 
@@ -432,7 +432,7 @@ case .error:
     // choose to silently skip/ignore the error.
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // In your button's action handler
 when(val result = corbado.completeAppend(activityContext)) {
     is ConnectAppendStatus.Completed -> {
@@ -500,7 +500,7 @@ Integrating passkey login into your app is slightly more complex than passkey en
 Before rendering the login screen, you should call the `isLoginAllowed()` method from the **Corbado iOS/Android SDK**. This function is crucial for determining if the current user is eligible to use a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 let nextStep = await corbado.isLoginAllowed()
 switch nextStep {
 case .initTextField(let cuiChallenge, _):
@@ -514,7 +514,7 @@ case .initFallback(_, _):
     // Handle "Fallback Login" (see below)
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 when (val nextStep = corbado.isLoginAllowed()) {
     is ConnectLoginStep.InitTextField -> {
         // If challenge is not null, handle "Overlay Login",
@@ -541,7 +541,7 @@ With **Overlay Login**, a user can log in with an existing passkey without provi
 If the login has been successful (`.done` / `.Done`), you must verify the returned `signedPasskeyData` with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // Take cuiChallenge from .initTextField(), see above
 let nextStep = await corbado.loginWithoutIdentifier(cuiChallenge: cuiChallenge, conditionalUI: false) {
     // This closure is called when the Corbado iOS SDK is waiting for a user interaction.
@@ -586,7 +586,7 @@ case .error(let error, let triggerFallback, _, let username):
     }
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // Take challenge from .InitTextField, see above
 val result = corbado.loginWithoutIdentifier(activityContext, challenge)
 when (result) {
@@ -632,7 +632,7 @@ This is the standard identifier-first login flow. The user provides their login 
 Just like with other flows, a successful login returns `.done` / `.Done` with `signedPasskeyData`, which you must verify with your backend.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // Take email from textfield input
 let nextStep = await corbado.loginWithIdentifier(identifier: email)
 
@@ -670,7 +670,7 @@ case .initRetry:
     // The operation can be retried. You might want to show a retry button to the user.
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // Take email from textfield input
 val result = corbado.loginWithTextField(activityContext, email)
 when (result) {
@@ -710,13 +710,13 @@ when (result) {
 The subsequent steps for handling the response are identical to the **Textfield Login** flow: you will need to handle the different cases returned by the method and ultimately verify the `signedPasskeyData` with your backend.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 let nextStep = await corbado.loginWithOneTap()
 
 // Handle the 'nextStep' response just as you would for the 'Textfield Login'
 // flow. The possible cases (.done, .error, etc.) are the same.
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 val result = corbado.loginWithOneTap(activityContext)
 
 // Handle the 'result' response just as you would for the 'Textfield Login'
@@ -777,7 +777,7 @@ To build a passkey management screen, you need to know two things: what passkeys
 This eligibility check is governed by your project's settings for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence). The method returns the list of existing passkeys along with a status indicating if the "Add new passkey" button should be displayed.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
@@ -801,7 +801,7 @@ case .error(let error):
     // Handle the error, for example by showing an alert to the user.
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 val manageStep = corbado.isManageAppendAllowed { _ ->
@@ -844,7 +844,7 @@ To allow a user to delete a passkey, you first need to identify which passkey th
 This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh `connectToken` of type `PasskeyDelete`.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // This assumes 'passkey' is the PasskeyInfo object selected by the user from your UI list.
 let status = await corbado.deletePasskey(passkeyId: passkey.id) { _ in
     // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
@@ -866,7 +866,7 @@ default:
     // You could show a generic error message here.
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // This assumes 'passkeyId' is the ID of the passkey selected by the user from your UI list.
 val deleteStatus = corbado.deletePasskey(connectTokenProvider = { _ ->
     // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
@@ -901,7 +901,7 @@ If the user is allowed to add a new passkey (as determined by the `isManageAppen
 This function initiates the native passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a `connectToken` of type `PasskeyAppend` from your backend.
 
 <CodeGroup>
-```swift Swift example
+```swift iOS example (Swift)
 // This would be called when the user taps the "Add new passkey" button in your UI.
 let status = await corbado.completePasskeyListAppend { _ in
     // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
@@ -927,7 +927,7 @@ case .passkeyOperationExcludeCredentialsMatch:
     // This is not an error. Inform the user gracefully.
 }
 ```
-```kotlin Kotlin example
+```kotlin Android example (Kotlin)
 // This would be called when the user taps the "Add new passkey" button in your UI.
 val appendStatus = corbado.completePasskeyListAppend(activityContext, { _ ->
     // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.

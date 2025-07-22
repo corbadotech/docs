@@ -48,12 +48,12 @@
                         ]
                     },
                     {
-                        "group": "UI Components",
+                        "group": "Web UI Components",
                         "pages": [
-                            "corbado-connect/ui-components/overview",
-                            "corbado-connect/ui-components/corbadoconnectappend",
-                            "corbado-connect/ui-components/corbadoconnectlogin",
-                            "corbado-connect/ui-components/corbadoconnectpasskeylist"
+                            "corbado-connect/web-ui-components/overview",
+                            "corbado-connect/web-ui-components/corbadoconnectappend",
+                            "corbado-connect/web-ui-components/corbadoconnectlogin",
+                            "corbado-connect/web-ui-components/corbadoconnectpasskeylist"
                         ]
                     },
                     {
