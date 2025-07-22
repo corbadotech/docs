@@ -195,7 +195,7 @@ object AppBackend {
         return try {
             // 1. Set up request
             val request = GetConnectTokenRequest(connectTokenType, accessToken)
-            val jsonRequest = Json.encodeToString(ConnectTokenRequest.serializer(), request)
+            val jsonRequest = Json.encodeToString(GetConnectTokenRequest.serializer(), request)
 
             // 2. Perform request
             val urlString = "https://<your-backend>/auth/createConnectToken"
@@ -259,7 +259,7 @@ object AppBackend {
 
 @Serializable
 data class GetConnectTokenRequest(
-    val connectTokenType: String,
+    val connectTokenType: ConnectTokenType,
     val accessToken: String
 )
 
