@@ -781,7 +781,7 @@ This eligibility check is governed by your project's settings for [Gradual Rollo
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
-    // The SDK needs a connectToken of type 'PasskeyList' to authorize this action.
+    // Provide a connectToken of type 'PasskeyList' to authorize the list operation.
     return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, accessToken: "access-token-of-user")
 })
 
@@ -805,6 +805,7 @@ case .error(let error):
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 val manageStep = corbado.isManageAppendAllowed { _ ->
+    // Provide a connectToken of type 'PasskeyList' to authorize the list operation.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyList, "access-token-of-user")
     if (result.isFailure) {
         throw ConnectTokenError("Could not get connect token")
@@ -868,6 +869,7 @@ default:
 ```kotlin Kotlin example
 // This assumes 'passkeyId' is the ID of the passkey selected by the user from your UI list.
 val deleteStatus = corbado.deletePasskey(connectTokenProvider = { connectTokenType ->
+    // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyDelete, "access-token-of-user")
     if (result.isFailure) {
         throw ConnectTokenError("Could not get connect token")
@@ -928,6 +930,7 @@ case .passkeyOperationExcludeCredentialsMatch:
 ```kotlin Kotlin example
 // This would be called when the user taps the "Add new passkey" button in your UI.
 val appendStatus = corbado.completePasskeyListAppend(activityContext, { connectTokenType ->
+    // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyAppend, "access-token-of-user")
     if (result.isFailure) {
         throw ConnectTokenError("Could not get connect token")
