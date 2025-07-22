@@ -516,13 +516,13 @@ case .initFallback(_, _):
 ```
 ```kotlin Kotlin example
 when (val nextStep = corbado.isLoginAllowed()) {
-    is ConnectLoginStep.InitOneTap -> {
-        // Handle "One-Tap Login" (see below)
-    }
-
     is ConnectLoginStep.InitTextField -> {
         // If challenge is not null, handle "Overlay Login",
         // otherwise handle "Textfield Login" (see below)
+    }
+
+    is ConnectLoginStep.InitOneTap -> {
+        // Handle "One-Tap Login" (see below)
     }
 
     is ConnectLoginStep.InitFallback -> {
@@ -587,7 +587,7 @@ case .error(let error, let triggerFallback, _, let username):
 }
 ```
 ```kotlin Kotlin example
-// Take challenge from .initTextField(), see above
+// Take challenge from .InitTextField, see above
 val result = corbado.loginWithoutIdentifier(activityContext, challenge)
 when (result) {
     is ConnectLoginWithoutIdentifierStatus.Done -> {
