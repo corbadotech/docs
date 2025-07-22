@@ -39,7 +39,7 @@ To call your endpoints for `connectToken` generation and `signedPasskeyData` ver
 ```swift AppBackend.swift
 class AppBackend {
     /// Get connectToken from backend (which gets it from Corbado Backend API)
-    static func getConnectToken(connectTokenType: ConnectTokenType, sessionId: String) async throws -> String {
+    static func getConnectToken(connectTokenType: ConnectTokenType, accessToken: String) async throws -> String {
         // 1. Set up request
         let urlString = "https://<your-backend>/auth/createConnectToken"
         guard let url = URL(string: urlString) else {
@@ -52,7 +52,7 @@ class AppBackend {
 
         let requestPayload = GetConnectTokenRequest(
             connectTokenType: connectTokenType.rawValue,
-            sessionId: sessionId
+            accessToken: accessToken
         )
         
         do {
@@ -131,7 +131,7 @@ class AppBackend {
         // 4. Decode the JSON response
         do {
             let decodedResponse = try JSONDecoder().decode(VerifySignedPasskeyDataResponse.self, from: data)
-            return (decodedResponse.success, decodedResponse.sessionId)
+            return (decodedResponse.success, decodedResponse.accessToken)
         } catch {
             print("Error decoding JSON response: \(error)")
             
@@ -146,7 +146,7 @@ class AppBackend {
 
 struct GetConnectTokenRequest: Codable {
     let connectTokenType: String
-    let sessionId: String
+    let accessToken: String
 }
 
 struct GetConnectTokenResponse: Codable {
@@ -159,13 +159,13 @@ struct VerifySignedPasskeyDataRequest: Codable {
 
 struct VerifySignedPasskeyDataResponse: Codable {
     let success: Bool
-    let sessionId: String
+    let accessToken: String
 }
 ```
 
-For `getConnectToken()`, you must provide the `sessionId` of the user's session to enable the backend to verify the user's authenticated state.
+For `getConnectToken()`, you must provide the user's `accessToken` to enable the backend to verify their authenticated state.
 
-<Info>We use a `sessionId` for demonstration purposes only. Any other method, such as a JWT, would also be suitable.</Info>
+<Info>We use an `accessToken` for demonstration purposes. This token is typically a JWT issued by your Identity Provider (IdP) after a user authenticates.</Info>
 
 ## 4. Passkey Enrollment
 
@@ -202,10 +202,10 @@ sequenceDiagram
 
     Note over App: Corbado iOS SDK
     App->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify user session
+    Backend->>Backend: Verify user accessToken
     Backend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-Backend: Return ConnectToken
-    Backend-->>-App: Return ConnectToken
+    BAPI-->>-Backend: Return connectToken
+    Backend-->>-App: Return connectToken
 
     App->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over App: Corbado iOS SDK<br/>handles passkey creation
@@ -230,13 +230,13 @@ The interaction with the **Corbado iOS SDK** on this screen occurs at two key mo
 
 Before rendering the passkey enrollment screen, you should call the `isAppendAllowed()` method from the **Corbado iOS SDK**. This function is crucial for determining if the current user is eligible to add a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
-The method requires a `connectTokenProvider`, a closure that fetches a short-lived `connectToken` from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current session identifier (e.g., a session ID or JWT) so your backend can verify their authenticated state before generating the token.
+The method requires a `connectTokenProvider`, a closure that fetches a short-lived `connectToken` from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current `accessToken` so your backend can verify their authenticated state before generating the token.
 
 ```swift Swift example
 // In your ViewModel or screen logic
 let nextStep = await corbado.isAppendAllowed { _ in
-    // Provide the session ID of the currently logged-in user.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, sessionId: "your-user-session-id")
+    // Provide the accessToken of the currently logged-in user.
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "your-user-access-token")
 }
 
 switch nextStep {
@@ -285,7 +285,7 @@ case .error:
 
 ## 5. Passkey Login
 
-Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
+Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new `accessToken` from your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
@@ -315,9 +315,9 @@ sequenceDiagram
     App->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
-    Backend->>+IdP: Create user session
-    IdP-->>-Backend: Return session ID
-    Backend-->>-App: Return session ID
+    Backend->>+IdP: Request tokens for user
+    IdP-->>-Backend: Return accessToken
+    Backend-->>-App: Return accessToken
 ```
 
 In the following sections, we will explain each step in detail.
@@ -364,10 +364,10 @@ switch nextStep {
 case .done(let signedPasskeyData, let username):
     // The passkey ceremony was successful.
     do {
-        let (success, sessionId) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
+        let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Backend verification successful. Create a session using the returned 
-            // session ID and navigate the user to the logged-in area of your app.
+            // Backend verification successful. You now have a valid accessToken.
+            // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
         }
@@ -415,10 +415,10 @@ switch nextStep {
 case .done(let signedPasskeyData, let username):
     // The passkey ceremony was successful.
     do {
-        let (success, sessionId) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
+        let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Backend verification successful. Create a session using the returned 
-            // session ID and navigate the user to the logged-in area of your app.
+            // Backend verification successful. You now have a valid accessToken.
+            // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an error message.
         }
@@ -487,10 +487,10 @@ sequenceDiagram
 
     Note over App: Corbado iOS SDK
     App->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify user session
+    Backend->>Backend: Verify user accessToken
     Backend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-Backend: Return ConnectToken
-    Backend-->>-App: Return ConnectToken
+    BAPI-->>-Backend: Return connectToken
+    Backend-->>-App: Return connectToken
 
     App->>+FAPI: Request passkey list<br/>(uses ConnectToken)
     Note over App: Corbado iOS SDK<br />handles passkey list
@@ -501,7 +501,7 @@ In the following sections, we will explain each step in detail.
 
 ### 6.2 App Integration
 
-All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS SDK** uses a short-lived `connectToken` that you generate on your backend for an authenticated user. This token proves to Corbado's APIs that the user performing the action has a valid session with your system.
+All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS SDK** uses a short-lived `connectToken` that you generate on your backend for an authenticated user. This token proves to Corbado's APIs that the user performing the action is properly authenticated with your system.
 
 To provide this token to the **Corbado iOS SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh `connectToken`. You can reuse the `AppBackend` helper class for this.
 
@@ -518,7 +518,7 @@ This eligibility check is governed by your project's settings for [Gradual Rollo
 // if the user is eligible to add a new one.
 let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
     // The SDK needs a connectToken of type 'PasskeyList' to authorize this action.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, sessionId: "your-user-session-id")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, accessToken: "your-user-access-token")
 })
 
 switch nextStep {
@@ -550,7 +550,7 @@ This operation also requires authorization, so you must provide the same `connec
 // This assumes 'passkey' is the PasskeyInfo object selected by the user from your UI list.
 let status = await corbado.deletePasskey(passkeyId: passkey.id) { _ in
     // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyDelete, sessionId: "your-user-session-id")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyDelete, accessToken: "your-user-access-token")
 }
 
 switch status {
@@ -581,7 +581,7 @@ This function initiates the native iOS passkey creation ceremony. It requires a 
 // This would be called when the user taps the "Add new passkey" button in your UI.
 let status = await corbado.completePasskeyListAppend { _ in
     // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
-    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, sessionId: "your-user-session-id")
+    return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "your-user-access-token")
 }
 
 switch status {
