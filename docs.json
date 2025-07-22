@@ -65,8 +65,7 @@
                                     "corbado-connect/integration/generic/overview",
                                     "corbado-connect/integration/generic/backend",
                                     "corbado-connect/integration/generic/web",
-                                    "corbado-connect/integration/generic/ios",
-                                    "corbado-connect/integration/generic/android"
+                                    "corbado-connect/integration/generic/mobile"
                                 ]
                             },
                             "corbado-connect/integration/cognito",
