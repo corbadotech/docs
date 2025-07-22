@@ -8,11 +8,23 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
-## Introduction
+## 1. Introduction
 
-- Explain Web approach
+**Corbado Connect** provides a set of Web UI Components that simplify the integration of passkey authentication into your web application. By using our components, you can offer a seamless and secure user experience with passkeys, without needing to replace your existing Identity Provider (IdP). The components handle the complexities of the WebAuthn standard and our backend APIs, allowing you to focus on your web application's core functionality.
 
-## Step 1: Passkey Enrollment
+This guide provides a step-by-step approach to integrating the **Corbado Connect Web UI Components**. You'll learn how to implement passkey enrollment, login, and management within your web application.
+
+## 2. Backend Integration
+
+The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application or a native/mobile application.
+
+To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required API endpoints in your backend:
+
+<Card title="Backend Setup" href="/corbado-connect/integration/generic/backend">
+  Learn how to implement the necessary backend endpoints in your backend to support passkey operations.
+</Card>
+
+## 3. Passkey Enrollment
 
 In a typical integration scenario, the initial user sign-up is handled through your existing authentication system's standard registration process. This could be through:
 
@@ -31,7 +43,7 @@ This approach offers several advantages:
 
 The complete user sign-up and passkey append flow is illustrated in detail in our [User Sign-up Flow documentation](/corbado-connect/flows/user-sign-up). In the following sections, we'll break down each component of the implementation.
 
-### Implementation Overview
+### 3.1 Implementation Overview
 
 The user sign-up and passkey append process consists of a series of coordinated interactions between your application's frontend and backend, your authentication system, and Corbado's APIs. Here's a high-level overview of the flow:
 
@@ -63,7 +75,7 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### Web UI Component Integration
+### 3.2 Web UI Component Integration
 
 The integration starts with the `CorbadoConnectAppend` component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
 
@@ -126,7 +138,7 @@ Here's an example integration:
 For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
 </Info>
 
-### Obtaining the ConnectToken
+### 3.3 Obtaining the ConnectToken
 
 When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API. This token authorizes the creation of a passkey for a specific and authenticated user (see [connectToken documentation](/corbado-connect/concepts/connect-token) for more details).
 
@@ -189,7 +201,7 @@ The endpoint performs several important steps:
 The ConnectToken is short-lived and single-use. Always generate a new token for each passkey operation.
 </Info>
 
-### Updating MFA Settings
+### 3.4 Updating MFA Settings
 
 After a passkey is created, you may need to update settings in your authentication system to reflect this change. This could include:
 
@@ -259,13 +271,13 @@ The exact implementation will depend on your authentication system's API or SDK,
 For more information about Corbado actions and how to implement them, see the [Actions documentation](/corbado-connect/architecture/actions).
 </Info>
 
-## Step 2: Passkey Login
+## 4. Passkey Login
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
-### Implementation Overview
+### 4.1 Implementation Overview
 
 The cornerstone of user login integration is `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with **Corbado Connect** (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
 
@@ -279,7 +291,7 @@ In each option, it is necessary to create a session within your authentication s
 
 We will now elaborate on each option in the following sections.
 
-#### Option 1: System Extension
+#### 4.1.1 Option 1: System Extension
 
 This option involves extending your existing authentication system through its plugin architecture or custom authentication method support. Many modern authentication systems provide ways to add new authentication methods or customize the authentication flow.
 
@@ -324,7 +336,7 @@ This approach is ideal when:
 The exact implementation details will depend on your authentication system's extension capabilities. Some systems might require implementing specific interfaces or following certain patterns.
 </Info>
 
-#### Option 2: Custom Endpoint
+#### 4.1.2 Option 2: Custom Endpoint
 
 This option involves implementing a dedicated endpoint in your backend that handles passkey verification and session creation. This approach gives you full control over the authentication flow and is suitable when your authentication system doesn't support extensions or when you need custom session handling.
 
@@ -423,7 +435,7 @@ This approach is ideal when:
 Remember to implement proper error handling and security measures in your endpoint, such as rate limiting and logging.
 </Info>
 
-#### Option 3: Corbado Action
+#### 4.1.3 Option 3: Corbado Action
 
 This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of `signedPasskeyData` in your system, you can use a `post-login` action to create and return a session. This approach minimizes the integration effort while maintaining security.
 
@@ -498,7 +510,7 @@ This approach is ideal when:
 The action environment provides secure access to your authentication system's API. Make sure to configure the necessary credentials and permissions in your **Corbado Connect** project settings.
 </Info>
 
-### Web UI Component Integration
+### 4.2 Web UI Component Integration
 
 The integration starts with the `CorbadoConnectLogin` component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
 
@@ -544,7 +556,7 @@ For comprehensive information on configuration options, detailed styling choices
 
 The implementation details for the `onComplete` callback will be provided in the subsequent sections.
 
-#### Option 1: System Extension
+#### 4.2.1 Option 1: System Extension
 
 As we have integrated with the existing authentication system, session creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
 
@@ -554,7 +566,7 @@ onComplete: (signedPasskeyData, clientState) => {
 }
 ```
 
-#### Option 2: Custom Endpoint
+#### 4.2.2 Option 2: Custom Endpoint
 
 When using the custom endpoint approach, the `onComplete` callback needs to send the `signedPasskeyData` to your verification endpoint and redirect to the profile page:
 
@@ -580,7 +592,7 @@ onComplete: async (signedPasskeyData, clientState) => {
 }
 ```
 
-#### Option 3: Corbado Action
+#### 4.2.3 Option 3: Corbado Action
 
 When using a Corbado Action, the session ID is returned directly in the `result` object, simplifying the frontend logic:
 
@@ -598,17 +610,17 @@ onComplete: async (result, clientState) => {
 }
 ```
 
-## Step 3: Passkey Management
+## 5. Passkey Management
 
 Providing users with a way to manage their passkeys is a critical part of the experience. The `CorbadoConnectPasskeyList` component offers a complete, pre-built UI for users to list, add, and delete passkeys associated with their account.
 
 This component should be placed in a secure, authenticated area of your application, such as a user profile or account settings page.
 
-### Implementation Overview
+### 5.1 Implementation Overview
 
 The `CorbadoConnectPasskeyList` component requires a distinct `ConnectToken` to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
-### Web UI Component Integration
+### 5.2 Web UI Component Integration
 
 Integrate the `CorbadoConnectPasskeyList` component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
 
@@ -660,7 +672,7 @@ Integrate the `CorbadoConnectPasskeyList` component on a profile or settings pag
 For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
 </Info>
 
-### Obtaining the ConnectToken
+### 5.3 Obtaining the ConnectToken
 
 The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a `ConnectToken` for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. You can use the same backend endpoint created for the enrollment step, as it's already set up to handle different token types.
 
