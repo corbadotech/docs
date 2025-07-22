@@ -1,0 +1,129 @@
+---
+title: "CorbadoConnectPasskeyList: Manage User Passkeys"
+description: "CorbadoConnectPasskeyList component lets users manage their passkeys. Learn how to securely list and delete passkeys in your application."
+sidebarTitle: "CorbadoConnectPasskeyList"
+---
+
+import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
+**CorbadoConnectPasskeyList** provides a complete UI for authenticated users to manage their passkeys.
+
+# When to Use This Component
+
+This component should be loaded within a **profile or account management section** of your application where a user is already authenticated.
+
+### Rendering Logic
+
+The component's rendering is primarily controlled by the **Gradual Rollout** feature. If the `allow-passkey-list` ruleset you've configured determines that the current user should not have access to passkey management, the component will not render at all.
+
+# User Experience
+
+If rendered, the component allows the user to perform three main actions:
+
+1.  **List existing passkeys**: See all passkeys associated with their account, including helpful metadata like the device it was created on and when it was last used.
+2.  **Delete existing passkeys**: Revoke passkeys they no longer need.
+3.  **Append new passkeys**: Add a passkey from their current device.
+
+# Error Handling
+
+The component is designed to show clear, helpful error messages to the user within a pop-up modal. Planned errors that the user might encounter include:
+
+-   **Unsupported device**: If the user tries to append a passkey on a device or browser that does not support WebAuthn.
+-   **Passkey already exists**: If the user tries to append a passkey on a device that already has one registered for their account.
+
+# Example
+
+> **Important:** This component is designed for users who are already logged in. You must generate `connectTokens` (see [here](/corbado-connect/concepts/connect-token)) on your backend for listing, appending, and deleting passkeys to validate that the user session is legitimate.
+
+```js
+<head>
+  <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+
+  <script type="module">
+    const passkeyListElement = document.getElementById('passkey-list');
+
+    // This function is responsible for getting a short-lived ConnectToken from your backend.
+    // Your server would make a secure, server-to-server call to Corbado's Backend API.
+    const connectTokenProvider = async (type) => {
+      // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
+      const response = await fetch('/your-backend/generate-corbado-connect-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type }), 
+      });
+
+      const { token } = await response.json();
+
+      return token;
+    };
+
+    Corbado.mountCorbadoConnectPasskeyList(passkeyListElement, {
+      projectId: "pro-XXX", // Your Corbado Project ID
+      frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
+
+      // Asynchronously provides connectTokens for all actions (list, append, delete)
+      connectTokenProvider: connectTokenProvider
+    });
+  </script>
+</head>
+
+<body>
+  <!-- The passkey list UI will render into this div -->
+  <div id="passkey-list"></div>
+</body>
+```
+
+# Available Configuration Parameters
+
+| **Name**                 | **Description**                                                                                                                                                                                                                                                                 | **Required** | **Type**                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------- |
+| `connectTokenProvider`   | A function that asynchronously returns a `ConnectToken`. It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
+
+# Customization
+
+You can customize the component's appearance to match your application's design in two ways:
+
+### 1. Through CSS Theme Variables
+
+The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet. (See the Customization section of the `CorbadoConnectAppend` component for a full list of variables).
+
+### 2. Through CSS Classes
+
+For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
+
+#### Shared CSS Classes
+
+These classes are used across multiple **Corbado Connect** components.
+
+| **Class Name** | **Usage** |
+| --- | --- |
+| `.cb-h2` | Used for heading level 2 styling |
+| `.cb-p` | Used for paragraph text styling |
+| `.cb-bold` | Used for bold text |
+| `.cb-link-button` | Used for link-style buttons |
+| `.cb-connect-container` | The top-level container for the component |
+| `.cb-primary-button` | Used for primary buttons |
+| `.cb-secondary-button` | Used for secondary buttons |
+| `.cb-notification-container` | Used for notification containers |
+| `.loader` | Used for loader/spinner animations |
+
+#### Component-Specific CSS Classes
+
+These classes are specific to the `CorbadoConnectPasskeyList` component.
+
+| **Class Name** | **Usage** |
+| --- | --- |
+| `.cb-passkey-button` | Styles for the main passkey button |
+| `.cb-passkey-list-container` | Container for the list of passkeys |
+| `.cb-passkey-list-item` | Styles for individual passkey list items |
+| `.cb-passkey-list-append-button` | Styles for the button used to append passkey items |
+| `.cb-modal` | Styles for modal windows (used for delete confirmation, errors, etc.) |
+| `.cb-passkey-list-empty` | Styles for the empty state of the passkey list |
+
+# Next steps: Get in touch
+
+<GetInTouch></GetInTouch>
