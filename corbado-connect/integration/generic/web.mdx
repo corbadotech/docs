@@ -1,6 +1,6 @@
 ---
-title: "TODO Adapt title and description Generic IdP Integration with Corbado Connect"
-description: "Integrate any generic Identity Provider (IdP) with Corbado Connect. Bring passkey authentication to your users without major system overhauls."
+title: "Web Application Integration with Corbado Connect"
+description: "Learn how to integrate passkey authentication into your web application using the Corbado Web UI Components. This guide covers setup, passkey enrollment, login, and management."
 sidebarTitle: "Web Application"
 ---
 
@@ -63,7 +63,7 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### UI Component Integration
+### Web UI Component Integration
 
 The integration starts with the `CorbadoConnectAppend` component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
 
@@ -498,7 +498,7 @@ This approach is ideal when:
 The action environment provides secure access to your authentication system's API. Make sure to configure the necessary credentials and permissions in your **Corbado Connect** project settings.
 </Info>
 
-### UI Component Integration
+### Web UI Component Integration
 
 The integration starts with the `CorbadoConnectLogin` component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
 
@@ -608,7 +608,7 @@ This component should be placed in a secure, authenticated area of your applicat
 
 The `CorbadoConnectPasskeyList` component requires a distinct `ConnectToken` to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
-### UI Component Integration
+### Web UI Component Integration
 
 Integrate the `CorbadoConnectPasskeyList` component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
 
