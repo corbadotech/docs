@@ -91,6 +91,8 @@ class AppBackend {
     }
 
     /// Verify signedPasskeyData with backend (which verifies with Corbado Backend API)
+    /// If you are using an external Identity Provider (IdP) such as Amazon Cognito or Firebase, 
+    /// you can delegate the verification process to those systems by making a call to them.
     static func verifySignedPasskeyData(signedPasskeyData: String) async throws -> (Bool, String) {
         // 1. Set up request
         let urlString = "https://<your-backend>/auth/verifySignedPasskeyData"
@@ -283,7 +285,7 @@ case .error:
 
 ## 5. Passkey Login
 
-Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
+Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
