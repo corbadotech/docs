@@ -18,7 +18,7 @@ This action runs *before* a login ceremony begins. Its primary purpose is to tra
 
 ### Post-login: Session Bridging and Data Enrichment
 
-This action runs *after* a passkey ceremony is successfully completed. Its main purpose is to convert a successful **Corbado Connect** authentication into a session in your external IDP. It receives `signedPasskeyData` from **Corbado Connect**, calls your external backend (e.g., at a `/passkey/postLogin` endpoint), which in turn calls your IDP to establish the final user session.
+This action runs *after* a passkey ceremony is successfully completed. Its main purpose is to convert a successful **Corbado Connect** authentication into a session in your external IDP. It receives [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) from **Corbado Connect**, calls your external backend (e.g., at a `/passkey/postLogin` endpoint), which in turn calls your IDP to establish the final user session.
 
 ### Post-append: Post-Registration Hook
 

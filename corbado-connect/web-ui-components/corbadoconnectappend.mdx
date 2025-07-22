@@ -39,7 +39,7 @@ The component features built-in error handling. If an issue occurs during the pa
 
 # Example
 
-> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a `connectToken` (see [here](/corbado-connect/concepts/connect-token)) on your backend to validate that the user session is legitimate. This token is then passed to the component.
+> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a [connectToken](/corbado-connect/concepts/connect-token) on your backend to validate that the user session is legitimate. This token is then passed to the component.
 
 ```js
 <head>
@@ -84,7 +84,7 @@ The component features built-in error handling. If an issue occurs during the pa
 | **Name**              | **Description**                                                                                                                                                                                                                                                                                                                                          | **Required** | **Type**                                                    |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------- |
 | `onSkip`              | Called when the component skips rendering or the user actively dismisses it. The `status` string provides the reason, which can be `gradual-rollout-denied` (user not eligible), `passkey-intelligence-denied` (device not suitable), or `user-skipped` (user clicked skip). | ✅            | `(status: string) => void`                      |
-| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use `ConnectToken` needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
+| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use [connectToken](/corbado-connect/concepts/connect-token) needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
 | `onComplete`          | Called when a passkey has been successfully appended. It provides the `status` (`user-completed`) and a `clientState` string, which should be stored client-side (e.g., in a cookie) to accelerate future passkey flows.                                                            | ✅            | `(status: string, clientState: string) => void` |
 
 # Customization
