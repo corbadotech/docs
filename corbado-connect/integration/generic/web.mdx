@@ -140,65 +140,12 @@ For comprehensive information on configuration options, detailed styling choices
 
 ### 3.3 Obtaining the ConnectToken
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a short-lived `connectToken` from Corbado's Backend API. This token authorizes the creation of a passkey for a specific and authenticated user (see [connectToken documentation](/corbado-connect/concepts/connect-token) for more details).
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from your backend.
 
-Here's an example implementation in your backend:
-
-```javascript
-// Example using Express.js
-app.post('/auth/createConnectToken', async (req, res) => {
-    try {
-        // 1. Verify the current user's session
-        const sessionId = req.cookies.session_id;
-        const user = await yourAuthSystem.verifySession(sessionId);
-        if (!user) {
-            return res.status(401).json({ error: 'Invalid session' });
-        }
-
-        // 2. Request ConnectToken from Corbado Backend API
-        const response = await fetch('https://backendapi.cloud.corbado.io/v2/connectTokens', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${CORBADO_API_SECRET}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                type: req.body.type, // e.g., 'passkey-append'
-                data: {
-                    displayName: user.displayName,
-                    identifier: user.email,
-                }
-            })
-        });
-
-        if (!response.ok) {
-            console.error('Failed to get ConnectToken:', await response.text());
-
-            return res.status(500).json({ error: 'Failed to get ConnectToken' });
-        }
-
-        const data = await response.json();
-        
-        // 3. Return the ConnectToken to the frontend
-        res.json({
-            connectToken: data.secret
-        });
-    } catch (error) {
-        console.error('Error getting ConnectToken:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-```
-
-The endpoint performs several important steps:
-
-1. **Session Verification**: Ensures the request comes from an authenticated user
-2. **User Information**: Retrieves user details needed for the ConnectToken
-3. **Token Generation**: Requests a ConnectToken from Corbado Backend API
-4. **Error Handling**: Properly handles and reports any issues
+For detailed instructions on how to implement the required endpoint in your backend, please refer to our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
 <Info>
-The ConnectToken is short-lived and single-use. Always generate a new token for each passkey operation.
+Always generate a new token for each passkey operation.
 </Info>
 
 ### 3.4 Updating MFA Settings
@@ -279,12 +226,12 @@ The complete flow is illustrated in detail in our [User Login Flow documentation
 
 ### 4.1 Implementation Overview
 
-The cornerstone of user login integration is `signedPasskeyData` — a short-lived, single-use JSON Web Token (JWT) that confirms successful passkey authentication with **Corbado Connect** (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
+The cornerstone of user login integration is [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
 
 There are several ways to integrate the passkey login flow with your authentication system:
 
-1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage `signedPasskeyData` verification and session creation (refer to our dedicated [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
-2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies `signedPasskeyData` and establishes a session.
+1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification and session creation (refer to our [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
+2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and establishes a session.
 3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and establish a session.
 
 In each option, it is necessary to create a session within your authentication system at the conclusion of the process. For simplicity, we demonstrate creating a server-side session and storing its session ID in a cookie. However, you have complete flexibility to implement sessions in any manner you prefer, such as using tokens implemented with a JWT and storing them in local storage.
@@ -369,60 +316,9 @@ sequenceDiagram
     Backend-->>-Frontend: Return session ID
 ```
 
-The implementation typically involves creating a new endpoint in your backend:
+The implementation involves creating a new endpoint in your backend that receives the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), verifies it by calling Corbado's Backend API, and then creates a session in your own authentication system.
 
-```typescript
-// Example using Express.js
-app.post('/auth/verifySignedPasskeyData', async (req, res) => {
-    try {
-        const { signedPasskeyData } = req.body;
-
-        // 1. Verify signedPasskeyData with Corbado Backend API
-        const verifyResult = await fetch('https://backendapi.cloud.corbado.io/v2/passkeys/verifySignedData', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${CORBADO_API_SECRET}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ signedPasskeyData })
-        });
-
-        const data = await verifyResult.json();
-        if (data.verificationResult !== "success") {
-            return res.status(401).json({ error: 'Invalid signedPasskeyData' });
-        }
-
-        // 2. Extract user information
-        const userInfo = extractUserInfo(signedPasskeyData);
-
-        // 3. Create user session in your auth system
-        const session = await yourAuthSystem.createSession({
-            userId: userInfo.sub,
-        });
-
-        // TODO Adapt this to native app cases where we don't have a cookie, just return
-        // in payload? Then we need to adapt web and mention that this is insecure because
-        // of missing HTTPOnly cookie.
-
-        // 4. Store session ID in a cookie
-        res.cookie('session_id', session.Id, {
-            httpOnly: true,             // Prevents JavaScript access
-            secure: true,               // Only sent over HTTPS
-            sameSite: 'strict',         // CSRF protection
-            maxAge: 3 * 60 * 60 * 1000, // 3 hours
-            path: '/'                   // Available across the site
-        });
-
-        // 5. Send success response
-        res.json({
-            success: true,
-        });
-    } catch (error) {
-        console.error('Verification failed:', error);
-        res.status(500).json({ error: 'Verification failed' });
-    }
-});
-```
+For detailed instructions on how to implement this endpoint, please refer to our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
 This approach is ideal when:
 
@@ -437,7 +333,7 @@ Remember to implement proper error handling and security measures in your endpoi
 
 #### 4.1.3 Option 3: Corbado Action
 
-This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of `signedPasskeyData` in your system, you can use a `post-login` action to create and return a session. This approach minimizes the integration effort while maintaining security.
+This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) in your system, you can use a `post-login` action to create and return a session. This approach minimizes the integration effort while maintaining security.
 
 Here's how the flow typically works:
 
@@ -568,7 +464,7 @@ onComplete: (signedPasskeyData, clientState) => {
 
 #### 4.2.2 Option 2: Custom Endpoint
 
-When using the custom endpoint approach, the `onComplete` callback needs to send the `signedPasskeyData` to your verification endpoint and redirect to the profile page:
+When using the custom endpoint approach, the `onComplete` callback needs to send the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) to your verification endpoint and redirect to the profile page:
 
 ```javascript
 onComplete: async (signedPasskeyData, clientState) => {
@@ -618,7 +514,7 @@ This component should be placed in a secure, authenticated area of your applicat
 
 ### 5.1 Implementation Overview
 
-The `CorbadoConnectPasskeyList` component requires a distinct `ConnectToken` to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
+The `CorbadoConnectPasskeyList` component requires a distinct [connectToken](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
 ### 5.2 Web UI Component Integration
 
@@ -674,6 +570,6 @@ For a detailed explanation of all available props and customization options, ple
 
 ### 5.3 Obtaining the ConnectToken
 
-The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a `ConnectToken` for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. You can use the same backend endpoint created for the enrollment step, as it's already set up to handle different token types.
+The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a [connectToken](/corbado-connect/concepts/connect-token) from your backend for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. The implementation of this endpoint is described in our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
 When a user opens the page, the component will call `connectTokenProvider('passkey-list')` to get a token to display the existing passkeys. If they try to delete a passkey, it will call `connectTokenProvider('passkey-delete')`, and so on. This ensures every action is explicitly authorized by your backend for the currently authenticated user.
