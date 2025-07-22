@@ -41,10 +41,10 @@ The backend logic required to support **Corbado Connect** is consistent across a
 To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required API endpoints in your backend:
 
 <Card title="Backend Setup" href="/corbado-connect/integration/generic/backend">
-  Learn how to implement the necessary backend endpoints in your backend to support passkey operations.
+  Learn how to implement the necessary endpoints in your backend to support passkey operations.
 </Card>
 
-To call your endpoints for `connectToken` generation and `signedPasskeyData` verification, we create a small helper class that will be utilized in the upcoming integrations:
+To call your endpoints for [connectToken](/corbado-connect/concepts/connect-token) generation and [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification (both endpoints are described in the **Backend Setup** guide), we create a small helper class that will be utilized in the upcoming integrations:
 
 <CodeGroup>
 ```swift AppBackend.swift
@@ -348,7 +348,7 @@ The interaction with the **Corbado iOS/Android SDK** on this screen occurs at tw
 
 Before rendering the passkey enrollment screen, you should call the `isAppendAllowed()` method from the **Corbado iOS/Android SDK**. This function is crucial for determining if the current user is eligible to add a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
-The method requires a `connectTokenProvider`, a closure that fetches a short-lived `connectToken` from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current `accessToken` so your backend can verify their authenticated state before generating the token.
+The method requires a `connectTokenProvider`, a closure that fetches a [connectToken](/corbado-connect/concepts/connect-token) from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current `accessToken` so your backend can verify their authenticated state before generating the token.
 
 <CodeGroup>
 ```swift iOS example (Swift)
@@ -538,7 +538,7 @@ when (val nextStep = corbado.isLoginAllowed()) {
 
 With **Overlay Login**, a user can log in with an existing passkey without providing their login identifier (e.g., email). The passkey prompt appears automatically. To handle this case, you need to call the `loginWithoutIdentifier()` method from the **Corbado iOS/Android SDK**.
 
-If the login has been successful (`.done` / `.Done`), you must verify the returned `signedPasskeyData` with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
+If the login has been successful (`.done` / `.Done`), you must verify the returned [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
 
 <CodeGroup>
 ```swift iOS example (Swift)
@@ -629,7 +629,7 @@ when (result) {
 
 This is the standard identifier-first login flow. The user provides their login identifier (e.g., email), and your app uses it to initiate the passkey ceremony. To handle this case, you call the `loginWithIdentifier()` method from the **Corbado iOS/Android SDK**.
 
-Just like with other flows, a successful login returns `.done` / `.Done` with `signedPasskeyData`, which you must verify with your backend.
+Just like with other flows, a successful login returns `.done` / `.Done` with [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), which you must verify with your backend.
 
 <CodeGroup>
 ```swift iOS example (Swift)
@@ -707,7 +707,7 @@ when (result) {
 
 [One-Tap Login](/corbado-connect/features/one-tap-login) offers the most frictionless experience. When the **Corbado iOS/Android SDK** has a stored identifier for the user, it can initiate the passkey login with a single tap, skipping the need for the user to type anything. You handle this case by calling `loginWithOneTap()`.
 
-The subsequent steps for handling the response are identical to the **Textfield Login** flow: you will need to handle the different cases returned by the method and ultimately verify the `signedPasskeyData` with your backend.
+The subsequent steps for handling the response are identical to the **Textfield Login** flow: you will need to handle the different cases returned by the method and ultimately verify the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) with your backend.
 
 <CodeGroup>
 ```swift iOS example (Swift)
@@ -764,9 +764,9 @@ In the following sections, we will explain each step in detail.
 
 ### 6.2 App Integration
 
-All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS/Android SDK** uses a short-lived `connectToken` that you generate on your backend for an authenticated user. This token proves to Corbado's APIs that the user performing the action is properly authenticated with your system.
+All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS/Android SDK** uses a [connectToken](/corbado-connect/concepts/connect-token) that you generate on your backend for an authenticated user.
 
-To provide this token to the **Corbado iOS/Android SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh `connectToken`. You can reuse the `AppBackend` helper class for this.
+To provide this token to the **Corbado iOS/Android SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh [connectToken](/corbado-connect/concepts/connect-token). You can reuse the `AppBackend` helper class for this.
 
 #### 6.2.1 List Passkeys
 
@@ -841,7 +841,7 @@ when (manageStep) {
 
 To allow a user to delete a passkey, you first need to identify which passkey they wish to remove. Typically, this is done by having the user select one from the list you populated in the previous step. Once you have the passkey's ID, you call the `deletePasskey()` method from the **Corbado iOS/Android SDK**.
 
-This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh `connectToken` of type `PasskeyDelete`.
+This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh [connectToken](/corbado-connect/concepts/connect-token) of type `PasskeyDelete`.
 
 <CodeGroup>
 ```swift iOS example (Swift)
@@ -898,7 +898,7 @@ when (deleteStatus) {
 
 If the user is allowed to add a new passkey (as determined by the `isManageAppendAllowed()` method), your UI should present an "Add new passkey" button. When the user taps this button, you call the `completePasskeyListAppend()` method from the **Corbado iOS/Android SDK**.
 
-This function initiates the native passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a `connectToken` of type `PasskeyAppend` from your backend.
+This function initiates the native passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a [connectToken](/corbado-connect/concepts/connect-token) of type `PasskeyAppend` from your backend.
 
 <CodeGroup>
 ```swift iOS example (Swift)
