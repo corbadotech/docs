@@ -1,0 +1,30 @@
+---
+title: "signedPasskeyData"
+description: "Learn what signedPasskeyData is, why it's needed, and how it's used to securely verify a passkey login in your application's backend."
+sidebarTitle: "signedPasskeyData"
+---
+
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
+The `signedPasskeyData` is a **short-lived, single-use** JSON Web Token (JWT) that confirms a successful passkey authentication with **Corbado Connect**. This token acts as the crucial link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session for the user. It is returned by the Corbado Frontend API upon a successful passkey login.
+
+After the frontend receives the `signedPasskeyData`, it should be sent to your application's backend for verification. Your backend then calls a Corbado Backend API endpoint to verify the token's authenticity. If the verification is successful, your backend can proceed to create a session for the user.
+
+This process ensures that the passkey login is valid and securely transfers the authentication status from Corbado to your application.
+
+The flow looks as follows:
+
+1.  **Corbado Connect login**:
+    A user logs in using their passkey in a web or mobile application.
+2.  **`signedPasskeyData` is returned**:
+    Upon successful passkey authentication, Corbado's Frontend API returns a `signedPasskeyData` token to your web or mobile application.
+3.  **Backend verification**:
+    Your web or mobile application sends the `signedPasskeyData` to your backend. Your backend then makes a secure server-to-server API call to Corbado's `/v2/passkeys/verifySignedData` endpoint to verify the token (see [API Reference](https://docs.corbado.com/api-reference/backend-api/passkeys/verify-signedpasskeydata-from-a-passkey-login)).
+4.  **Session creation**:
+    If Corbado's Backend API confirms that the token is valid, your backend creates a session for the user, completing the login process.
+5.  **Short-lived & single use**:
+    Each `signedPasskeyData` token is short-lived and can be used only once for verification. This prevents replay attacks and ensures a high level of security.
+
+**In summary**, every time a user logs in using a passkey, your application's backend needs to verify the `signedPasskeyData` to securely establish a session.
