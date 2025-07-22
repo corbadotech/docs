@@ -4,7 +4,7 @@ description: "Learn how to prepare your backend to support passkey authenticatio
 sidebarTitle: "Backend Setup"
 ---
 
-## Introduction
+## 1. Introduction
 
 To enable passkey-based authentication with **Corbado Connect**, your backend needs to support your web and mobile applications by providing two essential endpoints:
 
@@ -13,7 +13,7 @@ To enable passkey-based authentication with **Corbado Connect**, your backend ne
 
 In the following sections, we will detail the implementation of both endpoints.
 
-## Create connectToken
+## 2. Create connectToken
 
 Your backend must expose an endpoint that your frontend applications (web and mobile) can call to obtain a [connectToken](/corbado-connect/concepts/connect-token). This endpoint will in turn call **Corbado's** Backend API to generate the actual token.
 
@@ -63,7 +63,7 @@ app.post('/auth/createConnectToken', async (req, res) => {
 });
 ```
 
-## Verify signedPasskeyData
+## 3. Verify signedPasskeyData
 
 After a user successfully authenticates with a passkey, **Corbado Connect** generates [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data). You can find out more about it in our [concepts section](/corbado-connect/concepts/signed-passkey-data).
 
