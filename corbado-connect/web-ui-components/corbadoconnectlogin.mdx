@@ -8,35 +8,37 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
+## 1. Introduction
+
 **CorbadoConnectLogin** handles passkey logins. You might embed this component in a modal or on a dedicated login page. It's responsible for prompting the user to log in with a passkey and managing fallback if no passkey is available or if the passkey flow fails.
 
-# When to Use This Component
+## 2. When to Use This Component
 
 This component should be loaded at the **beginning of any login flow** where you want to offer passkeys as an authentication method.
 
-# Rendering Logic & User Experience
+## 3. Rendering Logic & User Experience
 
 The component's initial appearance can vary, creating a tailored experience for the user. There are three possible scenarios when the component loads:
 
-### Scenario 1: Immediate Fallback
+### 3.1 Scenario 1: Immediate Fallback
 
 The component immediately triggers the `onFallback` callback without rendering any UI. This happens if **Gradual Rollout** rules are configured to deny passkey login for the current user. This allows you to seamlessly direct them to your existing login method (e.g., password) without showing them a passkey option they can't use.
 
-### Scenario 2: Standard Login Form
+### 3.2 Scenario 2: Standard Login Form
 
 This is the default state. The component renders a form asking for an identifier (like an email address). In this state, the user can:
 1.  Type their identifier and click the button to initiate a passkey login.
 2.  Use **Conditional UI**, a browser feature that autofills the input with a passkey-associated account. Clicking this suggestion directly triggers the passkey login, saving the user a step.
 
-### Scenario 3: One-Tap Login
+### 3.3 Scenario 3: One-Tap Login
 
 The component renders a "Sign in with a passkey" button for a specific user. This streamlined experience occurs if the component detects a `clientState` value (from a previous `onComplete` callback) stored in the browser's `localStorage`. It allows returning users on the same device to log in with a single click.
 
-# Error Handling
+## 4. Error Handling
 
 The component is designed to handle errors gracefully and provide the best possible user experience. It uses two main strategies:
 
-### 1. Automatic Fallback
+### 4.1 Automatic Fallback
 
 In some cases, the component will automatically trigger the `onFallback` callback. This is the preferred behavior when:
 
@@ -46,11 +48,11 @@ In some cases, the component will automatically trigger the `onFallback` callbac
 
 This prevents users from getting stuck and directs them to an alternative login method. The `errorMessage` in the callback will provide context.
 
-### 2. Retryable Error Screen
+### 4.2 Retryable Error Screen
 
 In other cases, such as when a user instinctively closes the browser's passkey prompt, the error is likely recoverable. Instead of triggering the fallback, the component will display an informative message inside its own UI, explaining what happened and offering a "Try again" button. This helps guide users who might be unfamiliar with the passkey experience.
 
-# Example
+## 5. Example
 
 ```js
 <head>
@@ -95,26 +97,26 @@ In other cases, such as when a user instinctively closes the browser's passkey p
 </body>
 ```
 
-# Available Configuration Parameters
+## 6. Available Configuration Parameters
 
 | **Name**     | **Description**                                                                                                                                                                                                                                                                                                                                                     | **Required** | **Type**                                                   |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------- |
 | `onComplete` | Invoked upon a successful passkey login. Receives [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and a `clientState` string. **Storing the `clientState` in localStorage is crucial for enabling the One-Tap Login experience on subsequent visits.**                                                                                            | ✅            | `(signedPasskeyData: string, clientState: string) => void` |
 | `onFallback` | Called if passkey login isn't possible (due to gradual rollout, [passkey intelligence](/corbado-connect/features/passkey-intelligence)) or fails with a non-recoverable error. Provides an `identifier` (if the user entered one) and a descriptive `errorMessage`. Your logic should show an alternative login method (e.g., password) when this is called.                                                                       | ✅            | `(identifier: string, errorMessage: string) => void`       |
 
-# Customization
+## 7. Customization
 
 You can customize the component's appearance to match your application's design in two ways:
 
-### 1. Through CSS Theme Variables
+### 7.1 Through CSS Theme Variables
 
 The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet. (See the Customization section of the `CorbadoConnectAppend` component for a full list of variables).
 
-### 2. Through CSS Classes
+### 7.2 Through CSS Classes
 
 For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
 
-#### Shared CSS Classes
+#### 7.2.1 Shared CSS Classes
 
 These classes are used across multiple **Corbado Connect** components.
 
@@ -130,7 +132,7 @@ These classes are used across multiple **Corbado Connect** components.
 | `.cb-notification-container` | Used for notification containers |
 | `.loader` | Used for loader/spinner animations |
 
-#### Component-Specific CSS Classes
+#### 7.2.2 Component-Specific CSS Classes
 
 These classes are specific to the `CorbadoConnectLogin` component.
 
