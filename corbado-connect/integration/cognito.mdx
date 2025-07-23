@@ -77,7 +77,7 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### 4.2 UI Component Integration
+### 4.2 Web UI Component Integration
 
 We start by integrating the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
@@ -895,7 +895,7 @@ After users have created their initial passkeys during sign-up and used them for
 2. Creating additional passkeys
 3. Deleting unused passkeys
 
-All these operations follow a similar pattern: they require obtaining a [connectToken](/corbado-connect/concepts/connect-token) for the **Corbado Connect** Web UI component, which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
+All these operations follow a similar pattern: they require obtaining a [connectToken](/corbado-connect/concepts/connect-token) for the [Corbado Web UI Component](/corbado-connect/web-ui-components), which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
@@ -923,7 +923,7 @@ sequenceDiagram
     FAPI-->>-ExampleFrontend: Return success
 ```
 
-### 6.2 UI Component Integration
+### 6.2 Web UI Component Integration
 
 We integrate the `CorbadoConnectPasskeyList` component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 

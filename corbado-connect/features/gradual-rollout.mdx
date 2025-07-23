@@ -10,13 +10,13 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 ## What is Gradual Rollout?
 
-Gradual rollout is a feature that allows you to control which users are able to interact with the passkey UI components. This gives you the flexibility to introduce passkeys to your users in a phased manner, for example, by first enabling it for a small percentage of users and then gradually rolling it out to a wider audience.
+Gradual rollout is a feature that allows you to control which users are able to interact with the passkey [Corbado Web UI Components](/corbado-connect/web-ui-components). This gives you the flexibility to introduce passkeys to your users in a phased manner, for example, by first enabling it for a small percentage of users and then gradually rolling it out to a wider audience.
 
 This is managed through a set of rules that determine whether a user should be presented with a passkey component for appending a new passkey, logging in with a passkey, or viewing their list of passkeys.
 
 ## How does it work?
 
-Whenever one of the UI components is about to be displayed to a user, it checks with Corbado's backend to see if the user is eligible based on the configured rules. Based on the response, the component will either render or stay hidden.
+Whenever one of the [Corbado Web UI Components](/corbado-connect/web-ui-components) is about to be displayed to a user, it checks with Corbado's backend to see if the user is eligible based on the configured rules. Based on the response, the component will either render or stay hidden.
 
 These rules can be managed in the Corbado developer panel.
 

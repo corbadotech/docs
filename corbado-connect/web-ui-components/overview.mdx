@@ -1,6 +1,6 @@
 ---
-title: "Corbado Connect Web UI Components for Passkey Integration"
-description: "Overview of Corbado Connect Web UI components. Our JS-based components simplify passkey ceremonies, fallback logic, and user interactions for any front-end."
+title: "Corbado Web UI Components for Passkey Integration"
+description: "Overview of Corbado Web UI Components. Our JS-based components simplify passkey ceremonies, fallback logic, and user interactions for any front-end."
 sidebarTitle: "Overview"
 ---
 
@@ -13,7 +13,7 @@ Enterprise passkey integrations can be complex especially when you have multiple
 
 Corbado's approach is lightweight: you embed our JavaScript library or use npm packages to mount passkey related components in your code. This guide shows a short introduction to the two core components **CorbadoConnectAppend** and **CorbadoConnectLogin** and also briefly introduces **CorbadoConnectPasskeyList** for passkey management.
 
-This article [**focuses primarily on the automatic login approach tailored for identifier-first implementations**](https://www.corbado.com/blog/passkey-login-best-practices#61-automatic-passkey-login-approach-with-corbado). If you're interested in learning more about implementing passkeys using our [passkey button approach](https://www.corbado.com/blog/passkey-login-best-practices#62-separate-passkey-button-approach-with-corbado) with Corbado's Web UI components, feel free to contact us directly for further details.
+This article [**focuses primarily on the automatic login approach tailored for identifier-first implementations**](https://www.corbado.com/blog/passkey-login-best-practices#61-automatic-passkey-login-approach-with-corbado). If you're interested in learning more about implementing passkeys using our [passkey button approach](https://www.corbado.com/blog/passkey-login-best-practices#62-separate-passkey-button-approach-with-corbado) with [Corbado Web UI Components](/corbado-connect/web-ui-components), feel free to contact us directly for further details.
 
 ## 1. Components as one part of the Enterprise Passkey Platform
 
@@ -23,13 +23,13 @@ Frontend Components are only one part of the integration options provided by Cor
 
 ## 2. Configuration Supported by All Components
 
-Each **Corbado Connect** Web UI component supports a common set of configuration parameters:
+Each [Corbado Web UI Component](/corbado-connect/web-ui-components) supports a common set of configuration parameters:
 
 | **Name**               | **Description**                                                                                                                                                                             | **Required** | **Type**  |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------- |
 | `projectId`            | The ID of the Corbado project.                                                                                                                                                              | ✅            | `string`  |
 | `frontendApiUrlSuffix` | The Corbado Frontend API to connect to. You can specify whether the component connects to the staging or production environment.                                                            | ✅            | `string`  |
-| `isDebug`              | If set to `true`, the **Corbado Connect** Web UI components will log debug information to the console. Useful for development, but should be disabled in production.                            |              | `boolean` |
+| `isDebug`              | If set to `true`, the [Corbado Web UI Components](/corbado-connect/web-ui-components) will log debug information to the console. Useful for development, but should be disabled in production.                            |              | `boolean` |
 | `enableHighlight`      | If set to `true`, components are visually surrounded by a red box—helpful in development to understand the scope of each component in your layout.                                          |              | `boolean` |
 | `flags`                | An object that defines default flags to include in requests to Corbado's Frontend API. Currently, only `"conditional-ui-allowed"` is used; more flags may be added in the future as needed. |              | `object`  |
 
