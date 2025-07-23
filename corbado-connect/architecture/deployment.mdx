@@ -4,6 +4,10 @@ description: "A guide on the steps and best practices for deploying Corbado Conn
 sidebarTitle: "Deployment"
 ---
 
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
 # Corbado Deployment Options
 
 When deploying the **Corbado Connect** solution, you have two primary hosting models to choose from - our **public cloud** (Shared AWS Instance) or a **private cloud** (Dedicated AWS Instance). Each model offers different levels of customization, security and availability, depending on your organization's requirements. Within the private cloud model, there are multiple high-availability configurations to handle different disaster scenarios.
@@ -58,10 +62,6 @@ Within a private cloud setup, you can choose from three levels of high availabil
   - In the event of a complete regional outage, recovery can occur within 15-30 minutes (RTO), with \< 1 minute RPO.
 
 ---
-
-import Demo from "/snippets/corbado-connect/demo.mdx"
-
-<Demo />
 
 ## Fallback Mechanism for Passkeys
 
