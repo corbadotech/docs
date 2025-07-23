@@ -31,7 +31,7 @@ Here is an example implementation using Node.js and Express:
 ```javascript
 app.post('/auth/createConnectToken', async (req, res) => {
     try {
-        // 1. Get the accessToken from the Authorization header
+        // 1. Get accessToken from the Authorization header
         const authHeader = req.headers['authorization'];
         const accessToken = authHeader && authHeader.split(' ')[1];
         if (accessToken == null) {
