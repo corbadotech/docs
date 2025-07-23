@@ -59,7 +59,7 @@ sequenceDiagram
 
     Note over Frontend: CorbadoConnectAppend component<br/>initiates
     Frontend->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify user session
+    Backend->>Backend: Verify accessToken of user
     Backend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-Backend: Return ConnectToken
     Backend-->>-Frontend: Return ConnectToken
@@ -72,6 +72,8 @@ sequenceDiagram
     Actions-->>-FAPI: Return success
     FAPI-->>-Frontend: Return success
 ```
+
+<Info>For more details on `accessTokens`, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
 
 In the following sections, we will explain each step in detail.
 
@@ -98,15 +100,21 @@ Here's an example integration:
       },
 
       appendTokenProvider: async () => {
-        // Get Corbado ConnectToken from your backend (see next
-        // section), session ID is sent as cookie
+        // 1. Get the accessToken from local storage
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            throw new Error('User not authenticated');
+        }
+
+        // 2. Get connectToken from your backend (see next section)
         const response = await fetch('/auth/createConnectToken', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
-                type: 'passkey-append',
+                connectTokenType: 'passkey-append',
             })
         });
 
@@ -268,8 +276,8 @@ sequenceDiagram
     Plugin->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Plugin: Return verification result
     Plugin-->>-IdP: Return verification success
-    IdP->>IdP: Create user session
-    IdP-->>-Frontend: Return session ID
+    IdP->>IdP: Create accessToken
+    IdP-->>-Frontend: Return accessToken
 ```
 
 This approach is ideal when:
@@ -311,9 +319,9 @@ sequenceDiagram
     Frontend->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
-    Backend->>+IdP: Create user session
-    IdP-->>-Backend: Return session ID
-    Backend-->>-Frontend: Return session ID
+    Backend->>+IdP: Create accessToken
+    IdP-->>-Backend: Return accessToken
+    Backend-->>-Frontend: Return accessToken
 ```
 
 The implementation involves creating a new endpoint in your backend that receives the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), verifies it by calling Corbado's Backend API, and then creates a session in your own authentication system.
@@ -354,10 +362,10 @@ sequenceDiagram
     Actions-->>-FAPI: Return user ID
     FAPI->>FAPI: Verify passkey login
     FAPI->>+Actions: Execute post-login action
-    Actions->>+IdP: Create user session
-    IdP-->>-Actions: Return session ID
-    Actions-->>-FAPI: Return session ID
-    FAPI-->>-Frontend: Return session ID
+    Actions->>+IdP: Create accessToken
+    IdP-->>-Actions: Return accessToken
+    Actions-->>-FAPI: Return accessToken
+    FAPI-->>-Frontend: Return accessToken
 ```
 
 The implementation involves creating a `post-login` action:
@@ -369,16 +377,16 @@ export const handler = async (event) => {
     try {
         const userId = event.userId;
 
-        // 1. Create user session in your auth system
-        const session = await yourAuthSystem.createSession({
+        // 1. Create accessToken in your auth system
+        const accessToken = await yourAuthSystem.createAccessToken({
             userId: userId,
         });
 
-        // 2. Return session ID to the client
+        // 2. Return accessToken to the client
         return {
             statusCode: 200,
             body: {
-                sessionId: session.Id
+                accessToken: accessToken
             }
         };
     } catch (error) {
@@ -481,7 +489,9 @@ onComplete: async (signedPasskeyData, clientState) => {
         throw new Error('Verification failed');
     }
 
-    // 2. The session ID has been stored in a cookie (see above)
+    // 2. The backend returns an accessToken, store it
+    const { accessToken } = await response.json();
+    localStorage.setItem('accessToken', accessToken);
 
     // 3. Redirect to profile page
     window.location.href = '/profile';
@@ -490,16 +500,14 @@ onComplete: async (signedPasskeyData, clientState) => {
 
 #### 4.2.3 Option 3: Corbado Action
 
-When using a Corbado Action, the session ID is returned directly in the `result` object, simplifying the frontend logic:
+When using a Corbado Action, the `accessToken` is returned directly in the `result` object, simplifying the frontend logic:
 
 ```javascript
 onComplete: async (result, clientState) => {
-    const sessionId = result.sessionId;
+    const { accessToken } = result;
 
-    // 1. Store the session ID in a cookie (note that setting 
-    // the cookie from JavaScript makes it vulnerable to XSS 
-    // attacks, unlike option 2 which uses an httpOnly cookie)
-    document.cookie = `session_id=${sessionId}; path=/; secure; SameSite=Strict`;
+    // 1. Store the accessToken in local storage
+    localStorage.setItem('accessToken', accessToken);
 
     // 2. Redirect to profile page
     window.location.href = '/profile';
@@ -532,13 +540,20 @@ Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/cor
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
 
-      // Session ID is sent as cookie
+      // 1. Get the accessToken from local storage
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('User not authenticated');
+      }
+
+      // 2. Get connectToken from your backend
       const response = await fetch('/auth/createConnectToken', {
         method: 'POST',
         headers: { 
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
         },
-        body: JSON.stringify({ type }), 
+        body: JSON.stringify({ connectTokenType: type }), 
       });
 
       if (!response.ok) {
