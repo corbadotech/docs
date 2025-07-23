@@ -52,7 +52,7 @@ app.post('/auth/createConnectToken', async (req, res) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                type: req.body.type, // e.g., 'passkey-append'
+                type: req.body.connectTokenType, // e.g., 'passkey-append'
                 data: {
                     displayName: user.displayName,
                     identifier: user.email,
