@@ -49,12 +49,12 @@ graph TD
     class H,F,I corbadoStep
 ```
 
-A key part of this flow is that after any successful login (both for passkey and non-passkey logins), the application should always redirect to a page hosting the `CorbadoConnectAppend` component. This ensures every authenticated user is consistently offered the chance to enroll a passkey.
+A key part of this flow is that after any successful login (both for passkey and non-passkey logins), the application should always redirect to a page hosting the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component. This ensures every authenticated user is consistently offered the chance to enroll a passkey.
 
 <Warning>
   **Rule: Always redirect to the append flow after login**
 
-  This strategy is crucial for maximizing passkey adoption. The `CorbadoConnectAppend` component's built-in [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is designed to handle multiple scenarios. For example, after a cross-device authentication (CDA or "hybrid login"), the user has successfully logged in, but their new device doesn't have a passkey stored locally. Redirecting them to the append flow provides the perfect, low-friction opportunity to create one, improving their future login experience on that device.
+  This strategy is crucial for maximizing passkey adoption. The [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component's built-in [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is designed to handle multiple scenarios. For example, after a cross-device authentication (CDA or "hybrid login"), the user has successfully logged in, but their new device doesn't have a passkey stored locally. Redirecting them to the append flow provides the perfect, low-friction opportunity to create one, improving their future login experience on that device.
 </Warning>
 
 This guide will walk you through the implementation of each necessary step.

@@ -79,7 +79,7 @@ In the following sections, we will explain each step in detail.
 
 ### 4.2 Web UI Component Integration
 
-We start by integrating the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
+We start by integrating the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
 Here's how it's used in our example application's `post-login` page:
 
@@ -120,7 +120,7 @@ export default function Page() {
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
 ### 4.3 Obtaining the ConnectToken
@@ -344,9 +344,9 @@ In the following sections, we will explain each step in detail.
 
 ### 5.2 Web UI Component Integration
 
-Again, we start by integrating the `CorbadoConnectLogin` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
+Again, we start by integrating the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
 
-The core logic resides in a client component that wraps the `CorbadoConnectLogin` component:
+The core logic resides in a client component that wraps the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component:
 
 ```tsx /application/cognito/app/login/WrappedLogin.tsx
 'use client';
@@ -925,7 +925,7 @@ sequenceDiagram
 
 ### 6.2 Web UI Component Integration
 
-We integrate the `CorbadoConnectPasskeyList` component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
+We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
 Here's how it's used in our example application's profile page:
 
@@ -966,7 +966,7 @@ export const PasskeySection = ({integratePasskeys}: Props) => {
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
 ### 6.3 Obtaining the ConnectToken

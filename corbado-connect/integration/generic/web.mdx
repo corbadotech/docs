@@ -77,7 +77,7 @@ In the following sections, we will explain each step in detail.
 
 ### 3.2 Web UI Component Integration
 
-The integration starts with the `CorbadoConnectAppend` component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
+The integration starts with the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
 
 Here's an example integration:
 
@@ -135,7 +135,7 @@ Here's an example integration:
 ```
 
 <Info>
-For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
+For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
 ### 3.3 Obtaining the ConnectToken
@@ -408,7 +408,7 @@ The action environment provides secure access to your authentication system's AP
 
 ### 4.2 Web UI Component Integration
 
-The integration starts with the `CorbadoConnectLogin` component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
+The integration starts with the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
 
 Here's an example integration:
 
@@ -447,7 +447,7 @@ Here's an example integration:
 ```
 
 <Info>
-For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
+For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component documentation.
 </Info>
 
 The implementation details for the `onComplete` callback will be provided in the subsequent sections.
@@ -508,17 +508,17 @@ onComplete: async (result, clientState) => {
 
 ## 5. Passkey Management
 
-Providing users with a way to manage their passkeys is a critical part of the experience. The `CorbadoConnectPasskeyList` component offers a complete, pre-built UI for users to list, add, and delete passkeys associated with their account.
+Providing users with a way to manage their passkeys is a critical part of the experience. The [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component offers a complete, pre-built UI for users to list, add, and delete passkeys associated with their account.
 
 This component should be placed in a secure, authenticated area of your application, such as a user profile or account settings page.
 
 ### 5.1 Implementation Overview
 
-The `CorbadoConnectPasskeyList` component requires a distinct [connectToken](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
+The [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component requires a distinct [connectToken](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
 ### 5.2 Web UI Component Integration
 
-Integrate the `CorbadoConnectPasskeyList` component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
+Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
 
 ```html
 <head>
@@ -565,7 +565,7 @@ Integrate the `CorbadoConnectPasskeyList` component on a profile or settings pag
 ```
 
 <Info>
-For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
+For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
 ### 5.3 Obtaining the ConnectToken
