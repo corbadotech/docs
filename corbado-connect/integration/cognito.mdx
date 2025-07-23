@@ -138,7 +138,7 @@ appendTokenProvider={async () => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connectToken](/corbado-connectconnect-token) by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connectToken](/corbado-connect/concepts/connect-token) by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
 'use server';
@@ -895,7 +895,7 @@ After users have created their initial passkeys during sign-up and used them for
 2. Creating additional passkeys
 3. Deleting unused passkeys
 
-All these operations follow a similar pattern: they require obtaining a [connectToken](/corbado-connect/concepts/connect-token) for the [Corbado Web UI Component](/corbado-connect/web-ui-components), which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
+All these operations follow a similar pattern: they require obtaining a [connectToken](/corbado-connect/concepts/connect-token) for the [Corbado Web UI Component](/corbado-connect/web-ui-components/overview), which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
