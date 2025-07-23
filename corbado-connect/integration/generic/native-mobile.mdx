@@ -42,10 +42,10 @@ For the most up-to-date instructions on requirements, installation, and initiali
 
 The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application or an native/mobile application.
 
-To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required API endpoints in your backend:
+To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required session management and API endpoints in your backend:
 
 <Card title="Backend Setup" href="/corbado-connect/integration/generic/backend">
-  Learn how to implement the necessary endpoints in your backend to support passkey operations.
+  Learn how to implement the necessary session management and API endpoints in your backend.
 </Card>
 
 To call your endpoints for [connectToken](/corbado-connect/concepts/connect-token) generation and [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification (both endpoints are described in the **Backend Setup** guide), we create a small helper class that will be utilized in the upcoming integrations:
