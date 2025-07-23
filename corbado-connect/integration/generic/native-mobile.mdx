@@ -67,10 +67,10 @@ class AppBackend {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         let requestPayload = GetConnectTokenRequest(
-            connectTokenType: connectTokenType.rawValue,
-            accessToken: accessToken
+            connectTokenType: connectTokenType.rawValue
         )
         
         do {
@@ -164,7 +164,6 @@ class AppBackend {
 
 struct GetConnectTokenRequest: Codable {
     let connectTokenType: String
-    let accessToken: String
 }
 
 struct GetConnectTokenResponse: Codable {
@@ -198,7 +197,7 @@ object AppBackend {
     ): Result<String> {
         return try {
             // 1. Set up request
-            val request = GetConnectTokenRequest(connectTokenType, accessToken)
+            val request = GetConnectTokenRequest(connectTokenType)
             val jsonRequest = Json.encodeToString(GetConnectTokenRequest.serializer(), request)
 
             // 2. Perform request
@@ -207,6 +206,7 @@ object AppBackend {
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")
+            connection.setRequestProperty("Authorization", "Bearer $accessToken")
             connection.doOutput = true
 
             val writer = OutputStreamWriter(connection.outputStream)
@@ -264,7 +264,6 @@ object AppBackend {
 @Serializable
 data class GetConnectTokenRequest(
     val connectTokenType: ConnectTokenType,
-    val accessToken: String
 )
 
 @Serializable
