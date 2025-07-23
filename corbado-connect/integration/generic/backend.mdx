@@ -103,7 +103,7 @@ app.post('/auth/verifySignedPasskeyData', async (req, res) => {
 
         const data = await verifyResult.json();
         if (data.verificationResult !== "success") {
-            return res.status(401).json({ error: 'Invalid signedPasskeyData' });
+            return res.status(401).json({ success: false, error: 'Invalid signedPasskeyData' });
         }
 
         // 2. Extract user information
@@ -116,11 +116,12 @@ app.post('/auth/verifySignedPasskeyData', async (req, res) => {
 
         // 4. Send the accessToken to the client
         res.json({
+            success: true,
             accessToken: accessToken,
         });
     } catch (error) {
         console.error('Verification failed:', error);
-        res.status(500).json({ error: 'Verification failed' });
+        res.status(500).json({ success: false, error: 'Verification failed' });
     }
 });
 ```
