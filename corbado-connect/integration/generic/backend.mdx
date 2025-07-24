@@ -38,7 +38,7 @@ app.post('/auth/createConnectToken', async (req, res) => {
             return res.sendStatus(401);
         }
 
-        // 2. Verify the accesst oken
+        // 2. Verify the access token
         const user = await yourAuthSystem.verifyAccessToken(accessToken);
         if (!user) {
             return res.status(401).json({ error: 'Invalid access token' });
@@ -109,12 +109,12 @@ app.post('/auth/verifySignedPasskeyData', async (req, res) => {
         // 2. Extract user information
         const userInfo = extractUserInfo(signedPasskeyData);
 
-        // 3. Create an accesst oken
+        // 3. Create an access token
         const accessToken = await yourAuthSystem.createAccessToken({
             userId: userInfo.sub,
         });
 
-        // 4. Send the accesst oken to the client
+        // 4. Send the access token to the client
         res.json({
             success: true,
             accessToken: accessToken,
