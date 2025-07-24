@@ -24,6 +24,10 @@ To maintain a single source of truth and avoid duplicating instructions, we've c
   Learn how to implement the necessary session management and API endpoints in your backend.
 </Card>
 
+<Warning>
+  For simplicity in the following sections, we will store the **access token** in local storage. Please be aware that this is not a recommended practice for production environments. Storing **access tokens** in local storage makes them vulnerable to Cross-Site Scripting (XSS) attacks, where an attacker could steal the token. Secure token storage depends on the specific use case and is beyond the scope of this article.
+</Warning>
+
 ## 3. Passkey Enrollment
 
 In a typical integration scenario, the initial user sign-up is handled through your existing authentication system's standard registration process. This could be through:
