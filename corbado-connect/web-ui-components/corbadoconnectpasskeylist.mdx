@@ -47,7 +47,7 @@ The component is designed to show clear, helpful error messages to the user with
   <script type="module">
     const passkeyListElement = document.getElementById('passkey-list');
 
-    // This function is responsible for getting a short-lived ConnectToken from your backend.
+    // This function is responsible for getting a connect token from your backend.
     // Your server would make a secure, server-to-server call to Corbado's Backend API.
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
@@ -66,7 +66,7 @@ The component is designed to show clear, helpful error messages to the user with
       projectId: "pro-XXX", // Your Corbado Project ID
       frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
 
-      // Asynchronously provides connectTokens for all actions (list, append, delete)
+      // Asynchronously provides connect tokens for all actions (list, append, delete)
       connectTokenProvider: connectTokenProvider
     });
   </script>
@@ -82,7 +82,7 @@ The component is designed to show clear, helpful error messages to the user with
 
 | **Name**                 | **Description**                                                                                                                                                                                                                                                                 | **Required** | **Type**                               |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------- |
-| `connectTokenProvider`   | A function that asynchronously returns a [connectToken](/corbado-connect/concepts/connect-token). It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
+| `connectTokenProvider`   | A function that asynchronously returns a [connect token](/corbado-connect/concepts/connect-token). It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
 
 ## 8. Customization
 

@@ -40,14 +40,14 @@ The component features built-in error handling. If an issue occurs during the pa
 
 ## 6. Example
 
-> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a [connectToken](/corbado-connect/concepts/connect-token) on your backend to validate that the user session is legitimate. This token is then passed to the component.
+> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a [connect token](/corbado-connect/concepts/connect-token) on your backend to validate that the user session is legitimate. This token is then passed to the component.
 
 ```js
 <head>
   <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
   <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
   <script type="module">
-    // This connectToken must be generated on the server side
+    // This connect token must be generated on the server side
     // and passed to the component (e.g. by embedding it during server-side rendering).
     const connectToken = 'ctk1_xxx';
 
@@ -85,7 +85,7 @@ The component features built-in error handling. If an issue occurs during the pa
 | **Name**              | **Description**                                                                                                                                                                                                                                                                                                                                          | **Required** | **Type**                                                    |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------- |
 | `onSkip`              | Called when the component skips rendering or the user actively dismisses it. The `status` string provides the reason, which can be `gradual-rollout-denied` (user not eligible), `passkey-intelligence-denied` (device not suitable), or `user-skipped` (user clicked skip). | ✅            | `(status: string) => void`                      |
-| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use [connectToken](/corbado-connect/concepts/connect-token) needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
+| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use [connect token](/corbado-connect/concepts/connect-token) needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
 | `onComplete`          | Called when a passkey has been successfully appended. It provides the `status` (`user-completed`) and a `clientState` string, which should be stored client-side (e.g., in a cookie) to accelerate future passkey flows.                                                            | ✅            | `(status: string, clientState: string) => void` |
 
 ## 8. Customization

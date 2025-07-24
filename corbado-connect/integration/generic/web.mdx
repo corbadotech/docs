@@ -61,8 +61,8 @@ sequenceDiagram
     Frontend->>+Backend: POST /auth/createConnectToken
     Backend->>Backend: Verify accessToken of user
     Backend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-Backend: Return ConnectToken
-    Backend-->>-Frontend: Return ConnectToken
+    BAPI-->>-Backend: Return connect token
+    Backend-->>-Frontend: Return connect token
 
     Frontend->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over Frontend: CorbadoConnectAppend component<br/>handles passkey creation
@@ -106,7 +106,7 @@ Here's an example integration:
             throw new Error('User not authenticated');
         }
 
-        // 2. Get connectToken from your backend (see next section)
+        // 2. Get connect token from your backend (see next section)
         const response = await fetch('/auth/createConnectToken', {
             method: 'POST',
             headers: {
@@ -119,7 +119,7 @@ Here's an example integration:
         });
 
         if (!response.ok) {
-            throw new Error('Failed to get ConnectToken');
+            throw new Error('Failed to get connect token');
         }
 
         const data = await response.json();
@@ -146,9 +146,9 @@ Here's an example integration:
 For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
-### 3.3 Obtaining the ConnectToken
+### 3.3 Obtaining the Connect Token
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from your backend.
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from your backend.
 
 For detailed instructions on how to implement the required endpoint in your backend, please refer to our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
@@ -524,7 +524,7 @@ This component should be placed in a secure, authenticated area of your applicat
 
 ### 5.1 Implementation Overview
 
-The [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component requires a distinct [connectToken](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
+The [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component requires a distinct [connect token](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
 ### 5.2 Web UI Component Integration
 
@@ -538,7 +538,7 @@ Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/cor
   <script type="module">
     const passkeyListElement = document.getElementById('passkey-list');
 
-    // This function provides ConnectTokens for all actions (list, append, delete)
+    // This function provides connect tokens for all actions (list, append, delete)
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
 
@@ -548,7 +548,7 @@ Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/cor
         throw new Error('User not authenticated');
       }
 
-      // 2. Get connectToken from your backend
+      // 2. Get connect token from your backend
       const response = await fetch('/auth/createConnectToken', {
         method: 'POST',
         headers: { 
@@ -559,7 +559,7 @@ Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/cor
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to get ConnectToken for type: ${type}`);
+        throw new Error(`Failed to get connect token for type: ${type}`);
       }
 
       const { connectToken } = await response.json();
@@ -585,8 +585,8 @@ Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/cor
 For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 5.3 Obtaining the ConnectToken
+### 5.3 Obtaining the Connect Token
 
-The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a [connectToken](/corbado-connect/concepts/connect-token) from your backend for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. The implementation of this endpoint is described in our [Backend Setup guide](/corbado-connect/integration/generic/backend).
+The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a [connect token](/corbado-connect/concepts/connect-token) from your backend for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. The implementation of this endpoint is described in our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
 When a user opens the page, the component will call `connectTokenProvider('passkey-list')` to get a token to display the existing passkeys. If they try to delete a passkey, it will call `connectTokenProvider('passkey-delete')`, and so on. This ensures every action is explicitly authorized by your backend for the currently authenticated user.

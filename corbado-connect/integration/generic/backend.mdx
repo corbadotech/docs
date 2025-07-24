@@ -22,9 +22,9 @@ There are various strategies for handling sessions, such as maintaining server-s
 
 ## 3. Endpoints
 
-### 3.1. Create connectToken
+### 3.1. Create Connect Token
 
-Your backend must expose an endpoint that your frontend applications (web and mobile) can call to obtain a [connectToken](/corbado-connect/concepts/connect-token). This endpoint will in turn call **Corbado's** Backend API to generate the actual token.
+Your backend must expose an endpoint that your frontend applications (web and mobile) can call to obtain a [connect token](/corbado-connect/concepts/connect-token). This endpoint will in turn call **Corbado's** Backend API to generate the actual token.
 
 Here is an example implementation using Node.js and Express:
 
@@ -44,7 +44,7 @@ app.post('/auth/createConnectToken', async (req, res) => {
             return res.status(401).json({ error: 'Invalid accessToken' });
         }
 
-        // 3. Request connectToken from Corbado Backend API
+        // 3. Request connect token from Corbado Backend API
         const response = await fetch('https://backendapi.cloud.corbado.io/v2/connectTokens', {
             method: 'POST',
             headers: {
@@ -60,19 +60,19 @@ app.post('/auth/createConnectToken', async (req, res) => {
             })
         });
         if (!response.ok) {
-            console.error('Failed to get connectToken:', await response.text());
+            console.error('Failed to get connect token:', await response.text());
 
-            return res.status(500).json({ error: 'Failed to get connectToken' });
+            return res.status(500).json({ error: 'Failed to get connect token' });
         }
 
         const data = await response.json();
         
-        // 3. Return the connectToken to the frontend
+        // 3. Return the connect token to the frontend
         res.json({
             connectToken: data.secret
         });
     } catch (error) {
-        console.error('Error getting connectToken:', error);
+        console.error('Error getting connect token:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
