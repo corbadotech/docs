@@ -18,11 +18,15 @@ This guide provides a step-by-step approach to integrating the **Corbado Connect
 
 The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application or a native/mobile application.
 
-To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required API endpoints in your backend:
+To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required session management and API endpoints in your backend:
 
 <Card title="Backend Setup" href="/corbado-connect/integration/generic/backend">
-  Learn how to implement the necessary endpoints in your backend to support passkey operations.
+  Learn how to implement the necessary session management and API endpoints in your backend.
 </Card>
+
+<Warning>
+  For simplicity in the following sections, we will store the **access token** in local storage. Please be aware that this is not a recommended practice for production environments. Storing **access tokens** in local storage makes them vulnerable to Cross-Site Scripting (XSS) attacks, where an attacker could steal the token. Secure token storage depends on the specific use case and is beyond the scope of this article.
+</Warning>
 
 ## 3. Passkey Enrollment
 
@@ -59,10 +63,10 @@ sequenceDiagram
 
     Note over Frontend: CorbadoConnectAppend component<br/>initiates
     Frontend->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify user session
+    Backend->>Backend: Verify access token of user
     Backend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-Backend: Return ConnectToken
-    Backend-->>-Frontend: Return ConnectToken
+    BAPI-->>-Backend: Return connect token
+    Backend-->>-Frontend: Return connect token
 
     Frontend->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over Frontend: CorbadoConnectAppend component<br/>handles passkey creation
@@ -73,11 +77,13 @@ sequenceDiagram
     FAPI-->>-Frontend: Return success
 ```
 
+<Info>For more details on **access tokens**, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
+
 In the following sections, we will explain each step in detail.
 
 ### 3.2 Web UI Component Integration
 
-The integration starts with the `CorbadoConnectAppend` component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
+The integration starts with the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component, which is designed to be used immediately after a user has been authenticated through your existing system. The component guides users through creating (or "appending") a passkey to their account, but only if they and their device meet the eligibility requirements.
 
 Here's an example integration:
 
@@ -98,20 +104,26 @@ Here's an example integration:
       },
 
       appendTokenProvider: async () => {
-        // Get Corbado ConnectToken from your backend (see next
-        // section), session ID is sent as cookie
+        // 1. Get access token from local storage
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            throw new Error('User not authenticated');
+        }
+
+        // 2. Get connect token from your backend (see next section)
         const response = await fetch('/auth/createConnectToken', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
-                type: 'passkey-append',
+                connectTokenType: 'passkey-append',
             })
         });
 
         if (!response.ok) {
-            throw new Error('Failed to get ConnectToken');
+            throw new Error('Failed to get connect token');
         }
 
         const data = await response.json();
@@ -135,12 +147,12 @@ Here's an example integration:
 ```
 
 <Info>
-For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
+For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
-### 3.3 Obtaining the ConnectToken
+### 3.3 Obtaining the Connect Token
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from your backend.
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from your backend.
 
 For detailed instructions on how to implement the required endpoint in your backend, please refer to our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
@@ -220,21 +232,23 @@ For more information about Corbado actions and how to implement them, see the [A
 
 ## 4. Passkey Login
 
-Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, establish an authenticated session in your system.
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new **access token** from your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
 ### 4.1 Implementation Overview
 
-The cornerstone of user login integration is [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to establish a session.
+The cornerstone of user login integration is [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to create an **access token**.
 
 There are several ways to integrate the passkey login flow with your authentication system:
 
-1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification and session creation (refer to our [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
-2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and establishes a session.
-3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and establish a session.
+1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification and **access token** creation (refer to our [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
+2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and create an **access token**.
+3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and create an **access token**.
 
-In each option, it is necessary to create a session within your authentication system at the conclusion of the process. For simplicity, we demonstrate creating a server-side session and storing its session ID in a cookie. However, you have complete flexibility to implement sessions in any manner you prefer, such as using tokens implemented with a JWT and storing them in local storage.
+In each option, it is necessary to create an **access token** within your authentication system at the conclusion of the process.
+
+<Info>For more details on **access tokens**, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
 
 We will now elaborate on each option in the following sections.
 
@@ -268,15 +282,15 @@ sequenceDiagram
     Plugin->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Plugin: Return verification result
     Plugin-->>-IdP: Return verification success
-    IdP->>IdP: Create user session
-    IdP-->>-Frontend: Return session ID
+    IdP->>IdP: Create access token
+    IdP-->>-Frontend: Return access token
 ```
 
 This approach is ideal when:
 
 - Your authentication system has a plugin architecture
 - You want to maintain all authentication logic within your existing system
-- You need tight integration with your system's session management
+- You need tight integration with your system's session/token management
 - You want to leverage your system's existing user management features
 
 <Info>
@@ -285,7 +299,7 @@ The exact implementation details will depend on your authentication system's ext
 
 #### 4.1.2 Option 2: Custom Endpoint
 
-This option involves implementing a dedicated endpoint in your backend that handles passkey verification and session creation. This approach gives you full control over the authentication flow and is suitable when your authentication system doesn't support extensions or when you need custom session handling.
+This option involves implementing a dedicated endpoint in your backend that handles passkey verification and **access token** creation. This approach gives you full control over the authentication flow and is suitable when your authentication system doesn't support extensions or when you need custom session/token handling.
 
 Here's how the flow typically works:
 
@@ -311,12 +325,12 @@ sequenceDiagram
     Frontend->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
-    Backend->>+IdP: Create user session
-    IdP-->>-Backend: Return session ID
-    Backend-->>-Frontend: Return session ID
+    Backend->>+IdP: Create access token
+    IdP-->>-Backend: Return access token
+    Backend-->>-Frontend: Return access token
 ```
 
-The implementation involves creating a new endpoint in your backend that receives the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), verifies it by calling Corbado's Backend API, and then creates a session in your own authentication system.
+The implementation involves creating a new endpoint in your backend that receives the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), verifies it by calling Corbado's Backend API, and then obtains an **access token** from your own authentication system.
 
 For detailed instructions on how to implement this endpoint, please refer to our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
@@ -324,7 +338,7 @@ This approach is ideal when:
 
 - Your authentication system doesn't support plugins/extensions
 - You need complete control over the authentication flow
-- You want to implement custom session management
+- You want to implement custom session/token management
 - You're building a new authentication system from scratch
 
 <Info>
@@ -333,7 +347,7 @@ Remember to implement proper error handling and security measures in your endpoi
 
 #### 4.1.3 Option 3: Corbado Action
 
-This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) in your system, you can use a `post-login` action to create and return a session. This approach minimizes the integration effort while maintaining security.
+This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) in your system, you can use a `post-login` action to create and return an **access token**. This approach minimizes the integration effort while maintaining security.
 
 Here's how the flow typically works:
 
@@ -354,10 +368,10 @@ sequenceDiagram
     Actions-->>-FAPI: Return user ID
     FAPI->>FAPI: Verify passkey login
     FAPI->>+Actions: Execute post-login action
-    Actions->>+IdP: Create user session
-    IdP-->>-Actions: Return session ID
-    Actions-->>-FAPI: Return session ID
-    FAPI-->>-Frontend: Return session ID
+    Actions->>+IdP: Create access token
+    IdP-->>-Actions: Return access token
+    Actions-->>-FAPI: Return access token
+    FAPI-->>-Frontend: Return access token
 ```
 
 The implementation involves creating a `post-login` action:
@@ -369,25 +383,25 @@ export const handler = async (event) => {
     try {
         const userId = event.userId;
 
-        // 1. Create user session in your auth system
-        const session = await yourAuthSystem.createSession({
+        // 1. Create access token in your auth system
+        const accessToken = await yourAuthSystem.createAccessToken({
             userId: userId,
         });
 
-        // 2. Return session ID to the client
+        // 2. Return access token to the client
         return {
             statusCode: 200,
             body: {
-                sessionId: session.Id
+                accessToken: accessToken
             }
         };
     } catch (error) {
-        console.error('Session creation failed:', error);
+        console.error('access token creation failed:', error);
 
         return {
             statusCode: 500,
             body: {
-                message: 'Failed to create session',
+                message: 'Failed to create access token',
                 error: error.message,
             },
         };
@@ -400,7 +414,7 @@ This approach is ideal when:
 - You want minimal changes to your existing system
 - You prefer to handle authentication logic in **Corbado Connect's** environment
 - You need a quick integration path
-- Your authentication system has a simple session creation API
+- Your authentication system has a simple session/token creation API
 
 <Info>
 The action environment provides secure access to your authentication system's API. Make sure to configure the necessary credentials and permissions in your **Corbado Connect** project settings.
@@ -408,7 +422,7 @@ The action environment provides secure access to your authentication system's AP
 
 ### 4.2 Web UI Component Integration
 
-The integration starts with the `CorbadoConnectLogin` component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
+The integration starts with the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login.
 
 Here's an example integration:
 
@@ -447,14 +461,14 @@ Here's an example integration:
 ```
 
 <Info>
-For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
+For comprehensive information on configuration options, detailed styling choices, and customization using CSS variables and classes, please refer to the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component documentation.
 </Info>
 
 The implementation details for the `onComplete` callback will be provided in the subsequent sections.
 
 #### 4.2.1 Option 1: System Extension
 
-As we have integrated with the existing authentication system, session creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
+As we have integrated with the existing authentication system, **access token** creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
 
 ```javascript
 onComplete: (signedPasskeyData, clientState) => {
@@ -481,7 +495,9 @@ onComplete: async (signedPasskeyData, clientState) => {
         throw new Error('Verification failed');
     }
 
-    // 2. The session ID has been stored in a cookie (see above)
+    // 2. The backend returns an access token, store it
+    const { accessToken } = await response.json();
+    localStorage.setItem('accessToken', accessToken);
 
     // 3. Redirect to profile page
     window.location.href = '/profile';
@@ -490,16 +506,14 @@ onComplete: async (signedPasskeyData, clientState) => {
 
 #### 4.2.3 Option 3: Corbado Action
 
-When using a Corbado Action, the session ID is returned directly in the `result` object, simplifying the frontend logic:
+When using a Corbado Action, the **access token** is returned directly in the `result` object, simplifying the frontend logic:
 
 ```javascript
 onComplete: async (result, clientState) => {
-    const sessionId = result.sessionId;
+    const { accessToken } = result;
 
-    // 1. Store the session ID in a cookie (note that setting 
-    // the cookie from JavaScript makes it vulnerable to XSS 
-    // attacks, unlike option 2 which uses an httpOnly cookie)
-    document.cookie = `session_id=${sessionId}; path=/; secure; SameSite=Strict`;
+    // 1. Store the access token in local storage
+    localStorage.setItem('accessToken', accessToken);
 
     // 2. Redirect to profile page
     window.location.href = '/profile';
@@ -508,17 +522,17 @@ onComplete: async (result, clientState) => {
 
 ## 5. Passkey Management
 
-Providing users with a way to manage their passkeys is a critical part of the experience. The `CorbadoConnectPasskeyList` component offers a complete, pre-built UI for users to list, add, and delete passkeys associated with their account.
+Providing users with a way to manage their passkeys is a critical part of the experience. The [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component offers a complete, pre-built UI for users to list, add, and delete passkeys associated with their account.
 
 This component should be placed in a secure, authenticated area of your application, such as a user profile or account settings page.
 
 ### 5.1 Implementation Overview
 
-The `CorbadoConnectPasskeyList` component requires a distinct [connectToken](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
+The [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component requires a distinct [connect token](/corbado-connect/concepts/connect-token) to perform each of its actions. Much like the enrollment flow, these tokens must be securely fetched from your backend to authorize each specific operation for the logged-in user.
 
 ### 5.2 Web UI Component Integration
 
-Integrate the `CorbadoConnectPasskeyList` component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
+Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component on a profile or settings page. The component will handle all the logic for displaying passkeys and managing user interactions:
 
 ```html
 <head>
@@ -528,21 +542,28 @@ Integrate the `CorbadoConnectPasskeyList` component on a profile or settings pag
   <script type="module">
     const passkeyListElement = document.getElementById('passkey-list');
 
-    // This function provides ConnectTokens for all actions (list, append, delete)
+    // This function provides connect tokens for all actions (list, append, delete)
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
 
-      // Session ID is sent as cookie
+      // 1. Get access token from local storage
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('User not authenticated');
+      }
+
+      // 2. Get connect token from your backend
       const response = await fetch('/auth/createConnectToken', {
         method: 'POST',
         headers: { 
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
         },
-        body: JSON.stringify({ type }), 
+        body: JSON.stringify({ connectTokenType: type }), 
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to get ConnectToken for type: ${type}`);
+        throw new Error(`Failed to get connect token for type: ${type}`);
       }
 
       const { connectToken } = await response.json();
@@ -565,11 +586,11 @@ Integrate the `CorbadoConnectPasskeyList` component on a profile or settings pag
 ```
 
 <Info>
-For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
+For a detailed explanation of all available props and customization options, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 5.3 Obtaining the ConnectToken
+### 5.3 Obtaining the Connect Token
 
-The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a [connectToken](/corbado-connect/concepts/connect-token) from your backend for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. The implementation of this endpoint is described in our [Backend Setup guide](/corbado-connect/integration/generic/backend).
+The `connectTokenProvider` function is the bridge to your backend. It's responsible for fetching a [connect token](/corbado-connect/concepts/connect-token) from your backend for the specific action (`passkey-list`, `passkey-append`, or `passkey-delete`) the user wants to perform. The implementation of this endpoint is described in our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
 When a user opens the page, the component will call `connectTokenProvider('passkey-list')` to get a token to display the existing passkeys. If they try to delete a passkey, it will call `connectTokenProvider('passkey-delete')`, and so on. This ensures every action is explicitly authorized by your backend for the currently authenticated user.

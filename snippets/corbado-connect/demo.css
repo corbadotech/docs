@@ -1,0 +1,24 @@
+.demo-cards {
+    .card {
+        div[data-component-part="card-content-container"] {
+            padding: 0;
+        }
+        span[data-rmiz-content="found"] {
+            display: block;
+            visibility: visible;
+            padding: 1rem 1rem;
+            background-color: #1953ff;
+            justify-items: center;
+        }
+        .prose {
+            margin: 0;
+        }
+        .card-footer {
+            padding: 1rem 1rem;
+        }
+        #card-link-arrow-icon {
+            top: 78%;
+            right: 10%;
+        }
+    }
+}

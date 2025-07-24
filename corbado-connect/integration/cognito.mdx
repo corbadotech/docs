@@ -60,11 +60,11 @@ sequenceDiagram
     participant Actions as Corbado<br />Actions
 
     Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado connectToken
+    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
     ExampleBackend->>ExampleBackend: Verify user session
     ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return connectToken
-    ExampleBackend-->>-ExampleFrontend: Return connectToken
+    BAPI-->>-ExampleBackend: Return connect token
+    ExampleBackend-->>-ExampleFrontend: Return connect token
 
     ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
@@ -77,9 +77,9 @@ sequenceDiagram
 
 In the following sections, we will explain each step in detail.
 
-### 4.2 UI Component Integration
+### 4.2 Web UI Component Integration
 
-We start by integrating the `CorbadoConnectAppend` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
+We start by integrating the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
 Here's how it's used in our example application's `post-login` page:
 
@@ -120,12 +120,12 @@ export default function Page() {
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend component documentation](/corbado-connect/web-ui-components/corbadoconnectappend).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
-### 4.3 Obtaining the ConnectToken
+### 4.3 Obtaining the Connect Token
 
-When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user).
+When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user).
 
 The frontend first needs to get the `idToken` for the currently logged-in user from AWS Amplify. This JWT is proof of the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
@@ -138,7 +138,7 @@ appendTokenProvider={async () => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connectToken](/corbado-connectconnect-token) by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connect token](/corbado-connect/concepts/connect-token) by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/post-login/actions.ts
 'use server';
@@ -344,9 +344,9 @@ In the following sections, we will explain each step in detail.
 
 ### 5.2 Web UI Component Integration
 
-Again, we start by integrating the `CorbadoConnectLogin` component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
+Again, we start by integrating the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
 
-The core logic resides in a client component that wraps the `CorbadoConnectLogin` component:
+The core logic resides in a client component that wraps the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component:
 
 ```tsx /application/cognito/app/login/WrappedLogin.tsx
 'use client';
@@ -895,7 +895,7 @@ After users have created their initial passkeys during sign-up and used them for
 2. Creating additional passkeys
 3. Deleting unused passkeys
 
-All these operations follow a similar pattern: they require obtaining a [connectToken](/corbado-connect/concepts/connect-token) for the **Corbado Connect** Web UI component, which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
+All these operations follow a similar pattern: they require obtaining a [connect token](/corbado-connect/concepts/connect-token) for the [Corbado Web UI Component](/corbado-connect/web-ui-components/overview), which then handles the user interface and underlying functionality. In the following sections, we'll focus on the **passkey deletion process as an example**, since the other operations follow a similar pattern.
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
@@ -912,20 +912,20 @@ sequenceDiagram
     participant BAPI as Corbado<br />Backend API
 
     Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado connectToken
+    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
     ExampleBackend->>ExampleBackend: Verify user session
     ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return connectToken
-    ExampleBackend-->>-ExampleFrontend: Return connectToken
+    BAPI-->>-ExampleBackend: Return connect token
+    ExampleBackend-->>-ExampleFrontend: Return connect token
 
-    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses connectToken and passkey ID)
+    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses connect token and passkey ID)
     Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />handles passkey deletion
     FAPI-->>-ExampleFrontend: Return success
 ```
 
-### 6.2 UI Component Integration
+### 6.2 Web UI Component Integration
 
-We integrate the `CorbadoConnectPasskeyList` component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
+We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
 Here's how it's used in our example application's profile page:
 
@@ -966,12 +966,12 @@ export const PasskeySection = ({integratePasskeys}: Props) => {
 ```
 
 <Info>
-For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList component documentation](/corbado-connect/web-ui-components/corbadoconnectpasskeylist).
+For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 6.3 Obtaining the ConnectToken
+### 6.3 Obtaining the Connect Token
 
-When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connectToken](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
+When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
 
 The frontend first gets the `idToken` for the currently logged-in user from AWS Amplify. This JWT proves the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
 
@@ -984,7 +984,7 @@ connectTokenProvider={async (connectTokenType: string) => {
 }}
 ```
 
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connectToken](/corbado-connect/concepts/connect-token) by calling the utility function `getCorbadoConnectToken()`:
+The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connect token](/corbado-connect/concepts/connect-token) by calling the utility function `getCorbadoConnectToken()`:
 
 ```typescript /application/cognito/app/(auth-required)/profile/actions.tsx
 'use server';

@@ -42,13 +42,13 @@ For the most up-to-date instructions on requirements, installation, and initiali
 
 The backend logic required to support **Corbado Connect** is consistent across all client platforms, whether it's a web application or an native/mobile application.
 
-To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required API endpoints in your backend:
+To maintain a single source of truth and avoid duplicating instructions, we've consolidated all backend-related steps into a dedicated guide. Please refer to it for a complete walkthrough of the required session management and API endpoints in your backend:
 
 <Card title="Backend Setup" href="/corbado-connect/integration/generic/backend">
-  Learn how to implement the necessary endpoints in your backend to support passkey operations.
+  Learn how to implement the necessary session management and API endpoints in your backend.
 </Card>
 
-To call your endpoints for [connectToken](/corbado-connect/concepts/connect-token) generation and [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification (both endpoints are described in the **Backend Setup** guide), we create a small helper class that will be utilized in the upcoming integrations:
+To call your endpoints for [connect token](/corbado-connect/concepts/connect-token) generation and [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification (both endpoints are described in the **Backend Setup** guide), we create a small helper class that will be utilized in the upcoming integrations:
 
 <CodeGroup>
 ```swift AppBackend.swift
@@ -56,7 +56,7 @@ import CorbadoConnect
 import Foundation
 
 class AppBackend {
-    /// Get connectToken from backend (which gets it from Corbado Backend API)
+    /// Get connect token from backend (which gets it from Corbado Backend API)
     static func getConnectToken(connectTokenType: ConnectTokenType, accessToken: String) async throws -> String {
         // 1. Set up request
         let urlString = "https://<your-backend>/auth/createConnectToken"
@@ -67,10 +67,10 @@ class AppBackend {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         let requestPayload = GetConnectTokenRequest(
-            connectTokenType: connectTokenType.rawValue,
-            accessToken: accessToken
+            connectTokenType: connectTokenType.rawValue
         )
         
         do {
@@ -96,7 +96,7 @@ class AppBackend {
         // 4. Decode the JSON response
         do {
             let decodedResponse = try JSONDecoder().decode(GetConnectTokenResponse.self, from: data)
-            return decodedResponse.token
+            return decodedResponse.connectToken
         } catch {
             print("Error decoding JSON response: \(error)")
             
@@ -164,7 +164,6 @@ class AppBackend {
 
 struct GetConnectTokenRequest: Codable {
     let connectTokenType: String
-    let accessToken: String
 }
 
 struct GetConnectTokenResponse: Codable {
@@ -191,14 +190,14 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object AppBackend {
-    // Get connectToken from backend (which gets it from Corbado Backend API)
+    // Get connect token from backend (which gets it from Corbado Backend API)
     suspend fun getConnectToken(
         connectTokenType: ConnectTokenType,
         accessToken: String
     ): Result<String> {
         return try {
             // 1. Set up request
-            val request = GetConnectTokenRequest(connectTokenType, accessToken)
+            val request = GetConnectTokenRequest(connectTokenType)
             val jsonRequest = Json.encodeToString(GetConnectTokenRequest.serializer(), request)
 
             // 2. Perform request
@@ -207,6 +206,7 @@ object AppBackend {
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")
+            connection.setRequestProperty("Authorization", "Bearer $accessToken")
             connection.doOutput = true
 
             val writer = OutputStreamWriter(connection.outputStream)
@@ -220,7 +220,7 @@ object AppBackend {
             // 4. Decode the JSON response
             val jsonResponse = Json.decodeFromString(GetConnectTokenResponse.serializer(), response)
 
-            Result.success(jsonResponse.token)
+            Result.success(jsonResponse.connectToken)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -264,7 +264,6 @@ object AppBackend {
 @Serializable
 data class GetConnectTokenRequest(
     val connectTokenType: ConnectTokenType,
-    val accessToken: String
 )
 
 @Serializable
@@ -285,9 +284,9 @@ data class VerifySignedPasskeyDataResponse(
 ```
 </CodeGroup>
 
-For `getConnectToken()`, you must provide the user's `accessToken` to enable the backend to verify their authenticated state.
+For `getConnectToken()`, you must provide the user's **access token** to enable the backend to verify their authenticated state.
 
-<Info>We use an `accessToken` for demonstration purposes. This token is typically a JWT issued by your Identity Provider (IdP) after a user authenticates.</Info>
+<Info>For more details on **access tokens**, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
 
 ## 4. Passkey Enrollment
 
@@ -324,10 +323,10 @@ sequenceDiagram
 
     Note over App: Corbado iOS/Android SDK
     App->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify accessToken of user
+    Backend->>Backend: Verify access token of user
     Backend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-Backend: Return connectToken
-    Backend-->>-App: Return connectToken
+    BAPI-->>-Backend: Return connect token
+    Backend-->>-App: Return connect token
 
     App->>+FAPI: Execute passkey ceremony (WebAuthn)
     Note over App: Corbado iOS/Android SDK<br/>handles passkey creation
@@ -352,13 +351,13 @@ The interaction with the **Corbado iOS/Android SDK** on this screen occurs at tw
 
 Before rendering the passkey enrollment screen, you should call the `isAppendAllowed()` method from the **Corbado iOS/Android SDK**. This function is crucial for determining if the current user is eligible to add a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
-The method requires a `connectTokenProvider`, a closure that fetches a [connectToken](/corbado-connect/concepts/connect-token) from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current `accessToken` so your backend can verify their authenticated state before generating the token.
+The method requires a `connectTokenProvider`, a closure that fetches a [connect token](/corbado-connect/concepts/connect-token) from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current **access token** so your backend can verify their authenticated state before generating the token.
 
 <CodeGroup>
 ```swift iOS example (Swift)
 // In your ViewModel or screen logic
 let nextStep = await corbado.isAppendAllowed { _ in
-    // Provide the accessToken of the currently logged-in user.
+    // Provide the access token of the currently logged-in user.
     return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "access-token-of-user")
 }
 
@@ -458,7 +457,7 @@ when(val result = corbado.completeAppend(activityContext)) {
 
 ## 5. Passkey Login
 
-Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new `accessToken` from your system.
+Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new **access token** from your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
@@ -488,9 +487,9 @@ sequenceDiagram
     App->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
-    Backend->>+IdP: Request accessTokens
-    IdP-->>-Backend: Return accessToken
-    Backend-->>-App: Return accessToken
+    Backend->>+IdP: Request access token
+    IdP-->>-Backend: Return access token
+    Backend-->>-App: Return access token
 ```
 
 In the following sections, we will explain each step in detail.
@@ -558,7 +557,7 @@ case .done(let signedPasskeyData, let username):
     do {
         let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
@@ -598,7 +597,7 @@ when (result) {
         // The passkey ceremony was successful.
         val (success, accessToken) = AppBackend.verifySignedPasskeyData(result.session).getOrThrow()
         if (success) {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
@@ -646,7 +645,7 @@ case .done(let signedPasskeyData, let username):
     do {
         let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an error message.
@@ -682,7 +681,7 @@ when (result) {
         // The passkey ceremony was successful.
         val (success, accessToken) = AppBackend.verifySignedPasskeyData(result.session).getOrThrow()
         if (success) {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
@@ -754,12 +753,12 @@ sequenceDiagram
 
     Note over App: Corbado iOS/Android SDK
     App->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify accessToken of user
+    Backend->>Backend: Verify access token of user
     Backend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-Backend: Return connectToken
-    Backend-->>-App: Return connectToken
+    BAPI-->>-Backend: Return connect token
+    Backend-->>-App: Return connect token
 
-    App->>+FAPI: Request passkey list<br/>(uses connectToken)
+    App->>+FAPI: Request passkey list<br/>(uses connect token)
     Note over App: Corbado iOS/Android SDK<br />handles passkey list
     FAPI-->>-App: Return success
 ```
@@ -768,9 +767,9 @@ In the following sections, we will explain each step in detail.
 
 ### 6.2 App Integration
 
-All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS/Android SDK** uses a [connectToken](/corbado-connect/concepts/connect-token) that you generate on your backend for an authenticated user.
+All passkey management operations are security-sensitive and must be authorized. For this purpose, the **Corbado iOS/Android SDK** uses a [connect token](/corbado-connect/concepts/connect-token) that you generate on your backend for an authenticated user.
 
-To provide this token to the **Corbado iOS/Android SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh [connectToken](/corbado-connect/concepts/connect-token). You can reuse the `AppBackend` helper class for this.
+To provide this token to the **Corbado iOS/Android SDK** in a secure and timely manner, all management methods require a `connectTokenProvider`. This is a closure that the SDK calls just before executing an operation to get a fresh [connect token](/corbado-connect/concepts/connect-token). You can reuse the `AppBackend` helper class for this.
 
 #### 6.2.1 List Passkeys
 
@@ -785,7 +784,7 @@ This eligibility check is governed by your project's settings for [Gradual Rollo
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 let nextStep = await corbado.isManageAppendAllowed(connectTokenProvider: {
-    // Provide a connectToken of type 'PasskeyList' to authorize the list operation.
+    // Provide a connect token of type 'PasskeyList' to authorize the list operation.
     return try await AppBackend.getConnectToken(connectTokenType: .PasskeyList, accessToken: "access-token-of-user")
 })
 
@@ -809,7 +808,7 @@ case .error(let error):
 // This single method both fetches the list of current passkeys and checks
 // if the user is eligible to add a new one.
 val manageStep = corbado.isManageAppendAllowed { _ ->
-    // Provide a connectToken of type 'PasskeyList' to authorize the list operation.
+    // Provide a connect token of type 'PasskeyList' to authorize the list operation.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyList, "access-token-of-user")
     if (result.isFailure) {
         throw ConnectTokenError("Could not get connect token")
@@ -845,13 +844,13 @@ when (manageStep) {
 
 To allow a user to delete a passkey, you first need to identify which passkey they wish to remove. Typically, this is done by having the user select one from the list you populated in the previous step. Once you have the passkey's ID, you call the `deletePasskey()` method from the **Corbado iOS/Android SDK**.
 
-This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh [connectToken](/corbado-connect/concepts/connect-token) of type `PasskeyDelete`.
+This operation also requires authorization, so you must provide the same `connectTokenProvider` as before to generate a fresh [connect token](/corbado-connect/concepts/connect-token) of type `PasskeyDelete`.
 
 <CodeGroup>
 ```swift iOS example (Swift)
 // This assumes 'passkey' is the PasskeyInfo object selected by the user from your UI list.
 let status = await corbado.deletePasskey(passkeyId: passkey.id) { _ in
-    // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
+    // Provide a connect token of type 'PasskeyDelete' to authorize the deletion.
     return try await AppBackend.getConnectToken(connectTokenType: .PasskeyDelete, accessToken: "access-token-of-user")
 }
 
@@ -873,7 +872,7 @@ default:
 ```kotlin Android example (Kotlin)
 // This assumes 'passkeyId' is the ID of the passkey selected by the user from your UI list.
 val deleteStatus = corbado.deletePasskey(connectTokenProvider = { _ ->
-    // Provide a connectToken of type 'PasskeyDelete' to authorize the deletion.
+    // Provide a connect token of type 'PasskeyDelete' to authorize the deletion.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyDelete, "access-token-of-user")
     if (result.isFailure) {
         throw ConnectTokenError("Could not get connect token")
@@ -902,13 +901,13 @@ when (deleteStatus) {
 
 If the user is allowed to add a new passkey (as determined by the `isManageAppendAllowed()` method), your UI should present an "Add new passkey" button. When the user taps this button, you call the `completePasskeyListAppend()` method from the **Corbado iOS/Android SDK**.
 
-This function initiates the native passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a [connectToken](/corbado-connect/concepts/connect-token) of type `PasskeyAppend` from your backend.
+This function initiates the native passkey creation ceremony. It requires a `connectTokenProvider` to authorize the action, but for this operation, you must request a [connect token](/corbado-connect/concepts/connect-token) of type `PasskeyAppend` from your backend.
 
 <CodeGroup>
 ```swift iOS example (Swift)
 // This would be called when the user taps the "Add new passkey" button in your UI.
 let status = await corbado.completePasskeyListAppend { _ in
-    // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
+    // Provide a connect token of type 'PasskeyAppend' to authorize the creation.
     return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "access-token-of-user")
 }
 
@@ -934,7 +933,7 @@ case .passkeyOperationExcludeCredentialsMatch:
 ```kotlin Android example (Kotlin)
 // This would be called when the user taps the "Add new passkey" button in your UI.
 val appendStatus = corbado.completePasskeyListAppend(activityContext, { _ ->
-    // Provide a connectToken of type 'PasskeyAppend' to authorize the creation.
+    // Provide a connect token of type 'PasskeyAppend' to authorize the creation.
     val result = AppBackend.getConnectToken(ConnectTokenType.PasskeyAppend, "access-token-of-user")
     if (result.isFailure) {
         throw ConnectTokenError("Could not get connect token")

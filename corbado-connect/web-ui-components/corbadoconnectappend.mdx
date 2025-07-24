@@ -4,19 +4,20 @@ description: "CorbadoConnectAppend component lets users add passkeys to existing
 sidebarTitle: "CorbadoConnectAppend"
 ---
 
-import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
 import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
+## 1. Introduction
+
 **CorbadoConnectAppend** is used after a user has been authenticated (e.g., they've just logged in with a password or have an active session). Its role is to guide the user through creating (or "appending") a passkey to their account if the user and their device meet the eligibility requirements.
 ![CorbadoConnectAppend Component](https://www.corbado.com/_next/image?url=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fcorbado-cloud-staging-website-assets%2FImage_11_03_25_at_13_34_9c883cf482.jpeg&w=750&q=75&dpl=dpl_B1BvxMgoZpGVDaa5gQri9YWwY9ju)
 
-# When to Use This Component
+## 2. When to Use This Component
 
 This component should be loaded on any page that is shown to a user **immediately after they have successfully logged in**, such as a dashboard or a dedicated welcome page.
 
-### Rendering Logic
+## 3. Rendering Logic
 
 The component is not always visible. Before rendering its UI, it performs two critical checks. If either check fails, the component will not render, and the `onSkip` callback will be triggered.
 
@@ -25,7 +26,7 @@ The component is not always visible. Before rendering its UI, it performs two cr
 3.  **User Confirmation (Explainer)**: If the above checks pass, it shows an "explainer" screen. This screen informs the user about the benefits of passkeys and asks for their consent before proceeding. The content of this screen can be customized.
 4.  **Passkey Creation**: Once the user agrees, the component initiates the WebAuthn API to create and register the passkey.
 
-# User Experience
+## 4. User Experience
 
 When the component is visible, it provides a clear call-to-action inviting the user to create a passkey for faster, more secure logins. Once rendered, the user has three possible interactions:
 
@@ -33,20 +34,20 @@ When the component is visible, it provides a clear call-to-action inviting the u
 2. **Skip for Now**: The user can dismiss the prompt.
 3. **Learn More**: The user can view additional information about what passkeys are.
 
-# Error Handling
+## 5. Error Handling
 
 The component features built-in error handling. If an issue occurs during the passkey creation process (e.g., the user accidentally closes the browser prompt), the UI will display an informative error message and give the user the option to retry the operation.
 
-# Example
+## 6. Example
 
-> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a [connectToken](/corbado-connect/concepts/connect-token) on your backend to validate that the user session is legitimate. This token is then passed to the component.
+> **Important:** Only authenticated users are allowed to create new passkeys. You must generate a [connect token](/corbado-connect/concepts/connect-token) on your backend to validate that the user session is legitimate. This token is then passed to the component.
 
 ```js
 <head>
   <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
   <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
   <script type="module">
-    // This connectToken must be generated on the server side
+    // This connect token must be generated on the server side
     // and passed to the component (e.g. by embedding it during server-side rendering).
     const connectToken = 'ctk1_xxx';
 
@@ -79,19 +80,19 @@ The component features built-in error handling. If an issue occurs during the pa
 </body>
 ```
 
-# Available Configuration Parameters
+## 7. Available Configuration Parameters
 
 | **Name**              | **Description**                                                                                                                                                                                                                                                                                                                                          | **Required** | **Type**                                                    |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------- |
 | `onSkip`              | Called when the component skips rendering or the user actively dismisses it. The `status` string provides the reason, which can be `gradual-rollout-denied` (user not eligible), `passkey-intelligence-denied` (device not suitable), or `user-skipped` (user clicked skip). | ✅            | `(status: string) => void`                      |
-| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use [connectToken](/corbado-connect/concepts/connect-token) needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
+| `appendTokenProvider` | A function that is called after initial loading to retrieve the single-use [connect token](/corbado-connect/concepts/connect-token) needed to authorize passkey creation. This token must be generated on your backend.                                                                                             | ✅            | `() => Promise<string>`                                      |
 | `onComplete`          | Called when a passkey has been successfully appended. It provides the `status` (`user-completed`) and a `clientState` string, which should be stored client-side (e.g., in a cookie) to accelerate future passkey flows.                                                            | ✅            | `(status: string, clientState: string) => void` |
 
-# Customization
+## 8. Customization
 
 You can customize the component's appearance to match your application's design in two ways:
 
-### 1. Through CSS Theme Variables
+### 8.1 Through CSS Theme Variables
 
 The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet.
 
@@ -120,11 +121,11 @@ The easiest way to change colors, fonts, and border-radius is by overriding our 
 | `--cb-font-family-primary` | Primary font family | 'Space Grotesk', sans-serif |
 | `--cb-border-radius` | Border radius for elements | 0rem |
 
-### 2. Through CSS Classes
+### 8.2 Through CSS Classes
 
 For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
 
-#### Shared CSS Classes
+#### 8.2.1 Shared CSS Classes
 
 These classes are used across multiple **Corbado Connect** components.
 
@@ -140,7 +141,7 @@ These classes are used across multiple **Corbado Connect** components.
 | `.cb-notification-container` | Used for notification containers |
 | `.loader` | Used for loader/spinner animations |
 
-#### Component Specific CSS Classes
+#### 8.2.2 Component Specific CSS Classes
 
 These classes are specific to the `CorbadoConnectAppend` component.
 
@@ -156,7 +157,3 @@ These classes are specific to the `CorbadoConnectAppend` component.
 | `.cb-append-icon` | Styles for icons in append features |
 | `.cb-append-skip` | Styles for the skip option |
 | `.cb-append-skip-container` | Container for skip option elements |
-
-# Next steps: Get in touch
-
-<GetInTouch></GetInTouch>

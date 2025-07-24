@@ -4,22 +4,23 @@ description: "CorbadoConnectPasskeyList component lets users manage their passke
 sidebarTitle: "CorbadoConnectPasskeyList"
 ---
 
-import GetInTouch from "/snippets/corbado-connect/get-in-touch.mdx"
 import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
+## 1. Introduction
+
 **CorbadoConnectPasskeyList** provides a complete UI for authenticated users to manage their passkeys.
 
-# When to Use This Component
+## 2. When to Use This Component
 
 This component should be loaded within a **profile or account management section** of your application where a user is already authenticated.
 
-### Rendering Logic
+## 3. Rendering Logic
 
 The component's rendering is primarily controlled by the **Gradual Rollout** feature. If the `allow-passkey-list` ruleset you've configured determines that the current user should not have access to passkey management, the component will not render at all.
 
-# User Experience
+## 4. User Experience
 
 If rendered, the component allows the user to perform three main actions:
 
@@ -27,14 +28,14 @@ If rendered, the component allows the user to perform three main actions:
 2.  **Delete existing passkeys**: Revoke passkeys they no longer need.
 3.  **Append new passkeys**: Add a passkey from their current device.
 
-# Error Handling
+## 5. Error Handling
 
 The component is designed to show clear, helpful error messages to the user within a pop-up modal. Planned errors that the user might encounter include:
 
 -   **Unsupported device**: If the user tries to append a passkey on a device or browser that does not support WebAuthn.
 -   **Passkey already exists**: If the user tries to append a passkey on a device that already has one registered for their account.
 
-# Example
+## 6. Example
 
 > **Important:** This component is designed for users who are already logged in. You must generate `connectTokens` (see [here](/corbado-connect/concepts/connect-token)) on your backend for listing, appending, and deleting passkeys to validate that the user session is legitimate.
 
@@ -46,7 +47,7 @@ The component is designed to show clear, helpful error messages to the user with
   <script type="module">
     const passkeyListElement = document.getElementById('passkey-list');
 
-    // This function is responsible for getting a short-lived ConnectToken from your backend.
+    // This function is responsible for getting a connect token from your backend.
     // Your server would make a secure, server-to-server call to Corbado's Backend API.
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
@@ -65,7 +66,7 @@ The component is designed to show clear, helpful error messages to the user with
       projectId: "pro-XXX", // Your Corbado Project ID
       frontendApiUrlSuffix: "frontendapi.cloud.corbado.io", // Points to your chosen Corbado Frontend API environment
 
-      // Asynchronously provides connectTokens for all actions (list, append, delete)
+      // Asynchronously provides connect tokens for all actions (list, append, delete)
       connectTokenProvider: connectTokenProvider
     });
   </script>
@@ -77,25 +78,25 @@ The component is designed to show clear, helpful error messages to the user with
 </body>
 ```
 
-# Available Configuration Parameters
+## 7. Available Configuration Parameters
 
 | **Name**                 | **Description**                                                                                                                                                                                                                                                                 | **Required** | **Type**                               |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------- |
-| `connectTokenProvider`   | A function that asynchronously returns a [connectToken](/corbado-connect/concepts/connect-token). It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
+| `connectTokenProvider`   | A function that asynchronously returns a [connect token](/corbado-connect/concepts/connect-token). It receives a `type` argument (either `'passkey-list'`, `'passkey-append'`, or `'passkey-delete'`) to specify which kind of token is needed from your backend.                                                            | ✅            | `(type: string) => Promise<string>`    |
 
-# Customization
+## 8. Customization
 
 You can customize the component's appearance to match your application's design in two ways:
 
-### 1. Through CSS Theme Variables
+### 8.1 Through CSS Theme Variables
 
-The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet. (See the Customization section of the `CorbadoConnectAppend` component for a full list of variables).
+The easiest way to change colors, fonts, and border-radius is by overriding our CSS theme variables. You can set these in a `:root` block in your stylesheet (see the Customization section of the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component for a full list of variables).
 
-### 2. Through CSS Classes
+### 8.2 Through CSS Classes
 
 For more detailed changes, you can directly target the component's CSS classes. All classes are scoped under the `.cb-connect-container` to avoid conflicts.
 
-#### Shared CSS Classes
+#### 8.2.1 Shared CSS Classes
 
 These classes are used across multiple **Corbado Connect** components.
 
@@ -111,7 +112,7 @@ These classes are used across multiple **Corbado Connect** components.
 | `.cb-notification-container` | Used for notification containers |
 | `.loader` | Used for loader/spinner animations |
 
-#### Component-Specific CSS Classes
+#### 8.2.2 Component-Specific CSS Classes
 
 These classes are specific to the `CorbadoConnectPasskeyList` component.
 
@@ -123,7 +124,3 @@ These classes are specific to the `CorbadoConnectPasskeyList` component.
 | `.cb-passkey-list-append-button` | Styles for the button used to append passkey items |
 | `.cb-modal` | Styles for modal windows (used for delete confirmation, errors, etc.) |
 | `.cb-passkey-list-empty` | Styles for the empty state of the passkey list |
-
-# Next steps: Get in touch
-
-<GetInTouch></GetInTouch>

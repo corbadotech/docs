@@ -8,13 +8,13 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
-## What are Split Tests?
+## 1. What are Split Tests?
 
 Split testing (A/B testing) in **Corbado Connect** allows us to experiment with different feature configurations and user experience variations in a controlled manner. Unlike [Gradual Rollout](/corbado-connect/features/gradual-rollout) which controls feature availability, and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) which makes intelligent contextual decisions, split testing enables us to test the effectiveness of different approaches by randomly assigning users to different experimental groups.
 
 Split testing is implemented in **Corbado Connect** to make consistent and persistent assignment decisions across multiple user sessions, operating independently of Passkey Intelligence's decision-making.
 
-## How do they work?
+## 2. How do they work?
 
 The split assignment decision is made during certain user interactions (e.g., login) using a rule-based system similar to [Passkey Intelligence](/corbado-connect/features/passkey-intelligence). The assignment combines:
 
@@ -24,6 +24,6 @@ The split assignment decision is made during certain user interactions (e.g., lo
 
 Once a user is assigned to a split group, this assignment is permanently stored. This ensures consistency - a user will always be in the same experimental group across all their interactions.
 
-## Example: Auto-Append Feature
+## 3. Example: Auto-Append Feature
 
 We successfully used split testing to evaluate the "auto-append" feature, where we tested different strategies for automatically prompting users to create passkeys after login. This allowed us to measure the impact on user conversion rates and experience before rolling out the optimal approach.
