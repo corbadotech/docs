@@ -18,7 +18,7 @@ In the following sections, we will detail the session handling logic and the imp
 
 Once a user's identity is verified, your application needs a way to recognize them across subsequent requests. This process is known as session management.
 
-There are various strategies for handling sessions, such as maintaining server-side session entries in a database. However, for simplicity and broad applicability across both web and mobile clients, we'll use a stateless approach with JSON Web Tokens (JWTs). In our backend and examples, we will refer to these JWTs as `accessTokens`, a common industry term.
+There are various strategies for handling sessions, such as maintaining server-side session entries in a database. However, for simplicity and broad applicability across both web and mobile clients, we'll use a stateless approach with JSON Web Tokens (JWTs). In our backend and examples, we will refer to these JWTs as **access tokens**, a common industry term.
 
 ## 3. Endpoints
 
@@ -31,17 +31,17 @@ Here is an example implementation using Node.js and Express:
 ```javascript
 app.post('/auth/createConnectToken', async (req, res) => {
     try {
-        // 1. Get accessToken from the Authorization header
+        // 1. Get access token from the Authorization header
         const authHeader = req.headers['authorization'];
         const accessToken = authHeader && authHeader.split(' ')[1];
         if (accessToken == null) {
             return res.sendStatus(401);
         }
 
-        // 2. Verify the accessToken
+        // 2. Verify the accesst oken
         const user = await yourAuthSystem.verifyAccessToken(accessToken);
         if (!user) {
-            return res.status(401).json({ error: 'Invalid accessToken' });
+            return res.status(401).json({ error: 'Invalid access token' });
         }
 
         // 3. Request connect token from Corbado Backend API
@@ -82,9 +82,9 @@ app.post('/auth/createConnectToken', async (req, res) => {
 
 After a user successfully authenticates with a passkey, **Corbado Connect** generates [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data).
 
-Your backend needs to verify this [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) to confirm the user's identity before creating an `accessToken` in your system.
+Your backend needs to verify this [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) to confirm the user's identity before creating an **access token** in your system.
 
-Here's an example of an endpoint that verifies the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and creates an `accessToken` using Node.js and Express:
+Here's an example of an endpoint that verifies the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and creates an **access token** using Node.js and Express:
 
 ```typescript
 app.post('/auth/verifySignedPasskeyData', async (req, res) => {
@@ -109,12 +109,12 @@ app.post('/auth/verifySignedPasskeyData', async (req, res) => {
         // 2. Extract user information
         const userInfo = extractUserInfo(signedPasskeyData);
 
-        // 3. Create an accessToken
+        // 3. Create an accesst oken
         const accessToken = await yourAuthSystem.createAccessToken({
             userId: userInfo.sub,
         });
 
-        // 4. Send the accessToken to the client
+        // 4. Send the accesst oken to the client
         res.json({
             success: true,
             accessToken: accessToken,

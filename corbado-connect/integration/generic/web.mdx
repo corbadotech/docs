@@ -59,7 +59,7 @@ sequenceDiagram
 
     Note over Frontend: CorbadoConnectAppend component<br/>initiates
     Frontend->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify accessToken of user
+    Backend->>Backend: Verify access token of user
     Backend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-Backend: Return connect token
     Backend-->>-Frontend: Return connect token
@@ -73,7 +73,7 @@ sequenceDiagram
     FAPI-->>-Frontend: Return success
 ```
 
-<Info>For more details on `accessTokens`, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
+<Info>For more details on **access tokens**, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
 
 In the following sections, we will explain each step in detail.
 
@@ -100,7 +100,7 @@ Here's an example integration:
       },
 
       appendTokenProvider: async () => {
-        // 1. Get accessToken from local storage
+        // 1. Get access token from local storage
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
             throw new Error('User not authenticated');
@@ -228,23 +228,23 @@ For more information about Corbado actions and how to implement them, see the [A
 
 ## 4. Passkey Login
 
-Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new `accessToken` from your system.
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new **access token** from your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
 ### 4.1 Implementation Overview
 
-The cornerstone of user login integration is [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to create an `accessToken`.
+The cornerstone of user login integration is [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) (option 1 & 2). This token acts as the link between **Corbado Connect's** passkey authentication and your authentication system, which ultimately needs to create an **access token**.
 
 There are several ways to integrate the passkey login flow with your authentication system:
 
-1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification and `accessToken` creation (refer to our [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
-2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and create an `accessToken`.
-3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and create an `accessToken`.
+1. **System Extension**: If your authentication system supports plugins or custom authentication methods, you can extend it to manage [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) verification and **access token** creation (refer to our [Amazon Cognito](/corbado-connect/integration/cognito) integration guide, which follows this approach).
+2. **Custom Endpoint**: Develop a new endpoint in your backend that verifies [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and create an **access token**.
+3. **Corbado Action**: Utilize Corbado's action system to directly manage the authentication flow and create an **access token**.
 
-In each option, it is necessary to create an `accessToken` within your authentication system at the conclusion of the process.
+In each option, it is necessary to create an **access token** within your authentication system at the conclusion of the process.
 
-<Info>For more details on `accessTokens`, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
+<Info>For more details on **access tokens**, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
 
 We will now elaborate on each option in the following sections.
 
@@ -278,8 +278,8 @@ sequenceDiagram
     Plugin->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Plugin: Return verification result
     Plugin-->>-IdP: Return verification success
-    IdP->>IdP: Create accessToken
-    IdP-->>-Frontend: Return accessToken
+    IdP->>IdP: Create access token
+    IdP-->>-Frontend: Return access token
 ```
 
 This approach is ideal when:
@@ -295,7 +295,7 @@ The exact implementation details will depend on your authentication system's ext
 
 #### 4.1.2 Option 2: Custom Endpoint
 
-This option involves implementing a dedicated endpoint in your backend that handles passkey verification and `accessToken` creation. This approach gives you full control over the authentication flow and is suitable when your authentication system doesn't support extensions or when you need custom session/token handling.
+This option involves implementing a dedicated endpoint in your backend that handles passkey verification and **access token** creation. This approach gives you full control over the authentication flow and is suitable when your authentication system doesn't support extensions or when you need custom session/token handling.
 
 Here's how the flow typically works:
 
@@ -321,12 +321,12 @@ sequenceDiagram
     Frontend->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
-    Backend->>+IdP: Create accessToken
-    IdP-->>-Backend: Return accessToken
-    Backend-->>-Frontend: Return accessToken
+    Backend->>+IdP: Create access token
+    IdP-->>-Backend: Return access token
+    Backend-->>-Frontend: Return access token
 ```
 
-The implementation involves creating a new endpoint in your backend that receives the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), verifies it by calling Corbado's Backend API, and then obtains an `accessToken` from your own authentication system.
+The implementation involves creating a new endpoint in your backend that receives the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data), verifies it by calling Corbado's Backend API, and then obtains an **access token** from your own authentication system.
 
 For detailed instructions on how to implement this endpoint, please refer to our [Backend Setup guide](/corbado-connect/integration/generic/backend).
 
@@ -343,7 +343,7 @@ Remember to implement proper error handling and security measures in your endpoi
 
 #### 4.1.3 Option 3: Corbado Action
 
-This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) in your system, you can use a `post-login` action to create and return an `accessToken`. This approach minimizes the integration effort while maintaining security.
+This option leverages Corbado's action system to handle the authentication flow. Instead of implementing verification logic of [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) in your system, you can use a `post-login` action to create and return an **access token**. This approach minimizes the integration effort while maintaining security.
 
 Here's how the flow typically works:
 
@@ -364,10 +364,10 @@ sequenceDiagram
     Actions-->>-FAPI: Return user ID
     FAPI->>FAPI: Verify passkey login
     FAPI->>+Actions: Execute post-login action
-    Actions->>+IdP: Create accessToken
-    IdP-->>-Actions: Return accessToken
-    Actions-->>-FAPI: Return accessToken
-    FAPI-->>-Frontend: Return accessToken
+    Actions->>+IdP: Create access token
+    IdP-->>-Actions: Return access token
+    Actions-->>-FAPI: Return access token
+    FAPI-->>-Frontend: Return access token
 ```
 
 The implementation involves creating a `post-login` action:
@@ -379,12 +379,12 @@ export const handler = async (event) => {
     try {
         const userId = event.userId;
 
-        // 1. Create accessToken in your auth system
+        // 1. Create access token in your auth system
         const accessToken = await yourAuthSystem.createAccessToken({
             userId: userId,
         });
 
-        // 2. Return accessToken to the client
+        // 2. Return access token to the client
         return {
             statusCode: 200,
             body: {
@@ -392,12 +392,12 @@ export const handler = async (event) => {
             }
         };
     } catch (error) {
-        console.error('accessToken creation failed:', error);
+        console.error('access token creation failed:', error);
 
         return {
             statusCode: 500,
             body: {
-                message: 'Failed to create accessToken',
+                message: 'Failed to create access token',
                 error: error.message,
             },
         };
@@ -464,7 +464,7 @@ The implementation details for the `onComplete` callback will be provided in the
 
 #### 4.2.1 Option 1: System Extension
 
-As we have integrated with the existing authentication system, `accessToken` creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
+As we have integrated with the existing authentication system, **access token** creation and storage are managed by it. Therefore, after a successful passkey login, we need to hand over to the existing authentication system to complete the login:
 
 ```javascript
 onComplete: (signedPasskeyData, clientState) => {
@@ -491,7 +491,7 @@ onComplete: async (signedPasskeyData, clientState) => {
         throw new Error('Verification failed');
     }
 
-    // 2. The backend returns an accessToken, store it
+    // 2. The backend returns an access token, store it
     const { accessToken } = await response.json();
     localStorage.setItem('accessToken', accessToken);
 
@@ -502,13 +502,13 @@ onComplete: async (signedPasskeyData, clientState) => {
 
 #### 4.2.3 Option 3: Corbado Action
 
-When using a Corbado Action, the `accessToken` is returned directly in the `result` object, simplifying the frontend logic:
+When using a Corbado Action, the **access token** is returned directly in the `result` object, simplifying the frontend logic:
 
 ```javascript
 onComplete: async (result, clientState) => {
     const { accessToken } = result;
 
-    // 1. Store the accessToken in local storage
+    // 1. Store the access token in local storage
     localStorage.setItem('accessToken', accessToken);
 
     // 2. Redirect to profile page
@@ -542,7 +542,7 @@ Integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/cor
     const connectTokenProvider = async (type) => {
       // 'type' will be 'passkey-list', 'passkey-append', or 'passkey-delete'
 
-      // 1. Get accessToken from local storage
+      // 1. Get access token from local storage
       const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) {
         throw new Error('User not authenticated');

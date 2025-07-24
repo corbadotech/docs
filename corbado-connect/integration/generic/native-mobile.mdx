@@ -284,9 +284,9 @@ data class VerifySignedPasskeyDataResponse(
 ```
 </CodeGroup>
 
-For `getConnectToken()`, you must provide the user's `accessToken` to enable the backend to verify their authenticated state.
+For `getConnectToken()`, you must provide the user's **access token** to enable the backend to verify their authenticated state.
 
-<Info>For more details on `accessTokens`, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
+<Info>For more details on **access tokens**, please refer to the session management section in the [Backend Setup](/corbado-connect/integration/generic/backend#2-session-management) guide.</Info>
 
 ## 4. Passkey Enrollment
 
@@ -323,7 +323,7 @@ sequenceDiagram
 
     Note over App: Corbado iOS/Android SDK
     App->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify accessToken of user
+    Backend->>Backend: Verify access token of user
     Backend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-Backend: Return connect token
     Backend-->>-App: Return connect token
@@ -351,13 +351,13 @@ The interaction with the **Corbado iOS/Android SDK** on this screen occurs at tw
 
 Before rendering the passkey enrollment screen, you should call the `isAppendAllowed()` method from the **Corbado iOS/Android SDK**. This function is crucial for determining if the current user is eligible to add a passkey, based on your configurations for [Gradual Rollout](/corbado-connect/features/gradual-rollout) and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence).
 
-The method requires a `connectTokenProvider`, a closure that fetches a [connect token](/corbado-connect/concepts/connect-token) from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current `accessToken` so your backend can verify their authenticated state before generating the token.
+The method requires a `connectTokenProvider`, a closure that fetches a [connect token](/corbado-connect/concepts/connect-token) from your backend. We'll use the `AppBackend` helper class defined previously. You need to provide the user's current **access token** so your backend can verify their authenticated state before generating the token.
 
 <CodeGroup>
 ```swift iOS example (Swift)
 // In your ViewModel or screen logic
 let nextStep = await corbado.isAppendAllowed { _ in
-    // Provide the accessToken of the currently logged-in user.
+    // Provide the access token of the currently logged-in user.
     return try await AppBackend.getConnectToken(connectTokenType: .PasskeyAppend, accessToken: "access-token-of-user")
 }
 
@@ -457,7 +457,7 @@ when(val result = corbado.completeAppend(activityContext)) {
 
 ## 5. Passkey Login
 
-Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new `accessToken` from your system.
+Now that users can append passkeys to their accounts, we can enable a truly passwordless login experience. The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon successful verification, obtain a new **access token** from your system.
 
 The complete flow is illustrated in detail in our [User Login Flow documentation](/corbado-connect/flows/user-login).
 
@@ -487,9 +487,9 @@ sequenceDiagram
     App->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
-    Backend->>+IdP: Request accessTokens
-    IdP-->>-Backend: Return accessToken
-    Backend-->>-App: Return accessToken
+    Backend->>+IdP: Request access token
+    IdP-->>-Backend: Return access token
+    Backend-->>-App: Return access token
 ```
 
 In the following sections, we will explain each step in detail.
@@ -557,7 +557,7 @@ case .done(let signedPasskeyData, let username):
     do {
         let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
@@ -597,7 +597,7 @@ when (result) {
         // The passkey ceremony was successful.
         val (success, accessToken) = AppBackend.verifySignedPasskeyData(result.session).getOrThrow()
         if (success) {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
@@ -645,7 +645,7 @@ case .done(let signedPasskeyData, let username):
     do {
         let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
         if success {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an error message.
@@ -681,7 +681,7 @@ when (result) {
         // The passkey ceremony was successful.
         val (success, accessToken) = AppBackend.verifySignedPasskeyData(result.session).getOrThrow()
         if (success) {
-            // Backend verification successful. You now have a valid accessToken.
+            // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
         } else {
             // Backend verification failed. Show an appropriate error message.
@@ -753,7 +753,7 @@ sequenceDiagram
 
     Note over App: Corbado iOS/Android SDK
     App->>+Backend: POST /auth/createConnectToken
-    Backend->>Backend: Verify accessToken of user
+    Backend->>Backend: Verify access token of user
     Backend->>+BAPI: POST /v2/connectTokens
     BAPI-->>-Backend: Return connect token
     Backend-->>-App: Return connect token
