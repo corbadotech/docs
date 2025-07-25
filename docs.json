@@ -69,8 +69,7 @@
                                 ]
                             },
                             "corbado-connect/integration/cognito",
-                            "corbado-connect/integration/keycloak",
-                            "corbado-connect/integration/duende",
+                            "corbado-connect/integration/okta",
                             "corbado-connect/integration/support"
                         ]
                     },
