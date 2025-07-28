@@ -1,0 +1,43 @@
+---
+title: "RPID Configuration"
+description: "Discover how to configure the RPID for your application, particularly in complex scenarios involving both web and native/mobile applications running in parallel."
+sidebarTitle: "RPID Configuration"
+---
+
+Context:
+- /corbado-complete/helpful-guides/passkeys/relying-party-id
+- /corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps
+- https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys
+
+## 1. Introduction
+
+- General short RPID explanation
+
+## 2. Web Applications
+
+- Explain browser URL / origin is used and checked against RPID
+- Explain best practive to use root domain because most flexible for the future (if you have not planned different projects / passkey spaces on different sub domains)
+
+### 2.1. Local Development
+
+- Local development in web application case is easy because if you are on localhost any configured RPID works
+
+## 3. Native/Mobile Applications
+
+- Explain native/mobile applications are more tricky because the concept of an origin/browser url is not available
+- To introduce a similiar concept we need to establish trust between a domain and a native/mobile application
+- This differs per platform and will be explained in the following sections
+
+### 3.1. iOS
+
+TODO
+
+### 3.2. Android
+
+TODO
+
+### 3.3. Local Development
+
+- Explain that for native/mobile applications it is not as easy as for web applications
+- Explain that you need ful ASA file and assetlinks.json file working for local development
+- Explain shortcut if you only develop the native/mobile application and do not need to work it with a potential web application it is easiest to configure the Corbado Frontend API url as RPID (e.g. https://pro-1.frontendapi.corbado.io) and let Corbado deliver the ASA File and assertlinks.json for you.
