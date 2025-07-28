@@ -108,12 +108,12 @@ class AppBackend {
         }
     }
 
-    /// Verify signedPasskeyData with backend (which verifies with Corbado Backend API)
+    /// Complete the login process by verifying signedPasskeyData with backend and obtaining an access token
     /// If you are using an external Identity Provider (IdP) such as Amazon Cognito or Firebase, 
     /// you can delegate the verification process to those systems by making a call to them.
-    static func verifySignedPasskeyData(signedPasskeyData: String) async throws -> (Bool, String) {
+    static func completeLogin(signedPasskeyData: String) async throws -> (Bool, String) {
         // 1. Set up request
-        let urlString = "https://<your-backend>/auth/verifySignedPasskeyData"
+        let urlString = "https://<your-backend>/auth/completeLogin"
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }
@@ -122,7 +122,7 @@ class AppBackend {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let requestPayload = VerifySignedPasskeyDataRequest(
+        let requestPayload = CompleteLoginRequest(
             signedPasskeyData: signedPasskeyData
         )
         
@@ -148,7 +148,7 @@ class AppBackend {
 
         // 4. Decode the JSON response
         do {
-            let decodedResponse = try JSONDecoder().decode(VerifySignedPasskeyDataResponse.self, from: data)
+            let decodedResponse = try JSONDecoder().decode(CompleteLoginResponse.self, from: data)
             return (decodedResponse.success, decodedResponse.accessToken)
         } catch {
             print("Error decoding JSON response: \(error)")
@@ -170,11 +170,11 @@ struct GetConnectTokenResponse: Codable {
     let token: String
 }
 
-struct VerifySignedPasskeyDataRequest: Codable {
+struct CompleteLoginRequest: Codable {
     let signedPasskeyData: String
 }
 
-struct VerifySignedPasskeyDataResponse: Codable {
+struct CompleteLoginResponse: Codable {
     let success: Bool
     let accessToken: String
 }
@@ -226,17 +226,17 @@ object AppBackend {
         }
     }
 
-    // Verify signedPasskeyData with backend (which verifies with Corbado Backend API)
+    // Complete the login process by verifying signedPasskeyData with backend and obtaining an access token
     // If you are using an external Identity Provider (IdP) such as Amazon Cognito or Firebase,
     // you can delegate the verification process to those systems by making a call to them.
-    suspend fun verifySignedPasskeyData(signedPasskeyData: String): Result<Pair<Boolean, String>> {
+    suspend fun completeLogin(signedPasskeyData: String): Result<Pair<Boolean, String>> {
         return try {
             // 1. Set up request
-            val request = VerifySignedPasskeyDataRequest(signedPasskeyData)
-            val jsonRequest = Json.encodeToString(VerifySignedPasskeyDataRequest.serializer(), request)
+            val request = CompleteLoginRequest(signedPasskeyData)
+            val jsonRequest = Json.encodeToString(CompleteLoginRequest.serializer(), request)
 
             // 2. Perform request
-            val urlString = "https://<your-backend>/auth/verifySignedPasskeyData"
+            val urlString = "https://<your-backend>/auth/completeLogin"
             val url = URL(urlString)
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
@@ -252,7 +252,7 @@ object AppBackend {
             val response = reader.readText()
 
             // 4. Decode the JSON response
-            val jsonResponse = Json.decodeFromString(VerifySignedPasskeyDataResponse.serializer(), response)
+            val jsonResponse = Json.decodeFromString(CompleteLoginResponse.serializer(), response)
 
             Result.success(Pair(jsonResponse.success, jsonResponse.accessToken))
         } catch (e: Exception) {
@@ -272,15 +272,16 @@ data class GetConnectTokenResponse(
 )
 
 @Serializable
-data class VerifySignedPasskeyDataRequest(
+data class CompleteLoginRequest(
     val signedPasskeyData: String
 )
 
 @Serializable
-data class VerifySignedPasskeyDataResponse(
+data class CompleteLoginResponse(
     val success: Boolean,
     val accessToken: String
 )
+
 ```
 </CodeGroup>
 
@@ -484,7 +485,7 @@ sequenceDiagram
     FAPI->>FAPI: Verify passkey login
     FAPI-->>-App: Return signedPasskeyData
 
-    App->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
+    App->>+Backend: POST /auth/completeLogin<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
     Backend->>+IdP: Request access token
@@ -541,7 +542,7 @@ when (val nextStep = corbado.isLoginAllowed()) {
 
 With **Overlay Login**, a user can log in with an existing passkey without providing their login identifier (e.g., email). The passkey prompt appears automatically. To handle this case, you need to call the `loginWithoutIdentifier()` method from the **Corbado iOS/Android SDK**.
 
-If the login has been successful (`.done` / `.Done`), you must verify the returned [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) with your backend using the helper method `verifySignedPasskeyData()` implemented earlier.
+If the login has been successful (`.done` / `.Done`), you must verify the returned [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) with your backend using the helper method `completeLogin()` implemented earlier.
 
 <CodeGroup>
 ```swift iOS example (Swift)
@@ -555,7 +556,7 @@ switch nextStep {
 case .done(let signedPasskeyData, let username):
     // The passkey ceremony was successful.
     do {
-        let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
+        let (success, accessToken) = try await AppBackend.completeLogin(signedPasskeyData: signedPasskeyData)
         if success {
             // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
@@ -595,7 +596,7 @@ val result = corbado.loginWithoutIdentifier(activityContext, challenge)
 when (result) {
     is ConnectLoginWithoutIdentifierStatus.Done -> {
         // The passkey ceremony was successful.
-        val (success, accessToken) = AppBackend.verifySignedPasskeyData(result.session).getOrThrow()
+        val (success, accessToken) = AppBackend.completeLogin(result.session).getOrThrow()
         if (success) {
             // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
@@ -643,7 +644,7 @@ switch nextStep {
 case .done(let signedPasskeyData, let username):
     // The passkey ceremony was successful.
     do {
-        let (success, accessToken) = try await AppBackend.verifySignedPasskeyData(signedPasskeyData: signedPasskeyData)
+        let (success, accessToken) = try await AppBackend.completeLogin(signedPasskeyData: signedPasskeyData)
         if success {
             // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
@@ -679,7 +680,7 @@ val result = corbado.loginWithTextField(activityContext, email)
 when (result) {
     is ConnectLoginWithIdentifierStatus.Done -> {
         // The passkey ceremony was successful.
-        val (success, accessToken) = AppBackend.verifySignedPasskeyData(result.session).getOrThrow()
+        val (success, accessToken) = AppBackend.completeLogin(result.session).getOrThrow()
         if (success) {
             // Backend verification successful. You now have a valid access token.
             // Store the token and navigate the user to the logged-in area of your app.
