@@ -11,14 +11,14 @@ Context:
 
 ## 1. Introduction
 
-While **RPID** configuration for web applications is straightforward and based on the application's origin, native and mobile applications present unique challenges. Unlike web browsers, native apps don't operate within the traditional concept of web origins and domains. This fundamental difference requires a special approach to establish trust between your domain and your native/mobile applications.
+While **RPID** configuration for web applications is straightforward and based on the application's [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin), native and mobile applications present unique challenges. Unlike web browsers, native apps don't operate within the traditional concept of web [origins](https://developer.mozilla.org/en-US/docs/Glossary/Origin) and domains. This fundamental difference requires a special approach to establish trust between your domain and your native/mobile applications.
 
 To enable passkey functionality in native environments, you need to create a secure association between your application and your domain. This is achieved through platform-specific association files:
 
 - For **iOS** applications, this involves configuring an **Apple App Site Association (ASA)** file
 - For **Android** applications, you'll need to set up an **Asset Links** file
 
-These association files serve as digital proof that your native application is authorized to use passkeys associated with your domain's **RPID**. This security measure ensures that only legitimate applications can access and manage passkeys, preventing potential security vulnerabilities.
+These association files serve as digital proof that your native/mobile application is authorized to use passkeys associated with your domain's **RPID**. This security measure ensures that only legitimate applications can access and manage passkeys, preventing potential security vulnerabilities.
 
 ## 2. iOS
 
