@@ -1,12 +1,23 @@
 ---
-title: "Overview"
-description: "Discover how to configure the RPID for your application, particularly in complex scenarios involving both web and native/mobile applications running in parallel."
+title: "RPID Configuration Overview"
+description: "Learn how to properly configure the Relying Party Identifier (RPID) for your application, especially when managing both web and native/mobile applications."
 sidebarTitle: "Overview"
 ---
 
-Context:
-- /corbado-complete/helpful-guides/passkeys/relying-party-id
-- /corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps
-- https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys
+The Relying Party Identifier (RPID) is a crucial security parameter in passkey authentication that defines which domains and applications can access your passkeys. Similar to how a cookie domain determines where a cookie can be used, the RPID determines where your passkeys can be used. Proper RPID configuration is essential for ensuring seamless passkey functionality across your web and native/mobile applications.
 
-- General short RPID explanation
+<Info>
+The RPID must be a valid domain name (e.g., `example.com`) and a registrable suffix of the application's origin. For web applications, this means the RPID must match or be a parent domain of your application's domain.
+</Info>
+
+## Application Types
+
+<CardGroup cols={2}>
+<Card href="/corbado-connect/helpful-guides/rpid-configuration/web" title="Web Applications" icon="globe">
+Configure RPID to match your web application's domain or a parent domain for consistent passkey access across subdomains.
+</Card>
+
+<Card href="/corbado-connect/helpful-guides/rpid-configuration/native-mobile" title="Native/Mobile Applications" icon="mobile">
+Set up RPID to enable passkey sharing between your web and native applications while maintaining security boundaries.
+</Card>
+</CardGroup>
