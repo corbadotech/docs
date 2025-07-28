@@ -1,19 +1,23 @@
 ---
-title: "Web Application"
-description: "Discover how to configure the RPID for your application, particularly in complex scenarios involving both web and native/mobile applications running in parallel."
+title: "Web Application RPID Configuration"
+description: "Learn how to configure and validate RPID settings for web applications, with practical examples and best practices."
 sidebarTitle: "Web Application"
 ---
 
-Context:
-- /corbado-complete/helpful-guides/passkeys/relying-party-id
-- /corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps
-- https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys
+For web applications, browsers validate that your web application's origin (domain) matches or is a subdomain of the **RPID**:
 
-## 1. Introduction
+| RPID Setting | Origin/Domain | Status | Explanation |
+|-------------|---------|--------|-------------|
+| `example.com` | app.example.com | ✓ Valid | Subdomain |
+| `example.com` | auth.example.com | ✓ Valid | Subdomain |
+| `example.com` | example.com | ✓ Valid | Exact match |
+| `example.com` | other-example.com | ✗ Invalid | Different domain |
+| `example.com` | example.org | ✗ Invalid | Different domain |
+| `app.example.com` | app.example.com | ✓ Valid | Exact match |
+| `app.example.com` | example.com | ✗ Invalid | Different domain |
 
-- Explain browser URL / origin is used and checked against RPID
-- Explain best practice to use root domain because most flexible for the future (if you have not planned different projects / passkey spaces on different sub domains)
+When configuring your **RPID** in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs), we recommend using your root domain `example.com`.
 
-## 2. Local Development
-
-- Local development in web application case is easy because if you are on localhost any configured RPID works
+<Warning>
+Only use a subdomain as **RPID** if you specifically need to restrict passkey usage to that subdomain.
+</Warning>
