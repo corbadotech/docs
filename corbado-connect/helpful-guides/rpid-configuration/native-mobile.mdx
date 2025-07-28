@@ -1,7 +1,7 @@
 ---
-title: "RPID Configuration"
+title: "Native/Mobile Application"
 description: "Discover how to configure the RPID for your application, particularly in complex scenarios involving both web and native/mobile applications running in parallel."
-sidebarTitle: "RPID Configuration"
+sidebarTitle: "Native/Mobile Application"
 ---
 
 Context:
@@ -11,32 +11,19 @@ Context:
 
 ## 1. Introduction
 
-- General short RPID explanation
-
-## 2. Web Applications
-
-- Explain browser URL / origin is used and checked against RPID
-- Explain best practive to use root domain because most flexible for the future (if you have not planned different projects / passkey spaces on different sub domains)
-
-### 2.1. Local Development
-
-- Local development in web application case is easy because if you are on localhost any configured RPID works
-
-## 3. Native/Mobile Applications
-
 - Explain native/mobile applications are more tricky because the concept of an origin/browser url is not available
-- To introduce a similiar concept we need to establish trust between a domain and a native/mobile application
+- To introduce a similiar concept we need to establish trust between a domain and a native/mobile application (ASA file and assetlinks.json)
 - This differs per platform and will be explained in the following sections
 
-### 3.1. iOS
+## 2. iOS
 
 TODO
 
-### 3.2. Android
+## 3. Android
 
 TODO
 
-### 3.3. Local Development
+## 4. Local Development
 
 - Explain that for native/mobile applications it is not as easy as for web applications
 - Explain that you need ful ASA file and assetlinks.json file working for local development

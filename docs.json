@@ -63,6 +63,7 @@
                                 "group": "Generic",
                                 "pages": [
                                     "corbado-connect/integration/generic/overview",
+                                    "corbado-connect/integration/generic/rpid-configuration",
                                     "corbado-connect/integration/generic/backend",
                                     "corbado-connect/integration/generic/web",
                                     "corbado-connect/integration/generic/native-mobile"
@@ -89,6 +90,19 @@
                             "corbado-connect/concepts/connect-token",
                             "corbado-connect/concepts/signed-passkey-data",
                             "corbado-connect/concepts/client-state"
+                        ]
+                    },
+                    {
+                        "group": "Helpful Guides",
+                        "pages": [
+                            {
+                                "group": "RPID Configuration",
+                                "pages": [
+                                    "corbado-connect/helpful-guides/rpid-configuration/overview",
+                                    "corbado-connect/helpful-guides/rpid-configuration/web",
+                                    "corbado-connect/helpful-guides/rpid-configuration/native-mobile"
+                                ]
+                            }
                         ]
                     },
                     {
