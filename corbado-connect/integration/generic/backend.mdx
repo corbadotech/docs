@@ -78,16 +78,16 @@ app.post('/auth/createConnectToken', async (req, res) => {
 });
 ```
 
-### 3.2. Verify signedPasskeyData
+### 3.2. Complete Login
 
 After a user successfully authenticates with a passkey, **Corbado Connect** generates [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data).
 
-Your backend needs to verify this [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) to confirm the user's identity before creating an **access token** in your system.
+To complete the login, your backend needs to verify this [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) to confirm the user's identity before creating an **access token** in your system.
 
 Here's an example of an endpoint that verifies the [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) and creates an **access token** using Node.js and Express:
 
 ```typescript
-app.post('/auth/verifySignedPasskeyData', async (req, res) => {
+app.post('/auth/completeLogin', async (req, res) => {
     try {
         const { signedPasskeyData } = req.body;
 

@@ -322,7 +322,7 @@ sequenceDiagram
     FAPI->>FAPI: Verify passkey login
     FAPI-->>-Frontend: Return signedPasskeyData
 
-    Frontend->>+Backend: POST /auth/verifySignedPasskeyData<br/>(signedPasskeyData)
+    Frontend->>+Backend: POST /auth/completeLogin<br/>(signedPasskeyData)
     Backend->>+BAPI: POST /v2/passkeys/verifySignedData
     BAPI-->>-Backend: Return verification result
     Backend->>+IdP: Create access token
@@ -483,7 +483,7 @@ When using the custom endpoint approach, the `onComplete` callback needs to send
 ```javascript
 onComplete: async (signedPasskeyData, clientState) => {
     // 1. Send signedPasskeyData to your verification endpoint
-    const response = await fetch('/auth/verifySignedPasskeyData', {
+    const response = await fetch('/auth/completeLogin', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -496,11 +496,15 @@ onComplete: async (signedPasskeyData, clientState) => {
     }
 
     // 2. The backend returns an access token, store it
-    const { accessToken } = await response.json();
-    localStorage.setItem('accessToken', accessToken);
+    const { success, accessToken } = await response.json();
+    if (success) {
+        localStorage.setItem('accessToken', accessToken);
 
-    // 3. Redirect to profile page
-    window.location.href = '/profile';
+        // 3. Redirect to profile page
+        window.location.href = '/profile';
+    } else {
+        throw new Error('Login failed');
+    }
 }
 ```
 
