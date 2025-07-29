@@ -231,10 +231,6 @@ We recommend Option 1 (Static File Hosting) because:
 
 Configuring passkey support for **Android** applications requires establishing a trust relationship between your application and your **RPID**. This involves creating and configuring specific files and settings to verify your application's ownership of the domain.
 
-<Note>
-Before testing passkeys on physical **Android** devices, ensure you have the latest version of Google Play Services installed, as it provides the passkey functionality.
-</Note>
-
 ### 3.1. Asset Links file and keystore
 
 The trust relationship between your **Android** application and your **RPID** is established through two key components:
@@ -266,7 +262,7 @@ Below is an example of a complete **Asset Links** file. The crucial section is t
 ```
 
 <Info>
-`com.example.app` is the **Package Name** and the SHA-256 string is your application's **Certificate Fingerprint**, see [below](#3-2-package-name-and-certificate-fingerprint) to learn more about these identifiers.
+`com.example.app` is the **Package Name** and the SHA-256 string is your application's **Certificate Fingerprint**, see [below](#3-2-package-name-and-fingerprint) to learn more about these identifiers.
 </Info>
 
 #### 3.1.2 Keystore File
@@ -331,14 +327,10 @@ Here's the complete flow:
 3. When your **Android** application attempts to use passkeys:
    - **Android** fetches the **Asset Links** file from `https://example.com/.well-known/assetlinks.json`
    - Calculates the SHA-256 fingerprint of your application's signing certificate
-   - Verifies that your application's **Package Name** and **Certificate Fingerprint** are listed in the file
+   - Verifies that your application's **Package Name** and **Fingerprint** are listed in the file
 4. If verification succeeds, your **Android** application is authorized to use passkeys for the specified **RPID**
 
-<Warning>
-**Android** caches the **Asset Links** file. During development, you can force a refresh by clearing your application's data or reinstalling it.
-</Warning>
-
-### 3.2. Package Name and Certificate Fingerprint
+### 3.2. Package Name and Fingerprint
 
 The **Asset Links** file references your **Android** application using two unique identifiers that work together to uniquely identify your application.
 
@@ -362,7 +354,7 @@ Best practices for **Package Names**:
 - Avoid using underscores or hyphens
 </Info>
 
-#### 3.2.2 Certificate Fingerprint
+#### 3.2.2 Fingerprint
 
 The **SHA-256 Certificate Fingerprint** is a hash of the certificate used to sign your **Android** application. You can obtain it using the following command:
 

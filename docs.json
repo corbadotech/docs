@@ -102,7 +102,8 @@
                                     "corbado-connect/helpful-guides/rpid-configuration/web",
                                     "corbado-connect/helpful-guides/rpid-configuration/native-mobile"
                                 ]
-                            }
+                            },
+                            "corbado-connect/helpful-guides/ios-testing"
                         ]
                     },
                     {
