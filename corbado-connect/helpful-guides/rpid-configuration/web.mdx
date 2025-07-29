@@ -16,7 +16,7 @@ For web applications, browsers take your application's [origin](https://develope
 | `app.example.com` | app.example.com | ✓ Valid | Exact match |
 | `app.example.com` | example.com | ✗ Invalid | Different domain |
 
-When configuring your **RPID** in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs), we recommend using your root domain `example.com`. Only use a subdomain as **RPID** if you specifically need to restrict passkey usage to that subdomain.
+When configuring your **RPID** in the [Corbado Management Console](https://app.corbado.com/settings/general?tab=URLs), we recommend using your root domain `example.com`. Only use a subdomain as **RPID** if you specifically need to restrict passkey usage to that subdomain.
 
 <Info>
 Strictly speaking, browsers only use the origin's domain part (e.g. `example.com` from `https://example.com`) to validate the **RPID**. See [WebAuthn specification](https://www.w3.org/TR/webauthn-2/#sctn-rp-id-validation) for more details.
