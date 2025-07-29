@@ -16,20 +16,31 @@ While **RPID** configuration for web applications is straightforward and based o
 
 To enable passkey functionality in native environments, you need to create a secure association between your application and your domain. This is achieved through platform-specific association files:
 
-- For **iOS** applications, this involves configuring an **Apple App Site Association (AASA)** file
+- For **iOS** applications, this involves configuring an **AASA (Apple App Site Association)** file
 - For **Android** applications, you'll need to set up an **Asset Links** file
 
 These association files serve as digital proof that your native/mobile application is authorized to use passkeys associated with your domain's **RPID**. This security measure ensures that only legitimate applications can access and manage passkeys, preventing potential security vulnerabilities.
 
 ## 2. iOS
 
-- Write little introduction
-- Explain that for iPhone testing there need to be done some configs and link to iPhone testing guide (needs to be written)
+Configuring passkey support for **iOS** applications requires careful setup of the relationship between your application and your **RPID**. This involves creating and configuring multiple components that work together to establish a secure, trusted connection.
 
-### 2.1. Apple App Site Association (AASA) file
+<Note>
+Before testing passkeys on physical **iOS** devices, you'll need to configure your development environment properly. For detailed instructions, refer to our [iOS Device Testing Guide](/corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/overview).
+</Note>
+
+The **iOS** configuration process involves three main components:
+
+1. An **AASA** file
+2. Your application's unique identifiers (**Application Identifier Prefix** and **Bundle ID**)
+3. The hosting configuration for your **AASA** file
+
+Let's explore each of these components in detail.
+
+### 2.1. AASA file
 
 - Explain AASA file
-- Show link to example file with addon that this is explained in detailed in the hosting section below (link to this section)
+- Show link to example file with addon that this is explained in detailed in the hosting section below (link to this section) => https://pro-1.frontendapi.cloud.corbado.io/.well-known/apple-app-site-association
 - Show diagram from Flutter integration guide (remove Flutter/adapt to iOS, make production example with RPID example.com, name Runner.entitlements Example.entitlements)
 - Explain caching with ?mode=developer
 - Explain Example.entitlements file and the entry is basically the RPID and that the iOS application will use this entry, compare it to the RPID and load the AASA file from there
