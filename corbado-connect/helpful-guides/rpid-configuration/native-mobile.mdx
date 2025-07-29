@@ -148,10 +148,80 @@ These identifiers are combined in the **AASA** file forming a unique identifier 
 T9A667JL6T.com.corbado.developerpanel.app
 ```
 
-### 2.3. Hosting of AASA file
+### 2.3. Hosting the AASA file
 
-- Explain local development with RPID = FAPI
-- Explain different concepts like statically deliver it from your own webserver or proxy it through to Corbado Frontend API
+#### 2.3.1 Development Environment
+
+For development and testing, **Corbado Connect** provides a pre-configured **AASA** file through the Corbado Frontend API:
+
+```
+https://<ProjectID>.frontendapi.cloud.corbado.io/.well-known/apple-app-site-association
+```
+
+To use this during development:
+
+1. Set your **RPID** to `<ProjectID>.frontendapi.cloud.corbado.io`
+2. Configure your **Application Identifier Prefix** and **Bundle ID** in the [Corbado developer panel](https://app.corbado.com/pro-8081086374374980670/settings/native-apps)
+
+<Warning>
+This setup is only suitable for development. For production, you must host the **AASA** file on your own domain to match your production **RPID**.
+</Warning>
+
+#### 2.3.2 Production Environment
+
+In production, the **AASA** file must be hosted on your domain that matches your **RPID**. For example, if your **RPID** is `example.com`, the **AASA** file must be accessible at:
+
+```
+https://example.com/.well-known/apple-app-site-association
+```
+
+You have two options for hosting the file:
+
+<AccordionGroup>
+<Accordion title="Option 1: Static File Hosting (Recommended)">
+1. Download the **AASA** file from Corbado Frontend API
+2. Host it on your webserver at `/.well-known/apple-app-site-association`
+3. Ensure it's served with the correct content type: `application/json`
+
+**Advantages:**
+- Simple to set up
+- No dependency on Corbado Frontend API
+- Better performance
+- Works even if Corbado Frontend API is temporarily unavailable
+
+**Disadvantages:**
+- You have to manually update the file
+</Accordion>
+
+<Accordion title="Option 2: Proxy Configuration">
+Create a proxy rule on your webserver to forward requests to Corbado Frontend API:
+
+**Nginx Example:**
+```nginx
+location /.well-known/apple-app-site-association {
+    proxy_pass https://<ProjectID>.frontendapi.cloud.corbado.io/.well-known/apple-app-site-association;
+    proxy_set_header Host $host;
+    proxy_ssl_server_name on;
+}
+```
+
+**Advantages:**
+- Always serves the latest version
+- No need to manually update the file
+
+**Disadvantages:**
+- Depends on Corbado Frontend API availability
+- Slightly higher latency
+- More complex configuration
+</Accordion>
+</AccordionGroup>
+
+<Tip>
+We recommend Option 1 (Static File Hosting) because:
+- The **AASA** file rarely changes
+- It provides better reliability and performance
+- It's simpler to set up and maintain
+</Tip>
 
 ## 3. Android
 
