@@ -8,6 +8,7 @@ Context:
 - /corbado-complete/helpful-guides/passkeys/relying-party-id
 - /corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps
 - https://www.corbado.com/blog/webauthn-relying-party-id-rpid-passkeys
+- /local-context/flutter
 
 ## 1. Introduction
 
@@ -28,9 +29,10 @@ These association files serve as digital proof that your native/mobile applicati
 ### 2.1. Apple App Site Association (AASA) file
 
 - Explain AASA file
-- Show diagram from Flutter integration guide (remove Flutter/adapt to iOS, make production example with RPID example.com)
-- Explain that hosting of file will be explained later below (link to this section)
+- Show link to example file with addon that this is explained in detailed in the hosting section below (link to this section)
+- Show diagram from Flutter integration guide (remove Flutter/adapt to iOS, make production example with RPID example.com, name Runner.entitlements Example.entitlements)
 - Explain caching with ?mode=developer
+- Explain Example.entitlements file and the entry is basically the RPID and that the iOS application will use this entry, compare it to the RPID and load the AASA file from there
 
 ### 2.2. Application Identifier Prefix and Bundle Identifier
 
