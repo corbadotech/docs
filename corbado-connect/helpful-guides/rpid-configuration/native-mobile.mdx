@@ -16,7 +16,7 @@ While **RPID** configuration for web applications is straightforward and based o
 
 To enable passkey functionality in native environments, you need to create a secure association between your application and your domain. This is achieved through platform-specific association files:
 
-- For **iOS** applications, this involves configuring an **AASA (Apple App Site Association)** file
+- For **iOS** applications, this involves configuring an **AASA (Apple App Site Association)** and **entitlements** file
 - For **Android** applications, you'll need to set up an **Asset Links** file
 
 These association files serve as digital proof that your native/mobile application is authorized to use passkeys associated with your domain's **RPID**. This security measure ensures that only legitimate applications can access and manage passkeys, preventing potential security vulnerabilities.
@@ -31,25 +31,83 @@ Before testing passkeys on physical **iOS** devices, you'll need to configure yo
 
 The **iOS** configuration process involves three main components:
 
-1. An **AASA** file
+1. An **AASA** and **entitlements** file
 2. Your application's unique identifiers (**Application Identifier Prefix** and **Bundle ID**)
-3. The hosting configuration for your **AASA** file
+3. The hosting of your **AASA** file
 
 Let's explore each of these components in detail.
 
-### 2.1. AASA file
+### 2.1. AASA and entitlements file
 
-- Explain AASA file
-- Show link to example file with addon that this is explained in detailed in the hosting section below (link to this section) => https://pro-1.frontendapi.cloud.corbado.io/.well-known/apple-app-site-association
-- Show diagram from Flutter integration guide (remove Flutter/adapt to iOS, make production example with RPID example.com, name Runner.entitlements Example.entitlements)
-- Explain caching with ?mode=developer
-- Explain Example.entitlements file and the entry is basically the RPID and that the iOS application will use this entry, compare it to the RPID and load the AASA file from there
+Let's talk about the **AASA** file first. The **AASA** file is a JSON configuration file that establishes the trust relationship between your **iOS** application and your domain. This file must be hosted at a specific location on your domain (see [hosting](#2-3-hosting-of-aasa-file) for more details):
+
+`https://<your-domain>/.well-known/apple-app-site-association`
+
+Below is an example of an **AASA** file structure for passkey support. The important part is the `webcredentials` object where you allow certain **iOS** applications identified by their **Application Identifier Prefix** (here `T9A667JL6T`) and **Bundle ID** (here `com.corbado.developerpanel.app`) for passkey usage (see [below](#2-2-application-identifier-prefix-and-bundle-identifier) for more details):
+
+```json
+{
+  "appclips": {
+    "apps": []
+  },
+  "applinks": {
+    "details": [
+      {
+        "appID": "T9A667JL6T.com.corbado.developerpanel.app",
+        "paths": [
+          "*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "T9A667JL6T.com.corbado.developerpanel.app"
+    ]
+  }
+}
+```
+
+Second, let's talk about the **entitlements** file. With the **entitlements** file you declare the association between your **iOS** application and your domain, looking from the **iOS** application's perspective. The **entitlements** file is used to tell **iOS** where to look for the **AASA** file, thus closing the circle of trust.
+
+The **entitlements** file must be located in your **iOS** application's project directory and could look like this:
+
+```xml Example.entitlements
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+        <string>webcredentials:example.com</string>
+    </array>
+</dict>
+</plist>
+```
+
+The exact interaction between those two files is shown in the following diagram:
+
+<Frame caption="AASA and entitlements file interaction">
+![AASA and entitlements file interaction](/images/corbado-connect/rpid-aasa-file.webp)
+</Frame>
+
+Let's break down the key components:
+
+1. You configure the **RPID** to `example.com` in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs)
+2. You put `example.com` in the **entitlements** file
+3. On **iOS** application install/update, **iOS** reads the **entitlements** file and fetches the **AASA** file from `https://example.com/.well-known/apple-app-site-association`
+4. **iOS** checks if the applications **Application Identifier Prefix** and **Bundle ID** are listed in the **AASA** file (`webcredentials.apps`)
+5. If they are found the trust has been established and the **iOS** application is authorized to use passkeys for **RPID** `example.com`
+
+<Warning>
+The **AASA** file is cached by Apple. During development, append `?mode=developer` to the URL when accessing your **AASA** file to bypass this caching.
+</Warning>
 
 ### 2.2. Application Identifier Prefix and Bundle Identifier
 
 - Explain Application Identifier Prefix and Bundle Identifier
 
-### 2.3. Hosting of Apple App Site Association (AASA) file
+### 2.3. Hosting of AASA file
 
 - Explain local development with RPID = FAPI
 - Explain different concepts like statically deliver it from your own webserver or proxy it through to Corbado Frontend API
