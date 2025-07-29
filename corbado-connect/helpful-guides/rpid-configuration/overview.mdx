@@ -4,11 +4,11 @@ description: "Learn how to properly configure the RPID (Relying Party Identifier
 sidebarTitle: "Overview"
 ---
 
-The **RPID** (Relying Party Identifier) is a crucial security parameter in passkey authentication that defines which domains and applications can access your passkeys. Similar to how a cookie domain determines where a cookie can be used, the **RPID** determines where your passkeys can be used. 
+The **RPID** (Relying Party Identifier) is a crucial security parameter in passkey authentication that defines which domains and applications can access your passkeys. Similar to how a cookie domain determines where a cookie can be used (read and written), the **RPID** determines where your passkeys can be used. 
 
 Proper **RPID** configuration is essential for ensuring seamless passkey functionality across your web and native/mobile applications. For additional information, please refer to the official [WebAuthn specification](https://www.w3.org/TR/webauthn-2/#rp-id).
 
-The **RPID** can be configured in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs). It is different for web and native/mobile applications:
+You can configure the **RPID** in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs). Review the following pages to understand how **RPID** validation functions and what key considerations apply to your application type:
 
 <CardGroup cols={2}>
 <Card href="/corbado-connect/helpful-guides/rpid-configuration/web" title="Web Applications" icon="globe">

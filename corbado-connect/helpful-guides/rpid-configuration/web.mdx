@@ -4,20 +4,20 @@ description: "Learn how to configure and validate RPID settings for web applicat
 sidebarTitle: "Web Application"
 ---
 
-For web applications, browsers take your application's [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin), remove the scheme (e.g. `https://`) and check if it matches or is a subdomain of the **RPID**:
+For web applications, browsers take your application's [origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin) and check if it matches or is a subdomain of the **RPID**. For better understanding the concept of **RPID** validation, let's take a look at the following examples:
 
-| RPID  | Transformed Origin | Status | Explanation |
+| RPID  | Origin | Status | Explanation |
 |-------------|-------------------|--------|-------------|
-| `example.com` | app.example.com (from https://app.example.com) | ✓ Valid | Subdomain |
-| `example.com` | auth.example.com (from https://auth.example.com) | ✓ Valid | Subdomain |
-| `example.com` | example.com (from https://example.com) | ✓ Valid | Exact match |
-| `example.com` | other-example.com (from https://other-example.com) | ✗ Invalid | Different domain |
-| `example.com` | example.org (from https://example.org) | ✗ Invalid | Different domain |
-| `app.example.com` | app.example.com (from https://app.example.com) | ✓ Valid | Exact match |
-| `app.example.com` | example.com (from https://example.com) | ✗ Invalid | Different domain |
+| `example.com` | app.example.com | ✓ Valid | Subdomain |
+| `example.com` | auth.example.com | ✓ Valid | Subdomain |
+| `example.com` | example.com | ✓ Valid | Exact match |
+| `example.com` | other-example.com | ✗ Invalid | Different domain |
+| `example.com` | example.org | ✗ Invalid | Different domain |
+| `app.example.com` | app.example.com | ✓ Valid | Exact match |
+| `app.example.com` | example.com | ✗ Invalid | Different domain |
 
-When configuring your **RPID** in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs), we recommend using your root domain `example.com`.
+When configuring your **RPID** in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs), we recommend using your root domain `example.com`. Only use a subdomain as **RPID** if you specifically need to restrict passkey usage to that subdomain.
 
-<Warning>
-Only use a subdomain as **RPID** if you specifically need to restrict passkey usage to that subdomain.
-</Warning>
+<Info>
+Strictly speaking, browsers only use the origin's domain part (e.g. `example.com` from `https://example.com`) to validate the **RPID**. See [WebAuthn specification](https://www.w3.org/TR/webauthn-2/#sctn-rp-id-validation) for more details.
+</Info>
