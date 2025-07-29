@@ -29,21 +29,22 @@ Configuring passkey support for **iOS** applications requires careful setup of t
 Before testing passkeys on physical **iOS** devices, you'll need to configure your development environment properly. For detailed instructions, refer to our [iOS Device Testing Guide](/corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/overview).
 </Note>
 
-The **iOS** configuration process involves three main components:
-
-1. An **AASA** and **entitlements** file
-2. Your application's unique identifiers (**Application Identifier Prefix** and **Bundle ID**)
-3. The hosting of your **AASA** file
-
 Let's explore each of these components in detail.
 
 ### 2.1. AASA and entitlements file
 
-Let's talk about the **AASA** file first. The **AASA** file is a JSON configuration file that establishes the trust relationship between your **iOS** application and your domain. This file must be hosted at a specific location on your domain (see [hosting](#2-3-hosting-of-aasa-file) for more details):
+The trust relationship between your **iOS** application and your **RPID** is established through two key files:
+
+- An **AASA** file hosted on your **RPID** (domain) that specifies which applications are allowed to use passkeys for this **RPID**
+- An **entitlements** file in your **iOS** application that declares what **RPIDs** it wants to use for passkeys
+
+#### 2.1.1 AASA File
+
+The **AASA** file is a JSON configuration file [hosted](#2-3-hosting-of-aasa-file) on your **RPID** (domain):
 
 `https://<your-domain>/.well-known/apple-app-site-association`
 
-Below is an example of an **AASA** file structure for passkey support. The important part is the `webcredentials` object where you allow certain **iOS** applications identified by their **Application Identifier Prefix** (here `T9A667JL6T`) and **Bundle ID** (here `com.corbado.developerpanel.app`) for passkey usage (see [below](#2-2-application-identifier-prefix-and-bundle-identifier) for more details):
+Below is an example of a complete **AASA** file. The crucial section for passkeys is the `webcredentials` object, where you specify which **iOS** applications (identified by their **Application Identifier Prefix** and **Bundle ID**) are authorized to use passkeys:
 
 ```json
 {
@@ -68,9 +69,13 @@ Below is an example of an **AASA** file structure for passkey support. The impor
 }
 ```
 
-Second, let's talk about the **entitlements** file. With the **entitlements** file you declare the association between your **iOS** application and your domain, looking from the **iOS** application's perspective. The **entitlements** file is used to tell **iOS** where to look for the **AASA** file, thus closing the circle of trust.
+<Info>
+`T9A667JL6T` is the **Application Identifier Prefix** and `com.corbado.developerpanel.app` is the **Bundle ID**, see [below](#2-2-application-identifier-prefix-and-bundle-identifier) to learn more about these identifiers.
+</Info>
 
-The **entitlements** file must be located in your **iOS** application's project directory and could look like this:
+#### 2.1.2 Entitlements File
+
+The **entitlements** file completes the trust circle by declaring which **RPIDs** your **iOS** application wants to access. This file must be included in your **iOS** application's project:
 
 ```xml Example.entitlements
 <?xml version="1.0" encoding="UTF-8"?>
@@ -85,22 +90,26 @@ The **entitlements** file must be located in your **iOS** application's project 
 </plist>
 ```
 
-The exact interaction between those two files is shown in the following diagram:
+#### 2.1.3 Trust Establishment Process
+
+The following diagram illustrates how these files work together to establish trust:
 
 <Frame caption="AASA and entitlements file interaction">
 ![AASA and entitlements file interaction](/images/corbado-connect/rpid-aasa-file.webp)
 </Frame>
 
-Let's break down the key components:
+Here's the complete flow:
 
-1. You configure the **RPID** to `example.com` in the [Corbado developer panel](https://app.corbado.com/settings/general?tab=URLs)
-2. You put `example.com` in the **entitlements** file
-3. On **iOS** application install/update, **iOS** reads the **entitlements** file and fetches the **AASA** file from `https://example.com/.well-known/apple-app-site-association`
-4. **iOS** checks if the applications **Application Identifier Prefix** and **Bundle ID** are listed in the **AASA** file (`webcredentials.apps`)
-5. If they are found the trust has been established and the **iOS** application is authorized to use passkeys for **RPID** `example.com`
+1. The **RPID** has been [configured](https://app.corbado.com/settings/general?tab=URLs) as `example.com`
+2. The same **RPID** has been added to the **entitlements** file using the `webcredentials:` prefix
+3. When your **iOS** application is installed or updated:
+   - **iOS** reads the **entitlements** file
+   - Fetches the **AASA** file from `https://example.com/.well-known/apple-app-site-association`
+   - Verifies that your **iOS** application's identifiers are listed in the `webcredentials.apps` section
+4. If verification succeeds, your **iOS** application is authorized to use passkeys for the specified **RPID**
 
 <Warning>
-The **AASA** file is cached by Apple. During development, append `?mode=developer` to the URL when accessing your **AASA** file to bypass this caching.
+Apple aggressively caches **AASA** files. During development, append `?mode=developer` to bypass this caching when accessing your **AASA** file.
 </Warning>
 
 ### 2.2. Application Identifier Prefix and Bundle Identifier
