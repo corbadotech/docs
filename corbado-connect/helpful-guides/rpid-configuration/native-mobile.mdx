@@ -94,8 +94,8 @@ The **entitlements** file completes the trust circle by declaring which **RPIDs*
 
 The following diagram illustrates how these files work together to establish trust:
 
-<Frame caption="AASA and entitlements file interaction">
-![AASA and entitlements file interaction](/images/corbado-connect/rpid-aasa-file.webp)
+<Frame caption="Trust Establishment Process">
+![Trust Establishment Process](/images/corbado-connect/rpid-aasa-file.webp)
 </Frame>
 
 Here's the complete flow:
@@ -114,7 +114,39 @@ Apple aggressively caches **AASA** files. During development, append `?mode=deve
 
 ### 2.2. Application Identifier Prefix and Bundle Identifier
 
-- Explain Application Identifier Prefix and Bundle Identifier
+The **AASA** file references your **iOS** application using two unique identifiers that work together to uniquely identify your application.
+
+#### 2.2.1 Bundle Identifier
+
+The **Bundle Identifier** (or **Bundle ID**) is a unique identifier for your **iOS** application that you configure in Xcode. It follows a reverse-domain naming pattern:
+
+```
+com.example.app
+```
+
+<Info>
+Best practices for **Bundle IDs**:
+- Use reverse-domain notation (e.g., `com.yourcompany.appname`)
+- Only use alphanumeric characters, hyphens, and periods
+- Keep it lowercase to avoid confusion
+- Choose a name that will remain unique and consistent
+</Info>
+
+#### 2.2.2 Application Identifier Prefix
+
+The **Application Identifier Prefix** (also known as **Team ID**) is a unique identifier assigned by Apple to your development team. You can find it in the Apple Developer Portal under "Membership":
+
+<Frame caption="Team ID in Apple Developer Portal">
+![Apple Developer Portal Team ID location](/images/corbado-connect/apple-team-id.webp)
+</Frame>
+
+#### 2.2.3 Combined Usage
+
+These identifiers are combined in the **AASA** file forming a unique identifier for your **iOS** application, for example:
+
+```
+T9A667JL6T.com.corbado.developerpanel.app
+```
 
 ### 2.3. Hosting of AASA file
 
