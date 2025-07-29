@@ -19,7 +19,7 @@ To enable passkey functionality in native environments, you need to create a sec
 - For **iOS** applications, this involves configuring an **AASA (Apple App Site Association)** and **entitlements** file
 - For **Android** applications, you'll need to set up an **Asset Links** file
 
-These association files serve as digital proof that your native/mobile application is authorized to use passkeys associated with your domain's **RPID**. This security measure ensures that only legitimate applications can access and manage passkeys, preventing potential security vulnerabilities.
+These association files serve as digital proof that your native/mobile application is authorized to use passkeys associated with your **RPID** (domain). This security measure ensures that only legitimate applications can access and manage passkeys, preventing potential security vulnerabilities.
 
 ## 2. iOS
 
@@ -38,11 +38,13 @@ The trust relationship between your **iOS** application and your **RPID** is est
 - An **AASA** file hosted on your **RPID** (domain) that specifies which applications are allowed to use passkeys for this **RPID**
 - An **entitlements** file in your **iOS** application that declares what **RPIDs** it wants to use for passkeys
 
+For the next sections, we assume that the **RPID** is `example.com`.
+
 #### 2.1.1 AASA File
 
 The **AASA** file is a JSON configuration file [hosted](#2-3-hosting-of-aasa-file) on your **RPID** (domain):
 
-`https://<your-rpid>/.well-known/apple-app-site-association`
+`https://example.com/.well-known/apple-app-site-association`
 
 Below is an example of a complete **AASA** file. The crucial section for passkeys is the `webcredentials` object, where you specify which **iOS** applications (identified by their **Application Identifier Prefix** and **Bundle ID**) are authorized to use passkeys for this **RPID**:
 
@@ -54,7 +56,7 @@ Below is an example of a complete **AASA** file. The crucial section for passkey
   "applinks": {
     "details": [
       {
-        "appID": "T9A667JL6T.com.corbado.developerpanel.app",
+        "appID": "T9A667JL6T.com.example.app",
         "paths": [
           "*"
         ]
@@ -63,14 +65,14 @@ Below is an example of a complete **AASA** file. The crucial section for passkey
   },
   "webcredentials": {
     "apps": [
-      "T9A667JL6T.com.corbado.developerpanel.app"
+      "T9A667JL6T.com.example.app"
     ]
   }
 }
 ```
 
 <Info>
-`T9A667JL6T` is the **Application Identifier Prefix** and `com.corbado.developerpanel.app` is the **Bundle ID**, see [below](#2-2-application-identifier-prefix-and-bundle-identifier) to learn more about these identifiers.
+`T9A667JL6T` is the **Application Identifier Prefix** and `com.example.app` is the **Bundle ID**, see [below](#2-2-application-identifier-prefix-and-bundle-identifier) to learn more about these identifiers.
 </Info>
 
 #### 2.1.2 Entitlements File
@@ -89,6 +91,8 @@ The **entitlements** file completes the trust circle by declaring which **RPIDs*
 </dict>
 </plist>
 ```
+
+The relevant part here is the `webcredentials:example.com` entry. This entry tells **iOS** where to look for the **AASA** file.
 
 #### 2.1.3 Trust Establishment Process
 
@@ -145,7 +149,7 @@ The **Application Identifier Prefix** (also known as **Team ID**) is a unique id
 These identifiers are combined in the **AASA** file forming a unique identifier for your **iOS** application, for example:
 
 ```
-T9A667JL6T.com.corbado.developerpanel.app
+T9A667JL6T.com.example.app
 ```
 
 ### 2.3. Hosting the AASA file
