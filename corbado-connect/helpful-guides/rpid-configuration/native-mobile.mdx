@@ -42,9 +42,9 @@ The trust relationship between your **iOS** application and your **RPID** is est
 
 The **AASA** file is a JSON configuration file [hosted](#2-3-hosting-of-aasa-file) on your **RPID** (domain):
 
-`https://<your-domain>/.well-known/apple-app-site-association`
+`https://<your-rpid>/.well-known/apple-app-site-association`
 
-Below is an example of a complete **AASA** file. The crucial section for passkeys is the `webcredentials` object, where you specify which **iOS** applications (identified by their **Application Identifier Prefix** and **Bundle ID**) are authorized to use passkeys:
+Below is an example of a complete **AASA** file. The crucial section for passkeys is the `webcredentials` object, where you specify which **iOS** applications (identified by their **Application Identifier Prefix** and **Bundle ID**) are authorized to use passkeys for this **RPID**:
 
 ```json
 {
