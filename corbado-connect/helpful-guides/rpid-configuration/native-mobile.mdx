@@ -25,18 +25,18 @@ Before you test passkeys on the **iOS** simulator and physical devices, ensure y
 
 Let's explore each of these components in detail.
 
-### 2.1. AASA and entitlements file
+### 2.1. AASA and entitlements files
 
 The trust relationship between your **iOS** application and your **RPID** is established through two key files:
 
-- An **AASA** file hosted on your **RPID** (domain) that specifies which applications are allowed to use passkeys for this **RPID**
+- An **AASA** file [hosted](#2-3-hosting-the-aasa-file) on your **RPID** (domain) that specifies which applications are allowed to use passkeys for this **RPID**
 - An **entitlements** file in your **iOS** application that declares what **RPIDs** it wants to use for passkeys
 
 For the next sections, we assume that the **RPID** is `example.com`.
 
 #### 2.1.1 AASA File
 
-The **AASA** file is a JSON configuration file [hosted](#2-3-hosting-of-aasa-file) on your **RPID** (domain):
+The **AASA** file is a JSON configuration file [hosted](#2-3-hosting-the-aasa-file) on your **RPID** (domain):
 
 `https://example.com/.well-known/apple-app-site-association`
 
@@ -107,7 +107,7 @@ Here's the complete flow:
 4. If verification succeeds, your **iOS** application is authorized to use passkeys for the specified **RPID**
 
 <Warning>
-Apple aggressively caches **AASA** files. During development, append `?mode=developer` to bypass this caching when accessing your **AASA** file.
+Apple aggressively caches **AASA** files. During development, append `?mode=developer` to bypass this caching when accessing your **AASA** file. This only works if you have enabled **Associated Domains Development** on your device ([see iOS Testing Guide](/corbado-connect/helpful-guides/ios-testing#2-2-enable-associated-domains-development)).
 </Warning>
 
 ### 2.2. Application Identifier Prefix and Bundle Identifier
@@ -229,14 +229,14 @@ Configuring passkey support for **Android** applications requires establishing a
 
 The trust relationship between your **Android** application and your **RPID** is established through two key components:
 
-- An **Asset Links** file hosted on your **RPID** (domain) that specifies which applications are allowed to use passkeys for this **RPID**
+- An **Asset Links** file [hosted](#3-3-hosting-the-asset-links-file) on your **RPID** (domain) that specifies which applications are allowed to use passkeys for this **RPID**
 - A **keystore** file in your **Android** application that contains the certificate used to sign your application
 
 For the next sections, we assume that the **RPID** is `example.com`.
 
 #### 3.1.1 Asset Links File
 
-The **Asset Links** file is a JSON configuration file [hosted](#3-3-hosting-of-asset-links-file) on your **RPID** (domain):
+The **Asset Links** file is a JSON configuration file [hosted](#3-3-hosting-the-asset-links-file) on your **RPID** (domain):
 
 `https://example.com/.well-known/assetlinks.json`
 
