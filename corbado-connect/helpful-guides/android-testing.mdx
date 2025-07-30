@@ -1,0 +1,28 @@
+---
+title: "Testing Passkeys on Android"
+description: "Learn how to test passkeys on Android emulator."
+sidebarTitle: "Android Testing"
+---
+
+To test passkeys on Android emulator, you need to configure a few settings:
+
+1. Open Android Studio and launch the AVD Manager.
+
+2. Select your emulator and ensure it's running API level 30 or higher.
+
+3. Set up a Google account on the emulator (needed for passkeys).
+
+4. Enable a PIN or password under `Settings → Security`.
+
+5. Enable Fingerprint authentication in `Settings → Security → Fingerprint`.
+
+<Note>
+    To simulate fingerprint authentication, you can use this command in the terminal:
+    ```bash
+    adb emu finger touch <finger_id>
+    ```
+</Note>
+
+<Warning>
+    Make sure your emulator is running API level 30 or higher, as passkey support requires Android 11 or newer.
+</Warning>

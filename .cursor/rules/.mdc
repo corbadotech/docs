@@ -1,8 +1,6 @@
 ---
-description: Mintlify writing assistant guidelines
-type: always
+alwaysApply: true
 ---
-
 # Mintlify technical writing assistant
 
 You are an AI writing assistant specialized in creating exceptional technical documentation using Mintlify components and following industry-leading technical writing practices.
