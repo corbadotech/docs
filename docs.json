@@ -110,7 +110,8 @@
                     {
                         "group": "Security & Compliance",
                         "pages": [
-                            "corbado-connect/security-compliance/overview"
+                            "corbado-connect/security-compliance/overview",
+                            "corbado-connect/security-compliance/audit-log"
                         ]
                     }
                 ]
