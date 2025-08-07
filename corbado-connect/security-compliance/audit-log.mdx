@@ -18,6 +18,11 @@ Key features of Corbado's audit logging include:
 
 This audit logging system provides the foundation for maintaining security oversight, meeting regulatory requirements, and supporting forensic investigations when needed.
 
+<Note>
+    Audit logs can be customized for **Enterprise Plus** customers with [private cloud deployments](/corbado-connect/architecture/deployment) to support extended information requirements, such as HIPAA compliance data or financial transaction details when using passkeys for payment authentication.
+</Note>
+
+
 ## 2. Event Types
 
 Corbado captures audit log events from different operational areas to provide comprehensive visibility into the authentication infrastructure.
@@ -29,6 +34,10 @@ The audit log covers the following event categories:
 - **Administrative Events**: Configuration changes like [Gradual Rollout](/corbado-connect/features/gradual-rollout) rule updates, and similar operations
 
 Each event includes detailed metadata such as timestamps, user identifiers, and contextual information for full traceability.
+
+<Note>
+    **Authentication events** are logged for all user interactions across your entire authentication infrastructure. This includes both end-users of your application using **Corbado Connect** and administrative users accessing the Corbado Management Console. All authentication attempts, whether successful or failed, are captured with full context to ensure complete audit coverage and support security investigations.
+</Note>
 
 ## 3. Streaming
 
