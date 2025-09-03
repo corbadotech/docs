@@ -81,7 +81,8 @@
                             "corbado-connect/features/gradual-rollout",
                             "corbado-connect/features/split-tests",
                             "corbado-connect/features/passkey-intelligence",
-                            "corbado-connect/features/one-tap-login"
+                            "corbado-connect/features/one-tap-login",
+                            "corbado-connect/features/passkey-export"
                         ]
                     },
                     {

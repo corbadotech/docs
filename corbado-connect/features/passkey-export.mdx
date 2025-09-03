@@ -1,0 +1,106 @@
+---
+title: "Automatic Passkey Backup and Export to S3"
+description: "TODO"
+sidebarTitle: "Passkey Export"
+---
+
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
+# 1. Introduction
+
+- explain that we automatically backup passkeys to S3 once per day as gzipped CSV file
+- those backups can be downloaded from the Corbado Management Console
+- they could be used to import passkeys in your own system to leave Corbado Connect
+- add a mintlify note that passkey export must be activated per project by the Corbado support team
+
+# 2. CSV File Format
+
+- explain CVS fields
+- use markdown table
+- use the following fields
+
+"credentialId",
+"projectId",
+"userId",
+"externalUserId",
+"credentialId",
+"publicKey",
+"authenticatorSignCount",
+"authenticatorAaguid",
+"authenticatorAttachment",
+"backupEligible",
+"backupState",
+"transports",
+"attestationFormat",
+"attestationResponse",
+"created",
+"status",
+
+- the table should have a field column, a description column and a encoding column
+- the encoding column contains special encodings for some fields:
+    - credentialId
+    - publicKey
+    - attestationResponse
+- see encoding is base64 url with padding (add RFC and link to it)
+- add mintlify note with download link to example csv file
+
+# 3. Import
+
+- next step is to import the exported passkeys into your own system
+- we provide all relevant fields for the major frameworks
+- as a proof-of-concept we implemented an import for JavaScript/TypeScript SimpleWebAuthn library example (link word example to index.ts)
+- show following code:
+
+```javascript
+function loadCredentialsFromCSV(): void {
+  try {
+    const csvPath = path.join(__dirname, '2025-09-15.csv');
+    const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+    const records = parse(csvContent, {
+      columns: true,
+      skip_empty_lines: true,
+    }) as CSVRecord[];
+
+    for (const record of records) {
+      if (record.status === 'active') {
+        // Parse base64url encoded fields
+        const credentialId = Buffer.from(record.credentialId, 'base64url');
+        const publicKey = Buffer.from(record.publicKey, 'base64url');
+
+        // Parse transports
+        const transports = record.transports.split(';').map((t: string) => t.trim()) as AuthenticatorTransport[];
+
+        const credential: WebAuthnCredential = {
+          id: credentialId.toString('base64url'),
+          publicKey: publicKey,
+          counter: parseInt(record.authenticatorSignCount, 10),
+          transports: transports,
+        };
+
+        // Add credential to the default user
+        const user = inMemoryUserDB[loggedInUserId];
+        if (user) {
+          // Check if credential already exists by comparing credential IDs
+          const existingCred = user.credentials.find(cred =>
+            cred.id === credential.id
+          );
+
+          if (!existingCred) {
+            user.credentials.push(credential);
+            console.log(`Loaded credential from CSV: ${record.credentialId}`);
+          }
+        }
+      }
+    }
+
+    console.log(`Loaded ${inMemoryUserDB[loggedInUserId].credentials.length} credentials from CSV`);
+  } catch (error) {
+    console.warn('Could not load credentials from CSV:', error);
+  }
+}
+```
+
+- on startup of the example, you must call `loadCredentialsFromCSV` to load the example passkey file `2025-09-15.csv`
