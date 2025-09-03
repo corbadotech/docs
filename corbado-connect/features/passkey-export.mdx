@@ -1,7 +1,7 @@
 ---
 title: "Automatic Passkey Backup and Export to S3"
 description: "TODO"
-sidebarTitle: "Passkey Export"
+sidebarTitle: "Passkey Backup"
 ---
 
 import Demo from "/snippets/corbado-connect/demo.mdx"
@@ -63,10 +63,22 @@ Download an example CSV file to see the exact format: [sample-passkey-export.csv
 
 ## 3. Import
 
-- next step is to import the exported passkeys into your own system
-- we provide all relevant fields for the major frameworks
-- as a proof-of-concept we implemented an import for JavaScript/TypeScript SimpleWebAuthn library example (link word example to index.ts)
-- show following code:
+Once you have exported your passkey data, the next step is to import these credentials into your own authentication system. The CSV format provides all the necessary WebAuthn fields required by major authentication frameworks and libraries.
+
+### 3.1. Framework Compatibility
+
+The exported data includes all standard WebAuthn fields, making it compatible with popular authentication libraries:
+
+- **JavaScript/TypeScript**: SimpleWebAuthn, @webauthn/server
+- **Python**: py_webauthn, webauthn-rp
+- **Go**: go-webauthn/webauthn
+- **Java**: webauthn4j, yubico-java-server
+- **C#**: Fido2NetLib
+- **PHP**: web-auth/webauthn-lib
+
+### 3.2. SimpleWebAuthn Implementation Example
+
+As a proof-of-concept, we've implemented a complete import function for the JavaScript/TypeScript [SimpleWebAuthn library](https://simplewebauthn.dev/). This import function can be used in the official SimpleWebAuthn [example](https://github.com/MasterKale/SimpleWebAuthn/blob/master/example/index.ts).
 
 ```javascript
 function loadCredentialsFromCSV(): void {
@@ -118,4 +130,10 @@ function loadCredentialsFromCSV(): void {
 }
 ```
 
-- on startup of the example, you must call `loadCredentialsFromCSV` to load the example passkey file `2025-09-15.csv`
+The import function automatically:
+
+- Filters for active credentials only
+- Handles Base64URL decoding for binary fields
+- Parses semicolon-separated transport lists
+- Prevents duplicate credential imports
+- Provides detailed logging for debugging
