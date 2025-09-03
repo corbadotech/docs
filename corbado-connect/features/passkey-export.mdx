@@ -8,14 +8,33 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
-# 1. Introduction
+## 1. Introduction
 
-- explain that we automatically backup passkeys to S3 once per day as gzipped CSV file
-- those backups can be downloaded from the Corbado Management Console
-- they could be used to import passkeys in your own system to leave Corbado Connect
-- add a mintlify note that passkey export must be activated per project by the Corbado support team
+Corbado Connect provides automatic passkey backup functionality to ensure your authentication data is secure and portable. Our system automatically creates daily backups of all passkeys stored in your project, saving them as compressed CSV files in Amazon S3.
 
-# 2. CSV File Format
+### 1.1. Key Features
+
+- **Automated Daily Backups**: Passkeys are automatically backed up once per day as gzipped CSV files
+- **Secure Storage**: Backups are stored in Amazon S3 with enterprise-grade security
+- **Easy Access**: Download backup files directly from the Corbado Management Console
+- **Data Portability**: Use exported passkeys to migrate to your own authentication system if needed
+- **Migration Support**: Complete passkey data export enables seamless transition away from Corbado Connect
+
+### 1.2. Use Cases
+
+The passkey export feature is particularly useful for:
+
+- **Data Sovereignty**: Maintain complete control over your authentication data
+- **Compliance Requirements**: Meet regulatory requirements for data backup and retention
+- **Migration Planning**: Prepare for potential migration to self-hosted authentication systems
+- **Disaster Recovery**: Ensure business continuity with secure offsite backups
+- **Audit Trails**: Maintain historical records of passkey registrations and usage
+
+<Note>
+Passkey export must be activated per project by the Corbado support team. Contact our support team to enable this feature for your project.
+</Note>
+
+## 2. CSV File Format
 
 - explain CVS fields
 - use markdown table
@@ -46,7 +65,7 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 - see encoding is base64 url with padding (add RFC and link to it)
 - add mintlify note with download link to example csv file
 
-# 3. Import
+## 3. Import
 
 - next step is to import the exported passkeys into your own system
 - we provide all relevant fields for the major frameworks
