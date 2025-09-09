@@ -1,0 +1,132 @@
+---
+title: "Automatic Passkey Backup and Export to S3"
+description: "Learn how Corbado Connect automatically backs up your passkeys to S3 daily as CSV files. Download exports from the Management Console and import them into your own authentication system for seamless migration and data portability."
+sidebarTitle: "Passkey Backup"
+---
+
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
+## 1. Introduction
+
+Corbado Connect provides automatic passkey backup functionality to ensure your authentication data is secure and portable. Our system automatically creates daily backups of all passkeys stored in your project, saving them as compressed CSV files in Amazon S3.
+
+### 1.1. Key Features
+
+- **Automated Daily Backups**: Passkeys are automatically backed up once per day as gzipped CSV files
+- **Secure Storage**: Backups are stored in Amazon S3 with enterprise-grade security
+- **Easy Access**: Download backup files directly from the Corbado Management Console
+- **Data Portability**: Use exported passkeys to migrate to your own authentication system if needed
+- **Migration Support**: Complete passkey data export enables seamless transition away from Corbado Connect
+
+### 1.2. Use Cases
+
+The passkey export feature is particularly useful for:
+
+- **Data Sovereignty**: Maintain complete control over your authentication data
+- **Compliance Requirements**: Meet regulatory requirements for data backup and retention
+- **Migration Planning**: Prepare for potential migration to self-hosted authentication systems
+- **Disaster Recovery**: Ensure business continuity with secure offsite backups
+- **Audit Trails**: Maintain historical records of passkey registrations and usage
+
+<Note>
+Passkey export must be activated per project by the Corbado support team. Contact our support team to enable this feature for your project.
+</Note>
+
+## 2. CSV File Format
+
+The exported passkey data is provided in CSV format with the following structure. Each row represents a single passkey credential with all relevant WebAuthn data needed for import into your own authentication system.
+
+| Field | Description | Special Encoding/Format |
+|-------|-------------|-------------------|
+| `userId` | Internal Corbado user identifier | - |
+| `externalUserId` | Your application's user identifier | - |
+| `credentialId` | WebAuthn credential id | Base64URL with padding ([RFC 4648 Section 5](https://tools.ietf.org/html/rfc4648#section-5)) |
+| `publicKey` | WebAuthn public key for credential verification | Base64URL with padding ([RFC 4648 Section 5](https://tools.ietf.org/html/rfc4648#section-5)) |
+| `authenticatorSignCount` | Current signature counter value | - |
+| `authenticatorAaguid` | Authenticator Attestation GUID in UUID format | - |
+| `authenticatorAttachment` | Attachment type | - |
+| `backupEligible` | Whether credential supports backup | - |
+| `backupState` | Current backup state of the credential | - |
+| `transports` | Supported transport methods | Semicolon-separated list (e.g., "usb;nfc;ble") |
+| `attestationFormat` | WebAuthn attestation format used | - |
+| `created` | Credential creation timestamp | ISO 8601 format (e.g., "2024-01-15T10:30:00Z") |
+| `status` | Current credential status | - |
+
+## 3. Import
+
+Once you have exported your passkey data, the next step is to import these credentials into your own authentication system. The CSV format provides all the necessary WebAuthn fields required by major authentication frameworks and libraries.
+
+### 3.1. Framework Compatibility
+
+The exported data includes all standard WebAuthn fields, making it compatible with popular authentication libraries:
+
+- **JavaScript/TypeScript**: [SimpleWebAuthn](https://github.com/MasterKale/SimpleWebAuthn)
+- **Python**: [py_webauthn](https://github.com/duo-labs/py_webauthn)
+- **Go**: [go-webauthn/webauthn](https://github.com/go-webauthn/webauthn)
+- **Java**: [webauthn4j](https://github.com/webauthn4j/webauthn4j), [yubico-java-server](https://github.com/Yubico/java-webauthn-server)
+- **C#**: [Fido2NetLib](https://github.com/passwordless-lib/fido2-net-lib)
+- **PHP**: [lbuchs/WebAuthn](https://github.com/lbuchs/WebAuthn)
+
+### 3.2. SimpleWebAuthn Implementation Example
+
+As a proof-of-concept, we've implemented a complete import function for the JavaScript/TypeScript [SimpleWebAuthn library](https://simplewebauthn.dev/). This import function can be used in the official SimpleWebAuthn [example](https://github.com/MasterKale/SimpleWebAuthn/blob/master/example/index.ts).
+
+```javascript
+function loadCredentialsFromCSV(): void {
+  try {
+    const csvPath = path.join(__dirname, '2025-09-15.csv');
+    const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+    const records = parse(csvContent, {
+      columns: true,
+      skip_empty_lines: true,
+    }) as CSVRecord[];
+
+    for (const record of records) {
+      if (record.status === 'active') {
+        // Parse base64url encoded fields
+        const credentialId = Buffer.from(record.credentialId, 'base64url');
+        const publicKey = Buffer.from(record.publicKey, 'base64url');
+
+        // Parse transports
+        const transports = record.transports.split(';').map((t: string) => t.trim()) as AuthenticatorTransport[];
+
+        const credential: WebAuthnCredential = {
+          id: credentialId.toString('base64url'),
+          publicKey: publicKey,
+          counter: parseInt(record.authenticatorSignCount, 10),
+          transports: transports,
+        };
+
+        // Add credential to the default user
+        const user = inMemoryUserDB[loggedInUserId];
+        if (user) {
+          // Check if credential already exists by comparing credential IDs
+          const existingCred = user.credentials.find(cred =>
+            cred.id === credential.id
+          );
+
+          if (!existingCred) {
+            user.credentials.push(credential);
+            console.log(`Loaded credential from CSV: ${record.credentialId}`);
+          }
+        }
+      }
+    }
+
+    console.log(`Loaded ${inMemoryUserDB[loggedInUserId].credentials.length} credentials from CSV`);
+  } catch (error) {
+    console.warn('Could not load credentials from CSV:', error);
+  }
+}
+```
+
+The import function automatically:
+
+- Filters for active credentials only
+- Handles Base64URL decoding for binary fields
+- Parses semicolon-separated transport lists
+- Prevents duplicate credential imports
+- Provides detailed logging for debugging
