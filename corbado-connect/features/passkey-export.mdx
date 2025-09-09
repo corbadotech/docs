@@ -40,8 +40,6 @@ The exported passkey data is provided in CSV format with the following structure
 
 | Field | Description | Special Encoding/Format |
 |-------|-------------|-------------------|
-| `id` | Corbado credential identifier | - |
-| `projectId` | Corbado project identifier | - |
 | `userId` | Internal Corbado user identifier | - |
 | `externalUserId` | Your application's user identifier | - |
 | `credentialId` | WebAuthn credential id | Base64URL with padding ([RFC 4648 Section 5](https://tools.ietf.org/html/rfc4648#section-5)) |
@@ -53,13 +51,8 @@ The exported passkey data is provided in CSV format with the following structure
 | `backupState` | Current backup state of the credential | - |
 | `transports` | Supported transport methods | Semicolon-separated list (e.g., "usb;nfc;ble") |
 | `attestationFormat` | WebAuthn attestation format used | - |
-| `attestationResponse` | Complete attestation response data as JSON | Base64URL with padding ([RFC 4648 Section 5](https://tools.ietf.org/html/rfc4648#section-5)) |
 | `created` | Credential creation timestamp | ISO 8601 format (e.g., "2024-01-15T10:30:00Z") |
 | `status` | Current credential status | - |
-
-<Note>
-Download an example CSV file to see the exact format: [sample-passkey-export.csv](https://example.corbado.com/sample-passkey-export.csv)
-</Note>
 
 ## 3. Import
 
@@ -69,12 +62,12 @@ Once you have exported your passkey data, the next step is to import these crede
 
 The exported data includes all standard WebAuthn fields, making it compatible with popular authentication libraries:
 
-- **JavaScript/TypeScript**: SimpleWebAuthn, @webauthn/server
-- **Python**: py_webauthn, webauthn-rp
-- **Go**: go-webauthn/webauthn
-- **Java**: webauthn4j, yubico-java-server
-- **C#**: Fido2NetLib
-- **PHP**: web-auth/webauthn-lib
+- **JavaScript/TypeScript**: [SimpleWebAuthn](https://github.com/MasterKale/SimpleWebAuthn)
+- **Python**: [py_webauthn](https://github.com/duo-labs/py_webauthn)
+- **Go**: [go-webauthn/webauthn](https://github.com/go-webauthn/webauthn)
+- **Java**: [webauthn4j](https://github.com/webauthn4j/webauthn4j), [yubico-java-server](https://github.com/Yubico/java-webauthn-server)
+- **C#**: [Fido2NetLib](https://github.com/passwordless-lib/fido2-net-lib)
+- **PHP**: [lbuchs/WebAuthn](https://github.com/lbuchs/WebAuthn)
 
 ### 3.2. SimpleWebAuthn Implementation Example
 
