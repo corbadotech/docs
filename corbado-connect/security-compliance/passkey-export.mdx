@@ -1,6 +1,6 @@
 ---
-title: "Automatic Passkey Export to S3"
-description: "Learn how Corbado Connect automatically exports your passkeys to S3 daily as CSV files. Download exports from the Management Console and import them into your own authentication system for seamless migration and data portability."
+title: "Enterprise Passkey Export and Data Portability"
+description: "Enterprise-grade passkey export to S3 ensuring data sovereignty, regulatory compliance, and vendor independence for seamless authentication migration."
 sidebarTitle: "Passkey Export"
 ---
 
@@ -8,70 +8,140 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
-## 1. Introduction
+## 1. Executive Overview
 
-In addition to our existing backup and disaster recovery capabilities that are part of our enterprise solution, Corbado Connect addresses continuity requirements and vendor lock-in provisions of regulated entities by providing automatic passkey export functionality. This ensures your authentication data is secure, portable, and fully under your control. Our system automatically creates daily exports of all passkeys stored in your project, saving them as compressed CSV files in Amazon S3, enabling seamless portability and export of passkeys for compliance and business continuity purposes.
+In today's regulatory landscape, financial institutions, payment service providers, government entities, and other regulated organizations require absolute control over their authentication infrastructure and data. Corbado Connect's Enterprise Passkey Export capability directly addresses critical requirements for vendor independence, regulatory compliance, and operational resilience mandated by frameworks such as the European Banking Authority (EBA) guidelines, North American outsourcing regulations (OCC, OSFI), and national payment network regulations.
 
-### 1.1. Key Features
+This enterprise-grade feature ensures that your organization maintains complete sovereignty over authentication data while leveraging Corbado's advanced passkey infrastructure. By providing automated, secure, and fully portable authentication data exports, we eliminate vendor lock-in concerns and enable comprehensive business continuity planning, which are essential requirements for regulated entities operating in critical infrastructure sectors.
 
-- **Automated Daily Exports**: Passkeys are automatically exported once per day as gzipped CSV files
-- **Secure Storage**: Exports are stored in Amazon S3 with enterprise-grade security
-- **Easy Access**: Download export files directly from the Corbado Management Console
-- **Data Portability**: Use exported passkeys to migrate to your own authentication system if needed
-- **Migration Support**: Complete passkey data export enables seamless transition away from Corbado Connect
+### 1.1. Enterprise Capabilities
 
-### 1.2. Use Cases
+- **Automated Daily Data Archival**: Production-grade automated export processes execute daily, creating immutable authentication data archives in industry-standard formats
+- **Enterprise-Grade Security Architecture**: All exports are secured using AWS S3's enterprise security features, including encryption at rest (AES-256) and in transit (TLS 1.3)
+- **Management Console Integration**: Executive dashboards and administrative interfaces provide controlled access to historical authentication data exports
+- **Complete Data Portability**: Full WebAuthn credential export enables seamless migration to alternative authentication providers or in-house systems
+- **Vendor Independence Assurance**: Comprehensive data export capabilities ensure your organization retains the ability to transition authentication providers without service disruption
 
-The passkey export feature is particularly useful for:
+### 1.2. Strategic Business Applications
 
-- **Data Sovereignty**: Maintain complete control over your authentication data
-- **Compliance Requirements**: Meet regulatory requirements for data backup and retention
-- **Migration Planning**: Prepare for potential migration to self-hosted authentication systems
-- **Disaster Recovery**: Ensure business continuity with secure offsite backups
-- **Audit Trails**: Maintain historical records of passkey registrations and usage
+The Enterprise Passkey Export capability addresses critical requirements across regulated industries:
 
-<Note>
-Passkey export must be activated per project by the Corbado support team. Contact our support team to enable this feature for your project.
-</Note>
+- **Regulatory Audit Readiness**: Maintain comprehensive authentication data archives to satisfy regulatory examination requirements from banking supervisors, financial regulators, and compliance auditors
+- **Vendor Substitution Rights**: Exercise contractual rights for vendor replacement without data loss, ensuring compliance with procurement regulations and vendor risk management policies
+- **National Payment Network Resilience**: Meet national infrastructure requirements for payment service providers, including data localization, sovereignty, and disaster recovery mandates
+- **Business Continuity Planning**: Implement vendor-independent authentication data backup strategies beyond Corbado's existing disaster recovery infrastructure, enabling restoration without vendor support in extreme scenarios while maintaining alignment with Recovery Time Objectives (RTO) and Recovery Point Objectives (RPO)
+- **Multi-Jurisdictional Compliance**: Address data residency requirements, cross-border data transfer regulations, and jurisdiction-specific authentication data retention policies
+- **Exit Strategy Implementation**: Execute pre-defined vendor transition plans with zero authentication data loss, maintaining service continuity during provider changes
+- **Operational Risk Management**: Mitigate single points of failure in authentication infrastructure through comprehensive data export and portability capabilities
 
-## 2. CSV File Format
+### 1.3. Storage Architecture Options
 
-The exported passkey data is provided in CSV format with the following structure. Each row represents a single passkey credential with all relevant WebAuthn data needed for import into your own authentication system.
+Corbado Connect provides multiple storage deployment models to align with your organization's data governance, compliance requirements, and operational preferences:
 
-| Field | Description | Special Encoding/Format |
-|-------|-------------|-------------------|
-| `userId` | Internal Corbado user identifier | - |
-| `externalUserId` | Your application's user identifier | - |
-| `credentialId` | WebAuthn credential id | Base64URL with padding ([RFC 4648 Section 5](https://tools.ietf.org/html/rfc4648#section-5)) |
-| `publicKey` | WebAuthn public key for credential verification | Base64URL with padding ([RFC 4648 Section 5](https://tools.ietf.org/html/rfc4648#section-5)) |
-| `authenticatorSignCount` | Current signature counter value | - |
-| `authenticatorAaguid` | Authenticator Attestation GUID in UUID format | - |
-| `authenticatorAttachment` | Attachment type | - |
-| `backupEligible` | Whether credential supports backup | - |
-| `backupState` | Current backup state of the credential | - |
-| `transports` | Supported transport methods | Semicolon-separated list (e.g., "usb;nfc;ble") |
-| `attestationFormat` | WebAuthn attestation format used | - |
-| `created` | Credential creation timestamp | ISO 8601 format (e.g., "2024-01-15T10:30:00Z") |
-| `status` | Current credential status | - |
+#### **Standard Enterprise: Corbado-Managed Dedicated Storage**
 
-## 3. Import
+The standard Enterprise implementation provides each customer with a dedicated S3 bucket within their isolated Corbado environment. This approach delivers enterprise-grade security while minimizing operational overhead for your teams.
 
-Once you have exported your passkey data, the next step is to import these credentials into your own authentication system. The CSV format provides all the necessary WebAuthn fields required by major authentication frameworks and libraries.
+**Key Features:**
+- **Dedicated Storage**: Your passkey exports are stored in an S3 bucket exclusively allocated to your organization within your dedicated Corbado installation
+- **Management Console Access**: Download URLs for exported files are readily available through the Corbado Management Console
+- **Manual Download Capability**: Authorized administrators can initiate downloads on-demand for compliance audits, migrations, or backup purposes
+- **Secure Access**: All downloads require authentication through the Management Console with role-based access controls
+- **Data Retention**: Standard 3-day retention with automated cleanup, configurable based on your requirements
 
-### 3.1. Framework Compatibility
+This standard approach provides immediate value without requiring AWS infrastructure setup or cross-account configuration, making it ideal for organizations that prioritize simplicity while maintaining enterprise-grade security.
 
-The exported data includes all standard WebAuthn fields, making it compatible with popular authentication libraries:
+#### **Advanced Enterprise: Customer-Controlled Storage Infrastructure**
 
-- **JavaScript/TypeScript**: [SimpleWebAuthn](https://github.com/MasterKale/SimpleWebAuthn)
-- **Python**: [py_webauthn](https://github.com/duo-labs/py_webauthn)
-- **Go**: [go-webauthn/webauthn](https://github.com/go-webauthn/webauthn)
-- **Java**: [webauthn4j](https://github.com/webauthn4j/webauthn4j), [yubico-java-server](https://github.com/Yubico/java-webauthn-server)
-- **C#**: [Fido2NetLib](https://github.com/passwordless-lib/fido2-net-lib)
-- **PHP**: [lbuchs/WebAuthn](https://github.com/lbuchs/WebAuthn)
+For organizations with specific data sovereignty or compliance requirements, passkey exports can be configured to deliver directly to your own AWS S3 storage infrastructure. This approach ensures authentication data resides entirely within your organization's control while maintaining automated export delivery from Corbado's dedicated enterprise environment.
 
-### 3.2. SimpleWebAuthn Implementation Example
+**Security and Compliance Architecture:**
+- **Secure Access Control**: Corbado accesses your storage using temporary, limited-scope credentials that you control and can revoke at any time
+- **Data Ownership**: All exported data is immediately owned by your organization upon delivery, with no retained access by Corbado
+- **Encryption at Rest**: Supports your organization's encryption keys, ensuring only you can decrypt the exported authentication data
+- **Audit Trail**: All data transfers are logged and traceable for compliance reporting and security audits
+- **Tenant Isolation**: Each customer's exports are cryptographically isolated using unique identifiers to prevent any cross-tenant data access
 
-As a proof-of-concept, we've implemented a complete import function for the JavaScript/TypeScript [SimpleWebAuthn library](https://simplewebauthn.dev/). This import function can be used in the official SimpleWebAuthn [example](https://github.com/MasterKale/SimpleWebAuthn/blob/master/example/index.ts).
+#### **Enterprise Plus Addon: Custom Storage Solutions**
+
+For Enterprise Plus tier customers with specialized requirements, Corbado offers an addon that enables additional storage customization options beyond standard cross-account S3 configurations:
+
+- **Alternative Cloud Providers**: Integration with Azure Blob Storage, Google Cloud Storage, or other enterprise storage platforms
+- **On-Premises Delivery**: Direct delivery to on-premises storage systems via secure channels (SFTP, AWS Storage Gateway, or dedicated connectivity)
+- **Geographic Data Residency**: Region-specific storage with configurable data sovereignty controls
+- **Custom Retention Policies**: Automated lifecycle management aligned with your organization's data retention requirements
+- **Multi-Region Replication**: Automated replication to multiple storage locations for enhanced disaster recovery
+
+<Warning>
+Enterprise Passkey Export is available exclusively for Enterprise tier customers. Standard Enterprise contracts include Corbado-managed dedicated storage with Management Console access. Advanced configurations with customer-controlled S3 buckets are available for Enterprise customers with specific compliance requirements. Custom storage solutions beyond AWS S3 are available as an addon for Enterprise Plus agreements.
+</Warning>
+
+## 2. Technical Specifications: Export Data Schema
+
+### 2.1. Data Format and Compliance Standards
+
+Corbado Connect delivers authentication data exports in a standardized CSV format, ensuring compatibility with enterprise data management systems, compliance reporting tools, and authentication infrastructure platforms. This format has been specifically designed to meet audit trail requirements, facilitate vendor transitions, and support comprehensive disaster recovery scenarios.
+
+Each exported file contains a complete snapshot of your organization's passkey credentials, with every row representing a unique WebAuthn credential including all cryptographic material and metadata required for authentication system portability. The export format adheres to industry standards including:
+
+- **W3C WebAuthn Specification** compliance for credential data representation
+- **RFC 4648 Section 5** encoding standards for cryptographic materials
+- **ISO 8601** timestamp formatting for audit trail compatibility
+- **CSV RFC 4180** formatting for maximum interoperability
+
+### 2.2. Authentication Data Field Specifications
+
+The following table provides comprehensive documentation of each data field included in the export, essential for your technical teams, compliance officers, and audit personnel:
+
+| Field | Description | Data Type & Encoding | Compliance & Audit Relevance |
+|-------|-------------|-------------------|--------------------------------|
+| `userId` | Corbado-assigned unique user identifier | String (UUID v4) | Internal audit trail correlation |
+| `externalUserId` | Organization-specific user identifier | String | Primary key for enterprise identity systems integration |
+| `credentialId` | WebAuthn credential identifier | Base64URL with padding ([RFC 4648 §5](https://tools.ietf.org/html/rfc4648#section-5)) | Unique credential tracking for compliance reporting |
+| `publicKey` | COSE-encoded public key for credential verification | Base64URL with padding ([RFC 4648 §5](https://tools.ietf.org/html/rfc4648#section-5)) | Cryptographic material for authentication validation |
+| `authenticatorSignCount` | Signature counter for replay protection | Integer (32-bit unsigned) | Security audit and anomaly detection |
+| `authenticatorAaguid` | Authenticator Attestation GUID | UUID format (RFC 4122) | Device identification for risk assessment |
+| `authenticatorAttachment` | Platform vs. cross-platform indicator | Enum: `platform` \| `cross-platform` | Device binding compliance verification |
+| `backupEligible` | Cloud backup capability indicator | Boolean | Disaster recovery planning metric |
+| `backupState` | Current backup synchronization status | Boolean | Business continuity assessment |
+| `transports` | Supported authentication transport protocols | Semicolon-delimited (e.g., `usb;nfc;ble;internal`) | Multi-factor authentication compliance |
+| `attestationFormat` | WebAuthn attestation statement format | String (e.g., `packed`, `fido-u2f`, `none`) | Authenticator trust evaluation |
+| `created` | Credential registration timestamp | ISO 8601 (e.g., `2024-01-15T10:30:00.000Z`) | Audit trail and retention policy enforcement |
+| `status` | Credential lifecycle status | Enum: `active` \| `suspended` \| `revoked` | Access control and compliance state |
+
+<Info>
+All cryptographic materials are exported in their complete form, ensuring zero data loss during vendor transitions. The Base64URL encoding with padding ensures compatibility with all major authentication frameworks and maintains the integrity of cryptographic signatures required for WebAuthn authentication flows.
+</Info>
+
+## 3. Enterprise Integration and Migration Pathways
+
+### 3.1. Vendor Transition and Business Continuity Implementation
+
+The Enterprise Passkey Export capability has been architected to support seamless authentication provider transitions, ensuring zero disruption to your organization's authentication services during vendor migration scenarios. Whether executing a planned vendor transition as part of strategic sourcing initiatives or responding to business continuity events, the exported authentication data provides complete portability across authentication platforms.
+
+Our export format ensures compatibility with enterprise-grade authentication systems, enabling your organization to:
+
+- Execute vendor transitions within defined maintenance windows
+- Maintain authentication service availability during provider migrations
+- Preserve user authentication history for compliance and audit purposes
+- Implement multi-vendor authentication strategies for risk mitigation
+
+### 3.2. Enterprise Authentication Platform Compatibility
+
+The exported authentication data maintains full compatibility with industry-leading WebAuthn implementations, ensuring seamless integration with your existing or target authentication infrastructure:
+
+#### **Enterprise Development Frameworks**
+
+- **JavaScript/TypeScript**: [SimpleWebAuthn](https://github.com/MasterKale/SimpleWebAuthn) - Production-ready WebAuthn implementation for Node.js and browser environments
+- **Python**: [py_webauthn](https://github.com/duo-labs/py_webauthn) - Enterprise Python library supporting Django, Flask, and FastAPI integrations
+- **Go**: [go-webauthn/webauthn](https://github.com/go-webauthn/webauthn) - High-performance implementation for microservices architectures
+- **Java**: [webauthn4j](https://github.com/webauthn4j/webauthn4j), [Yubico Java WebAuthn Server](https://github.com/Yubico/java-webauthn-server) - Enterprise Java solutions for Spring Boot and Jakarta EE
+- **C#/.NET**: [Fido2NetLib](https://github.com/passwordless-lib/fido2-net-lib) - Microsoft-ecosystem compatible library for .NET Core and Azure deployments
+- **PHP**: [lbuchs/WebAuthn](https://github.com/lbuchs/WebAuthn) - Production-grade PHP implementation for Laravel and Symfony frameworks
+
+### 3.3. Reference Implementation: Migration Pattern
+
+To demonstrate the practical application of our data portability solution, we provide a reference implementation for importing exported passkey credentials into the industry-standard [SimpleWebAuthn library](https://simplewebauthn.dev/). This implementation illustrates the straightforward nature of credential migration, enabling organizations to rapidly prototype and validate their authentication migration strategies. The following code can be directly integrated into the official SimpleWebAuthn [example repository](https://github.com/MasterKale/SimpleWebAuthn/blob/master/example/index.ts) to establish a functional migration pathway.
 
 ```javascript
 function loadCredentialsFromCSV(): void {
@@ -123,10 +193,10 @@ function loadCredentialsFromCSV(): void {
 }
 ```
 
-The import function automatically:
+This reference implementation demonstrates key migration capabilities:
 
-- Filters for active credentials only
-- Handles Base64URL decoding for binary fields
-- Parses semicolon-separated transport lists
-- Prevents duplicate credential imports
-- Provides detailed logging for debugging
+- **Credential Filtering**: Processes only active credentials to maintain authentication system integrity
+- **Cryptographic Material Handling**: Properly decodes Base64URL-encoded credential IDs and public keys per WebAuthn specifications
+- **Transport Protocol Parsing**: Maintains multi-factor authentication compatibility through transport method preservation
+- **Idempotent Import Logic**: Implements duplicate detection to ensure safe re-execution during migration testing
+- **Operational Visibility**: Provides console output for migration validation and troubleshooting
