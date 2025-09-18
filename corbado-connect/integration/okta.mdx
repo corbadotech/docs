@@ -18,14 +18,14 @@ import OktaDemo from "/snippets/corbado-connect/okta-demo.mdx"
 
 ## 1. Introduction
 
-**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Okta** system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Okta for user management.
+**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Okta** system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of **Okta** for user management.
 
 This guide will walk you through the process of integrating **Corbado Connect** with **Okta**, using a sample Next.js application to demonstrate the key concepts.
 
 **Okta** offers multiple authentication solutions that have evolved over time. **Corbado Connect** supports the following:
 
 - **Okta Identity Engine** (requires custom domain and hosted widget)
-- **Okta CIC/Auth0** (Auth0 was acquired by Okta and is now part of Okta CIC)
+- **Okta CIC/Auth0** (Auth0 was acquired by **Okta** and is now part of **Okta CIC**)
 
 **Okta Classic** is currently **not supported**. If you need more information about the different **Okta** solutions, read our [blog article](https://www.corbado.com/blog/okta-passkeys-analysis) or [contact us](TODO).
 
@@ -33,7 +33,7 @@ This guide will walk you through the process of integrating **Corbado Connect** 
 
 The integration between **Corbado Connect** and **Okta** leverages the industry-standard **OAuth 2.0 Authorization Framework** and **OpenID Connect (OIDC)** protocol. This approach allows **Corbado Connect** to act as an external **Identity Provider (IdP)** that seamlessly integrates with your existing **Okta** infrastructure.
 
-Instead of users authenticating directly with Okta using traditional credentials, they will authenticate with **Corbado Connect** using passkeys, and then be federated back to **Okta** through a secure OIDC flow.
+Instead of users authenticating directly with **Okta** using traditional credentials, they will authenticate with **Corbado Connect** using passkeys, and then be federated back to **Okta** through a secure OIDC flow.
 
 This **OAuth 2.0/OIDC federation** approach ensures that your existing **Okta** policies, user management, and application integrations remain unchanged while adding the security and convenience of passkey-first authentication.
 
@@ -784,9 +784,34 @@ This integration is accomplished through the **Okta** Admin Console under **Cust
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
 </Info>
 
-### 5.2 OAuth 2.0/OIDC federation
+### 5.2 OAuth 2.0/OIDC Federation
 
-TODO
+As explained above, **Corbado Connect** functions as an **OIDC** server and can be used for **OAuth 2.0/OIDC federation**. To enable this integration, you need to create a new **Identity Provider** in the **Okta** Admin Console under **Security > Identity Providers**.
+
+The following simplified sequence diagram illustrates how the different components work together in the federation process:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ExampleApplication as Example<br />Application
+    participant OktaSignIn as Okta<br />Sign-in page
+    participant OktaOIDC as Okta<br />OIDC server
+    participant CorbadoOIDC as Corbado<br />OIDC server
+
+    ExampleApplication->>OktaSignIn: User navigates<br />to sign-in page
+    OktaSignIn->>OktaSignIn: CorbadoConnectLogin component<br />handles login
+    OktaSignIn->>OktaOIDC: Redirect initiated by<br />CorbadoConnectLogin component
+    OktaOIDC->>CorbadoOIDC: Redirect
+    CorbadoOIDC->>CorbadoOIDC: Corbado verifies login
+    CorbadoOIDC->>OktaOIDC: Redirect with<br />authorization_code
+    OktaOIDC->>+CorbadoOIDC: Requests tokens
+    CorbadoOIDC-->>-OktaOIDC: Returns tokens
+    OktaOIDC->>OktaOIDC: Verifies tokens
+    OktaOIDC->>ExampleApplication: Redirect with<br />authorization_code
+    ExampleApplication->>+OktaOIDC: Requests tokens
+    OktaOIDC-->>-ExampleApplication: Returns tokens
+    Note over ExampleApplication: User is logged in<br />with tokens/session
+```
 
 ## 6. TODO Passkey Management TODO
 
