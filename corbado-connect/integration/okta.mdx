@@ -8,13 +8,28 @@ import Demo from "/snippets/corbado-connect/demo.mdx"
 
 <Demo />
 
+## 0. TODOS
+
+- Check with Athena to address "real customer questions"
+- Link to Demo
+- Small Video (no youtube)
+- No code and no mermaids (TBD if some frontend code with componentns and high level mermaid with OIDC party is okay)
+- define okta version (they have multiple products)
+-
+
 ## 1. Introduction
 
-**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Amazon Cognito** user pools. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Cognito for user management.
+**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Okta** system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of Okta for user management.
 
-This guide will walk you through the process of integrating **Corbado Connect** with **Amazon Cognito**, using a sample Next.js application to demonstrate the key concepts.
+This guide will walk you through the process of integrating **Corbado Connect** with **Okta**, using a sample Next.js application to demonstrate the key concepts.
 
-**Amazon Cognito** is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Amazon Cognito website](https://aws.amazon.com/cognito/).
+**Okta** offers multiple authentication solutions that have evolved over time (**Corbado Connect** does not support all of them):
+
+- **Okta Identity Engine**: Supported by **Corbado Connect** (requires custom domain and hosted widget)
+- **Okta CIC/Auth0**: Supported by **Corbado Connect** (Auth0 was acquired by Okta in 2021 and is now part of Okta CIC)
+- **Okta Classic**: Not supported by **Corbado Connect**
+
+If you need more information about the different Okta products, read our [blog article](https://www.corbado.com/blog/okta-passkeys-analysis) or [contact us](TODO).
 
 ## 2. How it Works
 
