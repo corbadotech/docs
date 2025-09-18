@@ -173,611 +173,130 @@ The complete flow is illustrated in detail [here](/corbado-connect/flows/user-lo
 
 Unlike passkey enrollment, the login process is more complex because we need to integrate the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component directly into **Okta's** hosted sign-in page (hosted widget).
 
-This integration is accomplished through the **Okta** Admin Console under **Customizations > Brands**:
+This integration is accomplished through the **Okta** Admin Console under **Customizations > Brands**. We will explain the most important changes next.
+
+First, you need to load the JavaScript and CSS for the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. Extend the `<head>` with the following `<link>` tags:
 
 ```html
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex,nofollow" />
-    <!-- Styles generated from theme -->
-    <link href="{{themedStylesUrl}}" rel="stylesheet" type="text/css">
-    <!-- Favicon from theme -->
-    <link rel="shortcut icon" href="{{faviconUrl}}" type="image/x-icon"/>
-
-    <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
-
-    <title>{{pageTitle}}</title>
-    {{{SignInWidgetResources}}}
-
-    <style nonce="{{nonceValue}}">
-        {{#useSiwGen3}}
-        html {
-            font-size: 87.5%;
-        }
-        {{/useSiwGen3}}
-
-        #login-bg-image-id {
-            background-image: {{bgImageUrl}}
-        }
-    </style>
-
-    <style>
-        .cb-connect-custom-style {
-            --cb-color-outline: #dcdcdc;
-            --cb-color-primary: #253544;
-            --cb-color-secondary: #929aa1;
-            --cb-color-tertiary: #666;
-            --cb-color-on-primary: #fff;
-            --cb-border-radius: 5px;
-            --cb-color-surface: var(--color-gray-50);
-            --cb-color-primary-container: #eef2f3;
-            --cb-color-on-primary-container: #253544;
-            --cb-color-secondary-container: #ecf4e7;
-            --cb-color-on-secondary-container: #80b816;
-            --cb-font-family-primary: var(
-                    --default-font-family,
-                    ui-sans-serif,
-                    system-ui,
-                    sans-serif,
-                    "Apple Color Emoji",
-                    "Segoe UI Emoji",
-                    "Segoe UI Symbol",
-                    "Noto Color Emoji"
-            );
-            --cb-font-family-secondary: var(
-                    --default-font-family,
-                    ui-sans-serif,
-                    system-ui,
-                    sans-serif,
-                    "Apple Color Emoji",
-                    "Segoe UI Emoji",
-                    "Segoe UI Symbol",
-                    "Noto Color Emoji"
-            );
-
-            --cb-color-error-container: #ffd6da;
-            --cb-color-on-error-container: #cf0000;
-        }
-
-        #passkey-login-container {
-            .cb-connect-login {
-                max-width: 400px;
-                container-type: inline-size;
-            }
-
-            .cb-login-hybrid-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .cb-login-hybrid-container .cb-p,
-            .cb-login-hybrid-container .cb-link-button {
-                text-align: center;
-            }
-
-            .cb-login-init-signup {
-                margin-top: 2rem;
-            }
-
-            .cb-login-header {
-                text-align: center;
-            }
-
-            .cb-login-error-soft-icons,
-            .cb-login-error-hard-icons {
-                margin: 1.5rem 0;
-                display: flex;
-                justify-content: center;
-            }
-
-            .cb-login-error-soft-text,
-            .cb-login-error-hard-text {
-                margin: 1rem 0;
-                text-align: center;
-            }
-
-            .cb-login-error-soft-fallback {
-                margin-top: 1rem;
-                text-align: center;
-                color: var(--cb-color-secondary);
-            }
-
-            .cb-login-error-soft-button,
-            .cb-login-error-hard-button {
-                width: 100%;
-                background: var(--cb-color-primary);
-            }
-
-            .cb-login-error-hard-icons > * {
-                width: 80px;
-            }
-
-            .cb-login-error-hard-fallback {
-                margin-top: 1rem;
-                width: 100%;
-            }
-
-            .cb-login-error-hard-button-help {
-                color: var(--cb-color-secondary);
-            }
-
-            .cb-switch {
-                margin-top: 1rem;
-            }
-
-            .cb-login-hybrid-icons {
-                margin: 1rem 0;
-                padding: 2rem 0;
-                display: flex;
-                justify-content: center;
-                color: var(--cb-color-on-primary-container);
-                border-radius: var(--cb-border-radius);
-            }
-
-            .cb-login-hybrid-icons {
-                gap: 2rem;
-            }
-
-            .cb-login-hybrid-icons > * {
-                width: 180px;
-            }
-
-            .cb-login-hybrid-cta {
-                margin: 1rem 0rem;
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-            }
-
-            .cb-login-loader-container {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                padding-top: 1rem;
-                padding-bottom: 1rem;
-            }
-
-            .cb-login-loader {
-                width: 50px;
-                height: 50px;
-            }
-
-            .cb-passkey-button {
-                padding: 1rem;
-                background-color: white;
-                color: var(--cb-color-on-primary);
-                border-radius: var(--cb-border-radius);
-                border: 1px solid var(--cb-color-outline);
-                font-family: var(--cb-font-family-primary);
-                width: 100%;
-                display: flex;
-                justify-items: between;
-                align-items: center;
-                gap: 1rem;
-            }
-
-            .cb-passkey-button-icon {
-                width: 25px;
-                height: 25px;
-                color: black;
-            }
-
-            .cb-passkey-button-content {
-                flex: 1;
-                text-align: left;
-            }
-
-            .cb-passkey-button-title {
-                font-weight: bold;
-                font-size: 0.8rem;
-                color: black;
-            }
-
-            .cb-passkey-button-subtitle {
-                color: var(--cb-color-primary);
-                font-size: 0.8rem;
-            }
-
-            .cb-passkey-button-arrow {
-                width: 9px;
-                color: black;
-            }
-
-            .cb-h2 {
-                font-family: var(--cb-font-family-primary);
-                font-size: 1.1rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .cb-h3 {
-                font-family: var(--cb-font-family-primary);
-                font-size: 1rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .cb-p {
-                font-family: var(--cb-font-family-secondary);
-                font-size: 1rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .cb-divider {
-                height: 1rem;
-            }
-
-            .cb-span {
-                font-family: var(--cb-font-family-secondary);
-                font-size: 1rem;
-            }
-
-            .cb-bold {
-                font-weight: bold;
-            }
-
-            .cb-link-button {
-                cursor: pointer;
-                width: 100%;
-                text-decoration: underline;
-            }
-
-            .cb-connect-container {
-                font-family: var(--cb-font-family-primary);
-                background-color: var(--cb-color-surface);
-                display: flex;
-                flex-direction: column;
-                box-sizing: border-box;
-                text-align: left;
-                width: 100%;
-            }
-
-            button.cb-primary-button {
-                padding: 0.75rem 1.5rem;
-                color: var(--cb-color-on-primary);
-                background-color: var(--cb-color-primary);
-                border-radius: var(--cb-border-radius);
-                border: none;
-                cursor: pointer;
-                box-sizing: border-box;
-                font-family: var(--cb-font-family-primary);
-                text-decoration: none;
-            }
-
-            .cb-primary-button:hover,
-            .cb-primary-button:focus,
-            .cb-primary-button:active {
-                border: none;
-                opacity: 92%;
-            }
-
-            .cb-primary-button:disabled {
-                opacity: 84%;
-            }
-
-            button:hover {
-                cursor: pointer;
-            }
-
-            button.cb-secondary-button {
-                padding: 0.75rem 1.5rem;
-                color: var(--cb-color-on-secondary);
-                background-color: var(--cb-color-secondary);
-                border-radius: var(--cb-border-radius);
-                border: none;
-                cursor: pointer;
-                box-sizing: border-box;
-                font-family: var(--cb-font-family-primary);
-            }
-
-            .cb-secondary-button:hover,
-            .cb-secondary-button:focus,
-            .cb-secondary-button:active {
-                border: none;
-                opacity: 92%;
-            }
-
-            button.cb-outline-button {
-                padding: 0.75rem 1.5rem;
-                color: var(--cb-color-primary);
-                background-color: transparent;
-                border-radius: var(--cb-border-radius);
-                border: 1px solid var(--cb-color-primary);
-                cursor: pointer;
-                box-sizing: border-box;
-                font-family: var(--cb-font-family-primary);
-            }
-
-            .cb-input {
-                flex-grow: 1;
-                border-radius: var(--cb-border-radius);
-                color: var(--cb-color-tertiary);
-                border: 1px solid var(--cb-color-outline);
-                padding: 0.75rem 0.5rem;
-                justify-content: center;
-                box-sizing: border-box;
-                font-family: var(--cb-font-family-secondary);
-            }
-
-            .cb-input:focus {
-                outline: none;
-                border: 1px solid var(--cb-color-primary);
-            }
-
-            .cb-input:disabled {
-                background-color: var(--cb-input-disabled-color);
-            }
-
-            .cb-input-error {
-                border: 1px solid var(--cb-color-error);
-            }
-
-            .cb-input-field {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                margin-bottom: 0.75rem;
-            }
-
-            .cb-checkbox-input-field {
-                margin-bottom: 0.75rem;
-            }
-
-            .cb-checkbox-input-field input {
-                margin-right: 0.5rem;
-            }
-
-            .cb-input-label {
-                font-family: var(--cb-font-family-secondary);
-                margin: 0.25rem 0.5rem;
-            }
-
-            .cb-input-label-text {
-            }
-
-            .cb-notification-container {
-                display: flex;
-                padding: 0.5rem 1rem;
-                background: var(--cb-color-secondary-container);
-                color: var(--cb-color-on-secondary-container);
-                border-radius: 0.7rem;
-            }
-
-            .cb-notification-icon {
-                width: 20px;
-                margin-right: 0.25rem;
-                fill: var(--cb-color-on-secondary-container);
-            }
-
-            .cb-notification-text {
-                font-size: 0.8rem;
-                display: flex;
-                align-items: center;
-            }
-
-            .cb-error-notification {
-                width: 100%;
-                box-sizing: border-box;
-                background-color: var(--cb-color-error-container);
-                color: var(--cb-color-on-error-container);
-                border-radius: var(--cb-border-radius);
-                align-items: center;
-                gap: 1rem;
-                margin-bottom: 1rem;
-            }
-
-            .loader {
-                width: 0.75rem;
-                height: 0.75rem;
-                border: 2px solid #fff;
-                border-radius: 50%;
-                display: inline-block;
-                box-sizing: content-box;
-                animation: rotation 1s linear infinite;
-                vertical-align: middle;
-            }
-
-            .loader-primary {
-                border-top-color: var(--cb-color-primary);
-                border-bottom-color: transparent;
-            }
-
-            .loader-on-primary {
-                border-color: var(--cb-color-on-primary);
-                border-bottom-color: transparent;
-            }
-
-            .button-loading-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: inherit;
-                border-radius: inherit;
-                border: inherit;
-            }
-
-            @keyframes rotation {
-                0% {
-                    transform: rotate(0deg);
-                }
-
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-            .cb-connect-custom-style div.cb-connect-append-cta {
-                border-top: none;
-            }
-
-            .cb-connect-custom-style .cb-login-error-soft-container,
-            .cb-connect-custom-style .cb-login-error-hard-container {
-                align-items: normal;
-                width: 100%;
-            }
-
-            .cb-connect-custom-style button.cb-login-hybrid-button {
-                width: 100%;
-            }
-
-            .cb-connect-custom-style button.cb-login-error-soft-button,
-            .cb-connect-custom-style button.cb-login-error-hard-button,
-            .cb-connect-custom-style button.cb-login-error-hard-fallback {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div id="login-bg-image-id" class="login-bg-image tb--background"></div>
-    <div id="okta-login-container"></div>
-
-    <!--
-        "OktaUtil" defines a global OktaUtil object
-        that contains methods used to complete the Okta login flow.
-     -->
-    {{{OktaUtil}}}
-
-    <script type="text/javascript" nonce="{{nonceValue}}">
-        // "config" object contains default widget configuration
-        // with any custom overrides defined in your admin settings.
-        var config = OktaUtil.getSignInWidgetConfig();
-
-        // Render the Okta Sign-In Widget
-        var oktaSignIn = new OktaSignIn(config);
-        oktaSignIn.renderEl({ el: '#okta-login-container' },
-            OktaUtil.completeLogin,
-            function(error) {
-                // Logs errors that occur when configuring the widget.
-                // Remove or replace this with your own custom error handler.
-                console.log(error.message, error);
-            }
-        );
-    </script>
-
-    <script type="text/javascript">
-        const oktaFFHandshake = async (signedPasskeyData) => {
-            const config = OktaUtil.getSignInWidgetConfig();
-            const stateHandle = config.stateToken;
-            const url = document.querySelector('.okta-idps-container').children[0].href;
-            window.location.href = `/sso/idps/0oatsgxte1zfxW3gI697?login_hint=${signedPasskeyData}&fromURI=` + encodeURIComponent(location.href)
-        }
-
-        const setConventionalLoginError = (errorMessage) => {
-            const cboErrorContainerId = 'cbo-error-container';
-            const existingContainer = document.querySelector('#' + cboErrorContainerId);
-            console.log("existingContainer", existingContainer);
-            if (existingContainer) {
-                existingContainer.remove();
-            }
-
-            if (errorMessage === '') {
-                return;
-            }
-
-            const newDiv1 = document.createElement('div');
-            newDiv1.className = 'o-form-has-errors';
-            newDiv1.id = cboErrorContainerId;
-            newDiv1.role = 'alert';
-            const newDiv2 = document.createElement('div');
-            const newDiv3 = document.createElement('div');
-            newDiv3.className = 'okta-form-infobox-error infobox infobox-error'
-            newDiv3.role = 'alert';
-            const newText = document.createElement('p');
-            newText.textContent = errorMessage;
-            newDiv3.appendChild(newText);
-            newDiv2.appendChild(newDiv3);
-            newDiv1.appendChild(newDiv2);
-
-            var form = document.querySelector('.o-form-fieldset-container');
-            form.parentNode.insertBefore(newDiv1, form);
-
-            const submitButton = form.parentNode.parentNode.querySelector('input[type="submit"]');
-            if (submitButton) {
-                submitButton.addEventListener('click', function(event) {
-                    setConventionalLoginError('');
-                });
-            }
-        }
-
-        const fallbackToConventionalLogin = (passkeyLoginElement, conventionalLoginElement, email) => {
-            passkeyLoginElement.style.display = 'none';
-            const usernameInput = Array.from(conventionalLoginElement.querySelectorAll('input')).find(el => el.name.trim() === 'identifier');
-            usernameInput.value = email;
-            usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
-            conventionalLoginElement.style.display = 'block';
-        }
-
-        const getOnCompletePasskeyLoginFunction = () => {
-            return async (signedPasskeyData, clientState) => {
-                oktaFFHandshake(signedPasskeyData);
-            };
-        }
-
-        const mountLogin = (passkeyLoginElement, conventionalLoginElement) => {
-            Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
-                projectId: 'pro-8464273456666930151',
-                frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
-                customDomain: "https://corbado.okta-ek30212.cloud.corbado-demo.com",
-                onFallback: (email, errorMessage) => {
-                    setConventionalLoginError(errorMessage);
-                    fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
-                },
-                onFallbackSilent: (email) => {
-                    fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
-                },
-                onComplete: getOnCompletePasskeyLoginFunction(),
-                onSignupClick: () => console.log(""),
-                onConditionalLoginStart: (ac) => {
-                    console.log("");
-                }
-            });
-        }
-
-        const handlePrimaryAuth = () => {
-            // Section 1: Add passkey container
-            const conventionalLoginElement = document.querySelector('.auth-content-inner');
-            if (!conventionalLoginElement) {
-                return;
-            }
-
-            const newDiv = document.createElement('div');
-            newDiv.id = 'passkey-login-container';
-            const passkeyLoginElement = conventionalLoginElement.insertAdjacentElement('afterend', newDiv);
-            conventionalLoginElement.style.display = 'none';
-
-            mountLogin(passkeyLoginElement, conventionalLoginElement);
-
-            // Section 2: Remove OIDC button
-            const signInWithOIDCContainer = document.querySelector('.sign-in-with-idp');
-            signInWithOIDCContainer.style.display = 'none';
-        }
-
-        const okta = new OktaSignIn(OktaUtil.getSignInWidgetConfig());
-        okta.on('afterRender', c => {
-            console.log('after render', c)
-            const controllerName = c.controller;
-            switch (controllerName) {
-                case 'primary-auth':
-                    return handlePrimaryAuth();
-            }
-        });
-
-        okta.on('afterError', ((c, e) => {
+<script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
+<link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
+```
+
+Next, you need to wire the component with the sign-in form using the following JavaScript:
+
+```html
+<script type="text/javascript">
+const oktaFFHandshake = async (signedPasskeyData) => {
+    const config = OktaUtil.getSignInWidgetConfig();
+    const stateHandle = config.stateToken;
+    const url = document.querySelector('.okta-idps-container').children[0].href;
+    window.location.href = `/sso/idps/0oatsgxte1zfxW3gI697?login_hint=${signedPasskeyData}&fromURI=` + encodeURIComponent(location.href)
+}
+
+const setConventionalLoginError = (errorMessage) => {
+    const cboErrorContainerId = 'cbo-error-container';
+    const existingContainer = document.querySelector('#' + cboErrorContainerId);
+    console.log("existingContainer", existingContainer);
+    if (existingContainer) {
+        existingContainer.remove();
+    }
+
+    if (errorMessage === '') {
+        return;
+    }
+
+    const newDiv1 = document.createElement('div');
+    newDiv1.className = 'o-form-has-errors';
+    newDiv1.id = cboErrorContainerId;
+    newDiv1.role = 'alert';
+    const newDiv2 = document.createElement('div');
+    const newDiv3 = document.createElement('div');
+    newDiv3.className = 'okta-form-infobox-error infobox infobox-error'
+    newDiv3.role = 'alert';
+    const newText = document.createElement('p');
+    newText.textContent = errorMessage;
+    newDiv3.appendChild(newText);
+    newDiv2.appendChild(newDiv3);
+    newDiv1.appendChild(newDiv2);
+
+    var form = document.querySelector('.o-form-fieldset-container');
+    form.parentNode.insertBefore(newDiv1, form);
+
+    const submitButton = form.parentNode.parentNode.querySelector('input[type="submit"]');
+    if (submitButton) {
+        submitButton.addEventListener('click', function(event) {
             setConventionalLoginError('');
-        }));
-    </script>
-</body>
-</html>
+        });
+    }
+}
+
+const fallbackToConventionalLogin = (passkeyLoginElement, conventionalLoginElement, email) => {
+    passkeyLoginElement.style.display = 'none';
+    const usernameInput = Array.from(conventionalLoginElement.querySelectorAll('input')).find(el => el.name.trim() === 'identifier');
+    usernameInput.value = email;
+    usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    conventionalLoginElement.style.display = 'block';
+}
+
+const getOnCompletePasskeyLoginFunction = () => {
+    return async (signedPasskeyData, clientState) => {
+        oktaFFHandshake(signedPasskeyData);
+    };
+}
+
+const mountLogin = (passkeyLoginElement, conventionalLoginElement) => {
+    Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
+        projectId: 'pro-8464273456666930151',
+        frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
+        customDomain: "https://corbado.okta-ek30212.cloud.corbado-demo.com",
+        onFallback: (email, errorMessage) => {
+            setConventionalLoginError(errorMessage);
+            fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
+        },
+        onFallbackSilent: (email) => {
+            fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
+        },
+        onComplete: getOnCompletePasskeyLoginFunction(),
+        onSignupClick: () => console.log(""),
+        onConditionalLoginStart: (ac) => {
+            console.log("");
+        }
+    });
+}
+
+const handlePrimaryAuth = () => {
+    // Section 1: Add passkey container
+    const conventionalLoginElement = document.querySelector('.auth-content-inner');
+    if (!conventionalLoginElement) {
+        return;
+    }
+
+    const newDiv = document.createElement('div');
+    newDiv.id = 'passkey-login-container';
+    const passkeyLoginElement = conventionalLoginElement.insertAdjacentElement('afterend', newDiv);
+    conventionalLoginElement.style.display = 'none';
+
+    mountLogin(passkeyLoginElement, conventionalLoginElement);
+
+    // Section 2: Remove OIDC button
+    const signInWithOIDCContainer = document.querySelector('.sign-in-with-idp');
+    signInWithOIDCContainer.style.display = 'none';
+}
+
+const okta = new OktaSignIn(OktaUtil.getSignInWidgetConfig());
+okta.on('afterRender', c => {
+    console.log('after render', c)
+    const controllerName = c.controller;
+    switch (controllerName) {
+        case 'primary-auth':
+            return handlePrimaryAuth();
+    }
+});
+
+okta.on('afterError', ((c, e) => {
+    setConventionalLoginError('');
+}));
+</script>
 ```
 
 <Info>
