@@ -4,9 +4,9 @@ description: "Integrate Okta with Corbado Connect for passkeys. Offer secure and
 sidebarTitle: "Okta"
 ---
 
-import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx"
+import OktaDemo from "/snippets/corbado-connect/okta-demo.mdx"
 
-<CognitoDemo />
+<OktaDemo />
 
 ## 0. TODOS
 
@@ -14,8 +14,7 @@ import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx"
 - Link to Demo
 - Small Video (no youtube)
 - No code and no mermaids (TBD if some frontend code with componentns and high level mermaid with OIDC party is okay)
-- define okta version (they have multiple products)
--
+- DONE define okta version (they have multiple products)
 
 ## 1. Introduction
 
@@ -23,13 +22,13 @@ import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx"
 
 This guide will walk you through the process of integrating **Corbado Connect** with **Okta**, using a sample Next.js application to demonstrate the key concepts.
 
-**Okta** offers multiple authentication solutions that have evolved over time (**Corbado Connect** does not support all of them):
+**Okta** offers multiple authentication solutions that have evolved over time. **Corbado Connect** supports the following:
 
-- **Okta Identity Engine**: Supported by **Corbado Connect** (requires custom domain and hosted widget)
-- **Okta CIC/Auth0**: Supported by **Corbado Connect** (Auth0 was acquired by Okta in 2021 and is now part of Okta CIC)
-- **Okta Classic**: Not supported by **Corbado Connect**
+- ✅ **Okta Identity Engine**: Supported (requires custom domain and hosted widget)
+- ✅ **Okta CIC/Auth0**: Supported (Auth0 was acquired by Okta and is now part of Okta CIC)
+- ❌ **Okta Classic**: Not supported
 
-If you need more information about the different Okta products, read our [blog article](https://www.corbado.com/blog/okta-passkeys-analysis) or [contact us](TODO).
+If you need more information about the different **Okta** solutions, read our [blog article](https://www.corbado.com/blog/okta-passkeys-analysis) or [contact us](TODO).
 
 ## 2. How it Works
 
