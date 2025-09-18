@@ -45,8 +45,6 @@ To best illustrate the integration, we will refer to a complete example applicat
 
 - **Next.js**: A popular React framework for building server-rendered applications.
 
-We will guide you through the implementation of two primary user flows: sign-up and login.
-
 <Card title="Example Application" href="https://okta-ek30212.cloud.corbado-demo.com">
 See the example application using Corbado Connect and Okta in action.
 </Card>
@@ -175,7 +173,7 @@ Unlike passkey enrollment, the login process is more complex because we need to 
 
 This integration is accomplished through the **Okta** Admin Console under **Customizations > Brands**. We will explain the most important changes next.
 
-First, you need to load the JavaScript and CSS for the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. Extend the `<head>` with the following `<link>` tags:
+First, you need to load the JavaScript and CSS for the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. Extend the `<head>` with the following `<script>` and `<link>` tags:
 
 ```html
 <script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
@@ -332,7 +330,7 @@ sequenceDiagram
     Note over ExampleApplication: User is logged in<br />with tokens/session
 ```
 
-## 6. TODO Passkey Management TODO
+## 6. Passkey Management
 
 After users have created their initial passkeys during sign-up and used them for login, they need a way to manage their existing passkeys. Passkey management encompasses three main operations:
 
@@ -344,104 +342,68 @@ All these operations follow a similar pattern: they require obtaining a [connect
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
-### 6.1 Implementation Overview
-
-The passkey deletion process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant ExampleFrontend as Example<br />Frontend
-    participant ExampleBackend as Example<br />Backend
-    participant FAPI as Corbado<br />Frontend API
-    participant BAPI as Corbado<br />Backend API
-
-    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
-    ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return connect token
-    ExampleBackend-->>-ExampleFrontend: Return connect token
-
-    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses connect token and passkey ID)
-    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />handles passkey deletion
-    FAPI-->>-ExampleFrontend: Return success
-```
-
-### 6.2 Web UI Component Integration
+### 6.1 Web UI Component Integration
 
 We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
 Here's how it's used in our example application's profile page:
 
-```tsx /application/cognito/app/(auth-required)/profile/PasskeySection.tsx
-'use client';
-
-import {fetchAuthSession} from "aws-amplify/auth";
-import {getConnectToken} from "@/app/(auth-required)/profile/actions";
-import {CorbadoConnectPasskeyList} from "@corbado/connect-react";
+```tsx /application/okta/app/(auth-required)/profile/PasskeySection.tsx
+import { getConnectToken } from "../actions";
+import { CorbadoConnectPasskeyList } from "@corbado/connect-react";
 
 type Props = {
-    integratePasskeys: boolean;
+  integratePasskeys: boolean;
 };
 
-export const PasskeySection = ({integratePasskeys}: Props) => {
-    if (!integratePasskeys) {
-        return (
-            <div className='mb-2 w-full'>
-                <div>Passkeys have not been integrated into this application.</div>
-                <div>To integrate with 3 clicks. Use the button on the upper right side of this page.</div>
-            </div>
-        )
-    }
-
+export const PasskeySection = ({ integratePasskeys }: Props) => {
+  if (!integratePasskeys) {
     return (
-        <div className='mb-2 w-full'>
-            <CorbadoConnectPasskeyList
-                connectTokenProvider={async (connectTokenType: string) => {
-                    const session = await fetchAuthSession();
-                    const idToken = session.tokens?.idToken?.toString();
+      <div className="mb-2 w-full">
+        <div>Passkeys are disabled.</div>
+      </div>
+    );
+  }
 
-                    return await getConnectToken(connectTokenType, idToken);
-                }}
-            />
-        </div>
-    )
-}
+  return (
+    <div className="mb-2 w-full">
+      <CorbadoConnectPasskeyList
+        connectTokenProvider={async (connectTokenType: string) => {
+          return await getConnectToken(connectTokenType);
+        }}
+      />
+    </div>
+  );
+};
+
+export default PasskeySection;
 ```
 
 <Info>
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 6.3 Obtaining the Connect Token
+### 6.2 Obtaining the Connect Token
 
 When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
 
-The frontend first gets the `idToken` for the currently logged-in user from AWS Amplify. This JWT proves the user's session with **Amazon Cognito**. The `idToken` is then sent to a Next.js Server Action:
+It uses a Next.js Server Action that first verifies the session and then calls the utility function `getCorbadoConnectToken()`:
 
-```typescript
-connectTokenProvider={async (connectTokenType: string) => {
-    const session = await fetchAuthSession();
-    const idToken = session.tokens?.idToken?.toString();
-
-    return await getConnectToken(connectTokenType, idToken);
-}}
-```
-
-The server action first verifies the `idToken` to ensure it's valid and extracts the user's identity, then requests the [connect token](/corbado-connect/concepts/connect-token) by calling the utility function `getCorbadoConnectToken()`:
-
-```typescript /application/cognito/app/(auth-required)/profile/actions.tsx
+```typescript /application/okta/app/(auth-required)/profile/actions.tsx
 'use server';
 
-import {getCorbadoConnectToken, verifyAmplifyToken} from "@/lib/utils";
+import {getCorbadoConnectToken} from "@/lib/corbado";
+import {auth} from "@/auth";
+import {deleteOktaUser} from "@/lib/okta"
 
-export const getConnectToken = async (connectTokenType: string, idToken?: string) => {
-    if (!idToken) {
-        throw new Error('idToken is required');
+export const getConnectToken = async (connectTokenType: string) => {
+    const session = await auth();
+    if (!session) {
+        throw new Error('Session is required');
     }
 
-    const {displayName, identifier} = await verifyAmplifyToken(idToken);
+    const displayName = session.user.email;
+    const identifier = session.user.userId;
 
     return getCorbadoConnectToken(connectTokenType, displayName, identifier);
 }
