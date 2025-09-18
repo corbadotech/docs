@@ -63,6 +63,7 @@
                                 "group": "Generic",
                                 "pages": [
                                     "corbado-connect/integration/generic/overview",
+                                    "corbado-connect/integration/generic/rpid-configuration",
                                     "corbado-connect/integration/generic/backend",
                                     "corbado-connect/integration/generic/web",
                                     "corbado-connect/integration/generic/native-mobile"
@@ -91,9 +92,26 @@
                         ]
                     },
                     {
+                        "group": "Helpful Guides",
+                        "pages": [
+                            {
+                                "group": "RPID Configuration",
+                                "pages": [
+                                    "corbado-connect/helpful-guides/rpid-configuration/overview",
+                                    "corbado-connect/helpful-guides/rpid-configuration/web",
+                                    "corbado-connect/helpful-guides/rpid-configuration/native-mobile"
+                                ]
+                            },
+                            "corbado-connect/helpful-guides/ios-testing",
+                            "corbado-connect/helpful-guides/android-testing"
+                        ]
+                    },
+                    {
                         "group": "Security & Compliance",
                         "pages": [
-                            "corbado-connect/security-compliance/overview"
+                            "corbado-connect/security-compliance/overview",
+                            "corbado-connect/security-compliance/audit-log",
+                            "corbado-connect/security-compliance/passkey-export"
                         ]
                     }
                 ]

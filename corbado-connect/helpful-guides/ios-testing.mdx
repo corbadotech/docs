@@ -1,0 +1,55 @@
+---
+title: "Testing Passkeys on iOS"
+description: "Learn how to test passkeys on iOS simulator and physical devices."
+sidebarTitle: "iOS Testing"
+---
+
+import Demo from "/snippets/corbado-connect/demo.mdx"
+
+<Demo />
+
+## 1. Testing on Simulator
+
+For passkey testing, you need to enable Touch ID (on older versions) or Face ID. Use the iOS Simulator menu:
+
+**Features → Face ID / Touch ID → Enrolled**
+
+To simulate Face ID / Touch ID: 
+
+**Features → Face ID / Touch ID → Matching Face / Matching Touch**
+
+<Note>
+    Simulate Face ID: `Command + Shift + M` / Simulate Touch ID: `Command + Shift + H`
+</Note>
+
+## 2. Testing on Physical Devices
+
+### 2.1 Enable iPhone Developer Mode
+
+To allow Xcode to install your **iOS** application on your device, you must enable **Developer Mode**:
+
+1. Open **Settings** on your iPhone
+2. Go to **Privacy & Security**
+3. Scroll down and tap **Developer Mode**
+4. Toggle it on
+
+<Frame caption="iPhone settings showing Developer Mode toggle">
+![iPhone settings showing Developer Mode toggle](/images/corbado-connect/iphone-settings-developer-mode.webp)
+</Frame>
+
+### 2.2 Enable Associated Domains Development
+
+To enable your device to bypass the **AASA (Apple-App-Site-Association)** file cache using `?mode=developer`, you must enable **Associated Domains Development**:
+
+1. Open **Settings** on your iPhone
+2. Scroll down to **Developer** and tap it
+3. Scroll down to **Associated Domains Development**
+4. Toggle it on
+
+<Frame caption="iPhone settings showing Associated Domains Development toggle">
+![iPhone settings showing Associated Domains Development toggle](/images/corbado-connect/iphone-settings-associated-domains-development.webp)
+</Frame>
+
+<Note>
+    For further insights, refer to the [documentation](/corbado-connect/helpful-guides/rpid-configuration/native-mobile#2-1-aasa-and-entitlements-file) on **AASA** files.
+</Note>
