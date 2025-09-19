@@ -71,6 +71,7 @@
                             },
                             "corbado-connect/integration/cognito",
                             "corbado-connect/integration/okta",
+                            "corbado-connect/integration/auth0",
                             "corbado-connect/integration/support"
                         ]
                     },
