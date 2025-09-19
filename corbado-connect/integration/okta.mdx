@@ -388,7 +388,6 @@ It uses a Next.js Server Action that first verifies the session and then calls t
 
 import {getCorbadoConnectToken} from "@/lib/corbado";
 import {auth} from "@/auth";
-import {deleteOktaUser} from "@/lib/okta"
 
 export const getConnectToken = async (connectTokenType: string) => {
     const session = await auth();

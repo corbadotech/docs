@@ -1,35 +1,31 @@
 ---
-title: "Okta & Corbado Connect Passkey Integration"
-description: "Integrate Okta with Corbado Connect for passkeys. Offer secure and convenient passkey authentication to all your Okta users."
-sidebarTitle: "Okta"
+title: "Auth0 & Corbado Connect Passkey Integration"
+description: "Integrate Auth0 with Corbado Connect for passkeys. Offer secure and convenient passkey authentication to all your Auth0 users."
+sidebarTitle: "Auth0"
 ---
 
-import OktaDemo from "/snippets/corbado-connect/okta-demo.mdx"
+import Auth0Demo from "/snippets/corbado-connect/auth0-demo.mdx"
 
-<OktaDemo />
+<Auth0Demo />
 
 ## 1. Introduction
 
-**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Okta** system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of **Okta** for user management.
+**Corbado Connect** allows you to seamlessly integrate passkey-first authentication into your existing **Auth0** system. This enables you to offer your users a secure and convenient login experience without passwords, while still leveraging the power of **Auth0** for user management.
 
-This guide will walk you through the process of integrating **Corbado Connect** with **Okta**, using a sample Next.js application to demonstrate the key concepts.
+This guide will walk you through the process of integrating **Corbado Connect** with **Auth0**, using a sample Next.js application to demonstrate the key concepts.
 
-**Okta** offers multiple authentication solutions that have evolved over time. **Corbado Connect** supports the following:
-
-- **Okta Identity Engine** (requires custom domain and hosted widget)
-- **Okta CIC/Auth0** (Auth0 was acquired by **Okta** and is now part of **Okta CIC**)
-
-**Okta Classic** is currently **not supported**. If you need more information about the different **Okta** solutions, read our [blog article](https://www.corbado.com/blog/okta-passkeys-analysis) or [contact us](https://www.corbado.com/contact).
+**Auth0** is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Auth0 website](https://www.auth0.com).
 
 ## 2. How it Works
 
-The integration between **Corbado Connect** and **Okta** leverages the industry-standard **OAuth 2.0 Authorization Framework** and **OpenID Connect (OIDC)** protocol. This approach allows **Corbado Connect** to act as an external **Identity Provider (IdP)** that seamlessly integrates with your existing **Okta** infrastructure.
+The integration between **Corbado Connect** and **Auth0** leverages several **Auth0** features:
 
-Instead of users authenticating directly with **Okta** using traditional credentials, they will authenticate with **Corbado Connect** using passkeys, and then be federated back to **Okta** through a secure OIDC flow.
+- The password authentication flow
+- A custom database with a custom database login action script
 
-This **OAuth 2.0/OIDC federation** approach ensures that your existing **Okta** policies, user management, and application integrations remain unchanged while adding the security and convenience of passkey-first authentication.
+The password authentication flow is not used for classical password authentication but to pass the passkey authentication state from **Corbado Connect** to **Auth0**.
 
-Later in this guide, we will dive deep into this concept.
+The usage and wiring of these system components will be explained in more detail in the next sections.
 
 ## 3. Example Application
 
@@ -37,25 +33,36 @@ To best illustrate the integration, we will refer to a complete example applicat
 
 - **Next.js**: A popular React framework for building server-rendered applications.
 
-<Card title="Example Application" href="https://okta-ek30212.cloud.corbado-demo.com">
-See the example application using Corbado Connect and Okta in action.
+<Card title="Example Application" href="https://auth0.cloud.corbado-demo.com">
+See the example application using Corbado Connect and Auth0 in action.
 </Card>
 
 [Contact us](https://www.corbado.com/contact) to request access to the source code for the example application.
 
-## 4. Passkey Enrollment
+## 4. Storage
 
-In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by **Okta**. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
+[17:58, 19/09/2025] Stefan Becker: überall nen absatz zu storage?
+[17:58, 19/09/2025] Stefan Becker: weil auch als milkrun frage kam
+[17:58, 19/09/2025] Stefan Becker: würde ich cool finden
+[17:58, 19/09/2025] Stefan Becker: alles wir dbei corbado gespeichert
+[17:58, 19/09/2025] Stefan Becker: no db change bei customer
+[17:58, 19/09/2025] Kostas Pyliouras: yes
+[17:58, 19/09/2025] Stefan Becker: passkeys können exported werden dont worry
+[18:02, 19/09/2025] Kostas Pyliouras: yes und standard compliant
+
+## 5. Passkey Enrollment
+
+In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by **Auth0**. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
-### 4.1 Web UI Component Integration
+### 5.1 Web UI Component Integration
 
 To enable passkey creation we use the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
 Here's how it's used in our example application's `post-login` page:
 
-```tsx /application/okta/app/(auth-required)/post-login/page.tsx
+```tsx /application/auth0/app/(auth-required)/post-login/page.tsx
 "use client";
 
 import {CorbadoConnectAppend} from "@corbado/connect-react";
@@ -94,13 +101,13 @@ export default function Page() {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
-### 4.2 Obtaining the Connect Token
+### 5.2 Obtaining the Connect Token
 
 When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user).
 
 It uses a Next.js Server Action that first verifies the session and then calls the utility function `getCorbadoConnectToken()`:
 
-```typescript /application/okta/app/(auth-required)/post-login/actions.ts
+```typescript /application/auth0/app/(auth-required)/post-login/actions.ts
 'use server';
 
 import {AppendStatus} from "@corbado/types";
@@ -153,19 +160,19 @@ export const getCorbadoConnectToken = async (connectTokenType: string, displayNa
 }
 ```
 
-## 5. Passkey Login
+## 6. Passkey Login
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **OAuth 2.0/OIDC federation**  we outlined in the "How it Works" section becomes essential.
 
-The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Okta**.
+The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Auth0**.
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
-### 5.1 Web UI Component Integration
+### 6.1 Web UI Component Integration
 
-Unlike passkey enrollment, the login process is more complex because we need to integrate the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component directly into **Okta's** hosted sign-in page (hosted widget).
+Unlike passkey enrollment, the login process is more complex because we need to integrate the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component directly into **Auth0's** hosted sign-in page (hosted widget).
 
-This integration is accomplished through the **Okta** Admin Console under **Customizations > Brands**. We will explain the most important changes next.
+This integration is accomplished through the **Auth0** Admin Console under **Customizations > Brands**. We will explain the most important changes next.
 
 First, you need to load the JavaScript and CSS for the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. Extend the `<head>` with the following `<script>` and `<link>` tags:
 
@@ -178,10 +185,10 @@ Next, you need to wire the component with the sign-in form using the following J
 
 ```html
 <script type="text/javascript">
-const oktaFFHandshake = async (signedPasskeyData) => {
-    const config = OktaUtil.getSignInWidgetConfig();
+const Auth0FFHandshake = async (signedPasskeyData) => {
+    const config = Auth0Util.getSignInWidgetConfig();
     const stateHandle = config.stateToken;
-    const url = document.querySelector('.okta-idps-container').children[0].href;
+    const url = document.querySelector('.Auth0-idps-container').children[0].href;
     window.location.href = `/sso/idps/0oatsgxte1zfxW3gI697?login_hint=${signedPasskeyData}&fromURI=` + encodeURIComponent(location.href)
 }
 
@@ -203,7 +210,7 @@ const setConventionalLoginError = (errorMessage) => {
     newDiv1.role = 'alert';
     const newDiv2 = document.createElement('div');
     const newDiv3 = document.createElement('div');
-    newDiv3.className = 'okta-form-infobox-error infobox infobox-error'
+    newDiv3.className = 'Auth0-form-infobox-error infobox infobox-error'
     newDiv3.role = 'alert';
     const newText = document.createElement('p');
     newText.textContent = errorMessage;
@@ -232,7 +239,7 @@ const fallbackToConventionalLogin = (passkeyLoginElement, conventionalLoginEleme
 
 const getOnCompletePasskeyLoginFunction = () => {
     return async (signedPasskeyData, clientState) => {
-        oktaFFHandshake(signedPasskeyData);
+        Auth0FFHandshake(signedPasskeyData);
     };
 }
 
@@ -240,7 +247,7 @@ const mountLogin = (passkeyLoginElement, conventionalLoginElement) => {
     Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
         projectId: 'pro-8464273456666930151',
         frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
-        customDomain: "https://corbado.okta-ek30212.cloud.corbado-demo.com",
+        customDomain: "https://corbado.Auth0-ek30212.cloud.corbado-demo.com",
         onFallback: (email, errorMessage) => {
             setConventionalLoginError(errorMessage);
             fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
@@ -275,8 +282,8 @@ const handlePrimaryAuth = () => {
     signInWithOIDCContainer.style.display = 'none';
 }
 
-const okta = new OktaSignIn(OktaUtil.getSignInWidgetConfig());
-okta.on('afterRender', c => {
+const Auth0 = new Auth0SignIn(Auth0Util.getSignInWidgetConfig());
+Auth0.on('afterRender', c => {
     console.log('after render', c)
     const controllerName = c.controller;
     switch (controllerName) {
@@ -285,7 +292,7 @@ okta.on('afterRender', c => {
     }
 });
 
-okta.on('afterError', ((c, e) => {
+Auth0.on('afterError', ((c, e) => {
     setConventionalLoginError('');
 }));
 </script>
@@ -295,9 +302,9 @@ okta.on('afterError', ((c, e) => {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
 </Info>
 
-### 5.2 OAuth 2.0/OIDC Federation
+### 6.2 OAuth 2.0/OIDC Federation
 
-As explained above, **Corbado Connect** functions as an **OIDC** server and can be used for **OAuth 2.0/OIDC federation**. To enable this integration, you need to create a new **Identity Provider** in the **Okta** Admin Console under **Security > Identity Providers**.
+As explained above, **Corbado Connect** functions as an **OIDC** server and can be used for **OAuth 2.0/OIDC federation**. To enable this integration, you need to create a new **Identity Provider** in the **Auth0** Admin Console under **Security > Identity Providers**.
 
 The following simplified sequence diagram illustrates how the different components work together in the federation process:
 
@@ -305,26 +312,26 @@ The following simplified sequence diagram illustrates how the different componen
 sequenceDiagram
     autonumber
     participant ExampleApplication as Example<br />Application
-    participant OktaSignIn as Okta<br />Sign-in page
-    participant OktaOIDC as Okta<br />OIDC server
+    participant Auth0SignIn as Auth0<br />Sign-in page
+    participant Auth0OIDC as Auth0<br />OIDC server
     participant CorbadoOIDC as Corbado<br />OIDC server
 
-    ExampleApplication->>OktaSignIn: User navigates<br />to sign-in page
-    OktaSignIn->>OktaSignIn: CorbadoConnectLogin component<br />handles login
-    OktaSignIn->>OktaOIDC: Redirect initiated by<br />CorbadoConnectLogin component
-    OktaOIDC->>CorbadoOIDC: Redirect
+    ExampleApplication->>Auth0SignIn: User navigates<br />to sign-in page
+    Auth0SignIn->>Auth0SignIn: CorbadoConnectLogin component<br />handles login
+    Auth0SignIn->>Auth0OIDC: Redirect initiated by<br />CorbadoConnectLogin component
+    Auth0OIDC->>CorbadoOIDC: Redirect
     CorbadoOIDC->>CorbadoOIDC: Corbado verifies login
-    CorbadoOIDC->>OktaOIDC: Redirect with<br />authorization_code
-    OktaOIDC->>+CorbadoOIDC: Requests tokens
-    CorbadoOIDC-->>-OktaOIDC: Returns tokens
-    OktaOIDC->>OktaOIDC: Verifies tokens
-    OktaOIDC->>ExampleApplication: Redirect with<br />authorization_code
-    ExampleApplication->>+OktaOIDC: Requests tokens
-    OktaOIDC-->>-ExampleApplication: Returns tokens
+    CorbadoOIDC->>Auth0OIDC: Redirect with<br />authorization_code
+    Auth0OIDC->>+CorbadoOIDC: Requests tokens
+    CorbadoOIDC-->>-Auth0OIDC: Returns tokens
+    Auth0OIDC->>Auth0OIDC: Verifies tokens
+    Auth0OIDC->>ExampleApplication: Redirect with<br />authorization_code
+    ExampleApplication->>+Auth0OIDC: Requests tokens
+    Auth0OIDC-->>-ExampleApplication: Returns tokens
     Note over ExampleApplication: User is logged in<br />with tokens/session
 ```
 
-## 6. Passkey Management
+## 7. Passkey Management
 
 After users have created their initial passkeys during sign-up and used them for login, they need a way to manage their existing passkeys. Passkey management encompasses three main operations:
 
@@ -336,13 +343,13 @@ All these operations follow a similar pattern: they require obtaining a [connect
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
-### 6.1 Web UI Component Integration
+### 7.1 Web UI Component Integration
 
 We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
 Here's how it's used in our example application's profile page:
 
-```tsx /application/okta/app/(auth-required)/profile/PasskeySection.tsx
+```tsx /application/auth0/app/(auth-required)/profile/PasskeySection.tsx
 import { getConnectToken } from "../actions";
 import { CorbadoConnectPasskeyList } from "@corbado/connect-react";
 
@@ -377,18 +384,18 @@ export default PasskeySection;
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 6.2 Obtaining the Connect Token
+### 7.2 Obtaining the Connect Token
 
 When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
 
 It uses a Next.js Server Action that first verifies the session and then calls the utility function `getCorbadoConnectToken()`:
 
-```typescript /application/okta/app/(auth-required)/profile/actions.tsx
+```typescript /application/auth0/app/(auth-required)/profile/actions.tsx
 'use server';
 
 import {getCorbadoConnectToken} from "@/lib/corbado";
 import {auth} from "@/auth";
-import {deleteOktaUser} from "@/lib/okta"
+import {deleteAuth0User} from "@/lib/Auth0"
 
 export const getConnectToken = async (connectTokenType: string) => {
     const session = await auth();
