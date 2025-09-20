@@ -20,8 +20,9 @@ This guide will walk you through the process of integrating **Corbado Connect** 
 
 The integration between **Corbado Connect** and **Auth0** leverages several **Auth0** features:
 
-- The password authentication flow
-- A custom database with a custom database login action script
+- The **Password Authentication Low**
+- A **Custom Database** with a **Custom Database Login Action Script**
+- An **Action Trigger**
 
 The password authentication flow is not used for classical password authentication but to pass the passkey authentication state from **Corbado Connect** to **Auth0**.
 
@@ -56,7 +57,39 @@ In our example application, the initial user sign-up is handled through a conven
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
-### 5.1 Web UI Component Integration
+### 5.1 Implementation Overview
+
+The user sign-up process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ExampleFrontend as Example<br />Frontend
+    participant ExampleBackend as Example<br />Backend
+    participant Cognito as Amazon<br />Cognito
+    participant FAPI as Corbado<br />Frontend API
+    participant BAPI as Corbado<br />Backend API
+    participant Actions as Corbado<br />Actions
+
+    Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
+    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
+    ExampleBackend->>ExampleBackend: Verify user session
+    ExampleBackend->>+BAPI: POST /v2/connectTokens
+    BAPI-->>-ExampleBackend: Return connect token
+    ExampleBackend-->>-ExampleFrontend: Return connect token
+
+    ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
+    FAPI->>+Actions: Execute post-append action
+    Actions->>+Cognito: Set MFA settings (AdminGetUser + AdminSetUserMFAPreference)
+    Cognito-->>-Actions: Return success
+    Actions-->>-FAPI: Return success
+    FAPI-->>-ExampleFrontend: Return success
+```
+
+In the following sections, we will explain each step in detail.
+
+### 5.2 Web UI Component Integration
 
 To enable passkey creation we use the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
@@ -101,7 +134,7 @@ export default function Page() {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
-### 5.2 Obtaining the Connect Token
+### 5.3 Obtaining the Connect Token
 
 When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user).
 
@@ -168,7 +201,50 @@ The goal is to authenticate a user with their passkey using **Corbado Connect** 
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
-### 6.1 Web UI Component Integration
+### 6.1 Implementation Overview
+
+The user login process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, Lambda functions, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ExampleFrontend as Example<br />Frontend
+    participant Cognito as Amazon<br />Cognito
+    participant Lambda as verify_auth_challenge_response<br />lambda
+    participant FAPI as Corbado<br />Frontend API
+    participant BAPI as Corbado<br />Backend API
+    participant Actions as Corbado<br />Actions
+
+    ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
+    Note over ExampleFrontend: CorbadoConnectLogin component<br />handles passkey login
+    FAPI->>+Actions: Execute pre-login action
+    Actions->>+Cognito: User lookup by email<br />(AdminGetUser)
+    Cognito-->>-Actions: Return Cognito username<br />(e.g. 83942812-f091-7083-8632-7b8052ece3e5)
+    Actions-->>-FAPI: Return Cognito username
+    FAPI->>FAPI: Verify passkey login
+    FAPI-->>-ExampleFrontend: Return signedPasskeyData
+
+    ExampleFrontend->>+Cognito: AWS Amplify signIn()<br/>(CUSTOM_WITHOUT_SRP)
+    Note over Cognito: Runs define_auth_challenge and<br/>create_auth_challenge lambdas<br/>(Cognito username stored in private parameters).
+    Cognito-->>-ExampleFrontend: Return CUSTOM_CHALLENGE
+
+    ExampleFrontend->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
+    Cognito->>+Lambda: Invoke with signedPasskeyData<br/>and private Cognito username
+    Lambda->>+BAPI: POST /v2/passkey/verifySignedData<br/>(signedPasskeyData, Cognito username)
+
+    BAPI-->>-Lambda: Return verification result
+    Lambda-->>-Cognito: Return answerCorrect: true
+    Note over Cognito: Final define_auth_challenge lambda run sees<br/>success (challengeResult: true)
+    Cognito-->>-ExampleFrontend: Issue final Cognito tokens<br/>(Access, Refresh, ID)
+```
+
+<Info>
+The [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data) proves a successful passkey authentication with Corbado. It is the key artifact that connects the two systems.
+</Info>
+
+In the following sections, we will explain each step in detail.
+
+### 6.2 Web UI Component Integration
 
 Unlike passkey enrollment, the login process is more complex because we need to integrate the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component directly into **Auth0's** hosted sign-in page (hosted widget).
 
@@ -302,7 +378,7 @@ Auth0.on('afterError', ((c, e) => {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
 </Info>
 
-### 6.2 OAuth 2.0/OIDC Federation
+### 6.3 OAuth 2.0/OIDC Federation
 
 As explained above, **Corbado Connect** functions as an **OIDC** server and can be used for **OAuth 2.0/OIDC federation**. To enable this integration, you need to create a new **Identity Provider** in the **Auth0** Admin Console under **Security > Identity Providers**.
 
@@ -343,7 +419,31 @@ All these operations follow a similar pattern: they require obtaining a [connect
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
-### 7.1 Web UI Component Integration
+### 7.1 Implementation Overview
+
+The passkey deletion process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ExampleFrontend as Example<br />Frontend
+    participant ExampleBackend as Example<br />Backend
+    participant FAPI as Corbado<br />Frontend API
+    participant BAPI as Corbado<br />Backend API
+
+    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
+    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
+    ExampleBackend->>ExampleBackend: Verify user session
+    ExampleBackend->>+BAPI: POST /v2/connectTokens
+    BAPI-->>-ExampleBackend: Return connect token
+    ExampleBackend-->>-ExampleFrontend: Return connect token
+
+    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses connect token and passkey ID)
+    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />handles passkey deletion
+    FAPI-->>-ExampleFrontend: Return success
+```
+
+### 7.2 Web UI Component Integration
 
 We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
@@ -384,7 +484,7 @@ export default PasskeySection;
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 7.2 Obtaining the Connect Token
+### 7.3 Obtaining the Connect Token
 
 When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
 
