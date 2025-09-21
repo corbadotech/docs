@@ -40,11 +40,11 @@ See the example application using Corbado Connect and Auth0 in action.
 
 [Contact us](https://www.corbado.com/contact) to request access to the source code for the example application.
 
-## 4. Storage
+## 4. Data Storage
 
 When it comes to storage, the integration between **Corbado Connect** and **Auth0** is straightforward and requires **no changes** to your existing database infrastructure.
 
-### 4.1 Data Storage Architecture
+### 4.1 Architecture
 
 **All passkey data is stored within Corbado Connect**, including:
 
@@ -54,7 +54,7 @@ When it comes to storage, the integration between **Corbado Connect** and **Auth
 
 This approach tremendously simplifies integration and cuts down implementation time since no database schema changes are required on your end.
 
-### 4.2 Data Portability
+### 4.2 Portability
 
 **Corbado Connect** ensures you maintain full control over your data:
 
@@ -93,32 +93,35 @@ The complete flow is illustrated in detail [here](/corbado-connect/flows/user-si
 
 ### 5.1 Implementation Overview
 
-The user sign-up process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+The user sign-up process consists of a series of interactions between the example application, **Auth0**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    participant ExampleFrontend as Example<br />Frontend
-    participant ExampleBackend as Example<br />Backend
-    participant Cognito as Amazon<br />Cognito
-    participant FAPI as Corbado<br />Frontend API
-    participant BAPI as Corbado<br />Backend API
-    participant Actions as Corbado<br />Actions
+    participant ExampleFrontend as Example Frontend <br> (with Web UI Components)
+    participant ExampleBackend as Example Backend
+    participant CorbadoAPI as Corbado Backend API
+    participant Auth0 as Auth0
 
-    Note over ExampleFrontend: CorbadoConnectAppend component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
-    ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return connect token
-    ExampleBackend-->>-ExampleFrontend: Return connect token
+    %% II. Passkey Create / List
+    Note over ExampleFrontend,Auth0: III. Passkey Create / List (post-authentication)
+    ExampleFrontend->>ExampleBackend: Request CorbadoConnectToken
+    ExampleBackend->>Auth0: Validate User Auth0 access token
+    Auth0-->>ExampleBackend: Response
+    ExampleBackend->>CorbadoAPI: Create CorbadoConnectToken
+    CorbadoAPI-->>ExampleBackend: CorbadoConnectToken
+    ExampleBackend-->>ExampleFrontend: Deliver CorbadoConnectToken
+    ExampleFrontend->>CorbadoAPI: Interact with CorbadoConnectToken ...
 
-    ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
-    Note over ExampleFrontend: CorbadoConnectAppend component<br />handles passkey creation
-    FAPI->>+Actions: Execute post-append action
-    Actions->>+Cognito: Set MFA settings (AdminGetUser + AdminSetUserMFAPreference)
-    Cognito-->>-Actions: Return success
-    Actions-->>-FAPI: Return success
-    FAPI-->>-ExampleFrontend: Return success
+    %% III. Passkey Login
+    Note over ExampleFrontend,Auth0: III. Passkey Login (pre-authentication): User already has a passkey
+    ExampleFrontend->>CorbadoAPI: Passkey login completed (signed challenge)
+    CorbadoAPI-->>ExampleFrontend: Set signedPasskeyData as http-only Cookie
+    ExampleFrontend-->>ExampleBackend: Create Auth0 tokens
+    ExampleBackend-->>Auth0: Send signedPasskeyData to Auth0 via Password Flow
+    Auth0->>CorbadoAPI: Consume signedPasskeyData
+    CorbadoAPI-->>Auth0: Response
+    Auth0-->>ExampleBackend: Return Auth0 tokens
+    ExampleBackend-->>ExampleBackend: Create Application Session
 ```
 
 In the following sections, we will explain each step in detail.
@@ -237,39 +240,23 @@ The complete flow is illustrated in detail [here](/corbado-connect/flows/user-lo
 
 ### 6.1 Implementation Overview
 
-The user login process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, Lambda functions, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+The user login process consists of a series of interactions between the example application, **Auth0**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    participant ExampleFrontend as Example<br />Frontend
-    participant Cognito as Amazon<br />Cognito
-    participant Lambda as verify_auth_challenge_response<br />lambda
-    participant FAPI as Corbado<br />Frontend API
+    participant ExampleFrontend as Example Frontend <br> (Web UI Components)
+    participant ExampleBackend as Example Backend
     participant BAPI as Corbado<br />Backend API
-    participant Actions as Corbado<br />Actions
+    participant Auth0 as Auth0
 
-    ExampleFrontend->>+FAPI: Execute passkey ceremony (WebAuthn)
-    Note over ExampleFrontend: CorbadoConnectLogin component<br />handles passkey login
-    FAPI->>+Actions: Execute pre-login action
-    Actions->>+Cognito: User lookup by email<br />(AdminGetUser)
-    Cognito-->>-Actions: Return Cognito username<br />(e.g. 83942812-f091-7083-8632-7b8052ece3e5)
-    Actions-->>-FAPI: Return Cognito username
-    FAPI->>FAPI: Verify passkey login
-    FAPI-->>-ExampleFrontend: Return signedPasskeyData
-
-    ExampleFrontend->>+Cognito: AWS Amplify signIn()<br/>(CUSTOM_WITHOUT_SRP)
-    Note over Cognito: Runs define_auth_challenge and<br/>create_auth_challenge lambdas<br/>(Cognito username stored in private parameters).
-    Cognito-->>-ExampleFrontend: Return CUSTOM_CHALLENGE
-
-    ExampleFrontend->>+Cognito: AWS Amplify confirmSignIn()<br/>(Answer: signedPasskeyData)
-    Cognito->>+Lambda: Invoke with signedPasskeyData<br/>and private Cognito username
-    Lambda->>+BAPI: POST /v2/passkey/verifySignedData<br/>(signedPasskeyData, Cognito username)
-
-    BAPI-->>-Lambda: Return verification result
-    Lambda-->>-Cognito: Return answerCorrect: true
-    Note over Cognito: Final define_auth_challenge lambda run sees<br/>success (challengeResult: true)
-    Cognito-->>-ExampleFrontend: Issue final Cognito tokens<br/>(Access, Refresh, ID)
+    ExampleFrontend->>BAPI: Passkey login completed (signed challenge)
+    BAPI-->>ExampleFrontend: Set signedPasskeyData as http-only Cookie
+    ExampleFrontend-->>ExampleBackend: Create Auth0 tokens
+    ExampleBackend-->>Auth0: Send signedPasskeyData via Password Flow
+    Auth0->>BAPI: Consume signedPasskeyData
+    BAPI-->>Auth0: Response
+    Auth0-->>ExampleBackend: Return Auth0 tokens
+    ExampleBackend-->>ExampleBackend: Create Application Session
 ```
 
 <Info>
@@ -411,35 +398,6 @@ Auth0.on('afterError', ((c, e) => {
 <Info>
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
 </Info>
-
-### 6.3 OAuth 2.0/OIDC Federation
-
-As explained above, **Corbado Connect** functions as an **OIDC** server and can be used for **OAuth 2.0/OIDC federation**. To enable this integration, you need to create a new **Identity Provider** in the **Auth0** Admin Console under **Security > Identity Providers**.
-
-The following simplified sequence diagram illustrates how the different components work together in the federation process:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant ExampleApplication as Example<br />Application
-    participant Auth0SignIn as Auth0<br />Sign-in page
-    participant Auth0OIDC as Auth0<br />OIDC server
-    participant CorbadoOIDC as Corbado<br />OIDC server
-
-    ExampleApplication->>Auth0SignIn: User navigates<br />to sign-in page
-    Auth0SignIn->>Auth0SignIn: CorbadoConnectLogin component<br />handles login
-    Auth0SignIn->>Auth0OIDC: Redirect initiated by<br />CorbadoConnectLogin component
-    Auth0OIDC->>CorbadoOIDC: Redirect
-    CorbadoOIDC->>CorbadoOIDC: Corbado verifies login
-    CorbadoOIDC->>Auth0OIDC: Redirect with<br />authorization_code
-    Auth0OIDC->>+CorbadoOIDC: Requests tokens
-    CorbadoOIDC-->>-Auth0OIDC: Returns tokens
-    Auth0OIDC->>Auth0OIDC: Verifies tokens
-    Auth0OIDC->>ExampleApplication: Redirect with<br />authorization_code
-    ExampleApplication->>+Auth0OIDC: Requests tokens
-    Auth0OIDC-->>-ExampleApplication: Returns tokens
-    Note over ExampleApplication: User is logged in<br />with tokens/session
-```
 
 ## 7. Passkey Management
 
