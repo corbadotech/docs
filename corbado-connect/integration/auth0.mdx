@@ -42,14 +42,48 @@ See the example application using Corbado Connect and Auth0 in action.
 
 ## 4. Storage
 
-[17:58, 19/09/2025] Stefan Becker: überall nen absatz zu storage?
-[17:58, 19/09/2025] Stefan Becker: weil auch als milkrun frage kam
-[17:58, 19/09/2025] Stefan Becker: würde ich cool finden
-[17:58, 19/09/2025] Stefan Becker: alles wir dbei corbado gespeichert
-[17:58, 19/09/2025] Stefan Becker: no db change bei customer
-[17:58, 19/09/2025] Kostas Pyliouras: yes
-[17:58, 19/09/2025] Stefan Becker: passkeys können exported werden dont worry
-[18:02, 19/09/2025] Kostas Pyliouras: yes und standard compliant
+When it comes to storage, the integration between **Corbado Connect** and **Auth0** is straightforward and requires **no changes** to your existing database infrastructure.
+
+### 4.1 Data Storage Architecture
+
+**All passkey data is stored within Corbado Connect**, including:
+
+- **Passkeys and WebAuthn credentials**: Securely stored with enterprise-grade encryption
+- **User metadata**: Minimal identifiers needed to link Auth0 users with their passkeys
+- **Authentication logs**: Audit trails for passkey operations and user activities
+
+This approach tremendously simplifies integration and cuts down implementation time since no database schema changes are required on your end.
+
+### 4.2 Data Portability
+
+**Corbado Connect** ensures you maintain full control over your data:
+
+- **Export capabilities**: Passkeys can be exported at any time, fully automated to any external system including yours
+- **Standard compliance**: All data follows WebAuthn and FIDO2 standards for maximum portability
+- **Migration support**: Complete data migration assistance available when needed
+
+<Note>
+See our documentation on [Passkey Export](/corbado-connect/security-compliance/passkey-export) for more details including field descriptions and an example import implementation for the JavaScript/TypeScript [SimpleWebAuthn](https://simplewebauthn.dev/) library.
+</Note>
+
+### 4.3 Security & Compliance
+
+All storage meets the highest security standards:
+
+- **ISO 27001 certified**: Information security management system compliance
+- **SOC 2 Type II**: Rigorous security, availability, and confidentiality controls
+- **Enterprise encryption**: Data encrypted at rest and in transit
+- **Regular audits**: Continuous security assessments and penetration testing
+
+### 4.4 System Integration
+
+**Corbado Connect** stores the **Auth0** user ID to seamlessly connect both systems during:
+
+- **Passkey Enrollment**: Links new passkeys to existing **Auth0** user accounts
+- **Passkey Login**: Validates passkey ownership against the correct **Auth0** user
+- **Passkey Management**: Ensures passkey operations are performed by authorized users
+
+This minimal data synchronization maintains the integrity of both systems while preserving user privacy.
 
 ## 5. Passkey Enrollment
 
