@@ -97,31 +97,18 @@ The user sign-up process consists of a series of interactions between the exampl
 
 ```mermaid
 sequenceDiagram
-    participant ExampleFrontend as Example Frontend <br> (with Web UI Components)
+    participant ExampleFrontend as Example Frontend<br />(Web UI Components)
     participant ExampleBackend as Example Backend
-    participant CorbadoAPI as Corbado Backend API
+    participant BAPI as Corbado<br />Backend API
     participant Auth0 as Auth0
 
-    %% II. Passkey Create / List
-    Note over ExampleFrontend,Auth0: III. Passkey Create / List (post-authentication)
     ExampleFrontend->>ExampleBackend: Request CorbadoConnectToken
     ExampleBackend->>Auth0: Validate User Auth0 access token
     Auth0-->>ExampleBackend: Response
-    ExampleBackend->>CorbadoAPI: Create CorbadoConnectToken
-    CorbadoAPI-->>ExampleBackend: CorbadoConnectToken
+    ExampleBackend->>BAPI: Create CorbadoConnectToken
+    BAPI-->>ExampleBackend: CorbadoConnectToken
     ExampleBackend-->>ExampleFrontend: Deliver CorbadoConnectToken
-    ExampleFrontend->>CorbadoAPI: Interact with CorbadoConnectToken ...
-
-    %% III. Passkey Login
-    Note over ExampleFrontend,Auth0: III. Passkey Login (pre-authentication): User already has a passkey
-    ExampleFrontend->>CorbadoAPI: Passkey login completed (signed challenge)
-    CorbadoAPI-->>ExampleFrontend: Set signedPasskeyData as http-only Cookie
-    ExampleFrontend-->>ExampleBackend: Create Auth0 tokens
-    ExampleBackend-->>Auth0: Send signedPasskeyData to Auth0 via Password Flow
-    Auth0->>CorbadoAPI: Consume signedPasskeyData
-    CorbadoAPI-->>Auth0: Response
-    Auth0-->>ExampleBackend: Return Auth0 tokens
-    ExampleBackend-->>ExampleBackend: Create Application Session
+    ExampleFrontend->>BAPI: Interact with CorbadoConnectToken ...
 ```
 
 In the following sections, we will explain each step in detail.
