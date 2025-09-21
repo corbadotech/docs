@@ -97,6 +97,7 @@ The user sign-up process consists of a series of interactions between the exampl
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant ExampleFrontend as Example Frontend<br />(Web UI Components)
     participant ExampleBackend as Example Backend
     participant BAPI as Corbado<br />Backend API
@@ -232,6 +233,7 @@ The user login process consists of a series of interactions between the example 
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant ExampleFrontend as Example Frontend <br> (Web UI Components)
     participant ExampleBackend as Example Backend
     participant BAPI as Corbado<br />Backend API
@@ -255,7 +257,7 @@ In the following sections, we will explain each step in detail.
 
 ### 6.2 Web UI Component Integration
 
-Again, we start by integrating the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
+Again, we start by integrating the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Auth0**.
 
 The core logic resides in a client component that wraps the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component:
 
@@ -350,6 +352,7 @@ The passkey deletion process consists of a series of interactions between the ex
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant ExampleFrontend as Example Frontend<br />(Web UI Components)
     participant ExampleBackend as Example Backend
     participant BAPI as Corbado<br />Backend API
