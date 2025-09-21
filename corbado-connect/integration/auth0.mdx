@@ -346,26 +346,22 @@ The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey
 
 ### 7.1 Implementation Overview
 
-The passkey deletion process consists of a series of interactions between the example application (utilizing AWS Amplify), **Amazon Cognito**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
+The passkey deletion process consists of a series of interactions between the example application, **Auth0**, and Corbado APIs. These interactions are best illustrated using a sequence diagram:
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    participant ExampleFrontend as Example<br />Frontend
-    participant ExampleBackend as Example<br />Backend
-    participant FAPI as Corbado<br />Frontend API
+    participant ExampleFrontend as Example Frontend<br />(Web UI Components)
+    participant ExampleBackend as Example Backend
     participant BAPI as Corbado<br />Backend API
+    participant Auth0 as Auth0
 
-    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />initiates
-    ExampleFrontend->>+ExampleBackend: Request Corbado connect token
-    ExampleBackend->>ExampleBackend: Verify user session
-    ExampleBackend->>+BAPI: POST /v2/connectTokens
-    BAPI-->>-ExampleBackend: Return connect token
-    ExampleBackend-->>-ExampleFrontend: Return connect token
-
-    ExampleFrontend->>+FAPI: Request passkey deletion<br/>(uses connect token and passkey ID)
-    Note over ExampleFrontend: CorbadoConnectPasskeyList component<br />handles passkey deletion
-    FAPI-->>-ExampleFrontend: Return success
+    ExampleFrontend->>ExampleBackend: Request CorbadoConnectToken
+    ExampleBackend->>Auth0: Validate User Auth0 access token
+    Auth0-->>ExampleBackend: Response
+    ExampleBackend->>BAPI: Create CorbadoConnectToken
+    BAPI-->>ExampleBackend: CorbadoConnectToken
+    ExampleBackend-->>ExampleFrontend: Deliver CorbadoConnectToken
+    ExampleFrontend->>BAPI: Interact with CorbadoConnectToken ...
 ```
 
 ### 7.2 Web UI Component Integration
@@ -374,23 +370,13 @@ We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/
 
 Here's how it's used in our example application's profile page:
 
-```tsx /application/auth0/app/(auth-required)/profile/PasskeySection.tsx
-import { getConnectToken } from "../actions";
+```tsx /application/auth0/components/PasskeySection.tsx
+"use client";
+
+import { getConnectToken } from "@/app/actions";
 import { CorbadoConnectPasskeyList } from "@corbado/connect-react";
 
-type Props = {
-  integratePasskeys: boolean;
-};
-
-export const PasskeySection = ({ integratePasskeys }: Props) => {
-  if (!integratePasskeys) {
-    return (
-      <div className="mb-2 w-full">
-        <div>Passkeys are disabled.</div>
-      </div>
-    );
-  }
-
+export const PasskeySection = () => {
   return (
     <div className="mb-2 w-full">
       <CorbadoConnectPasskeyList
@@ -415,21 +401,25 @@ When the component needs to perform an operation (like deleting a passkey), it e
 
 It uses a Next.js Server Action that first verifies the session and then calls the utility function `getCorbadoConnectToken()`:
 
-```typescript /application/auth0/app/(auth-required)/profile/actions.tsx
+```typescript /application/auth0/app/actions.tsx
 'use server';
 
 import {getCorbadoConnectToken} from "@/lib/corbado";
-import {auth} from "@/auth";
-import {deleteAuth0User} from "@/lib/Auth0"
+import { getSession } from "@/lib/session";
+import { AppendStatus } from "@corbado/types";
+import { cookies } from "next/headers";
 
 export const getConnectToken = async (connectTokenType: string) => {
-    const session = await auth();
-    if (!session) {
+    // get current session (email and userId)
+    const session = await getSession();
+    if (!session.user) {
         throw new Error('Session is required');
     }
 
     const displayName = session.user.email;
-    const identifier = session.user.userId;
+    const sub = session.user.sub;
+    const splits = sub.split('|');
+    const identifier = splits[1];
 
     return getCorbadoConnectToken(connectTokenType, displayName, identifier);
 }
