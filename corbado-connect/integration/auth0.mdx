@@ -16,6 +16,10 @@ This guide will walk you through the process of integrating **Corbado Connect** 
 
 **Auth0** is a service that provides authentication, authorization, and user management for your web and mobile apps. You can learn more about it on the [official Auth0 website](https://www.auth0.com).
 
+<Note>
+For additional questions and troubleshooting, see our [FAQ](/corbado-connect/integration/auth0#8-faq) at the end of this guide.
+</Note>
+
 ## 2. How it Works
 
 The integration between **Corbado Connect** and **Auth0** leverages several **Auth0** features:
@@ -429,3 +433,29 @@ export const getConnectToken = async (connectTokenType: string) => {
 ```
 
 The utility function then manages the request to the Corbado Backend API, using the provided `connectTokenType` to specify which operation the token should authorize (in this case, it could be 'passkey-list', 'passkey-add', or 'passkey-delete').
+
+## 8. FAQ
+
+### 8.1 What is `connectTokenType` and how should I use it?
+
+The `connectTokenType` parameter specifies which operation the connect token should authorize. Common values include:
+- `'passkey-list'` - for listing user's passkeys
+- `'passkey-add'` - for adding new passkeys
+- `'passkey-delete'` - for deleting passkeys
+
+We recommend implementing this in your backend since only the type differs between operations - the call to Corbado and user authentication checks remain the same.
+
+### 8.2 Do I need to store anything after a passkey is appended?
+
+No, you don't need to store anything manually after a passkey append operation. However, you can optionally:
+
+- Use the `onComplete` handler in the component to get the append status (`skip`, `complete`, `complete-noop`, etc.)
+- Utilize Corbado's "post-append" action for custom logic
+
+### 8.3 Where does the username (webauthnid) come from in the login component's onComplete handler?
+
+The username (webauthnid) is passed from our component to the handler and originally comes from the passkey itself. This is automatically handled by the Corbado Web UI Components.
+
+### 8.4 How is the signed passkey data transmitted to my backend?
+
+The signed passkey data comes from a cookie and is passed to your Node.js backend. This data acts like an authentication token - without valid signed passkey data, the login process cannot proceed.
