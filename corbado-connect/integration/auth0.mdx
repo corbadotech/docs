@@ -20,7 +20,7 @@ This guide will walk you through the process of integrating **Corbado Connect** 
 
 The integration between **Corbado Connect** and **Auth0** leverages several **Auth0** features:
 
-- The **Password Authentication Low**
+- The **Password Authentication Flow**
 - A **Custom Database** with a **Custom Database Login Action Script**
 - An **Action Trigger**
 
@@ -220,7 +220,7 @@ export const getCorbadoConnectToken = async (connectTokenType: string, displayNa
 
 ## 6. Passkey Login
 
-Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **OAuth 2.0/OIDC federation**  we outlined in the "How it Works" section becomes essential.
+Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **Auth0** password authentication flow we outlined in the "How it Works" section becomes essential.
 
 The goal is to authenticate a user with their passkey using **Corbado Connect** and, upon success, establish an authenticated session with **Auth0**.
 
@@ -240,7 +240,7 @@ sequenceDiagram
     ExampleFrontend->>BAPI: Passkey login completed (signed challenge)
     BAPI-->>ExampleFrontend: Set signedPasskeyData as http-only Cookie
     ExampleFrontend-->>ExampleBackend: Create Auth0 tokens
-    ExampleBackend-->>Auth0: Send signedPasskeyData via Password Flow
+    ExampleBackend-->>Auth0: Send signedPasskeyData via<br />Password Authentication Flow
     Auth0->>BAPI: Consume signedPasskeyData
     BAPI-->>Auth0: Response
     Auth0-->>ExampleBackend: Return Auth0 tokens
@@ -255,132 +255,77 @@ In the following sections, we will explain each step in detail.
 
 ### 6.2 Web UI Component Integration
 
-Unlike passkey enrollment, the login process is more complex because we need to integrate the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component directly into **Auth0's** hosted sign-in page (hosted widget).
+Again, we start by integrating the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for handling the passkey login and passing the result to our application logic to complete the login with **Amazon Cognito**.
 
-This integration is accomplished through the **Auth0** Admin Console under **Customizations > Brands**. We will explain the most important changes next.
+The core logic resides in a client component that wraps the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component:
 
-First, you need to load the JavaScript and CSS for the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component. Extend the `<head>` with the following `<script>` and `<link>` tags:
+```tsx /application/auth0/app/(auth)/login/_components/PasskeyLogin.tsx
+"use client";
 
-```html
-<script src="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.js"></script>
-<link rel="stylesheet" href="https://cdn.cloud.corbado.io/connect/dist/web-js-latest.min.css" />
-```
+import {CorbadoConnectLogin} from "@corbado/connect-react";
+import {MutableRefObject, useEffect, useRef} from "react";
 
-Next, you need to wire the component with the sign-in form using the following JavaScript:
+const setUpCustomizations = (containerRef: MutableRefObject<HTMLDivElement|null>) => {
+    useEffect(() => {
+        if (!containerRef.current) return;
 
-```html
-<script type="text/javascript">
-const Auth0FFHandshake = async (signedPasskeyData) => {
-    const config = Auth0Util.getSignInWidgetConfig();
-    const stateHandle = config.stateToken;
-    const url = document.querySelector('.Auth0-idps-container').children[0].href;
-    window.location.href = `/sso/idps/0oatsgxte1zfxW3gI697?login_hint=${signedPasskeyData}&fromURI=` + encodeURIComponent(location.href)
-}
+        const replaceTextContent = () => {
+            const elements = containerRef.current?.querySelectorAll('div.cb-login-error-soft-fallback');
+            elements?.forEach((element) => {
+                element.textContent = 'Receive email instead';
+            });
+        };
 
-const setConventionalLoginError = (errorMessage) => {
-    const cboErrorContainerId = 'cbo-error-container';
-    const existingContainer = document.querySelector('#' + cboErrorContainerId);
-    console.log("existingContainer", existingContainer);
-    if (existingContainer) {
-        existingContainer.remove();
-    }
+        replaceTextContent();
 
-    if (errorMessage === '') {
-        return;
-    }
+        const observer = new MutationObserver((mutations) => {
+            let shouldReplace = false;
 
-    const newDiv1 = document.createElement('div');
-    newDiv1.className = 'o-form-has-errors';
-    newDiv1.id = cboErrorContainerId;
-    newDiv1.role = 'alert';
-    const newDiv2 = document.createElement('div');
-    const newDiv3 = document.createElement('div');
-    newDiv3.className = 'Auth0-form-infobox-error infobox infobox-error'
-    newDiv3.role = 'alert';
-    const newText = document.createElement('p');
-    newText.textContent = errorMessage;
-    newDiv3.appendChild(newText);
-    newDiv2.appendChild(newDiv3);
-    newDiv1.appendChild(newDiv2);
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    shouldReplace = true;
+                } else if (mutation.type === 'characterData') {
+                    shouldReplace = true;
+                }
+            });
 
-    var form = document.querySelector('.o-form-fieldset-container');
-    form.parentNode.insertBefore(newDiv1, form);
-
-    const submitButton = form.parentNode.parentNode.querySelector('input[type="submit"]');
-    if (submitButton) {
-        submitButton.addEventListener('click', function(event) {
-            setConventionalLoginError('');
+            if (shouldReplace) {
+                setTimeout(replaceTextContent, 10);
+            }
         });
-    }
+
+        observer.observe(containerRef.current, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 }
 
-const fallbackToConventionalLogin = (passkeyLoginElement, conventionalLoginElement, email) => {
-    passkeyLoginElement.style.display = 'none';
-    const usernameInput = Array.from(conventionalLoginElement.querySelectorAll('input')).find(el => el.name.trim() === 'identifier');
-    usernameInput.value = email;
-    usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
-    conventionalLoginElement.style.display = 'block';
-}
+export const PasskeyLogin = ({onFallback, onUnknownUser, onComplete}: {
+    onFallback: (identifier: string, message: string) => void
+    onUnknownUser: (identifier: string) => void
+    onComplete: (signedPasskeyData: string, _: string, webauthnId: string) => Promise<void>
+}) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    setUpCustomizations(containerRef);
 
-const getOnCompletePasskeyLoginFunction = () => {
-    return async (signedPasskeyData, clientState) => {
-        Auth0FFHandshake(signedPasskeyData);
-    };
-}
+    return (
+        <div ref={containerRef}>
+            <CorbadoConnectLogin
+                onComplete={onComplete}
+                onFallback={onFallback}
+                onUnknownUser={onUnknownUser}
+            />
+        </div>
+    );
+};
 
-const mountLogin = (passkeyLoginElement, conventionalLoginElement) => {
-    Corbado.mountCorbadoConnectLogin(passkeyLoginElement, {
-        projectId: 'pro-8464273456666930151',
-        frontendApiUrlSuffix: "frontendapi.cloud.corbado.io",
-        customDomain: "https://corbado.Auth0-ek30212.cloud.corbado-demo.com",
-        onFallback: (email, errorMessage) => {
-            setConventionalLoginError(errorMessage);
-            fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
-        },
-        onFallbackSilent: (email) => {
-            fallbackToConventionalLogin(passkeyLoginElement, conventionalLoginElement, email);
-        },
-        onComplete: getOnCompletePasskeyLoginFunction(),
-        onSignupClick: () => console.log(""),
-        onConditionalLoginStart: (ac) => {
-            console.log("");
-        }
-    });
-}
-
-const handlePrimaryAuth = () => {
-    // Section 1: Add passkey container
-    const conventionalLoginElement = document.querySelector('.auth-content-inner');
-    if (!conventionalLoginElement) {
-        return;
-    }
-
-    const newDiv = document.createElement('div');
-    newDiv.id = 'passkey-login-container';
-    const passkeyLoginElement = conventionalLoginElement.insertAdjacentElement('afterend', newDiv);
-    conventionalLoginElement.style.display = 'none';
-
-    mountLogin(passkeyLoginElement, conventionalLoginElement);
-
-    // Section 2: Remove OIDC button
-    const signInWithOIDCContainer = document.querySelector('.sign-in-with-idp');
-    signInWithOIDCContainer.style.display = 'none';
-}
-
-const Auth0 = new Auth0SignIn(Auth0Util.getSignInWidgetConfig());
-Auth0.on('afterRender', c => {
-    console.log('after render', c)
-    const controllerName = c.controller;
-    switch (controllerName) {
-        case 'primary-auth':
-            return handlePrimaryAuth();
-    }
-});
-
-Auth0.on('afterError', ((c, e) => {
-    setConventionalLoginError('');
-}));
-</script>
+export default PasskeyLogin;
 ```
 
 <Info>
