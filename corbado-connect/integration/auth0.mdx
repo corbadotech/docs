@@ -119,32 +119,32 @@ To enable passkey creation we use the [CorbadoConnectAppend](/corbado-connect/we
 
 Here's how it's used in our example application's `post-login` page:
 
-```tsx /application/auth0/app/(auth-required)/post-login/page.tsx
+```tsx /application/auth0/app/post-login/page.tsx
 "use client";
 
 import {CorbadoConnectAppend} from "@corbado/connect-react";
 import {useRouter} from "next/navigation";
-import {getCorbadoConnectTokenAppend, postPasskeyAppend} from "./actions";
+import {getConnectToken, postPasskeyAppend} from "@/app/actions";
 import {AppendStatus} from "@corbado/types";
 
-export default function Page() {
+export default function AppendPage() {
     const router = useRouter();
 
     return (
         <div className="flex h-screen flex-1 items-center justify-center bg-gray-50">
             <div className="z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-gray-100 shadow-xl">
-                <div className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 sm:px-8">
+                <div className="flex flex-col space-y-4 bg-white px-4 py-8 sm:px-8">
                     <CorbadoConnectAppend
-                        onSkip={async () => router.push("/profile")}
+                        onSkip={async () => router.push("/")}
                         appendTokenProvider={async () => {
-                            return await getCorbadoConnectTokenAppend();
+                            return await getConnectToken('passkey-append');
                         }}
                         onComplete={async (
                             appendStatus: AppendStatus,
                             clientState: string
                         ) => {
                             await postPasskeyAppend(appendStatus, clientState);
-                            router.push("/profile");
+                            router.push("/");
                         }}
                     />
                 </div>
@@ -164,25 +164,26 @@ When the component is initialized, it executes the function given in `appendToke
 
 It uses a Next.js Server Action that first verifies the session and then calls the utility function `getCorbadoConnectToken()`:
 
-```typescript /application/auth0/app/(auth-required)/post-login/actions.ts
+```typescript /application/auth0/app/actions.tsx
 'use server';
 
-import {AppendStatus} from "@corbado/types";
-import {cookies} from "next/headers";
 import {getCorbadoConnectToken} from "@/lib/corbado";
-import {auth} from "@/auth";
+import { getSession } from "@/lib/session";
+import { AppendStatus } from "@corbado/types";
 
-
-export async function getCorbadoConnectTokenAppend() {
-    const session = await auth();
-    if (!session) {
+export const getConnectToken = async (connectTokenType: string) => {
+    // get current session (email and userId)
+    const session = await getSession();
+    if (!session.user) {
         throw new Error('Session is required');
     }
 
     const displayName = session.user.email;
-    const identifier = session.user.userId;
+    const sub = session.user.sub;
+    const splits = sub.split('|');
+    const identifier = splits[1];
 
-    return getCorbadoConnectToken('passkey-append', displayName, identifier);
+    return getCorbadoConnectToken(connectTokenType, displayName, identifier);
 }
 ```
 
