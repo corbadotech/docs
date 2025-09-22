@@ -65,6 +65,7 @@
                                     "corbado-connect/integration/generic/overview",
                                     "corbado-connect/integration/generic/rpid-configuration",
                                     "corbado-connect/integration/generic/backend",
+                                    "corbado-connect/integration/generic/data-storage",
                                     "corbado-connect/integration/generic/web",
                                     "corbado-connect/integration/generic/native-mobile"
                                 ]
