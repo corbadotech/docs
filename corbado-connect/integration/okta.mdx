@@ -43,13 +43,19 @@ See the example application using Corbado Connect and Okta in action.
 
 [Contact us](https://www.corbado.com/contact) to request access to the source code for the example application.
 
-## 4. Passkey Enrollment
+## 4. Data Storage
+
+When it comes to storage, the integration between **Corbado Connect** and **Okta** is straightforward and requires **no changes** to your existing database infrastructure.
+
+For comprehensive details on architecture, portability, security, and compliance, please refer to our dedicated [Data Storage](/corbado-connect/integration/generic/data-storage) section.
+
+## 5. Passkey Enrollment
 
 In our example application, the initial user sign-up is handled through a conventional method (e.g., email and password) managed by **Okta**. Once the user has an account and is logged in, we offer them the option to add a passkey to their account for future passwordless logins. This process is often called "passkey append".
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-sign-up).
 
-### 4.1 Web UI Component Integration
+### 5.1 Web UI Component Integration
 
 To enable passkey creation we use the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component from the `@corbado/connect-react` library. The component takes care of the entire UI and logic for creating and storing the passkey.
 
@@ -94,7 +100,7 @@ export default function Page() {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectAppend](/corbado-connect/web-ui-components/corbadoconnectappend) component documentation.
 </Info>
 
-### 4.2 Obtaining the Connect Token
+### 5.2 Obtaining the Connect Token
 
 When the component is initialized, it executes the function given in `appendTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API (this token authorizes the creation of a passkey for a specific and authenticated user).
 
@@ -153,7 +159,7 @@ export const getCorbadoConnectToken = async (connectTokenType: string, displayNa
 }
 ```
 
-## 5. Passkey Login
+## 6. Passkey Login
 
 Now that users can associate passkeys with their accounts, we can enable a truly passwordless login experience. This is where the **OAuth 2.0/OIDC federation**  we outlined in the "How it Works" section becomes essential.
 
@@ -161,7 +167,7 @@ The goal is to authenticate a user with their passkey using **Corbado Connect** 
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/user-login).
 
-### 5.1 Web UI Component Integration
+### 6.1 Web UI Component Integration
 
 Unlike passkey enrollment, the login process is more complex because we need to integrate the [CorbadoConnectLogin](/corbado-connect/web-ui-components/corbadoconnectlogin) component directly into **Okta's** hosted sign-in page (hosted widget).
 
@@ -295,7 +301,7 @@ okta.on('afterError', ((c, e) => {
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectLogin component documentation](/corbado-connect/web-ui-components/corbadoconnectlogin).
 </Info>
 
-### 5.2 OAuth 2.0/OIDC Federation
+### 6.2 OAuth 2.0/OIDC Federation
 
 As explained above, **Corbado Connect** functions as an **OIDC** server and can be used for **OAuth 2.0/OIDC federation**. To enable this integration, you need to create a new **Identity Provider** in the **Okta** Admin Console under **Security > Identity Providers**.
 
@@ -324,7 +330,7 @@ sequenceDiagram
     Note over ExampleApplication: User is logged in<br />with tokens/session
 ```
 
-## 6. Passkey Management
+## 7. Passkey Management
 
 After users have created their initial passkeys during sign-up and used them for login, they need a way to manage their existing passkeys. Passkey management encompasses three main operations:
 
@@ -336,7 +342,7 @@ All these operations follow a similar pattern: they require obtaining a [connect
 
 The complete flow is illustrated in detail [here](/corbado-connect/flows/passkey-management).
 
-### 6.1 Web UI Component Integration
+### 7.1 Web UI Component Integration
 
 We integrate the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component from the `@corbado/connect-react` library. This component provides a complete user interface for managing passkeys, including viewing, adding, and deleting them.
 
@@ -377,7 +383,7 @@ export default PasskeySection;
 For a detailed explanation of all available props for this component, please see the [CorbadoConnectPasskeyList](/corbado-connect/web-ui-components/corbadoconnectpasskeylist) component documentation.
 </Info>
 
-### 6.2 Obtaining the Connect Token
+### 7.2 Obtaining the Connect Token
 
 When the component needs to perform an operation (like deleting a passkey), it executes the function given in `connectTokenProvider` to request a [connect token](/corbado-connect/concepts/connect-token) from Corbado's Backend API. This token authorizes the specific operation for the authenticated user.
 
