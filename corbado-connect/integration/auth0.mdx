@@ -437,7 +437,7 @@ Corbado Connect integrates with Auth0 by creating an additional custom database 
 
 ### 8.6 Will I have duplicate users in Auth0 after implementing passkeys?
 
-Initially yes, but this is handled automatically through Auth0's account linking feature. When a user logs in with a passkey, a second user entry is created (e.g., `custom|DB|xyz` alongside the original `email|xyz`). However, using Auth0's post-login actions, these accounts are automatically linked, so your application always sees a single user with multiple authentication methods (identities).
+Initially yes, but this is handled automatically through Auth0's account linking feature. When a user logs in with a passkey, a second user entry is created (e.g., `customDB|xyz` alongside the original `email|xyz`). However, using Auth0's post-login actions, these accounts are automatically linked, so your application always sees a single user with multiple authentication methods (identities).
 
 ### 8.7 Can I use the same Auth0 application for web and mobile apps?
 
