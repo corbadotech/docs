@@ -430,3 +430,26 @@ This is possible because you assign a CNAME subdomain to us (e.g., `corbado.your
 </Tip>
 
 If assigning a CNAME is not possible in your setup, other options like direct backend-to-backend communication are also available. Please [contact us](https://www.corbado.com/contact) to discuss alternative integration patterns.
+
+### 8.5 How does Corbado Connect work with Auth0's custom database connections?
+
+Corbado Connect integrates with Auth0 by creating an additional custom database connection that doesn't store actual passwords but instead validates signed JWT tokens from Corbado. When a user completes passkey authentication, Corbado issues a signed JWT token that the custom database script verifies. This creates a seamless bridge between passkey authentication and Auth0's user management system without requiring changes to your existing Auth0 setup.
+
+### 8.6 Will I have duplicate users in Auth0 after implementing passkeys?
+
+Initially yes, but this is handled automatically through Auth0's account linking feature. When a user logs in with a passkey, a second user entry is created (e.g., `custom|DB|xyz` alongside the original `email|xyz`). However, using Auth0's post-login actions, these accounts are automatically linked, so your application always sees a single user with multiple authentication methods (identities).
+
+### 8.7 Can I use the same Auth0 application for web and mobile apps?
+
+Yes, you can use a single Auth0 application for all platforms when implementing a Backend-for-Frontend (BFF) architecture. In this setup, all client applications (web, iOS, Android) communicate with your backend service, which then handles the Auth0 authentication using a single client ID and secret. This simplifies configuration and management while maintaining security.
+
+### 8.8 What happens to existing user data when migrating to passkeys?
+
+Your existing Auth0 user data remains unchanged. Corbado Connect works alongside your current authentication methods, so users can continue logging in with their existing credentials while gradually adopting passkeys. The integration preserves all existing user attributes, custom claims, and post-login logic.
+
+### 8.9 Do I need to create or modify my Auth0 post-login actions?
+
+Yes, a post-login action is required to handle account linking.
+
+-   **If you don't have an existing post-login action:** You will need to create a new one. This action will contain a small piece of code to link the passkey-based identity with the user's primary account.
+-   **If you already have post-login actions:** You'll simply need to add the account linking code to your existing flow. This addition works alongside your current post-login logic (such as adding custom claims or customer IDs to tokens) without disrupting existing functionality.
