@@ -423,4 +423,10 @@ The username (webauthnid) is passed from our component to the handler and origin
 
 ### 8.4 How is `signedPasskeyData` transmitted to my backend?
 
-`signedPasskeyData` comes from a cookie and is passed to your backend. This data acts like an authentication token - without valid `signedPasskeyData`, the login process cannot proceed.
+The `signedPasskeyData` is transmitted from Corbado's Frontend API to your frontend and subsequently to your backend. After a successful passkey authentication, Corbado's Backend API sets an **http-only cookie** containing the `signedPasskeyData` in the user's browser. This data acts like an authentication token - without valid `signedPasskeyData`, the login process cannot proceed. While the `signedPasskeyData` can be validated directly as a JWT for basic verification, it must also be consumed against our Backend API to guarantee replay protection and complete security validation.
+
+<Tip>
+This is possible because you assign a CNAME subdomain to us (e.g., `corbado.your-domain.com`), making Corbado's services appear as if they are running under your own domain. The browser then automatically includes this cookie in requests made to your backend (running on `your-domain.com` or a subdomain), which can then validate the data and complete the login process. Http-only cookies are a security best practice as they are not accessible via JavaScript, mitigating XSS attacks.
+</Tip>
+
+If assigning a CNAME is not possible in your setup, other options like direct backend-to-backend communication are also available. Please [contact us](https://www.corbado.com/contact) to discuss alternative integration patterns.
