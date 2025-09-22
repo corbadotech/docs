@@ -32,6 +32,10 @@ The password authentication flow is not used for classical password authenticati
 
 The usage and wiring of these system components will be explained in more detail in the next sections.
 
+<Note>
+The integration requires a custom frontend implementation. If you use **Univeral Login** please [contact us](https://www.corbado.com/contact).
+</Note>
+
 ## 3. Example Application
 
 To best illustrate the integration, we will refer to a complete example application. This application is built with the following technologies:
@@ -58,6 +62,10 @@ When it comes to storage, the integration between **Corbado Connect** and **Auth
 
 This approach tremendously simplifies integration and cuts down implementation time since no database schema changes are required on your end.
 
+<Note>
+**Corbado Connect** only stores the public key of the passkey. The private key is never stored and is never accessible to **Corbado Connect**.
+</Note>
+
 ### 4.2 Portability
 
 **Corbado Connect** ensures you maintain full control over your data:
@@ -78,6 +86,7 @@ All storage meets the highest security standards:
 - **SOC 2 Type II**: Rigorous security, availability, and confidentiality controls
 - **Enterprise encryption**: Data encrypted at rest and in transit
 - **Regular audits**: Continuous security assessments and penetration testing
+- **No PII**: **Corbado Connect** does **not** store any personal information (PII) such as names, emails, or phone numbers.
 
 ### 4.4 System Integration
 
@@ -456,6 +465,6 @@ No, you don't need to store anything manually after a passkey append operation. 
 
 The username (webauthnid) is passed from our component to the handler and originally comes from the passkey itself. This is automatically handled by the Corbado Web UI Components.
 
-### 8.4 How is the signed passkey data transmitted to my backend?
+### 8.4 How is `signedPasskeyData` transmitted to my backend?
 
-The signed passkey data comes from a cookie and is passed to your Node.js backend. This data acts like an authentication token - without valid signed passkey data, the login process cannot proceed.
+`signedPasskeyData` comes from a cookie and is passed to your backend. This data acts like an authentication token - without valid `signedPasskeyData`, the login process cannot proceed.
