@@ -22,7 +22,7 @@ There are various strategies for handling sessions, such as maintaining server-s
 
 ## 3. Endpoints
 
-### 3.1. Create Connect Token
+### 3.1 Create Connect Token
 
 Your backend must expose an endpoint that your frontend applications (web and mobile) can call to obtain a [connect token](/corbado-connect/concepts/connect-token). This endpoint will in turn call **Corbado's** Backend API to generate the actual token.
 
@@ -78,7 +78,7 @@ app.post('/auth/createConnectToken', async (req, res) => {
 });
 ```
 
-### 3.2. Complete Login
+### 3.2 Complete Login
 
 After a user successfully authenticates with a passkey, **Corbado Connect** generates [signedPasskeyData](/corbado-connect/concepts/signed-passkey-data).
 
