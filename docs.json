@@ -438,6 +438,76 @@
                         }
                     }
                 ]
+            },
+            {
+                "tab": "Authentication Flow",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": ["authentication-flow/overview"]
+                    },
+                    {
+                        "group": "Flows",
+                        "pages": [
+                            {
+                                "group": "Web Flow",
+                                "pages": [
+                                    "authentication-flow/flows/web-flow/passkey-sign-up",
+                                    {
+                                        "group": "Passkey Login",
+                                        "pages": [
+                                            "authentication-flow/flows/web-flow/passkey-login/automatic-passkey-upgrade",
+                                            "authentication-flow/flows/web-flow/passkey-login/one-tap",
+                                            "authentication-flow/flows/web-flow/passkey-login/conditional-ui",
+                                            "authentication-flow/flows/web-flow/passkey-login/textfield",
+                                            "authentication-flow/flows/web-flow/passkey-login/hybrid-via-qr-code-desktop-only",
+                                            "authentication-flow/flows/web-flow/passkey-login/login-errors"
+                                        ]
+                                    },
+                                    {
+                                        "group": "Passkey Append",
+                                        "pages": [
+                                            "authentication-flow/flows/web-flow/passkey-append/non-mfa-account",
+                                            "authentication-flow/flows/web-flow/passkey-append/mfa-account",
+                                            "authentication-flow/flows/web-flow/passkey-append/after-hybrid",
+                                            "authentication-flow/flows/web-flow/passkey-append/after-error",
+                                            "authentication-flow/flows/web-flow/passkey-append/on-2nd-device",
+                                            "authentication-flow/flows/web-flow/passkey-append/append-errors"
+                                        ]
+                                    },
+                                    "authentication-flow/flows/web-flow/passkey-management"
+                                ]
+                            },
+                            {
+                                "group": "Native App Flow",
+                                "pages": [
+                                    "authentication-flow/flows/native-app-flow/passkey-sign-up",
+                                    {
+                                        "group": "Passkey Login",
+                                        "pages": [
+                                            "authentication-flow/flows/native-app-flow/passkey-login/overlay-login",
+                                            "authentication-flow/flows/native-app-flow/passkey-login/conditional-ui",
+                                            "authentication-flow/flows/native-app-flow/passkey-login/textfield",
+                                            "authentication-flow/flows/native-app-flow/passkey-login/login-errors"
+                                        ]
+                                    },
+                                    {
+                                        "group": "Passkey Append",
+                                        "pages": [
+                                            "authentication-flow/flows/native-app-flow/passkey-append/non-mfa-account",
+                                            "authentication-flow/flows/native-app-flow/passkey-append/mfa-account",
+                                            "authentication-flow/flows/native-app-flow/passkey-append/after-error",
+                                            "authentication-flow/flows/native-app-flow/passkey-append/on-2nd-device",
+                                            "authentication-flow/flows/native-app-flow/passkey-append/after-local-biometric",
+                                            "authentication-flow/flows/native-app-flow/passkey-append/append-errors"
+                                        ]
+                                    },
+                                    "authentication-flow/flows/native-app-flow/passkey-management"
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         ],
         "global": {

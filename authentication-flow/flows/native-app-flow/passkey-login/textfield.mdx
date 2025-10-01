@@ -1,0 +1,34 @@
+---
+title: "Textfield"
+description: "This flow details how users sign in when passkeys are suggested based on email/username provided by the user in the textfield."
+---
+
+## Textfield-based passkey login
+
+Instead of showing an immediate prompt, users can type their identifier (email, phone, or username) into a textfield.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS textfield passkey flow">
+        <img
+            src="/images/authentication-flow/native-app/textfield-passkey-ios-native.png"
+            alt="Native app mobile textfield passkey flow on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: iOS textfield passkey flow">
+      <img src="/images/authentication-flow/native-app/textfield-passkey-android-native.png" alt="Native app mobile textfield passkey on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Login via general textfield">
+        - User enters their identifier (email/username) on the login page in textfield.
+        - If a passkey is available for that account, the system suggests it as the preferred login option.
+        - The user selects a stored passkey, authenticates with biometric/PIN, and is logged in instantly.
+    </Step>
+
+</Steps>

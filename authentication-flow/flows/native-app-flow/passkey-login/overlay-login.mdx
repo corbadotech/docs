@@ -1,0 +1,42 @@
+---
+title: "Automatic Overlay Login"
+description: "This flow details how users sign in when passkeys are suggested based on context or user action. The flow improves both security and convenience by conditionally offering a passwordless login if a passkey is available on the device."
+---
+
+## Automatic Passkey Overlay
+
+An OS-driven prompt that automatically appears when passkeys are available, guiding users to log in seamlessly without extra steps.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS automatic passkey overlay flow">
+        <img
+            src="/images/authentication-flow/native-app/automatic-passkey-overlay-ios-native.png"
+            alt="Native app mobile automatic passkey overlay flow on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: Android automatic passkey overlay flow">
+      <img src="/images/authentication-flow/native-app/automatic-passkey-overlay-android-native.png" alt="Native app mobile automatic passkey overlay flow on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
+
+<Steps>
+    <Step title="Login via auto-suggested passkey via modal">
+        - User enters identifier on mobile login.
+        - OS/app triggers overlay modal for passkey authentication having all the passkeys linked to this
+        account on this device.
+        - User chooses the correct one and authenticates
+        using biometrics/PIN.
+    </Step>
+
+</Steps>

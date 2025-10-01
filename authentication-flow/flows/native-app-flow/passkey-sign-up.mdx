@@ -1,0 +1,64 @@
+---
+title: "Passkey Sign Up"
+description: "User signs up and creates a passkey in a native app."
+---
+
+## Sign-up Flow
+
+Users registering across native apps follows the described journey:
+
+1. Create an account with an identifier (username + password).
+2. Get prompted to create a passkey.
+3. Choose to **create**, **skip**, or **abort** the process.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="iOS sign-up flow">
+        <img
+            src="/images/authentication-flow/native-app/sign-up-flow-ios-native.png"
+            alt="Native app mobile sign-up flow on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Android sign-up flow">
+      <img src="/images/authentication-flow/native-app/sign-up-flow-android-native.png" alt="Native app mobile sign-up flow on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
+
+<Steps>
+  <Step title="Registration with traditional identifier method (username+password)">
+    - User creates an account by entering **username & password** and clicks **Sign up**.  
+    - A modal appears prompting for passkey creation.
+  </Step>
+
+<Step title="Auto-append immediately after registration">
+    - User is prompted via auto-append to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    - Successfully passkey creation is completed and now user have a passkey attached with the current signed up  account.
+
+</Step>
+
+  <Step title="Auto-append aborted/cancelled or skipped">
+    - If user skips, cancels, or the prompt does not show, user continues registration. 
+    - The app later triggers the normal append screens for passkey creation.
+
+    **3.a. Passkey creation via manual append**
+    - User starts the append process from within the app flow.
+    - User successfully creates a passkey.
+    - User continues into the main product flow (verification, PIN, biometrics).
+
+    **3.b. Passkey creation skipped**
+    - User starts append but skips passkey creation.
+    - User continues into the main product flow (verification, PIN, biometrics).
+
+  </Step>
+  
+</Steps>

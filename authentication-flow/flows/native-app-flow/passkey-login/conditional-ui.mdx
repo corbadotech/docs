@@ -1,0 +1,40 @@
+---
+title: "Conditional UI"
+description: "Using conditional UI for passkey login in native apps."
+---
+
+## Autosuggested Passkeys
+
+Passkeys can appear as suggestions directly on the keyboard’s suggestion bar, allowing users to select and log in quickly without opening an extra prompt.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS autosuggested passkey flow">
+        <img
+            src="/images/authentication-flow/native-app/autosuggested-passkey-ios-native.png"
+            alt="Native app mobile autosuggested passkey via keyboard on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: Android autosuggested passkey flow">
+      <img src="/images/authentication-flow/native-app/autosuggested-passkey-android-native.png" alt="Native app mobile autosuggested passkey via keyboard on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
+
+<Steps>
+    <Step title="Login via auto-suggested passkey in keyboard">
+        - User enters their identifier (email/username) on the login page.
+        - Browser displays an autosuggest popup if a matching passkey is available for this site.
+        - The user selects a stored passkey, authenticates with biometric/PIN, and is logged in instantly.
+    </Step>
+
+</Steps>
