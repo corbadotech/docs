@@ -1,0 +1,64 @@
+---
+title: "Login Errors"
+description: "This flow describes various error states users may encounter when attempting to sign in using a passkey or traditional credentials. Understanding these scenarios ensures a smooth user experience by providing clear, actionable error messages and fallback options."
+---
+
+## Error States During User Login
+
+Resilient user login on desktops & mobile, with visual guidance in all failure scenarios.
+
+<Tabs>
+  <Tab title="macOS">
+    <Frame caption="macOS passkey login error states">
+      <img src="/images/authentication-flow/web-app/desktop/passkey-login-errorstates-macos.png" alt="Web app desktop passkey login error states on macOS" />
+    </Frame>
+  </Tab>
+
+<Tab title="Windows">
+    <Frame caption="Windows passkey login error states">
+        <img
+            src="/images/authentication-flow/web-app/desktop/passkey-login-errorstates-windows.png"
+            alt="Web app desktop passkey login error states on Windows"
+        />
+    </Frame>
+</Tab>
+<Tab title="iOS">
+    <Frame caption="iOS passkey login error states">
+        <img
+            src="/images/authentication-flow/web-app/mobile/passkey-login-errorstates-ios.png"
+            alt="Web app mobile passkey login error states on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Android passkey login error states">
+      <img src="/images/authentication-flow/web-app/mobile/passkey-login-errorstates-android.png" alt="Web app mobile passkey login error states on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Error: no identifier / unrecognised identifier">
+        - When user attempts to login with a blank or invalid email/username. 
+    </Step>
+    <Step title="Error: account locked / not found">
+        - The email/username does not correspond to an active account, or the account is locked.
+    </Step>
+    <Step title="Error: system / API error related to lookup">
+        - An internal error occurs while looking up the user/account.
+    </Step>
+    <Step title="Error: general passkey login error">
+        - Something went wrong with passkey authentication unrelated to user input.
+    </Step>
+    <Step title="Error: tried deleted passkey">
+        - User attempts login with a credential that has been deleted.
+    </Step>
+    <Step title="Error: incorrect Username / Password">
+        - User provides incorrect login credentials.
+    </Step>
+    <Step title="Error: critical account error">
+        - Major issues with the account status (e.g., banned or under administrative hold).
+    </Step>
+
+</Steps>

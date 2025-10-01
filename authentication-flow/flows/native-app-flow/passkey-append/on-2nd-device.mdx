@@ -1,0 +1,41 @@
+---
+title: "Passkey Append: On 2nd Device"
+description: "This flow explains how users can append a passkey to their account after authenticating on a new (second) device with a password and MFA. This enables seamless, passwordless sign-in on future logins, strengthening security and improving the user experience."
+---
+
+## Passkey Creation on Second Device
+
+Users logging in native app from a new device, follows a standard hybrid login flow and experience passkey creation on the current device.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS passkey append on new device">
+        <img
+            src="/images/authentication-flow/native-app/append-on-second-device-ios-native.png"
+            alt="Native app passkey append on new device, on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: Android passkey append on new device">
+      <img src="/images/authentication-flow/native-app/append-on-second-device-android-native.png" alt="Native app passkey append on new device, on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
+<Steps>
+     <Step title="Login on current device using another device">
+        - User enters their identifier (email/username) on the login page.
+        - OS detects passkey linked to this account on another device.
+        - User scans the QR code/ bluetooth connect and authenticates on the device having passkeys.
+        - After successful authentication, user is asked to add a passkey on the current device as well.
+        - User continues to create passkey. After successful passkey creation on the current device, the user is asked to setup a PIN and for biometrics enabling.
+    </Step>
+
+</Steps>

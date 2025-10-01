@@ -1,0 +1,41 @@
+---
+title: "Passkey Append: After Error"
+description: "This flow handles cases where the initial attempt to create or register a passkey did not succeed due to system errors, user cancellations, or other interruptions. It ensures that the user can retry appending a passkey securely without losing access and with clear guidance to resolve errors."
+---
+
+## Passkey Creation After Error
+
+Users logging in native app, follows a standard hybrid login flow and experience passkey append after error.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS passkey append after error">
+        <img
+            src="/images/authentication-flow/native-app/append-after-error-ios-native.png"
+            alt="Native app passkey append after error on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: Android passkey append after error">
+      <img src="/images/authentication-flow/native-app/append-after-error-android-native.png" alt="Native app passkey append after error on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
+<Steps>
+     <Step title="Error encounter while creating passkeys after hybrid login">
+        - User enters their identifier (email/username) on the login page.
+        - Since no passkey is found, user is prompted to log in using their traditional password.
+        - After successful password authentication, the user is offered the option to create a passkey for future logins.
+        - User gets an error while creating passkeys and is shown another append after error screen with guiding details.
+        - User continues to create passkey. After successful passkey creation, the user is signed in and is asked to setup a PIN and for biometrics enabling.
+    </Step>
+
+</Steps>

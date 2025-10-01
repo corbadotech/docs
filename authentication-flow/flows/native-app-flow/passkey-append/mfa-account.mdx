@@ -1,0 +1,42 @@
+---
+title: "Passkey Append: MFA Account"
+description: "This flow explains how users log in native apps when no passkey is set up for a MFA account. The process ensures secure access and encourages passwordless adoption by combining traditional login and passkey creation opportunities."
+---
+
+## Passkey Creation For MFA User Accounts
+
+Users logging in native app, follows a standard login flow for MFA user with passkey append experience.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS passkey append, MFA accounts">
+        <img
+            src="/images/authentication-flow/native-app/mfa-append-ios-native.png"
+            alt="Native app passkey append with MFA accounts on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: Android passkey append, MFA accounts">
+      <img src="/images/authentication-flow/native-app/mfa-append-android-native.png" alt="Native app passkey append with MFA accounts on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
+<Steps>
+    <Step title="Login when user has no passkeys and activated MFA">
+        - User enters their identifier (email/username) on the login page.
+        - Since no passkey is found, user is prompted to log in using their traditional password.
+        - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
+        - After successful verification, the user is offered the option to create a passkey for future logins.
+        - User chooses to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+        - After successful passkey creation, the user is signed in and is asked to setup PIN. Finally, they are redirected to the app dashboard.
+        </Step>
+
+</Steps>

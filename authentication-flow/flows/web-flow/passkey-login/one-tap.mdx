@@ -1,0 +1,50 @@
+---
+title: "One-Tap"
+description: "This flow explains the end-to-end journey of a user logging in with passkeys after their account is created. It details how credentials are verified via secure, passwordless login (One-Tap)"
+---
+
+## One-Tap Login Flow
+
+Users logging in via desktop and mobile browsers follow a standard login flow enriched by the One-Tap passkey experience.
+
+<Tabs>
+  <Tab title="macOS">
+    <Frame caption="macOS one-tap passkey flow">
+      <img src="/images/authentication-flow/web-app/desktop/one-tap-macos.png" alt="Web app desktop one-tap passkey flow on macOS" />
+    </Frame>
+  </Tab>
+
+<Tab title="Windows">
+    <Frame caption="Windows one-tap passkey flow">
+        <img
+            src="/images/authentication-flow/web-app/desktop/one-tap-windows.png"
+            alt="Web app desktop one-tap passkey flow on Windows"
+        />
+    </Frame>
+</Tab>
+
+<Tab title="iOS">
+    <Frame caption="iOS one-tap passkey flow">
+        <img
+            src="/images/authentication-flow/web-app/mobile/one-tap-ios.png"
+            alt="Web app mobile one-tap passkey flow on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Android one-tap passkey flow">
+      <img src="/images/authentication-flow/web-app/mobile/one-tap-android.png" alt="Web app mobile one-tap passkey flow on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Users Login via One-Tap">
+        - Browser detects passkey linked for this platform, system prompts for
+        available saved passkey using browser or OS-native modal (Touch ID).
+
+        - User authenticates instantly in a single step.
+    </Step>
+
+</Steps>
