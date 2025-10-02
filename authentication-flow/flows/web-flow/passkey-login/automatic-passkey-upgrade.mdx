@@ -1,13 +1,13 @@
 ---
 title: "Automatic Passkey Upgrade"
-description: "This flow explains the automatic passkey creation feature that browser intelligently provides when the user tries to save the password in the apple password manager."
+description: "This flow explains the automatic passkey creation feature that browsers intelligently provide when the user tries to autofill a password from a password manager."
 ---
 
-<Info>This feature is only available in iOS(web-app), macOS, Windows.</Info>
+<Info>As of October 2025, this feature is only available in iOS, macOS and Windows. Not all password managers support it yet. Note, that it only works when a password is autofilled. Note that it only works when there is no passkey stored for the user yet.</Info>
 
-## Automatic Passkey Creation After Login
+## Automatic Passkey Creation after Login
 
-Users logging in via desktop browsers follow a standard login flow enriched by the automatic passkey upgradation.
+Users logging in via a browser follow a standard login flow enriched by the automatic passkey upgrade.
 
 <Tabs>
   <Tab title="macOS">
@@ -36,15 +36,19 @@ Users logging in via desktop browsers follow a standard login flow enriched by t
 </Tabs>
 <Info>
     NOTE: The blue background indicates product-native steps (e.g., verification
-    code, enabling biometrics). Passkey creation is seamlessly embedded in your
+    code). Passkey creation is seamlessly embedded in your
     product journey.
 </Info>
 
 <Steps>
   <Step title="Login with password-autofill">
-    - User logs in with their password, which is then autofilled by Apple Passwords/Google Password Manager. 
-    - User is asked to verify their identity.
-    - Passkey creation process runs in the backend, given that they have successfully verified their identity.
+    - User logs in with their password, which is then autofilled by e.g. Apple Passwords / Google Password Manager. 
+  </Step>
+  <Step title="Provide second factor">
+    - User is asked to authenticate with a second factor (e.g. SMS OTP).
+  </Step>
+    <Step title="Passkey is automatically created">
+    - Passkey creation process runs in the backend, given that they have successfully authenticated with the second factor and no passkey exists yet.
     - Passkey is successfully created, user is notified via a push alert and they redirect to app dashboard.
   </Step>
 

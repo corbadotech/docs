@@ -1,11 +1,11 @@
 ---
 title: "Passkey Management"
-description: "This flow describes how users can manage their passkeys within the profile section of their account. Passkey management allows users to register, delete, and troubleshoot passkeys directly from their account’s security settings. "
+description: "This flow describes how users can manage their passkeys within the account settings section. Passkey management allows users to register, delete, and troubleshoot passkeys."
 ---
 
 ## Create, Manage or Delete Passkeys via Passkey List Component
 
-Passkey management lets user view, update, and remove the passkeys saved on your devices. It ensures user stay in control of which accounts are linked to which devices, and gives them the option to revoke access if a device is lost or no longer in use.
+Passkey management lets user view, update, and remove the passkeys saved on your devices. It ensures user stay in control of which passkeys exists for an account and gives them the option to revoke passkeys if a device is lost or no longer in use.
 
 ### General Passkey Management
 
@@ -42,19 +42,20 @@ Passkey management lets user view, update, and remove the passkeys saved on your
 
 <Steps>
     <Step title="General Passkey Settings in Profile Section">
-        - Users can see all the passkeys created via current account here and
-        can initiate passkey registration for new devices or update existing
+        - Users can see all the passkeys created for the current account here and
+        can initiate passkey registration for new devices, delete or update existing
         credentials.
     </Step>
-    <Step title="When No Passkey is Created for the User Account">
-        - When user has no passkey linked, passkey list is shown empty.
+    <Step title="When no Passkey is created for the User Account">
+        - When user has no passkey created, the passkey list is shown empty.
     </Step>
     <Step title="Passkey Delete Modal">
         - User can simply delete existing passkeys from the list shown by
         clicking on the "X" icon on the top right corner of any passkey listed.
         - This action is not reversible, so the user is again asked for
         confirmation on deletion of passkey. This leads to permanent passkey
-        deletion. - User has the ability to create a new one.
+        deletion (of the public key). 
+        - User has the possiblity to create a new one.
     </Step>
 </Steps>
 
