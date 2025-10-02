@@ -22,6 +22,10 @@ This Private Cloud feature leverages your single-tenant infrastructure to ensure
 - **Complete Data Portability**: Full WebAuthn credential export enables seamless migration to alternative authentication providers or in-house systems
 - **Vendor Independence Assurance**: Comprehensive data export capabilities ensure your organization retains the ability to transition authentication providers without service disruption
 
+<Frame caption="Passkey Export List">
+![Passkey Export List](/images/corbado-connect/passkey-export-list.webp)
+</Frame>
+
 ### 1.2 Strategic Business Applications
 
 The Enterprise Passkey Export capability addresses critical requirements across regulated industries:
@@ -51,6 +55,10 @@ The standard [Enterprise Private Cloud](https://www.corbado.com/pricing) impleme
 
 This standard approach provides immediate value without requiring AWS infrastructure setup or cross-account configuration, making it ideal for organizations that prioritize simplicity while maintaining enterprise-grade security.
 
+<Frame caption="Amazon S3 configuration (Corbado account)">
+![Amazon S3 configuration (Corbado account)](/images/corbado-connect/passkey-export-configuration-s3-corbado.webp)
+</Frame>
+
 #### 1.3.2 **Advanced Private Cloud: Customer-Controlled Storage Infrastructure**
 
 For Private Cloud customers with specific data sovereignty or compliance requirements, passkey exports can be configured to deliver directly to your own AWS S3 storage infrastructure. This approach ensures authentication data resides entirely within your organization's control while maintaining automated export delivery from your dedicated single-tenant Corbado environment.
@@ -62,6 +70,10 @@ For Private Cloud customers with specific data sovereignty or compliance require
 - **Audit Trail**: All data transfers are logged and traceable for compliance reporting and security audits
 - **Tenant Isolation**: Each customer's exports are cryptographically isolated using unique identifiers to prevent any cross-tenant data access
 
+<Frame caption="Amazon S3 configuration (own account)">
+![Amazon S3 configuration (own account)](/images/corbado-connect/passkey-export-configuration-s3-own.webp)
+</Frame>
+
 #### 1.3.3 **Private Cloud Enterprise Plus Addon: Custom Storage Solutions**
 
 For Private Cloud customers with the [Enterprise Plus](https://www.corbado.com/pricing) addon, Corbado enables additional storage customization options beyond standard cross-account S3 configurations:
@@ -71,6 +83,10 @@ For Private Cloud customers with the [Enterprise Plus](https://www.corbado.com/p
 - **Geographic Data Residency**: Region-specific storage with configurable data sovereignty controls
 - **Custom Retention Policies**: Automated lifecycle management aligned with your organization's data retention requirements
 - **Multi-Region Replication**: Automated replication to multiple storage locations for enhanced disaster recovery
+
+<Frame caption="Amazon HTTP endpoint configuration">
+![Amazon HTTP endpoint configuration](/images/corbado-connect/passkey-export-configuration-http-endpoint.webp)
+</Frame>
 
 <Warning>
 Enterprise Passkey Export is available exclusively for [Enterprise Private Cloud](https://www.corbado.com/pricing) deployments. This feature is not available for [Enterprise Public Cloud](https://www.corbado.com/pricing) customers. Standard Private Cloud contracts include Corbado-managed dedicated storage with Management Console access. Advanced configurations with customer-controlled S3 buckets are available for Private Cloud customers with specific compliance requirements. Custom storage solutions beyond AWS S3 are available through the [Enterprise Plus](https://www.corbado.com/pricing) addon, which is only available with Private Cloud deployments.
