@@ -14,7 +14,7 @@ In today's regulatory landscape, financial institutions, payment service provide
 
 This Private Cloud feature leverages your single-tenant infrastructure to ensure complete sovereignty over authentication data while utilizing Corbado's advanced passkey capabilities. By providing automated, secure, and fully portable authentication data exports, we eliminate vendor lock-in concerns and enable comprehensive business continuity planning, which are essential requirements for regulated entities operating in critical infrastructure sectors.
 
-### 1.1. Private Cloud Enterprise Capabilities
+### 1.1 Private Cloud Enterprise Capabilities
 
 - **Automated Daily Data Archival**: Production-grade automated export processes execute daily, creating immutable authentication data archives in industry-standard formats
 - **Enterprise-Grade Security Architecture**: All exports are secured using AWS S3's enterprise security features, including encryption at rest (AES-256) and in transit (TLS 1.3)
@@ -22,7 +22,11 @@ This Private Cloud feature leverages your single-tenant infrastructure to ensure
 - **Complete Data Portability**: Full WebAuthn credential export enables seamless migration to alternative authentication providers or in-house systems
 - **Vendor Independence Assurance**: Comprehensive data export capabilities ensure your organization retains the ability to transition authentication providers without service disruption
 
-### 1.2. Strategic Business Applications
+<Frame caption="Passkey Export List">
+![Passkey Export List](/images/corbado-connect/passkey-export-list.webp)
+</Frame>
+
+### 1.2 Strategic Business Applications
 
 The Enterprise Passkey Export capability addresses critical requirements across regulated industries:
 
@@ -34,11 +38,11 @@ The Enterprise Passkey Export capability addresses critical requirements across 
 - **Exit Strategy Implementation**: Execute pre-defined vendor transition plans with zero authentication data loss, maintaining service continuity during provider changes
 - **Operational Risk Management**: Mitigate single points of failure in authentication infrastructure through comprehensive data export and portability capabilities
 
-### 1.3. Storage Architecture Options
+### 1.3 Storage Architecture Options
 
 [Enterprise Private Cloud](https://www.corbado.com/pricing) deployments provide multiple storage models to align with your organization's data governance, compliance requirements, and operational preferences:
 
-#### **Standard Private Cloud: Corbado-Managed Dedicated Storage**
+#### 1.3.1 **Standard Private Cloud: Corbado-Managed Dedicated Storage**
 
 The standard [Enterprise Private Cloud](https://www.corbado.com/pricing) implementation provides each customer with a dedicated S3 bucket within their single-tenant isolated Corbado environment. This approach delivers enterprise-grade security while minimizing operational overhead for your teams.
 
@@ -51,7 +55,11 @@ The standard [Enterprise Private Cloud](https://www.corbado.com/pricing) impleme
 
 This standard approach provides immediate value without requiring AWS infrastructure setup or cross-account configuration, making it ideal for organizations that prioritize simplicity while maintaining enterprise-grade security.
 
-#### **Advanced Private Cloud: Customer-Controlled Storage Infrastructure**
+<Frame caption="Amazon S3 configuration (Corbado account)">
+![Amazon S3 configuration (Corbado account)](/images/corbado-connect/passkey-export-configuration-s3-corbado.webp)
+</Frame>
+
+#### 1.3.2 **Advanced Private Cloud: Customer-Controlled Storage Infrastructure**
 
 For Private Cloud customers with specific data sovereignty or compliance requirements, passkey exports can be configured to deliver directly to your own AWS S3 storage infrastructure. This approach ensures authentication data resides entirely within your organization's control while maintaining automated export delivery from your dedicated single-tenant Corbado environment.
 
@@ -62,7 +70,11 @@ For Private Cloud customers with specific data sovereignty or compliance require
 - **Audit Trail**: All data transfers are logged and traceable for compliance reporting and security audits
 - **Tenant Isolation**: Each customer's exports are cryptographically isolated using unique identifiers to prevent any cross-tenant data access
 
-#### **Private Cloud Enterprise Plus Addon: Custom Storage Solutions**
+<Frame caption="Amazon S3 configuration (own account)">
+![Amazon S3 configuration (own account)](/images/corbado-connect/passkey-export-configuration-s3-own.webp)
+</Frame>
+
+#### 1.3.3 **Private Cloud Enterprise Plus Addon: Custom Storage Solutions**
 
 For Private Cloud customers with the [Enterprise Plus](https://www.corbado.com/pricing) addon, Corbado enables additional storage customization options beyond standard cross-account S3 configurations:
 
@@ -72,13 +84,17 @@ For Private Cloud customers with the [Enterprise Plus](https://www.corbado.com/p
 - **Custom Retention Policies**: Automated lifecycle management aligned with your organization's data retention requirements
 - **Multi-Region Replication**: Automated replication to multiple storage locations for enhanced disaster recovery
 
+<Frame caption="HTTP endpoint configuration">
+![HTTP endpoint configuration](/images/corbado-connect/passkey-export-configuration-http-endpoint.webp)
+</Frame>
+
 <Warning>
 Enterprise Passkey Export is available exclusively for [Enterprise Private Cloud](https://www.corbado.com/pricing) deployments. This feature is not available for [Enterprise Public Cloud](https://www.corbado.com/pricing) customers. Standard Private Cloud contracts include Corbado-managed dedicated storage with Management Console access. Advanced configurations with customer-controlled S3 buckets are available for Private Cloud customers with specific compliance requirements. Custom storage solutions beyond AWS S3 are available through the [Enterprise Plus](https://www.corbado.com/pricing) addon, which is only available with Private Cloud deployments.
 </Warning>
 
 ## 2. Technical Specifications: Export Data Schema
 
-### 2.1. Data Format and Compliance Standards
+### 2.1 Data Format and Compliance Standards
 
 Corbado Connect delivers authentication data exports in a standardized CSV format, ensuring compatibility with enterprise data management systems, compliance reporting tools, and authentication infrastructure platforms. This format has been specifically designed to meet audit trail requirements, facilitate vendor transitions, and support comprehensive disaster recovery scenarios.
 
@@ -89,7 +105,7 @@ Each exported file contains a complete snapshot of your organization's passkey c
 - **ISO 8601** timestamp formatting for audit trail compatibility
 - **CSV RFC 4180** formatting for maximum interoperability
 
-### 2.2. Authentication Data Field Specifications
+### 2.2 Authentication Data Field Specifications
 
 The following table provides comprehensive documentation of each data field included in the export, essential for your technical teams, compliance officers, and audit personnel:
 
@@ -115,7 +131,7 @@ All cryptographic materials are exported in their complete form, ensuring zero d
 
 ## 3. Enterprise Integration and Migration Pathways
 
-### 3.1. Vendor Transition and Business Continuity Implementation
+### 3.1 Vendor Transition and Business Continuity Implementation
 
 The Enterprise Passkey Export capability has been architected to support seamless authentication provider transitions, ensuring zero disruption to your organization's authentication services during vendor migration scenarios. Whether executing a planned vendor transition as part of strategic sourcing initiatives or responding to business continuity events, the exported authentication data provides complete portability across authentication platforms.
 
@@ -126,11 +142,11 @@ Our export format ensures compatibility with enterprise-grade authentication sys
 - Preserve user authentication history for compliance and audit purposes
 - Implement multi-vendor authentication strategies for risk mitigation
 
-### 3.2. Enterprise Authentication Platform Compatibility
+### 3.2 Enterprise Authentication Platform Compatibility
 
 The exported authentication data maintains full compatibility with industry-leading WebAuthn implementations, ensuring seamless integration with your existing or target authentication infrastructure:
 
-#### **Enterprise Development Frameworks**
+#### 3.2.1 **Enterprise Development Frameworks**
 
 - **JavaScript/TypeScript**: [SimpleWebAuthn](https://github.com/MasterKale/SimpleWebAuthn) - Production-ready WebAuthn implementation for Node.js and browser environments
 - **Python**: [py_webauthn](https://github.com/duo-labs/py_webauthn) - Enterprise Python library supporting Django, Flask, and FastAPI integrations
@@ -139,7 +155,7 @@ The exported authentication data maintains full compatibility with industry-lead
 - **C#/.NET**: [Fido2NetLib](https://github.com/passwordless-lib/fido2-net-lib) - Microsoft-ecosystem compatible library for .NET Core and Azure deployments
 - **PHP**: [lbuchs/WebAuthn](https://github.com/lbuchs/WebAuthn) - Production-grade PHP implementation for Laravel and Symfony frameworks
 
-### 3.3. Reference Implementation: Migration Pattern
+### 3.3 Reference Implementation: Migration Pattern
 
 To demonstrate the practical application of our data portability solution, we provide a reference implementation for importing exported passkey credentials into the industry-standard [SimpleWebAuthn library](https://simplewebauthn.dev/). This implementation illustrates the straightforward nature of credential migration, enabling organizations to rapidly prototype and validate their authentication migration strategies. The following code can be directly integrated into the official SimpleWebAuthn [example repository](https://github.com/MasterKale/SimpleWebAuthn/blob/master/example/index.ts) to establish a functional migration pathway.
 
@@ -200,3 +216,79 @@ This reference implementation demonstrates key migration capabilities:
 - **Transport Protocol Parsing**: Maintains multi-factor authentication compatibility through transport method preservation
 - **Idempotent Import Logic**: Implements duplicate detection to ensure safe re-execution during migration testing
 - **Operational Visibility**: Provides console output for migration validation and troubleshooting
+
+## 4. Checksum Verification and Data Integrity
+
+### 4.1 Enterprise-Grade Data Integrity Controls
+
+Corbado's Enterprise Passkey Export implements rigorous data integrity controls to ensure the authenticity and completeness of exported authentication data. Each export file is cryptographically verified using industry-standard checksum algorithms, providing your organization with independently verifiable proof that exported data remains unaltered during transmission and storage.
+
+The checksum verification system addresses critical requirements for regulated industries:
+
+- **Regulatory Compliance**: Satisfies data integrity requirements for financial services, healthcare, and government sectors
+- **Audit Trail Validation**: Provides cryptographic proof of data integrity for compliance auditors and security teams
+- **Tamper Detection**: Enables immediate identification of any unauthorized modifications to exported authentication data
+- **Chain of Custody**: Establishes verifiable chain of custody for authentication data from export to import
+
+### 4.2 CRC64NVME Checksum Implementation
+
+To ensure performance at enterprise scale while maintaining cryptographic integrity, Corbado implements the `CRC64NVME` checksum algorithm for all passkey exports. This algorithm is specifically designed for high-performance verification of large datasets, making it ideal for organizations with substantial user bases requiring millions of passkey credentials.
+
+### 4.3 Verification Procedure and Implementation
+
+For organizations requiring independent verification of export integrity, Corbado provides a reference implementation written in Python using the AWS CRT library. This implementation enables your security and compliance teams to validate the integrity of exported files without relying on Corbado's internal verification systems.
+
+```python
+"""
+Compute CRC64NVME checksum of a file using AWS CRT library.
+
+This uses the official AWS CRT implementation for CRC64NVME checksums,
+which matches the S3 `x-amz-checksum-crc64-nvme`/`ChecksumCRC64NVME` value.
+"""
+
+from awscrt import checksums
+import base64
+import sys
+import os
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python3 crc64nvme.py <file>", file=sys.stderr)
+        return 1
+
+    filepath = sys.argv[1]
+    if not os.path.isfile(filepath):
+        print(f"Error: '{filepath}' is not a file", file=sys.stderr)
+        return 1
+
+    with open(filepath, 'rb') as f:
+        file_data = f.read()
+
+    checksum = checksums.crc64nvme(file_data)
+    checksum_bytes = checksum.to_bytes(8, byteorder='big')
+    checksum_base64 = base64.b64encode(checksum_bytes).decode('ascii')
+
+    print(checksum_base64)
+
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+To verify the checksum of an export file, run the following commands:
+
+```bash
+# Create isolated Python virtual environment
+python3 -m venv checksum-verification
+source checksum-verification/bin/activate
+
+# Install AWS CRT library for official CRC64NVME implementation
+pip3 install awscrt
+
+# Verify export file integrity
+python3 crc64nvme.py /path/to/export/file.csv.gz
+=> 5yuiJSxKKnU=
+```
+
+The generated Base64-encoded checksum can be compared with the value displayed in the Corbado Management Console to confirm data integrity. For automated verification workflows, this process can be integrated into your organization's CI/CD pipelines or security automation frameworks.
