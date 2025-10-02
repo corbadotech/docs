@@ -1,11 +1,11 @@
 ---
 title: "Passkey Append: After Error"
-description: "This flow explains error cases that may occur when users attempt to append a passkey to their account after logging in on a new device. Proper handling of these errors ensures users can recover smoothly and maintain access to their account."
+description: "This flow details how a user appends a new passkey after they faced an error when logging in with an existing passkey (autohealing)."
 ---
 
-## Passkey Creation After Error
+## Passkey Creation after Error
 
-Users login on desktops & mobile, follows a standard hybrid login flow and experience passkey append after error.
+Users log in on desktops & mobile, experience an error during passkey login, need to use conventional login methods and can then append a new passkey.
 
 <Tabs>
   <Tab title="macOS">
@@ -27,10 +27,9 @@ Users login on desktops & mobile, follows a standard hybrid login flow and exper
 <Steps>
     <Step title="Error encounter while creating passkeys after hybrid login">
         - User enters their identifier (email/username) on the login page.
-        - Since no passkey is found, user is prompted to log in using their traditional password.
+        - There is an error with the passkey login, so the users uses their traditional password (and optionally MFA).
         - After successful password authentication, the user is offered the option to create a passkey for future logins.
-        - User gets an error while creating passkeys and is shown another append after error screen with guiding details.
-        - User continues to create passkey. After successful passkey creation, the user is signed in and is asked to setup a PIN and for biometrics enabling.
+        - User continues to create passkey.
         </Step>
 
 </Steps>

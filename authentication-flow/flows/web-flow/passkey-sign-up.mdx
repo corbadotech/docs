@@ -1,9 +1,9 @@
 ---
-title: Passkey Sign Up
+title: Passkey Sign-Up
 description: This flow explains the end-to-end journey of a first-time user creating an account. It covers how identifiers are captured, passkeys are created, and fallback credentials (like passwords or MFA) are introduced.
 ---
 
-## Sign-up Flow
+## Sign-Up Flow
 
 Users registering across desktop and mobile follow the same overall journey:
 
@@ -45,28 +45,28 @@ Users registering across desktop and mobile follow the same overall journey:
 
 <Info>
     NOTE: The blue background indicates product-native steps (e.g., verification
-    code, enabling biometrics). Passkey creation is seamlessly embedded in your
+    code). These are steps not provided by Corbado UI components but from your existing implementation. Passkey creation is seamlessly embedded in your
     product journey.
 </Info>
 
 <Steps>
   <Step title="Registration with identifier method">
-    - User creates an account by entering **username & password** and clicks **Sign up**.  
-    - A modal appears prompting for passkey creation.
+    - User enters **username & password**.
+    - User creates an account by clicking **Sign up**.
   </Step>
 
 <Step title="Auto-append immediately after registration">
     - User is prompted via auto-append to set up a passkey using fingerprint,
-    face, or PIN for secure sign-in.
-    - Successfully passkey creation is completed and now user have a passkey attached with the current signed up
+    face, or PIN.
+    - Successfully passkey creation is completed and now the user has a passkey appended to the signed up
     account.
 </Step>
  <Step title="Auto-append aborted/cancelled or skipped">
-    - If user skips, cancels, or the prompt does not show, user continues registration. 
-    - The app later triggers the normal append screens for passkey creation.
+    - If the user skips, cancels, or the prompt does not show, the user continues the convetional registration. 
+    - The app can later trigger the passkey append screen again for passkey creation.
 
     **3.a. Passkey creation via manual append**
-    - User starts the append process from within the app flow.
+    - User starts the append process by clicking **Continue**.
     - User successfully creates a passkey.
     - User continues into the main product flow (verification, PIN, biometrics).
 
