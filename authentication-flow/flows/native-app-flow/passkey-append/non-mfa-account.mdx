@@ -30,21 +30,51 @@ Users logging in native app, follows a standard login flow for non-MFA user with
     embedded in your product journey.
 </Info>
 <Steps>
-     <Step title="Login when user has no passkeys">
+    <Step title="Login when user has no passkeys">
         - User enters their identifier (email/username) on the login page.
-        - Since no passkey is found, user is prompted to log in using their traditional password.
-        - After successful password authentication, the user is offered the option to create a passkey for future logins.
     </Step>
-    <Step title="Creating a passkey after login">
-        - User chooses to set up a passkey using fingerprint, face, or PIN for secure sign-in.
-        - After creating the passkey, the user is prompted to verify their account via a code sent through email or SMS.
-        - After successful verification, the user is signed in, asked to setup PIN and redirected to the app
-        dashboard.
+    <Step title="Fallback to traditional login method">
+        - System detects no passkey created for the respective account, system fallbacks to traditional login method (username + password).
     </Step>
-    <Step title="Skipping the passkey creation">
-        - User skips the passkey setup process.
-        - User is signed in with password and is asked to verify their identity via code verification.
-        - User is asked to setup PIN and is directed to the app dashboard as usual. Users then have an option to enable local biometric login.
+    <Step title="Passkey append process initiates">
+        - Once the user is logged in via traditional method, they are offered an option to create a passkey for future logins.
+    </Step>
+    <Step title="Passkey append process continues">
+        - User continues with the passkey creation process.
+
+        **4.a. OS-native biometric prompt appears**
+        - OS biometric prompt modal appears asking the user to authenticate using fingerprint, face, or PIN for secure sign-in.
+        - User successfully authenticates via biometrics.
+
+        **4.b. Passkey creation successful**
+        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+
+        **4.c. System prompts for user verification**
+        - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
+
+        **4.d. Successful second factor verification**
+        - User successfully completes the second factor verification.
+
+        **4.e. App PIN setup**
+        - User is asked to setup PIN.
+
+        **4.f. Enable local biometric for app login**
+        - User is allowed to enable/disable local biometric app login (provided as product feature).
+    </Step>
+    <Step title="Skips the passkey append process">
+        - User skips the passkey setup process and continues with the second factor verification.
+
+        **5.a. System prompts for user verification**
+        - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
+
+        **5.b. Successful second factor verification**
+        - User successfully completes the second factor verification.
+
+        **5.c. App PIN setup**
+        - User is asked to setup PIN.
+
+        **5.d. Enable local biometric for app login**
+        - User is allowed to enable/disable local biometric app login (provided as product feature).
     </Step>
 
 </Steps>

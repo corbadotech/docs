@@ -3,7 +3,12 @@ title: "Automatic Passkey Upgrade"
 description: "This flow explains the automatic passkey creation feature that browsers intelligently provide when the user tries to autofill a password from a password manager."
 ---
 
-<Info>As of October 2025, this feature is only available in iOS, macOS and Windows. Not all password managers support it yet. Note, that it only works when a password is autofilled. Note that it only works when there is no passkey stored for the user yet.</Info>
+<Info>
+    As of October 2025, this feature is only available in iOS, macOS and
+    Windows. Not all password managers support it yet. Note, that it only works
+    when a password is autofilled and when there is no passkey stored for the
+    user yet.
+</Info>
 
 ## Automatic Passkey Creation after Login
 
@@ -44,12 +49,18 @@ Users logging in via a browser follow a standard login flow enriched by the auto
   <Step title="Login with password-autofill">
     - User logs in with their password, which is then autofilled by e.g. Apple Passwords / Google Password Manager. 
   </Step>
+  <Step title="Biometric confirmation for password auto-fill">
+    - User confirms their identity with a biometric method (like Face ID or Touch ID)
+  </Step>
   <Step title="Provide second factor">
     - User is asked to authenticate with a second factor (e.g. SMS OTP).
   </Step>
-    <Step title="Passkey is automatically created">
+  <Step title="Automatic passkey creation">
     - Passkey creation process runs in the backend, given that they have successfully authenticated with the second factor and no passkey exists yet.
     - Passkey is successfully created, user is notified via a push alert and they redirect to app dashboard.
+  </Step>
+  <Step title="Redirection to app dashboard">
+    - User is redirected to the app dashboard.
   </Step>
 
 </Steps>

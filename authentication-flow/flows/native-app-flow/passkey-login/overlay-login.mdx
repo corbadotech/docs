@@ -31,12 +31,22 @@ An OS-driven prompt that automatically appears when passkeys are available, guid
 </Info>
 
 <Steps>
-    <Step title="Login via auto-suggested passkey via modal">
+    <Step title="Login using auto-suggested passkey">
         - User enters identifier on mobile login.
-        - OS/app triggers overlay modal for passkey authentication having all the passkeys linked to this
-        account on this device.
-        - User chooses the correct one and authenticates
-        using biometrics/PIN.
     </Step>
-
+    <Step title="Passkey auto-suggestion OS modal">
+        - OS/app triggers overlay modal for passkey authentication having all
+        the passkeys linked to this account on this device.
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User chooses the correct one and authenticates using biometrics/PIN.
+    </Step>
+    <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to setup PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
+    </Step>
 </Steps>

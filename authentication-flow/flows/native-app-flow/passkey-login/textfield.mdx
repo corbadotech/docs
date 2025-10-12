@@ -3,7 +3,7 @@ title: "Textfield"
 description: "This flow details how users sign in when passkeys are suggested based on email/username provided by the user in the textfield."
 ---
 
-## Textfield-based passkey login
+## Textfield-based Passkey Login
 
 Instead of showing an immediate prompt, users can type their identifier (email, phone, or username) into a textfield.
 
@@ -25,10 +25,15 @@ Instead of showing an immediate prompt, users can type their identifier (email, 
 </Tabs>
 
 <Steps>
-    <Step title="Login via general textfield">
-        - User enters their identifier (email/username) on the login page in textfield.
-        - If a passkey is available for that account, the system suggests it as the preferred login option.
-        - The user selects a stored passkey, authenticates with biometric/PIN, and is logged in instantly.
+    <Step title="User enters identifier">
+        - User types their identifier (email, phone, or username) into the login textfield on the web-app.
+    </Step>
+    <Step title="OS-native passkey prompt appears">
+        - If a saved passkey is available for the account, the system automatically suggests it.
+    </Step>
+    <Step title="Biometric authentication prompt appears">
+        - User verifies their identity using the device’s screen lock (fingerprint, PIN, or face recognition).  
+        - Upon successful verification, the user is seamlessly logged in.
     </Step>
 
 </Steps>

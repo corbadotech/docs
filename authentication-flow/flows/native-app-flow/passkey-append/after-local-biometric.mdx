@@ -26,9 +26,16 @@ Users logging in native app using their local biometric authentication, guided t
 
 <Steps>
      <Step title="Login app using local biometric, followed by passkey append">
-        - The user first authenticates locally using biometrics set up on their device (e.g., Touch ID, Face ID or PIN).
-        - After this successful local biometric check, the system prompts the user to create or append a passkey.
-        - User follows the process and successfully creates a passkey. 
+        - User first authenticates locally using biometrics set up on their device (e.g., Touch ID, Face ID or PIN).
+    </Step>
+    <Step title="Passkey append process initiates">
+        - Once the system verifies user identity, the user is offered an option to create a passkey for future logins.
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User chooses & continue to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates passkey and is now linked with the user account for the respective web-app.
     </Step>
 
 </Steps>

@@ -45,7 +45,8 @@ Users registering across desktop and mobile follow the same overall journey:
 
 <Info>
     NOTE: The blue background indicates product-native steps (e.g., verification
-    code). These are steps not provided by Corbado UI components but from your existing implementation. Passkey creation is seamlessly embedded in your
+    code). These are steps not provided by Corbado UI components but from your
+    existing implementation. Passkey creation is seamlessly embedded in your
     product journey.
 </Info>
 
@@ -55,24 +56,25 @@ Users registering across desktop and mobile follow the same overall journey:
     - User creates an account by clicking **Sign up**.
   </Step>
 
-<Step title="Auto-append immediately after registration">
+  <Step title="Auto-append immediately after registration">
     - User is prompted via auto-append to set up a passkey using fingerprint,
     face, or PIN.
     - Successfully passkey creation is completed and now the user has a passkey appended to the signed up
     account.
-</Step>
- <Step title="Auto-append aborted/cancelled or skipped">
-    - If the user skips, cancels, or the prompt does not show, the user continues the convetional registration. 
+    - After successful passkey creation, user continues into the main product flow (verification, app dashboard).
+  </Step>
+  <Step title="Auto-append aborted/cancelled or skipped">
+    - If the user skips, cancels, or the prompt does not show, the user continues the conventional registration. 
     - The app can later trigger the passkey append screen again for passkey creation.
 
     **3.a. Passkey creation via manual append**
     - User starts the append process by clicking **Continue**.
     - User successfully creates a passkey.
-    - User continues into the main product flow (verification, PIN, biometrics).
+    - User continues into the main product flow (verification, app dashboard).
 
     **3.b. Passkey creation skipped**
     - User starts append but skips passkey creation.
-    - User continues into the main product flow (verification, PIN, biometrics).
+    - User continues into the main product flow (verification, app dashboard).
 
   </Step>
 

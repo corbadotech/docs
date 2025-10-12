@@ -27,13 +27,28 @@ This approach solves the cross-device authentication challenge by using a secure
 <Steps>
     <Step title="Login via cross device authentication">
         - User enters their identifier (email/username) on the login page in textfield.
-        - System generates and displays a time-limited, unique QR code.
+        - System detects passkey linked with this account on another device.
+    </Step>
+    <Step title="System displays QR code">
+        - System generates and displays a time-limited unique QR code.
+    </Step>
+    <Step title="User scans QR and authenticates">
         - User scans the QR code using their mobile device or tablet where the passkey is stored.
-        - The second device performs biometric or PIN authentication to confirm identity.
+        - The second device performs biometric or PIN authentication.
+    </Step>
+    <Step title="Login completes on current device & passkey append initiates">
         - Authentication response is securely sent back to complete login on the desktop device.
-        - User is granted access on the original device without entering a password.
+        - User is granted access on the current device.
         - After successful cross device authentication, user is asked to create a passkey on the current device.
-        - User continues to the process and set up a passkey using fingerprint, face, or PIN for secure sign-in.
-        </Step>
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User chooses & continue to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+    </Step>
+    <Step title="Redirection to app dashboard">
+        - User is redirected to the app dashboard.
+    </Step>
 
 </Steps>

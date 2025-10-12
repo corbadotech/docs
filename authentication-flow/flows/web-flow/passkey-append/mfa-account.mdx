@@ -7,7 +7,6 @@ description: "This flow explains how users append a passkey to a MFA account."
 
 MFA users logging in via desktop and mobile browsers, follow a standard login flow where they are offered to append a passkey.
 
-
 <Tabs>
   <Tab title="macOS">
     <Frame caption="macOS passkey append, MFA accounts">
@@ -48,11 +47,24 @@ MFA users logging in via desktop and mobile browsers, follow a standard login fl
 <Steps>
     <Step title="Login when user has no passkeys and activated MFA">
         - User enters their identifier (email/username) on the login page.
-        - Since no passkey is found, user is prompted to log in using their traditional password.
+    </Step>
+    <Step title="Fallback to traditional login method">
+        - System detects no passkey created for the respective account, system fallbacks to traditional login method (username + password).
+    </Step>
+    <Step title="System prompts for user verification">
         - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
-        - After successful verification, the user is offered the option to create a passkey for future logins.
-        - User chooses to set up a passkey using fingerprint, face, or PIN for secure sign-in.
-        - After successful passkey creation, the user is signed in and redirected to the app dashboard.
-        </Step>
+    </Step>
+    <Step title="Passkey append process initiates">
+        - Once the system verifies user identity, the user is offered an option to create a passkey for future logins.
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User chooses & continue to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+    </Step>
+    <Step title="Redirection to app dashboard">
+        - User is redirected to the app dashboard.
+    </Step>
 
 </Steps>
