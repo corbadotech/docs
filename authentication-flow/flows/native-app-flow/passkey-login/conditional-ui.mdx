@@ -8,20 +8,14 @@ description: "Using conditional UI for passkey login in native apps."
 Passkeys can appear as suggestions directly on the keyboard’s suggestion bar, allowing users to select and log in quickly without opening an extra prompt.
 
 <Tabs>
-<Tab title="iOS">
-    <Frame caption="Native: iOS autosuggested passkey flow">
-        <img
-            src="/images/authentication-flow/native-app/autosuggested-passkey-ios-native.png"
-            alt="Native app mobile autosuggested passkey via keyboard on iOS"
-        />
-    </Frame>
-</Tab>
-
-  <Tab title="Android">
-    <Frame caption="Native: Android autosuggested passkey flow">
-      <img src="/images/authentication-flow/native-app/autosuggested-passkey-android-native.png" alt="Native app mobile autosuggested passkey via keyboard on Android" />
-    </Frame>
-  </Tab>
+    <Tab title="iOS">
+        <Frame caption="Native: iOS autosuggested passkey flow">
+            <img
+                src="/images/authentication-flow/native-app/autosuggested-passkeys-ios-native.png"
+                alt="Native app mobile autosuggested passkey via keyboard on iOS"
+            />
+        </Frame>
+    </Tab>
 </Tabs>
 
 <Info>
@@ -31,10 +25,22 @@ Passkeys can appear as suggestions directly on the keyboard’s suggestion bar, 
 </Info>
 
 <Steps>
-    <Step title="Login via auto-suggested passkey in keyboard">
-        - User enters their identifier (email/username) on the login page.
-        - Browser displays an autosuggest popup if a matching passkey is available for this site.
-        - The user selects a stored passkey, authenticates with biometric/PIN, and is logged in instantly.
+    <Step title="Passkey auto-suggestion appears in keyboard">
+        - When the user taps on the email field, an autosuggested passkey appears on the keyboard based on the stored credential for that domain.
+    </Step>
+     <Step title="Authenticate using the selected passkey">
+        - The user taps the suggested passkey on the keyboard to continue with authentication.
+    </Step>
+     <Step title="Device verifies user">
+        - User verify their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
+    </Step>
+     <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to setup PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
     </Step>
 
 </Steps>

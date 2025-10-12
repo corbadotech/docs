@@ -30,12 +30,31 @@ Users logging in native app, follows a standard hybrid login flow and experience
     embedded in your product journey.
 </Info>
 <Steps>
-     <Step title="Error encounter while creating passkeys after hybrid login">
+    <Step title="Login when user has no passkeys">
         - User enters their identifier (email/username) on the login page.
-        - Since no passkey is found, user is prompted to log in using their traditional password.
-        - After successful password authentication, the user is offered the option to create a passkey for future logins.
-        - User gets an error while creating passkeys and is shown another append after error screen with guiding details.
-        - User continues to create passkey. After successful passkey creation, the user is signed in and is asked to setup a PIN and for biometrics enabling.
+    </Step>
+    <Step title="Fallback to traditional login method">
+        - System detects no passkey created for the respective account, system fallbacks to traditional login method (username + password).
+    </Step>
+    <Step title="Passkey append process initiates">
+        - User is offered an option to create a passkey for future logins.
+    </Step>
+    <Step title="Passkey append process abruptly cancels or an error occurs">
+        - There is an abrupt error faced during passkey creation process, the user is not negatively notified for the error. Instead, an informing screen appears where the user is again asked to create a passkey.
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User continue to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+    </Step>
+     <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to setup PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
     </Step>
 
 </Steps>

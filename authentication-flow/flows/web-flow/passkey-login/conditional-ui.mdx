@@ -40,10 +40,15 @@ Passkeys can appear as suggestions directly on the keyboard’s suggestion bar, 
 </Tabs>
 
 <Steps>
-    <Step title="Login via auto-suggested passkey in keyboard">
-        - User enters their identifier (email/username) on the login page.
-        - Browser displays an autosuggest popup if a matching passkey is available for this site.
-        - The user selects a stored passkey, authenticates with biometric/PIN, and is logged in instantly.
+    <Step title="Passkey auto-suggestion appears in keyboard">
+        - When the user taps on the email field, an autosuggested passkey appears on the keyboard based on the stored credential for that domain.
+    </Step>
+     <Step title="Authenticate using the selected passkey">
+        - The user taps the suggested passkey on the keyboard to continue with authentication.
+        - User verify their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
+    </Step>
+     <Step title="Access granted">
+        - User is seamlessly logged in and redirected to the dashboard.
     </Step>
 
 </Steps>

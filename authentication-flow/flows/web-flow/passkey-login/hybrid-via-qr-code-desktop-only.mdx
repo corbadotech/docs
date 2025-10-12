@@ -3,7 +3,7 @@ title: "Hybrid via QR code (Desktop-only)"
 description: "This flow details how users sign in on a device where their passkey is not available by leveraging a second device with stored passkeys via scanning a QR code. "
 ---
 
-## Login via another Device
+## Login via Another Device
 
 This approach solves the cross-device authentication challenge by using a secure, cryptographic challenge-response communicated via QR code paired with Bluetooth proximity check.
 
@@ -27,11 +27,18 @@ This approach solves the cross-device authentication challenge by using a secure
 <Steps>
     <Step title="Login via cross device authentication">
         - User enters their identifier (email/username) on the login page in textfield.
-        - System generates and displays a time-limited, unique QR code.
+        - System detects passkey linked with this account on another device.
+    </Step>
+    <Step title="System displays QR code">
+        - System generates and displays a time-limited unique QR code.
+    </Step>
+    <Step title="User scans QR and authenticates">
         - User scans the QR code using their mobile device or tablet where the passkey is stored.
         - The second device performs biometric or PIN authentication.
+    </Step>
+    <Step title="Login completes on current device">
         - Authentication response is securely sent back to complete login on the desktop device.
-        - User is granted access on the original device.
+        - User is granted access on the current device.
     </Step>
 
 </Steps>
