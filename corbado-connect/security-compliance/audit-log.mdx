@@ -1,6 +1,6 @@
 ---
 title: "Corbado Connect Audit Logging"
-description: "Comprehensive audit logging with tamper-proof storage, real-time streaming to SIEM systems, and compliance-ready event tracking for authentication, user management, and administrative activities."
+description: "Comprehensive audit logging with tamper-proof storage, real-time streaming to external systems, and compliance-ready event tracking for authentication, user management, and administrative activities."
 sidebarTitle: "Audit Logging"
 ---
 
@@ -10,7 +10,11 @@ import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx"
 
 ## 1. Introduction
 
-Corbado provides comprehensive audit logging capabilities designed to meet your organization's compliance and security requirements. Our audit logging system captures and securely stores all critical events across the authentication infrastructure, providing complete visibility into user activities, administrative actions, and system operations.
+Corbado provides comprehensive audit logging capabilities designed to meet your organization's compliance and accountability requirements. Our audit logging system captures and securely stores all critical events across the authentication infrastructure, providing complete visibility into user activities, administrative actions, and system operations.
+
+<Note>
+    For security-related events, refer to our dedicated page explaining our [security log](/corbado-connect/security-compliance/security-log).
+</Note>
 
 Key features of Corbado's audit logging include:
 
@@ -18,14 +22,13 @@ Key features of Corbado's audit logging include:
 - **Compliance-Ready**: Designed to align with major compliance frameworks (e.g. ISO 27001 and SOC 2)
 - **Tamper-Proof Storage**: All audit logs are stored using Write-Once-Read-Many (WORM) technology, ensuring data integrity and preventing unauthorized modifications
 - **Long-Term Retention**: Audit logs are retained for up to 10 years, depending on your requirements
-- **Real-Time Streaming**: Stream audit log events to external systems like SIEM platforms for real-time monitoring and analysis
+- **Real-Time Streaming**: Stream audit log events to external systems for real-time monitoring and analysis
 
-This audit logging system provides the foundation for maintaining security oversight, meeting regulatory requirements, and supporting forensic investigations when needed.
+This audit logging system provides the foundation for maintaining oversight and meeting regulatory requirements.
 
 <Note>
     Audit logs can be customized for **Enterprise Plus** customers with [private cloud deployments](/corbado-connect/architecture/deployment) to support extended information requirements, such as HIPAA compliance data or financial transaction details when using passkeys for payment authentication.
 </Note>
-
 
 ## 2. Event Types
 
@@ -47,12 +50,11 @@ Each event includes detailed metadata such as timestamps, user identifiers, and 
 
 All audit log events can be streamed in real-time to external systems for monitoring, analysis, and compliance purposes. Our streaming implementation includes robust retry logic to ensure reliable delivery of audit events.
 
-This capability is particularly useful for feeding audit log events into your **SIEM** (Security Information and Event Management) system for centralized security monitoring and alerting.
-
 ### 3.1. Supported Destinations
 
 Corbado supports streaming to the following systems:
 
+- **Amazon EventBridge**
 - **Coralogix**
 - **Datadog**
 - **Dynatrace**
