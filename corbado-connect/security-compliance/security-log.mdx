@@ -1,6 +1,6 @@
 ---
 title: "Corbado Connect Security Logging"
-description: "Comprehensive security logging with tamper-proof storage, real-time streaming to SIEM systems, and compliance-ready event tracking for authentication, user management, and administrative activities."
+description: "OCSF-standardized security logging with tamper-proof storage, SIEM-ready format, and real-time streaming for authentication and identity management events."
 sidebarTitle: "Security Logging"
 ---
 
@@ -10,21 +10,44 @@ import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx"
 
 ## 1. Introduction
 
-Corbado provides comprehensive security logging capabilities designed to meet your organization's security requirements. Our security logging system captures and securely stores all critical events across the authentication infrastructure, providing complete visibility into user activities, administrative actions, and system operations.
+Corbado's **Security Log** provides comprehensive event logging using the industry-standard **OCSF** (Open Cybersecurity Schema Framework). This standardized logging system captures authentication and identity management events in a vendor-agnostic format, making it ideal for SIEM integration, security monitoring, and threat detection.
 
 <Note>
-    For compliance-related events, refer to our dedicated page explaining our [audit log](/corbado-connect/security-compliance/audit-log).
+    Corbado also maintains a separate [Audit Log](/corbado-connect/security-compliance/audit-log) with a custom format designed for compliance requirements. While some events appear in both logs, the Security Log uses the standardized OCSF schema for better interoperability with security tools.
 </Note>
 
-Key features of Corbado's security logging include:
+### 1.1 Security Log vs. Audit Log
 
-- **Standardized Format**: Corbado's security logging is based on [OCSF](https://ocsf.io) (Open Cybersecurity Schema Framework), a widely adopted, vendor-agnostic global standard for cybersecurity event logging and reporting
-- **Complete Event Coverage**: Security logs are automatically generated for all relevant event types, including authentication events, user management operations, and administrative changes
+Corbado provides two separate logging systems that serve different purposes:
+
+| Aspect | Security Log | Audit Log |
+|--------|-------------|----------|
+| **Format** | OCSF 1.6.0 (standardized) | Custom format |
+| **Primary Purpose** | SIEM integration, security monitoring | Compliance & regulatory requirements |
+| **Best For** | Security teams, SOC analysts, threat detection | Auditors, compliance officers, regulatory audits |
+| **Event Coverage** | IAM events using OCSF classes | Broader custom events for compliance needs |
+| **Interoperability** | High (vendor-agnostic standard) | Custom (flexible for specific requirements) |
+
+**When to use Security Log:**
+- Integrating with SIEM platforms (Splunk, Datadog, etc.)
+- Real-time security monitoring and alerting
+- Standardized security event analysis
+- Cross-platform security correlation
+
+**When to use Audit Log:**
+- Meeting specific compliance framework requirements (ISO 27001, SOC 2, HIPAA)
+- Custom audit trail requirements
+- Regulatory reporting with specific data fields
+- Long-term compliance record keeping
+
+### 1.2 Key Features
+
+- **OCSF Standardized Format**: Based on [OCSF](https://ocsf.io) (Open Cybersecurity Schema Framework), a widely adopted, vendor-agnostic global standard for cybersecurity event logging and reporting
+- **SIEM-Ready**: Pre-formatted for seamless integration with major SIEM platforms without custom parsing
+- **Complete IAM Event Coverage**: Automatically captures authentication, authorization, and identity management events
 - **Tamper-Proof Storage**: All security logs are stored using Write-Once-Read-Many (WORM) technology, ensuring data integrity and preventing unauthorized modifications
 - **Long-Term Retention**: Security logs are retained for up to 10 years, depending on your requirements
 - **Real-Time Streaming**: Stream security log events to external systems like SIEM platforms for real-time monitoring and analysis
-
-This security logging system provides the foundation for maintaining security oversight and supporting forensic investigations when needed.
 
 <Note>
     **Corbado Connect** implements version **1.6.0** of the **OCSF** schema specification.
