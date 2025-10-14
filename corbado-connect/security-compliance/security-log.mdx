@@ -36,22 +36,22 @@ Corbado captures security log events from different operational areas to provide
 
 The security log covers the following event types (called classes in **OCSF**):
 
-- **Account Change (3001)**: TODO description ([details](https://schema.ocsf.io/1.6.0/classes/account_change))
-- **Authentication (3002)**: TODO description ([details](https://schema.ocsf.io/1.6.0/classes/authentication))
-- **Entity Management (3004)**: TODO description ([details](https://schema.ocsf.io/1.6.0/classes/entity_management))
-- **User Access Management (3005)**: TODO description ([details](https://schema.ocsf.io/1.6.0/classes/user_access))
-- **Group Management (3006)**: TODO description ([details](https://schema.ocsf.io/1.6.0/classes/group_management))
-- **API Activity (6003)**: TODO description ([details](https://schema.ocsf.io/1.6.0/classes/api_activity))
+- **Account Change (3001)**: Captures user account management activities such as account creation, modification, deletion, password changes, status changes (enabled, disabled, locked, unlocked), and multi-factor authentication configuration updates (see [schema](https://schema.ocsf.io/1.6.0/classes/account_change))
+- **Authentication (3002)**: Records authentication session activities including login and logout attempts (both successful and failed), authentication ticket requests, and other key authentication process stages. These events include details about the user, authentication method, and attempt status (see [schema](https://schema.ocsf.io/1.6.0/classes/authentication))
+- **Entity Management (3004)**: Tracks activities performed by managed clients, microservices, or users at management consoles. Covers create, read, update, and delete operations on managed entities, as well as enrollment, status changes, and lifecycle management actions (see [schema](https://schema.ocsf.io/1.6.0/classes/entity_management))
+- **User Access Management (3005)**: Documents changes to user privileges, including the assignment and revocation of permissions that control access to specific resources (see [schema](https://schema.ocsf.io/1.6.0/classes/user_access))
+- **Group Management (3006)**: Logs group-related operations including privilege assignments, user membership changes (additions and removals), subgroup management, and group lifecycle events such as creation and deletion (see [schema](https://schema.ocsf.io/1.6.0/classes/group_management))
+- **API Activity (6003)**: Records general API operations following the CRUD pattern (Create, Read, Update, Delete), capturing API calls made across the infrastructure with details about the request, response, and affected resources (see [schema](https://schema.ocsf.io/1.6.0/classes/api_activity))
 
 Each event includes detailed metadata such as timestamps, user identifiers, and contextual information for full traceability.
 
 <Note>
-    **Authentication events** are logged for all user interactions across your entire authentication infrastructure. This includes both end-users of your application using **Corbado Connect** and administrative users accessing the Corbado Management Console. All authentication attempts, whether successful or failed, are captured with full context to ensure complete audit coverage and support security investigations.
+    **Authentication events** are logged for all user interactions across your entire authentication infrastructure. This includes both end-users of your application using **Corbado Connect** and administrative users accessing the Corbado Management Console. All authentication attempts, whether successful or failed, are captured with full context to ensure complete security coverage and support investigations.
 </Note>
 
 ## 3. Streaming
 
-All security log events can be streamed in real-time to external systems for monitoring, analysis, and compliance purposes. Our streaming implementation includes robust retry logic to ensure reliable delivery of audit events.
+All security log events can be streamed in real-time to external systems for monitoring, analysis, and compliance purposes. Our streaming implementation includes robust retry logic to ensure reliable delivery of security events.
 
 This capability is particularly useful for feeding security log events into your **SIEM** (Security Information and Event Management) system for centralized security monitoring and alerting.
 
