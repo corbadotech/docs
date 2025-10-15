@@ -66,7 +66,130 @@ The security log covers the following event types (called classes in **OCSF**):
 - **Group Management (3006)**: Logs group-related operations including privilege assignments, user membership changes (additions and removals), subgroup management, and group lifecycle events such as creation and deletion (see [schema](https://schema.ocsf.io/1.6.0/classes/group_management))
 - **API Activity (6003)**: Records general API operations following the CRUD pattern (Create, Read, Update, Delete), capturing API calls made across the infrastructure with details about the request, response, and affected resources (see [schema](https://schema.ocsf.io/1.6.0/classes/api_activity))
 
-Each event includes detailed metadata such as timestamps, user identifiers, and contextual information for full traceability.
+Each event is accompanied by detailed metadata, including timestamps, user identifiers, and contextual information, which ensures comprehensive traceability. The following example illustrates an **Authentication (3002)** event:
+
+```json
+{
+  "activity_id": 1,
+  "activity_name": "Logon",
+  "category_uid": 3,
+  "category_name": "Identity & Access Management",
+  "class_uid": 3002,
+  "class_name": "Authentication",
+  "metadata": {
+    "uid": "1760545048853223586",
+    "event_code": "passkey-login.completed",
+    "version": "1.6.0",
+    "product": {
+      "name": "Corbado Security Log",
+      "vendor_name": "Corbado"
+    },
+    "profiles": [
+      "datetime",
+      "host"
+    ]
+  },
+  "severity_id": 1,
+  "severity": "Informational",
+  "time": 1760545048853,
+  "time_dt": "2025-10-15T16:17:28Z",
+  "type_uid": 300201,
+  "actor": {
+    "user": {
+      "type_id": 1,
+      "type": "User",
+      "uid": "usr-3",
+      "has_mfa": true
+    }
+  },
+  "user": {
+    "type_id": 1,
+    "type": "User",
+    "uid": "usr-3",
+    "has_mfa": true
+  },
+  "device": {
+    "type_id": 8,
+    "type": "browser",
+    "name": "Chrome 141.0.0",
+    "ip": "172.20.0.13",
+    "os": {
+      "type_id": 300,
+      "type": "macOS",
+      "name": "macOS 14.8.1"
+    },
+    "location": {
+      "country": "Germany",
+      "city": "Munich"
+    }
+  },
+  "src_endpoint": {
+    "ip": "172.20.0.13",
+    "os": {
+      "type_id": 300,
+      "type": "macOS",
+      "name": "macOS 14.8.1"
+    },
+    "location": {
+      "country": "Germany",
+      "city": "Munich"
+    }
+  },
+  "auth_protocol_id": 99,
+  "auth_protocol": "WebAuthn",
+  "auth_factors": [
+    {
+      "factor_type_id": 10,
+      "factor_type": "WebAuthn",
+      "provider": "Corbado"
+    }
+  ],
+  "is_mfa": true,
+  "timezone_offset": 0,
+  "service": {
+    "name": "Backend API"
+  },
+  "http_request": {
+    "uid": "req-5659926085531781367",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+  },
+  "observables": [
+    {
+      "type_id": 2,
+      "type": "IP Address",
+      "name": "src_endpoint.ip",
+      "value": "172.20.0.13"
+    },
+    {
+      "type_id": 16,
+      "type": "HTTP User-Agent",
+      "name": "http_request.user_agent",
+      "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    {
+      "type_id": 31,
+      "type": "User Object: uid",
+      "name": "actor.user.uid",
+      "value": "usr-3"
+    }
+  ],
+  "status_id": 1,
+  "status": "Success",
+  "unmapped": {
+    "credentials": [
+      {
+        "uid": "cre-10128074893245022843",
+        "used": true,
+        "created_time": 1759397001000,
+        "last_used_time": 1760545048000,
+        "authenticator_aaguid": "fbfc3007-154e-4ecc-8c0b-6e020557d7bd",
+        "authenticator_attachment": "platform",
+        "authenticator_transport": "hybrid, internal"
+      }
+    ]
+  }
+}
+```
 
 <Note>
     **Authentication events** are logged for all user interactions across your entire authentication infrastructure. This includes both end-users of your application using **Corbado Connect** and administrative users accessing the Corbado Management Console. All authentication attempts, whether successful or failed, are captured with full context to ensure complete security coverage and support investigations.
