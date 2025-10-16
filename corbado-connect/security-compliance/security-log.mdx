@@ -77,7 +77,7 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
   "class_uid": 3002,
   "class_name": "Authentication",
   "metadata": {
-    "uid": "1760545048853223586",
+    "uid": "1760603578864164757",
     "event_code": "passkey-login.completed",
     "version": "1.6.0",
     "product": {
@@ -91,8 +91,8 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
   },
   "severity_id": 1,
   "severity": "Informational",
-  "time": 1760545048853,
-  "time_dt": "2025-10-15T16:17:28Z",
+  "time": 1760603578864,
+  "time_dt": "2025-10-16T08:32:58Z",
   "type_uid": 300201,
   "actor": {
     "user": {
@@ -150,7 +150,7 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
     "name": "Backend API"
   },
   "http_request": {
-    "uid": "req-5659926085531781367",
+    "uid": "req-8867746337883870496",
     "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
   },
   "observables": [
@@ -176,15 +176,39 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
   "status_id": 1,
   "status": "Success",
   "unmapped": {
+    "project_id": "pro-1",
+    "webauthn_ceremony": {
+      "type": "webauthn.get",
+      "origin": "https://app.corbado.com",
+      "challenge": "nqPi7ZxJQt4oyB93fRbCkxkg4Z5NXj5UuOiF1f5OqDw",
+      "signature": "MEUCIQCR2-YF34YGGXcvMLNKsHQBY5vfRFkcv94REnkr_-fbDAIgR0TaBeS9DyT91cIMnlQdpo86JPEb6hBTFyj6VNOr7RQ",
+      "user_present": true,
+      "user_verified": false,
+      "backup_eligible": true,
+      "backup_status": true,
+      "attested_data": false,
+      "extension_data": false
+    },
     "credentials": [
       {
-        "uid": "cre-10128074893245022843",
+        "uid": "cre-10521343327534767859",
+        "public_key": "pQECAyYgASFYIIKMCTQVGylX2Nu9KqTVOcXqakIXsTPLOFQ0PuGpz0oaIlggjQvwOC-MXcBUM6P8DC3tve8Yaga1CenAPl47whY1tcY",
+        "public_key_details": {
+          "algorithm": "ES256",
+          "key_type": "EC2",
+          "ec2": {
+            "curve": "P-256",
+            "x": "gowJNBUbKVfY270qpNU5xepqQhexM8s4VDQ-4anPSho",
+            "y": "jQvwOC-MXcBUM6P8DC3tve8Yaga1CenAPl47whY1tcY"
+          }
+        },
         "used": true,
-        "created_time": 1759397001000,
-        "last_used_time": 1760545048000,
+        "created_time": 1760559014000,
+        "last_used_time": 1760603578000,
+        "age_days": 0,
         "authenticator_aaguid": "fbfc3007-154e-4ecc-8c0b-6e020557d7bd",
-        "authenticator_attachment": "platform",
-        "authenticator_transport": "hybrid, internal"
+        "authenticator_attachment": "unknown",
+        "authenticator_transport": "internal, hybrid"
       }
     ]
   }
