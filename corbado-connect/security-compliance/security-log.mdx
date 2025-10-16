@@ -77,7 +77,7 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
   "class_uid": 3002,
   "class_name": "Authentication",
   "metadata": {
-    "uid": "1760603578864164757",
+    "uid": "1760617679583335734",
     "event_code": "passkey-login.completed",
     "version": "1.6.0",
     "product": {
@@ -91,28 +91,28 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
   },
   "severity_id": 1,
   "severity": "Informational",
-  "time": 1760603578864,
-  "time_dt": "2025-10-16T08:32:58Z",
+  "time": 1760617679583,
+  "time_dt": "2025-10-16T12:27:59Z",
   "type_uid": 300201,
   "actor": {
     "user": {
       "type_id": 1,
       "type": "User",
-      "uid": "usr-3",
+      "uid": "usr-2432600134296050303",
       "has_mfa": true
     }
   },
   "user": {
     "type_id": 1,
     "type": "User",
-    "uid": "usr-3",
+    "uid": "usr-2432600134296050303",
     "has_mfa": true
   },
   "device": {
     "type_id": 8,
     "type": "browser",
     "name": "Chrome 141.0.0",
-    "ip": "172.20.0.13",
+    "ip": "84.161.151.216",
     "os": {
       "type_id": 300,
       "type": "macOS",
@@ -124,7 +124,7 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
     }
   },
   "src_endpoint": {
-    "ip": "172.20.0.13",
+    "ip": "84.161.151.216",
     "os": {
       "type_id": 300,
       "type": "macOS",
@@ -150,7 +150,7 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
     "name": "Backend API"
   },
   "http_request": {
-    "uid": "req-8867746337883870496",
+    "uid": "req-1235123340092569853",
     "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
   },
   "observables": [
@@ -158,7 +158,7 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
       "type_id": 2,
       "type": "IP Address",
       "name": "src_endpoint.ip",
-      "value": "172.20.0.13"
+      "value": "84.161.151.216"
     },
     {
       "type_id": 16,
@@ -170,18 +170,16 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
       "type_id": 31,
       "type": "User Object: uid",
       "name": "actor.user.uid",
-      "value": "usr-3"
+      "value": "usr-2432600134296050303"
     }
   ],
-  "status_id": 1,
-  "status": "Success",
   "unmapped": {
     "project_id": "pro-1",
     "webauthn_ceremony": {
       "type": "webauthn.get",
       "origin": "https://app.corbado.com",
-      "challenge": "nqPi7ZxJQt4oyB93fRbCkxkg4Z5NXj5UuOiF1f5OqDw",
-      "signature": "MEUCIQCR2-YF34YGGXcvMLNKsHQBY5vfRFkcv94REnkr_-fbDAIgR0TaBeS9DyT91cIMnlQdpo86JPEb6hBTFyj6VNOr7RQ",
+      "challenge": "mSXyjmkc3YtQpKFo9TDvd0ZCyiYfVVBTD1qv_TBUIh4",
+      "signature": "MEQCID4SaaJt79loDgxultgsKarc4IkPcGFpq_thpzEngShDAiBRF1s2ZKhF7p6iscEdkD6JKXvp8x8ej27nYcZ54MyGqw",
       "user_present": true,
       "user_verified": false,
       "backup_eligible": true,
@@ -191,27 +189,29 @@ Each event is accompanied by detailed metadata, including timestamps, user ident
     },
     "credentials": [
       {
-        "uid": "cre-10521343327534767859",
-        "public_key": "pQECAyYgASFYIIKMCTQVGylX2Nu9KqTVOcXqakIXsTPLOFQ0PuGpz0oaIlggjQvwOC-MXcBUM6P8DC3tve8Yaga1CenAPl47whY1tcY",
+        "uid": "cre-712296467142127448",
+        "public_key": "pQECAyYgASFYIOCpQwp-ojzrvoBftTvvSjNY3c1adsQE-7NrWwpAwGV1Ilgg-ggHwROg9qzUPpTASW-alryfPApBicZUf0MDLozXCXI",
         "public_key_details": {
           "algorithm": "ES256",
           "key_type": "EC2",
           "ec2": {
             "curve": "P-256",
-            "x": "gowJNBUbKVfY270qpNU5xepqQhexM8s4VDQ-4anPSho",
-            "y": "jQvwOC-MXcBUM6P8DC3tve8Yaga1CenAPl47whY1tcY"
+            "x": "4KlDCn6iPOu-gF-1O-9KM1jdzVp2xAT7s2tbCkDAZXU",
+            "y": "-ggHwROg9qzUPpTASW-alryfPApBicZUf0MDLozXCXI"
           }
         },
         "used": true,
-        "created_time": 1760559014000,
-        "last_used_time": 1760603578000,
-        "age_days": 0,
+        "created_time": 1754555286000,
+        "last_used_time": 1760617679000,
+        "age_days": 70,
         "authenticator_aaguid": "fbfc3007-154e-4ecc-8c0b-6e020557d7bd",
-        "authenticator_attachment": "unknown",
-        "authenticator_transport": "internal, hybrid"
+        "authenticator_attachment": "platform",
+        "authenticator_transport": "hybrid, internal"
       }
     ]
-  }
+  },
+  "status_id": 1,
+  "status": "Success"
 }
 ```
 
