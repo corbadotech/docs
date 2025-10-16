@@ -112,6 +112,7 @@
                         "group": "Security & Compliance",
                         "pages": [
                             "corbado-connect/security-compliance/overview",
+                            "corbado-connect/security-compliance/security-log",
                             "corbado-connect/security-compliance/audit-log",
                             "corbado-connect/security-compliance/passkey-export"
                         ]

@@ -1,0 +1,244 @@
+---
+title: "Corbado Connect Security Logging"
+description: "OCSF-standardized security logging with tamper-proof storage, SIEM-ready format, and real-time streaming for authentication and identity management events."
+sidebarTitle: "Security Logging"
+---
+
+import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx"
+
+<CognitoDemo />
+
+## 1. Introduction
+
+Corbado's **Security Log** provides comprehensive event logging using the industry-standard **OCSF** (Open Cybersecurity Schema Framework). This standardized logging system captures authentication and identity management events in a vendor-agnostic format, making it ideal for SIEM integration, security monitoring, and threat detection.
+
+<Note>
+    Corbado also maintains a separate [Audit Log](/corbado-connect/security-compliance/audit-log) with a custom format designed for compliance requirements. While some events appear in both logs, the Security Log uses the standardized OCSF schema for better interoperability with security tools.
+</Note>
+
+### 1.1 Security Log vs. Audit Log
+
+Corbado provides two separate logging systems that serve different purposes:
+
+| Aspect | Security Log | Audit Log |
+|--------|-------------|----------|
+| **Format** | OCSF 1.6.0 (standardized) | Custom format |
+| **Primary Purpose** | SIEM integration, security monitoring | Compliance & regulatory requirements |
+| **Best For** | Security teams, SOC analysts, threat detection | Auditors, compliance officers, regulatory audits |
+| **Event Coverage** | IAM events using OCSF classes | Broader custom events for compliance needs |
+| **Interoperability** | High (vendor-agnostic standard) | Custom (flexible for specific requirements) |
+
+**When to use Security Log:**
+- Integrating with SIEM platforms (Splunk, Datadog, etc.)
+- Real-time security monitoring and alerting
+- Standardized security event analysis
+- Cross-platform security correlation
+
+**When to use Audit Log:**
+- Meeting specific compliance framework requirements (ISO 27001, SOC 2, HIPAA)
+- Custom audit trail requirements
+- Regulatory reporting with specific data fields
+- Long-term compliance record keeping
+
+### 1.2 Key Features
+
+- **OCSF Standardized Format**: Based on [OCSF](https://ocsf.io) (Open Cybersecurity Schema Framework), a widely adopted, vendor-agnostic global standard for cybersecurity event logging and reporting
+- **SIEM-Ready**: Pre-formatted for seamless integration with major SIEM platforms without custom parsing
+- **Complete IAM Event Coverage**: Automatically captures authentication, authorization, and identity management events
+- **Tamper-Proof Storage**: All security logs are stored using Write-Once-Read-Many (WORM) technology, ensuring data integrity and preventing unauthorized modifications
+- **Long-Term Retention**: Security logs are retained for up to 10 years, depending on your requirements
+- **Real-Time Streaming**: Stream security log events to external systems like SIEM platforms for real-time monitoring and analysis
+
+<Note>
+    **Corbado Connect** implements version **1.6.0** of the **OCSF** schema specification.
+</Note>
+
+## 2. Event Types
+
+Corbado captures security log events from different operational areas to provide comprehensive visibility into the authentication infrastructure.
+
+The security log covers the following event types (called classes in **OCSF**):
+
+- **Account Change (3001)**: Captures user account management activities such as account creation, modification, deletion, password changes, status changes (enabled, disabled, locked, unlocked), and multi-factor authentication configuration updates (see [schema](https://schema.ocsf.io/1.6.0/classes/account_change))
+- **Authentication (3002)**: Records authentication session activities including login and logout attempts (both successful and failed), authentication ticket requests, and other key authentication process stages. These events include details about the user, authentication method, and attempt status (see [schema](https://schema.ocsf.io/1.6.0/classes/authentication))
+- **Entity Management (3004)**: Tracks activities performed by managed clients, microservices, or users at management consoles. Covers create, read, update, and delete operations on managed entities, as well as enrollment, status changes, and lifecycle management actions (see [schema](https://schema.ocsf.io/1.6.0/classes/entity_management))
+- **User Access Management (3005)**: Documents changes to user privileges, including the assignment and revocation of permissions that control access to specific resources (see [schema](https://schema.ocsf.io/1.6.0/classes/user_access))
+- **Group Management (3006)**: Logs group-related operations including privilege assignments, user membership changes (additions and removals), subgroup management, and group lifecycle events such as creation and deletion (see [schema](https://schema.ocsf.io/1.6.0/classes/group_management))
+- **API Activity (6003)**: Records general API operations following the CRUD pattern (Create, Read, Update, Delete), capturing API calls made across the infrastructure with details about the request, response, and affected resources (see [schema](https://schema.ocsf.io/1.6.0/classes/api_activity))
+
+Each event is accompanied by detailed metadata, including timestamps, user identifiers, and contextual information, which ensures comprehensive traceability. The following example illustrates an **Authentication (3002)** event:
+
+```json
+{
+  "activity_id": 1,
+  "activity_name": "Logon",
+  "category_uid": 3,
+  "category_name": "Identity & Access Management",
+  "class_uid": 3002,
+  "class_name": "Authentication",
+  "metadata": {
+    "uid": "1760603578864164757",
+    "event_code": "passkey-login.completed",
+    "version": "1.6.0",
+    "product": {
+      "name": "Corbado Security Log",
+      "vendor_name": "Corbado"
+    },
+    "profiles": [
+      "datetime",
+      "host"
+    ]
+  },
+  "severity_id": 1,
+  "severity": "Informational",
+  "time": 1760603578864,
+  "time_dt": "2025-10-16T08:32:58Z",
+  "type_uid": 300201,
+  "actor": {
+    "user": {
+      "type_id": 1,
+      "type": "User",
+      "uid": "usr-3",
+      "has_mfa": true
+    }
+  },
+  "user": {
+    "type_id": 1,
+    "type": "User",
+    "uid": "usr-3",
+    "has_mfa": true
+  },
+  "device": {
+    "type_id": 8,
+    "type": "browser",
+    "name": "Chrome 141.0.0",
+    "ip": "172.20.0.13",
+    "os": {
+      "type_id": 300,
+      "type": "macOS",
+      "name": "macOS 14.8.1"
+    },
+    "location": {
+      "country": "Germany",
+      "city": "Munich"
+    }
+  },
+  "src_endpoint": {
+    "ip": "172.20.0.13",
+    "os": {
+      "type_id": 300,
+      "type": "macOS",
+      "name": "macOS 14.8.1"
+    },
+    "location": {
+      "country": "Germany",
+      "city": "Munich"
+    }
+  },
+  "auth_protocol_id": 99,
+  "auth_protocol": "WebAuthn",
+  "auth_factors": [
+    {
+      "factor_type_id": 10,
+      "factor_type": "WebAuthn",
+      "provider": "Corbado"
+    }
+  ],
+  "is_mfa": true,
+  "timezone_offset": 0,
+  "service": {
+    "name": "Backend API"
+  },
+  "http_request": {
+    "uid": "req-8867746337883870496",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+  },
+  "observables": [
+    {
+      "type_id": 2,
+      "type": "IP Address",
+      "name": "src_endpoint.ip",
+      "value": "172.20.0.13"
+    },
+    {
+      "type_id": 16,
+      "type": "HTTP User-Agent",
+      "name": "http_request.user_agent",
+      "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    {
+      "type_id": 31,
+      "type": "User Object: uid",
+      "name": "actor.user.uid",
+      "value": "usr-3"
+    }
+  ],
+  "status_id": 1,
+  "status": "Success",
+  "unmapped": {
+    "project_id": "pro-1",
+    "webauthn_ceremony": {
+      "type": "webauthn.get",
+      "origin": "https://app.corbado.com",
+      "challenge": "nqPi7ZxJQt4oyB93fRbCkxkg4Z5NXj5UuOiF1f5OqDw",
+      "signature": "MEUCIQCR2-YF34YGGXcvMLNKsHQBY5vfRFkcv94REnkr_-fbDAIgR0TaBeS9DyT91cIMnlQdpo86JPEb6hBTFyj6VNOr7RQ",
+      "user_present": true,
+      "user_verified": false,
+      "backup_eligible": true,
+      "backup_status": true,
+      "attested_data": false,
+      "extension_data": false
+    },
+    "credentials": [
+      {
+        "uid": "cre-10521343327534767859",
+        "public_key": "pQECAyYgASFYIIKMCTQVGylX2Nu9KqTVOcXqakIXsTPLOFQ0PuGpz0oaIlggjQvwOC-MXcBUM6P8DC3tve8Yaga1CenAPl47whY1tcY",
+        "public_key_details": {
+          "algorithm": "ES256",
+          "key_type": "EC2",
+          "ec2": {
+            "curve": "P-256",
+            "x": "gowJNBUbKVfY270qpNU5xepqQhexM8s4VDQ-4anPSho",
+            "y": "jQvwOC-MXcBUM6P8DC3tve8Yaga1CenAPl47whY1tcY"
+          }
+        },
+        "used": true,
+        "created_time": 1760559014000,
+        "last_used_time": 1760603578000,
+        "age_days": 0,
+        "authenticator_aaguid": "fbfc3007-154e-4ecc-8c0b-6e020557d7bd",
+        "authenticator_attachment": "unknown",
+        "authenticator_transport": "internal, hybrid"
+      }
+    ]
+  }
+}
+```
+
+<Note>
+    **Authentication events** are logged for all user interactions across your entire authentication infrastructure. This includes both end-users of your application using **Corbado Connect** and administrative users accessing the Corbado Management Console. All authentication attempts, whether successful or failed, are captured with full context to ensure complete security coverage and support investigations.
+</Note>
+
+## 3. Streaming
+
+All security log events can be streamed in real-time to external systems for monitoring, analysis, and compliance purposes. Our streaming implementation includes robust retry logic to ensure reliable delivery of security events.
+
+This capability is particularly useful for feeding security log events into your **SIEM** (Security Information and Event Management) system for centralized security monitoring and alerting.
+
+### 3.1. Supported Destinations
+
+Corbado supports streaming to the following systems:
+
+- **Amazon EventBridge**
+- **Coralogix**
+- **Datadog**
+- **Dynatrace**
+- **Elastic**
+- **Honeycomb**
+- **LogicMonitor**
+- **New Relic**
+- **Snowflake**
+- **Splunk**
+- **Sumo Logic**
+
+Additionally, you can stream events to a **HTTP endpoint**, providing maximum flexibility to connect security logs to any system of your choice.
