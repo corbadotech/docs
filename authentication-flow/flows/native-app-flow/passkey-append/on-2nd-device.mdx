@@ -1,0 +1,71 @@
+---
+title: "Passkey Append: On 2nd Device"
+description: "This flow explains how users can append a passkey to their account after authenticating on a new (second) device with a password and MFA. This enables seamless, passwordless sign-in on future logins, strengthening security and improving the user experience."
+---
+
+## Passkey Creation on Second Device
+
+Users logging in native app from a new device, follows a standard hybrid login flow and experience passkey creation on the current device.
+
+<Tabs>
+<Tab title="iOS">
+    <Frame caption="Native: iOS passkey append on new device">
+        <img
+            src="/images/authentication-flow/native-app/append-on-second-device-ios-native.png"
+            alt="Native app passkey append on new device, on iOS"
+        />
+    </Frame>
+</Tab>
+
+  <Tab title="Android">
+    <Frame caption="Native: Android passkey append on new device">
+      <img src="/images/authentication-flow/native-app/append-on-second-device-android-native.png" alt="Native app passkey append on new device, on Android" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<Info>
+    NOTE: 
+    - The blue background indicates product-native steps (e.g., setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey. 
+    - The grey background represents another compatible device linked to the
+    user’s account, used to complete biometric authentication.
+</Info>
+<Steps>
+    <Step title="Login when user has no passkeys">
+        - User enters their identifier (email/username) on the login page.
+    </Step>
+    <Step title="Fallback to traditional login method">
+        - System detects no passkey created for the respective account, system fallbacks to traditional login method (username + password).
+    </Step>
+    <Step title="Passkey detection on another device">
+        - System detects passkey linked from this account on another device.
+    </Step>
+    <Step title="System displays QR code">
+        - System generates and displays a time-limited unique QR code.
+    </Step>
+    <Step title="User scans QR and authenticates">
+        - User scans the QR code using their mobile device or tablet where the passkey is stored.
+        - The second device performs biometric or PIN authentication.
+    </Step>
+    <Step title="Login completes on current device & passkey append initiates">
+        - Authentication response is securely sent back to complete login on the desktop device.
+        - User is granted access on the current device.
+        - After successful cross device authentication, user is asked to create a passkey on the current device.
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User chooses & continue to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+    </Step>
+    <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to setup PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
+    </Step>
+
+</Steps>
