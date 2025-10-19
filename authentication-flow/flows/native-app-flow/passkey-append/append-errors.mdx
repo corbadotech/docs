@@ -1,7 +1,9 @@
 ---
 title: "Append Errors"
-description: "This flow explains error cases that may occur when users attempt to append a passkey to their account. Proper handling of these errors ensures users can recover smoothly and maintain access to their account."
+description: "This flow explains error cases that may occur when users attempt to append a passkey to their account. Proper handling of these errors ensures users can recover smoothly and maintain access to their account."
 ---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Error States During Passkey Append Process
 
@@ -9,18 +11,19 @@ Resilient passkey creation on native apps, with visual guidance in all failure s
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey append error states">
-        <img
-            src="/images/authentication-flow/native-app/append-errorstates-ios-native.png"
-            alt="Native app passkey append error states on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-errorstates-ios-native.png"
+        caption="Native: iOS passkey append error states"
+        imageName="append-errorstates-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey append error states">
-      <img src="/images/authentication-flow/native-app/append-errorstates-android-native.png" alt="Native app passkey append error states on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-errorstates-android-native.png"
+        caption="Native: Android passkey append error states"
+        imageName="append-errorstates-android-native.png"
+    />
   </Tab>
 </Tabs>
 

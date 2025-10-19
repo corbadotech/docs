@@ -3,24 +3,27 @@ title: "Passkey Append: Non-MFA Account"
 description: "This flow explains how users log in native apps when no passkey is set up for a non-MFA account. The process ensures secure access and encourages passwordless adoption by combining traditional login and passkey creation opportunities."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Passkey Creation For Non-MFA User Accounts
 
 Users logging in native app, follows a standard login flow for non-MFA user with passkey append experience.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey append, non-MFA accounts">
-        <img
-            src="/images/authentication-flow/native-app/non-mfa-append-ios-native.png"
-            alt="Native app passkey append with non-MFA accounts on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/non-mfa-append-ios-native.png"
+        caption="Native: iOS passkey append, non-MFA accounts"
+        imageName="non-mfa-append-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey append, non-MFA accounts">
-      <img src="/images/authentication-flow/native-app/non-mfa-append-android-native.png" alt="Native app passkey append with non-MFA accounts on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/non-mfa-append-android-native.png"
+        caption="Native: Android passkey append, non-MFA accounts"
+        imageName="non-mfa-append-android-native.png"
+    />
   </Tab>
 </Tabs>
 

@@ -3,24 +3,27 @@ title: "Automatic Overlay Login"
 description: "This flow details how users sign in when passkeys are suggested based on context or user action. The flow improves both security and convenience by conditionally offering a passwordless login if a passkey is available on the device."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Automatic Passkey Overlay
 
 An OS-driven prompt that automatically appears when passkeys are available, guiding users to log in seamlessly without extra steps.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS automatic passkey overlay flow">
-        <img
-            src="/images/authentication-flow/native-app/automatic-passkey-overlay-ios-native.png"
-            alt="Native app mobile automatic passkey overlay flow on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/automatic-passkey-overlay-ios-native.png"
+        caption="Native: iOS automatic passkey overlay flow"
+        imageName="automatic-passkey-overlay-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android automatic passkey overlay flow">
-      <img src="/images/authentication-flow/native-app/automatic-passkey-overlay-android-native.png" alt="Native app mobile automatic passkey overlay flow on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/automatic-passkey-overlay-android-native.png"
+        caption="Native: Android automatic passkey overlay flow"
+        imageName="automatic-passkey-overlay-android-native.png"
+    />
   </Tab>
 </Tabs>
 

@@ -1,7 +1,9 @@
 ---
 title: "Passkey Management"
-description: "This flow describes how users can manage their passkeys within the profile section of their account. Passkey management allows users to register, delete, and troubleshoot passkeys directly from their account’s security settings in native apps. "
+description: "This flow describes how users can manage their passkeys within the profile section of their account. Passkey management allows users to register, delete, and troubleshoot passkeys directly from their account's security settings in native apps. "
 ---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Create, Manage or Delete Passkeys via Passkey List Component
 
@@ -11,18 +13,19 @@ Passkey management lets user view, update, and remove the passkeys saved on your
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey management flow">
-        <img
-            src="/images/authentication-flow/native-app/general-passkey-management-ios-native.png"
-            alt="Native app mobile passkey management flow on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/general-passkey-management-ios-native.png"
+        caption="Native: iOS passkey management flow"
+        imageName="general-passkey-management-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey management flow">
-      <img src="/images/authentication-flow/native-app/general-passkey-management-android-native.png" alt="Native app mobile passkey management flow on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/general-passkey-management-android-native.png"
+        caption="Native: Android passkey management flow"
+        imageName="general-passkey-management-android-native.png"
+    />
   </Tab>
 </Tabs>
 
@@ -48,18 +51,19 @@ Passkey management lets user view, update, and remove the passkeys saved on your
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey list error states">
-        <img
-            src="/images/authentication-flow/native-app/passkey-list-errors-ios-native.png"
-            alt="Native app mobile passkey list error states on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-list-errors-ios-native.png"
+        caption="Native: iOS passkey list error states"
+        imageName="passkey-list-errors-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey list error states">
-      <img src="/images/authentication-flow/native-app/passkey-list-errors-android-native.png" alt="Native app mobile passkey list error states on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-list-errors-android-native.png"
+        caption="Native: Android passkey list error states"
+        imageName="passkey-list-errors-android-native.png"
+    />
   </Tab>
 </Tabs>
 

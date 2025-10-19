@@ -3,24 +3,27 @@ title: "Passkey Append: On 2nd Device"
 description: "This flow explains how users can append a passkey to their account after authenticating on a new (second) device with a password and MFA. This enables seamless, passwordless sign-in on future logins, strengthening security and improving the user experience."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Passkey Creation on Second Device
 
 Users logging in native app from a new device, follows a standard hybrid login flow and experience passkey creation on the current device.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey append on new device">
-        <img
-            src="/images/authentication-flow/native-app/append-on-second-device-ios-native.png"
-            alt="Native app passkey append on new device, on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-on-second-device-ios-native.png"
+        caption="Native: iOS passkey append on new device"
+        imageName="append-on-second-device-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey append on new device">
-      <img src="/images/authentication-flow/native-app/append-on-second-device-android-native.png" alt="Native app passkey append on new device, on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-on-second-device-android-native.png"
+        caption="Native: Android passkey append on new device"
+        imageName="append-on-second-device-android-native.png"
+    />
   </Tab>
 </Tabs>
 

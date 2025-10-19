@@ -3,6 +3,8 @@ title: "Passkey Sign Up"
 description: "User signs up and creates a passkey in a native app."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Sign-up Flow
 
 Users registering across native apps follows the described journey:
@@ -13,18 +15,19 @@ Users registering across native apps follows the described journey:
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="iOS sign-up flow">
-        <img
-            src="/images/authentication-flow/native-app/sign-up-flow-ios-native.png"
-            alt="Native app mobile sign-up flow on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/sign-up-flow-ios-native.png"
+        caption="iOS sign-up flow"
+        imageName="sign-up-flow-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Android sign-up flow">
-      <img src="/images/authentication-flow/native-app/sign-up-flow-android-native.png" alt="Native app mobile sign-up flow on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/sign-up-flow-android-native.png"
+        caption="Android sign-up flow"
+        imageName="sign-up-flow-android-native.png"
+    />
   </Tab>
 </Tabs>
 

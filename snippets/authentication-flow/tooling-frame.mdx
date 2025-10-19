@@ -1,0 +1,22 @@
+export const ToolingFrame = ({ imageURL, caption, imageName }) => {
+    return (
+        <div className="flex flex-col">
+            <Frame caption={caption}>
+                <img src={imageURL} alt={imageName || caption} />
+            </Frame>
+            <div className="flex justify-end my-2">
+                <Tooltip tip="Download as PNG">
+                    <a
+                        href={imageURL}
+                        download={imageName}
+                        className="bg-white text-black text-xs px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition-all"
+                    >
+                    <Icon icon="arrow-down-to-line" iconType="regular" color="black"/> 
+                    </a>
+                </Tooltip>
+            </div>
+            
+        </div>
+    );
+
+};

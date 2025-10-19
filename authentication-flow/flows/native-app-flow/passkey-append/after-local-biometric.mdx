@@ -3,24 +3,27 @@ title: "Passkey Append: After Local Biometric"
 description: "This flow illustrates authentication via local biometrics, such as fingerprint or facial recognition. This process ties the new device or authentication method to the user's existing account to enable future passwordless login."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Passkey Creation After Local Biometric Login
 
 Users logging in native app using their local biometric authentication, guided through the passkey creation flow.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey append after local biometric authentication">
-        <img
-            src="/images/authentication-flow/native-app/append-after-local-biometric-ios-native.png"
-            alt="Native app passkey append after local biometric authentication, on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-local-biometric-ios-native.png"
+        caption="Native: iOS passkey append after local biometric authentication"
+        imageName="append-after-local-biometric-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey append after local biometric authentication">
-      <img src="/images/authentication-flow/native-app/append-after-local-biometric-android-native.png" alt="Native app passkey append after local biometric authentication, on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-local-biometric-android-native.png"
+        caption="Native: Android passkey append after local biometric authentication"
+        imageName="append-after-local-biometric-android-native.png"
+    />
   </Tab>
 </Tabs>
 

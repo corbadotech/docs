@@ -3,24 +3,27 @@ title: "Login Errors"
 description: "This flow describes various error states users may encounter when attempting to sign in using a passkey or traditional credentials in native apps. Understanding these scenarios ensures a smooth user experience by providing clear, actionable error messages and fallback options."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Error States During User Login
 
 Resilient user login on native app, with visual guidance in all failure scenarios.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey login error states">
-        <img
-            src="/images/authentication-flow/native-app/passkey-login-errorstates-ios-native.png"
-            alt="Native app passkey login error states on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-login-errorstates-ios-native.png"
+        caption="Native: iOS passkey login error states"
+        imageName="passkey-login-errorstates-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey login error states">
-      <img src="/images/authentication-flow/native-app/passkey-login-errorstates-android-native.png" alt="Native app passkey login error states on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-login-errorstates-android-native.png"
+        caption="Native: Android passkey login error states"
+        imageName="passkey-login-errorstates-android-native.png"
+    />
   </Tab>
 </Tabs>
 

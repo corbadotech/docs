@@ -3,24 +3,27 @@ title: "Textfield"
 description: "This flow details how users sign in when passkeys are suggested based on email/username provided by the user in the textfield."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Textfield-based Passkey Login
 
 Instead of showing an immediate prompt, users can type their identifier (email, phone, or username) into a textfield.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS textfield passkey flow">
-        <img
-            src="/images/authentication-flow/native-app/textfield-passkey-ios-native.png"
-            alt="Native app mobile textfield passkey flow on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/textfield-passkey-ios-native.png"
+        caption="Native: iOS textfield passkey flow"
+        imageName="textfield-passkey-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: iOS textfield passkey flow">
-      <img src="/images/authentication-flow/native-app/textfield-passkey-android-native.png" alt="Native app mobile textfield passkey on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/textfield-passkey-android-native.png"
+        caption="Native: Android textfield passkey flow"
+        imageName="textfield-passkey-android-native.png"
+    />
   </Tab>
 </Tabs>
 

@@ -3,24 +3,27 @@ title: "Passkey Append: After Error"
 description: "This flow handles cases where the initial attempt to create or register a passkey did not succeed due to system errors, user cancellations, or other interruptions. It ensures that the user can retry appending a passkey securely without losing access and with clear guidance to resolve errors."
 ---
 
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
 ## Passkey Creation After Error
 
 Users logging in native app, follows a standard hybrid login flow and experience passkey append after error.
 
 <Tabs>
 <Tab title="iOS">
-    <Frame caption="Native: iOS passkey append after error">
-        <img
-            src="/images/authentication-flow/native-app/append-after-error-ios-native.png"
-            alt="Native app passkey append after error on iOS"
-        />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-error-ios-native.png"
+        caption="Native: iOS passkey append after error"
+        imageName="append-after-error-ios-native.png"
+    />
 </Tab>
 
   <Tab title="Android">
-    <Frame caption="Native: Android passkey append after error">
-      <img src="/images/authentication-flow/native-app/append-after-error-android-native.png" alt="Native app passkey append after error on Android" />
-    </Frame>
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-error-android-native.png"
+        caption="Native: Android passkey append after error"
+        imageName="append-after-error-android-native.png"
+    />
   </Tab>
 </Tabs>
 
