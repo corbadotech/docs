@@ -471,8 +471,7 @@
                                             "authentication-flow/flows/web-flow/passkey-append/mfa-account",
                                             "authentication-flow/flows/web-flow/passkey-append/after-hybrid",
                                             "authentication-flow/flows/web-flow/passkey-append/after-error",
-                                            "authentication-flow/flows/web-flow/passkey-append/on-2nd-device",
-                                            "authentication-flow/flows/web-flow/passkey-append/append-errors"
+                                            "authentication-flow/flows/web-flow/passkey-append/on-2nd-device"
                                         ]
                                     },
                                     "authentication-flow/flows/web-flow/passkey-management"
@@ -499,8 +498,7 @@
                                             "authentication-flow/flows/native-app-flow/passkey-append/after-error",
                                             "authentication-flow/flows/native-app-flow/passkey-append/on-2nd-device",
                                             "authentication-flow/flows/native-app-flow/passkey-append/after-local-biometric",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/append-errors"
+                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge"
                                         ]
                                     },
                                     "authentication-flow/flows/native-app-flow/passkey-management"

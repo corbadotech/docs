@@ -9,11 +9,15 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 Resilient user login on native app, with visual guidance in all failure scenarios.
 
+### General Login Errors
+
+Error scenarios, user experience while general login into the application.
+
 <Tabs>
 <Tab title="iOS">
     <ToolingFrame 
         imageURL="/images/authentication-flow/native-app/passkey-login-errorstates-ios-native.png"
-        caption="Native: iOS passkey login error states"
+        caption="Native: iOS general login error states"
         imageName="passkey-login-errorstates-ios-native.png"
     />
 </Tab>
@@ -21,7 +25,7 @@ Resilient user login on native app, with visual guidance in all failure scenario
   <Tab title="Android">
     <ToolingFrame 
         imageURL="/images/authentication-flow/native-app/passkey-login-errorstates-android-native.png"
-        caption="Native: Android passkey login error states"
+        caption="Native: Android general login error states"
         imageName="passkey-login-errorstates-android-native.png"
     />
   </Tab>
@@ -48,6 +52,40 @@ Resilient user login on native app, with visual guidance in all failure scenario
     </Step>
     <Step title="Error: critical account error">
         - Major issues with the account status (e.g., banned or under administrative hold).
+    </Step>
+
+</Steps>
+
+### Passkey Login Errors
+
+Error scenarios, user experience while login into the application via passkeys.
+
+<Tabs>
+<Tab title="iOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-errorstates-ios-native.png"
+        caption="Native: iOS passkey login error states"
+        imageName="passkey-errorstates-ios-native.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-errorstates-android-native.png"
+        caption="Native: Android passkey login error states"
+        imageName="passkey-errorstates-android-native.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Passkey login aborted during OS prompt (first attempt)">
+        - User begins the passkey login but cancels or dismisses the OS-native authentication prompt the first time.
+        - The system allows the user to try logging in via passkeys or skip and continue with their current login method.
+    </Step>
+    <Step title="Passkey login aborted during OS prompt (subsequent attempts)">
+        - After one or more cancellations in the operating system’s authentication prompt (e.g., second, third, or further attempts), the user continues to see the option to retry, but may receive a supportive message encouraging completion for improved security.
+        - User can always opt to skip passkey login and proceed using traditional login credentials.
     </Step>
 
 </Steps>
