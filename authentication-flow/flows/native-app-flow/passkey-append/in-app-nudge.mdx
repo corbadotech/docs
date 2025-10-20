@@ -11,15 +11,15 @@ Use an in-app nudge to prompt users to add a passkey at a suitable moment in the
 
 <Tabs>
   <Tab title="iOS">
-    <ToolingFrame imageURL="/images/authentication-flow/native-app/in-app-nudge-ios.png" caption="Native: iOS in-app nudge to create a passkey" imageName="in-app-nudge-ios.png" >
+    <ToolingFrame imageURL="/images/authentication-flow/native-app/in-app-nudge-ios-native.png" caption="Native: iOS in-app nudge to create a passkey" imageName="in-app-nudge-ios-native.png" >
     </ToolingFrame>
   </Tab>
 
   <Tab title="Android">
     <ToolingFrame 
-        imageURL="/images/authentication-flow/native-app/in-app-nudge-android.png"
+        imageURL="/images/authentication-flow/native-app/in-app-nudge-android-native.png"
         caption="Native: Android in-app nudge to create a passkey"
-        imageName="in-app-nudge-android.png"
+        imageName="in-app-nudge-android-native.png"
     />
   </Tab>
 </Tabs>
@@ -30,23 +30,16 @@ Use an in-app nudge to prompt users to add a passkey at a suitable moment in the
 </Info>
 
 <Steps>
-    <Step title="User starts the app">
-        - User initiates with the native application.
+    <Step title="App login via local biometric">
+        - After the system local biometric authentication, user successfully logs in the native application.
     </Step>
-    <Step title="Auto-append process initiates">
-        - User is offered an option to create a passkey for future logins.
+    <Step title="Post-unlock: system initiates auto-append">
+        - User is offered an option to create a passkey for future logins and continues with the process.
     </Step>
-    <Step title="Auto-append continues">
-        - User continues with the auto-append passkey process.
-
-        **3.a. OS-native biometric prompt appears**
-        - OS biometric prompt modal appears asking the user to authenticate using fingerprint, face, or PIN for secure sign-in.
-        - User successfully authenticates via biometrics.
-
-        **3.b. Passkey creation successful**
+    <Step title="Passkey creation successful">
         - User successfully creates passkey and is now redirected to the app dashboard.
     </Step>
-    <Step title="Show in-app nudge">
+    <Step title="Post-unlock: show in-app nudge">
         - The In-app nudge can appear either directly after opening the app at some point or it can
         appear when the user skips/click outside the auto-append passkey OS prompt.
 
@@ -57,18 +50,20 @@ Use an in-app nudge to prompt users to add a passkey at a suitable moment in the
         skip option.
     </Step>
     <Step title="Begin passkey creation">
-        - On accept, passkey creation initiates.
-
-        **5.a. OS-native biometric prompt appears**
-        - OS biometric prompt modal appears asking the user to authenticate using fingerprint, face, or PIN for secure sign-in.
-        - User successfully authenticates via biometrics.
-
-        **5.b. Passkey creation successful**
-        - User successfully creates passkey and is now redirected to the app dashboard.
+        - On accept, passkey creation initiates. User continues with the process.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully authenticates via biometrics, creates a passkey and is now redirected to the app dashboard.
     </Step>
     <Step title="Handle decline or defer">
         - If the user skips, optionally schedule the
         nudge for a later session or a different context.
+    </Step>
+    <Step title="On CTA click: trigger in-app nudge">
+        - When the user clicks any CTA on the app screen, prompts an in-app nudge.
+    </Step>
+    <Step title="Continue with in-app nudge">
+        - The user interacts with the in-app nudge and either creates a passkey successfully or skips to continue to the dashboard.
     </Step>
 
 </Steps>
