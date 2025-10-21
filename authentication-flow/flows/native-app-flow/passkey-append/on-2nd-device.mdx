@@ -7,7 +7,7 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Passkey Creation on Second Device
 
-Users logging in native app from a new device, follows a standard hybrid login flow and experience passkey creation on the current device.
+Users logging into a native app from a new device follow a standard hybrid login flow and experience passkey creation on the current device.
 
 <Tabs>
 <Tab title="iOS">
@@ -35,7 +35,7 @@ Users logging in native app from a new device, follows a standard hybrid login f
     user’s account, used to complete biometric authentication.
 </Info>
 <Steps>
-    <Step title="Login when user has no passkeys">
+    <Step title="Login when user has no passkeys on current device">
         - User enters their identifier (email/username) on the login page.
     </Step>
     <Step title="Fallback to traditional login method">
@@ -52,7 +52,7 @@ Users logging in native app from a new device, follows a standard hybrid login f
         - The second device performs biometric or PIN authentication.
     </Step>
     <Step title="Login completes on current device & passkey append initiates">
-        - Authentication response is securely sent back to complete login on the desktop device.
+        - Authentication response is securely sent back to complete login on the current device.
         - User is granted access on the current device.
         - After successful cross device authentication, user is asked to create a passkey on the current device.
     </Step>
