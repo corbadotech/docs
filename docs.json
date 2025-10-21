@@ -470,7 +470,7 @@
                                     "passkey-ui-flows/web/passkey-creation/on-2nd-device"
                                 ]
                             },
-                            "passkey-ui-flows/web/management"
+                            "passkey-ui-flows/web/passkey-management"
                         ]
                     },
                     {
@@ -495,7 +495,7 @@
                                     "passkey-ui-flows/native/passkey-creation/in-app-after-cta"
                                 ]
                             },
-                            "passkey-ui-flows/native/management"
+                            "passkey-ui-flows/native/passkey-management"
                         ]
                     }
                 ]
