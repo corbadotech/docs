@@ -1,0 +1,63 @@
+---
+title: "Passkey Login: Cross-Device via QR Code"
+sidebarTitle: "Cross-Device via QR"
+description: "This flow details how users sign in on a desktop device where their passkey is not available by leveraging their mobile device with stored passkeys via scanning a QR code. Passkey Intelligence automatically determines when to offer this option."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Login via Mobile Device (Cross-Device Authentication)
+
+This approach uses the operating system's built-in **hybrid transport** functionality (part of the CTAP 2 specification) for secure cross-device authentication.
+
+**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** automatically determines when to offer QR code login. It only displays the QR code option when it detects that the user has a passkey on their mobile device, ensuring a high probability of successful authentication.
+
+<Warning>
+    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. This dual-channel approach (QR code for initial pairing + Bluetooth proximity verification) is a critical phishing protection mechanism built into passkeys, ensuring the authenticating mobile device is physically near the desktop device being logged into.
+</Warning>
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/hybrid-via-qr-macos.png"
+        caption="macOS hybrid login via QR code"
+        imageName="hybrid-via-qr-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/hybrid-via-qr-windows.png"
+        caption="Windows hybrid login via QR code"
+        imageName="hybrid-via-qr-windows.png"
+    />
+</Tab>
+</Tabs>
+
+<Steps>
+    <Step title="User enters identifier">
+        - User enters their identifier (email/username) on the login page in textfield.
+        - System now knows which user account is attempting to log in.
+    </Step>
+    <Step title="Passkey Intelligence determines cross-device authentication is available">
+        - The system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to analyze the user's passkey availability.
+        - It automatically detects that this user has a passkey stored on their mobile device.
+        - Based on this intelligence, the system prepares to offer cross-device authentication via QR code.
+    </Step>
+    <Step title="OS displays QR code screen">
+        - The operating system displays a screen preparing the user for cross-device authentication.
+        - The operating system generates a QR code for secure pairing.
+        - Instructions prompt the user to scan the code with their mobile device.
+        - **Requirements:** Both devices must have internet and Bluetooth enabled.
+    </Step>
+    <Step title="User scans QR and authenticates">
+        - User scans the QR code using their mobile device where the passkey is stored.
+        - **Bluetooth proximity check:** The OS verifies both devices are physically close (phishing protection).
+        - The mobile device performs biometric or PIN authentication.
+    </Step>
+    <Step title="Login completes on current device">
+        - Authentication response is securely sent back via the internet connection to complete login on the desktop device.
+        - User is granted access on the current device.
+    </Step>
+
+</Steps>

@@ -438,6 +438,67 @@
                         }
                     }
                 ]
+            },
+            {
+                "tab": "Passkey UI Flows",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": ["passkey-ui-flows/overview"]
+                    },
+                    {
+                        "group": "Web",
+                        "pages": [
+                            {
+                                "group": "Passkey Login",
+                                "pages": [
+                                    "passkey-ui-flows/web/passkey-login/one-tap",
+                                    "passkey-ui-flows/web/passkey-login/conditional-ui",
+                                    "passkey-ui-flows/web/passkey-login/identifier-first",
+                                    "passkey-ui-flows/web/passkey-login/cross-device-qr",
+                                    "passkey-ui-flows/web/passkey-login/error-states"
+                                ]
+                            },
+                            {
+                                "group": "Passkey Creation",
+                                "pages": [
+                                    "passkey-ui-flows/web/passkey-creation/automatic-upgrade",
+                                    "passkey-ui-flows/web/passkey-creation/non-mfa",
+                                    "passkey-ui-flows/web/passkey-creation/mfa",
+                                    "passkey-ui-flows/web/passkey-creation/after-hybrid",
+                                    "passkey-ui-flows/web/passkey-creation/after-error",
+                                    "passkey-ui-flows/web/passkey-creation/on-2nd-device"
+                                ]
+                            },
+                            "passkey-ui-flows/web/management"
+                        ]
+                    },
+                    {
+                        "group": "Native",
+                        "pages": [
+                            {
+                                "group": "Passkey Login",
+                                "pages": [
+                                    "passkey-ui-flows/native/passkey-login/overlay",
+                                    "passkey-ui-flows/native/passkey-login/conditional-ui",
+                                    "passkey-ui-flows/native/passkey-login/identifier-first",
+                                    "passkey-ui-flows/native/passkey-login/error-states"
+                                ]
+                            },
+                            {
+                                "group": "Passkey Creation",
+                                "pages": [
+                                    "passkey-ui-flows/native/passkey-creation/non-mfa",
+                                    "passkey-ui-flows/native/passkey-creation/mfa",
+                                    "passkey-ui-flows/native/passkey-creation/after-error",
+                                    "passkey-ui-flows/native/passkey-creation/in-app-after-unlock",
+                                    "passkey-ui-flows/native/passkey-creation/in-app-after-cta"
+                                ]
+                            },
+                            "passkey-ui-flows/native/management"
+                        ]
+                    }
+                ]
             }
         ],
         "global": {

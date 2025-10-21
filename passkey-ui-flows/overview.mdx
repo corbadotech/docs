@@ -1,0 +1,57 @@
+---
+title: "Passkey UI Best Practices"
+description: "Visual UI flow reference showing best-practice passkey authentication implementations. Based on Corbado Connect's enterprise-grade solution, these flows demonstrate optimal user journeys across web and native platforms."
+---
+
+## Overview
+
+These visual UI flow diagrams showcase **best-practice passkey authentication** as implemented in [Corbado Connect](/corbado-connect/overview/welcome), our enterprise-grade passkey solution. While these flows are production-tested patterns from our platform, they serve as **universal best practices** that any team can use to implement passkey authentication optimally.
+
+<Info>
+    **Powered by Corbado Connect:** These flows represent the reference implementation from [Corbado Connect](/corbado-connect/overview/welcome), featuring [Passkey Intelligence](/corbado-connect/features/passkey-intelligence), smart fallback strategies, and platform-optimized UX patterns. You can implement these exact patterns in your own solution or use Corbado Connect to get them out-of-the-box.
+</Info>
+
+## What You'll Learn
+
+-   **Complete user journeys:** Explore the full sign-up and login experiences across all platforms
+-   **Every decision point:** Review all major screens, error states, and fallback scenarios  
+-   **Platform-specific patterns:** See how passkeys work on iOS, Android, macOS, and Windows
+-   **Real-world edge cases:** Understand error handling, cross-device scenarios, and recovery flows
+-   **Production-ready UX:** Learn from enterprise-tested patterns that maximize passkey adoption
+
+The documentation is designed to be visual and flow-oriented, showing actual UI screens and user decision trees so you can quickly understand each scenario and integrate it into your product with confidence.
+
+## UI Flow Categories
+
+<CardGroup cols={2}>
+<Card title="Web UI Flows" icon="globe" href="/passkey-ui-flows/web/sign-up">
+    Complete web authentication patterns including sign-up, login methods (One-Tap, Conditional UI, Identifier-First, Cross-Device QR), post-login nudges, and passkey management.
+</Card>
+
+<Card title="Native App UI Flows" icon="mobile" href="/passkey-ui-flows/native/sign-up">
+    Mobile app authentication patterns with platform-specific implementations, local biometrics integration, and In-App Nudge strategies.
+</Card>
+</CardGroup>
+
+<Note>
+    In this documentation, MFA is not mandatory by default. This means
+    single-factor accounts (e.g., accounts secured only with a password) are
+    supported. However, MFA can be enforced if required by the application or
+    compliance. When MFA is optional, the passkey append option allows users who
+    initially registered without MFA to later add additional factors for
+    stronger security.
+</Note>
+
+## Using These Flows
+
+**For Corbado Connect Users:** These flows are what you get out-of-the-box with [Corbado Connect](/corbado-connect/overview/welcome). Our UI components and [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) automatically handle all these scenarios for you.
+
+**For Custom Implementations:** Use these flows as your reference implementation to build passkey authentication that follows industry best practices and maximizes user adoption.
+
+<Tip>
+    Want access to the full Figma board with all flows for your design team? Email <a href="mailto:contact@corbado.com">contact@corbado.com</a> to request access.
+</Tip>
+
+import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx";
+
+<CognitoDemo />

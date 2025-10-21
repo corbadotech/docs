@@ -1,0 +1,128 @@
+---
+title: "Passkey Login: Error States"
+sidebarTitle: "Error States"
+description: "This page describes various error states users may encounter when attempting to sign in using a passkey."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Error States During User Login
+
+Resilient user login on desktops & mobile, with visual guidance in all failure scenarios.
+
+These error states are part of a comprehensive [fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery) that ensures users can always access their accounts securely, even when passkey authentication encounters issues.
+
+### General Login Errors
+
+Error scenarios, user experience while general login into the web-application.
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/passkey-login-errorstates-macos.png"
+        caption="macOS general login error states"
+        imageName="passkey-login-errorstates-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/passkey-login-errorstates-windows.png"
+        caption="Windows general login error states"
+        imageName="passkey-login-errorstates-windows.png"
+    />
+</Tab>
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/passkey-login-errorstates-ios.png"
+        caption="iOS general login error states"
+        imageName="passkey-login-errorstates-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/passkey-login-errorstates-android.png"
+        caption="Android general login error states"
+        imageName="passkey-login-errorstates-android.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Error: no identifier / unrecognised identifier">
+        - When user attempts to login with a blank or invalid email/username. 
+    </Step>
+    <Step title="Error: account locked / not found">
+        - The email/username does not correspond to an active account, or the account is locked.
+    </Step>
+    <Step title="Error: system / API error related to lookup">
+        - An internal error occurs while looking up the user/account.
+    </Step>
+    <Step title="Error: general passkey login error">
+        - Something went wrong with passkey authentication unrelated to user input.
+    </Step>
+    <Step title="Error: tried deleted passkey">
+        - User attempts login with a credential that has been deleted.
+    </Step>
+    <Step title="Error: incorrect Username / Password">
+        - User provides incorrect login credentials.
+    </Step>
+    <Step title="Error: critical account error">
+        - Major issues with the account status (e.g., banned or under administrative hold).
+    </Step>
+
+</Steps>
+
+### Passkey Login Errors
+
+Error scenarios, user experience while login into the web-application via passkeys.
+
+<Info>
+    **Handling Passkey Ceremony Aborts:** When users cancel or abort passkey authentication, it's important to provide clear guidance and retry options. Learn more about best practices for handling [passkey ceremony aborts and fallback strategies](https://www.corbado.com/blog/passkey-fallback-recovery) in our comprehensive guide.
+</Info>
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/passkey-errorstates-macos.png"
+        caption="macOS passkey login error states"
+        imageName="passkey-errorstates-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/passkey-errorstates-windows.png"
+        caption="Windows passkey login error states"
+        imageName="passkey-errorstates-windows.png"
+    />
+</Tab>
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/passkey-errorstates-ios.png"
+        caption="iOS passkey login error states"
+        imageName="passkey-errorstates-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/passkey-errorstates-android.png"
+        caption="Android passkey login error states"
+        imageName="passkey-errorstates-android.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Passkey login aborted during OS prompt (first attempt)">
+        - User begins the passkey login but cancels or dismisses the OS-native authentication prompt the first time.
+        - The system allows the user to try logging in via passkeys or skip and continue with their current login method.
+    </Step>
+    <Step title="Passkey login aborted during OS prompt (subsequent attempts)">
+        - After one or more cancellations in the operating system’s authentication prompt (e.g., second, third, or further attempts), the user continues to see the option to retry, but may receive a supportive message encouraging completion for improved security.
+        - User can always opt to skip passkey login and proceed using traditional login credentials.
+    </Step>
+
+</Steps>

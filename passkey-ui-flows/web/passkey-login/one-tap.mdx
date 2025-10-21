@@ -1,0 +1,59 @@
+---
+title: "Passkey Login: One-Tap"
+sidebarTitle: "One-Tap"
+description: "This flow explains the journey of a user logging in via One-Tap passkey button."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## One-Tap Login Flow
+
+Users logging in via desktop and mobile browsers follow a standard login flow enriched by the One-Tap passkey experience, leading to higher login rates on trusted devices.
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/one-tap-macos.png"
+        caption="macOS one-tap passkey flow"
+        imageName="one-tap-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/one-tap-windows.png"
+        caption="Windows one-tap passkey flow"
+        imageName="one-tap-windows.png"
+    />
+</Tab>
+
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/one-tap-ios.png"
+        caption="iOS one-tap passkey flow"
+        imageName="one-tap-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/one-tap-android.png"
+        caption="Android one-tap passkey flow"
+        imageName="one-tap-android.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Users Login via One-Tap">
+        - Corbado detects the user has a passkey linked to the platform. User taps "Login with Passkey" button on the login screen to start authentication.
+    </Step>
+    <Step title="Automatic OS-native biometric modal appears">
+        - System prompts for available saved passkey using browser or OS-native modal (Touch ID).
+        - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
+    </Step>
+    <Step title="Access granted">
+        - User is seamlessly logged in and redirected to the dashboard.
+    </Step>
+
+</Steps>

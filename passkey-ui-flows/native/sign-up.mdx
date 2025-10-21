@@ -1,0 +1,66 @@
+---
+title: "Passkey Sign Up"
+description: "User signs up and creates a passkey in a native app."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Sign-up Flow
+
+Users registering across native apps follows the described journey:
+
+1. Create an account with an identifier (username + password).
+2. Get prompted to create a passkey.
+3. Choose to **create**, **skip**, or **abort** the process.
+
+<Tabs>
+<Tab title="iOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/sign-up-flow-ios-native.png"
+        caption="iOS sign-up flow"
+        imageName="sign-up-flow-ios-native.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/sign-up-flow-android-native.png"
+        caption="Android sign-up flow"
+        imageName="sign-up-flow-android-native.png"
+    />
+  </Tab>
+</Tabs>
+
+<Info>
+    **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). These steps are examples from your existing app flow. **PIN and local biometrics are optional features** you can offer to protect app access within sessions - they're separate from passkey authentication. We encourage implementing [local biometrics](https://www.corbado.com/blog/passkeys-local-biometrics) to unlock your app after initial passkey authentication for the best user experience. Passkey creation is seamlessly embedded in your product journey.
+</Info>
+
+<Steps>
+  <Step title="Registration with identifier method">
+    - User enters **username & password**.
+    - User creates an account by clicking **Sign up**.
+  </Step>
+
+  <Step title="Auto-append immediately after registration">
+    - User is prompted via auto-append to set up a passkey using fingerprint,
+    face, or PIN.
+    - Passkey creation is successfully completed and now the user has a passkey appended to the signed up
+    account.
+    - After successful passkey creation, user continues into the main product flow (verification, PIN, biometrics).
+  </Step>
+  <Step title="Auto-append aborted/cancelled or skipped">
+    - If the user skips, cancels, or the prompt does not show, the user continues the conventional registration. 
+    - The app can later trigger the passkey append screen again for passkey creation.
+
+    **3.a. Passkey creation via manual append**
+    - User starts the append process by clicking **Continue**.
+    - User successfully creates a passkey.
+    - User continues into the main product flow (verification, PIN, biometrics).
+
+    **3.b. Passkey creation skipped**
+    - User starts append but skips passkey creation.
+    - User continues into the main product flow (verification, PIN, biometrics).
+
+  </Step>
+
+</Steps>

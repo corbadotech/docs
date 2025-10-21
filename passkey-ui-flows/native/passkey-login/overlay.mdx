@@ -1,0 +1,68 @@
+---
+title: "Passkey Login: Automatic Overlay"
+sidebarTitle: "Automatic Overlay"
+description: "Usernameless login flow where the OS automatically displays a passkey overlay without requiring identifier entry. This provides the fastest possible login experience when passkeys are immediately available."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Automatic Passkey Overlay (Usernameless Login)
+
+An OS-driven prompt that automatically appears when passkeys are available, **before the user enters their identifier**. This is a **usernameless flow** that provides the fastest possible login experience by displaying available passkeys immediately.
+
+This flow leverages the **`preferImmediatelyAvailableCredentials`** configuration for iOS and Android, ensuring the overlay screen only appears when a passkey is truly available for login on this device. This prevents the UI from showing when login would fail, significantly improving conversion rates.
+
+<Warning>
+    **First Installation Delay:** On first app installation, the automatic overlay may take some time to appear as the operating system needs to verify domain associations:
+    - **iOS:** Verifies **Associated Domains** via the `apple-app-site-association` file
+    - **Android:** Verifies **Digital Asset Links** via the `.well-known/assetlinks.json` file
+    
+    These verification files determine which domains are authorized to use passkeys with your app. After initial verification completes, the overlay appears instantly on subsequent app launches.
+</Warning>
+
+<Tabs>
+<Tab title="iOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/automatic-passkey-overlay-ios-native.png"
+        caption="Native: iOS automatic passkey overlay flow"
+        imageName="automatic-passkey-overlay-ios-native.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/automatic-passkey-overlay-android-native.png"
+        caption="Native: Android automatic passkey overlay flow"
+        imageName="automatic-passkey-overlay-android-native.png"
+    />
+  </Tab>
+</Tabs>
+
+<Info>
+    **Technical Implementation:** This flow uses `preferImmediatelyAvailableCredentials` to ensure the overlay only displays when passkeys are immediately available on the device. This configuration is only available natively (with some exceptions). If you need support for security keys or cross-device authentication (CDA), a different configuration must be used - contact us for implementation guidance.
+</Info>
+
+<Info>
+    **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
+</Info>
+
+<Steps>
+    <Step title="OS automatically displays passkey overlay">
+        - The overlay appears automatically when the app login screen is shown, WITHOUT requiring the user to enter their identifier first.
+        - This is a usernameless flow - the system displays ALL available passkeys for this app.
+        - OS/app automatically triggers overlay modal for passkey authentication showing all passkeys stored on this device for this app.
+    </Step>
+    <Step title="User selects passkey and authenticates">
+        - User selects their passkey from the available options.
+        - The system now knows which user account is authenticating.
+        - User authenticates using biometrics/PIN.
+    </Step>
+    <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to set up PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
+    </Step>
+</Steps>

@@ -1,0 +1,53 @@
+---
+title: "Passkey Login: Conditional UI"
+sidebarTitle: "Conditional UI"
+description: "Usernameless login flow where the OS automatically presents available passkeys, determining user identity only after selection."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Conditional UI Flow (Usernameless Login)
+
+The Conditional UI flow is automatically triggered by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. On iOS, passkeys appear on the keyboard's suggestion bar. The system presents all available passkeys for the app, and determines the user's identity after they select and authenticate with their passkey.
+
+<Info>
+    **Key Technical Detail:** The system doesn't know which user is logging in until AFTER they select their passkey. This usernameless approach enables the seamless experience where all available passkeys are shown upfront.
+</Info>
+
+<Tabs>
+    <Tab title="iOS">
+        <ToolingFrame
+            imageURL="/images/authentication-flow/native-app/autosuggested-passkeys-ios-native.png"
+            caption="Native: iOS Conditional UI flow"
+            imageName="autosuggested-passkeys-ios-native.png"
+        />
+    </Tab>
+</Tabs>
+
+<Info>
+    **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
+</Info>
+
+<Steps>
+    <Step title="Conditional UI automatically triggered">
+        - When the user taps on the email field, the OS automatically triggers Conditional UI, displaying ALL available passkeys for the app on the keyboard's suggestion bar.
+        - Note: This is usernameless - the system doesn't yet know which user is trying to log in.
+    </Step>
+     <Step title="Authenticate using the selected passkey">
+        - The user taps their passkey from the available options on the keyboard, which identifies them to the system.
+        - Upon selection, the system now knows which user account is attempting to authenticate.
+    </Step>
+     <Step title="Device verifies user">
+        - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
+        - After successful verification, the system completes the login for the identified user account.
+    </Step>
+     <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to set up PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
+    </Step>
+
+</Steps>

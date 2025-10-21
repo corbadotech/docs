@@ -1,0 +1,57 @@
+---
+title: "Passkey Creation: In-App After Unlock"
+sidebarTitle: "In-App After Unlock"
+description: "This flow shows the In-App Nudge appearing immediately after local biometric unlock. Note that this creates two consecutive biometric prompts, which some developers prefer to avoid."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## In-App Nudge: After Unlock (Post-Authentication)
+
+This In-App Nudge appears immediately after users unlock the app with [local biometrics](https://www.corbado.com/blog/passkeys-local-biometrics), offering them the opportunity to create a passkey for enhanced future authentication. This approach maximizes visibility but triggers two consecutive biometric prompts.
+
+<Info>
+    **Local Biometrics vs. Passkeys:** [Local biometrics](https://www.corbado.com/blog/passkeys-local-biometrics) (Touch ID, Face ID, fingerprint) re-verify your identity WITHIN an already authenticated session to protect app access. **Passkeys**, on the other hand, perform INITIAL remote authentication to establish your identity with the backend server. They serve complementary purposes: local biometrics protect the app session, while passkeys enable secure, phishing-resistant login. By creating a passkey after local biometric login, users gain a superior authentication method for future logins while still benefiting from local biometric protection for app access.
+</Info>
+
+<Tabs>
+<Tab title="iOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-local-biometric-ios-native.png"
+        caption="Native: iOS In-App Nudge after unlock"
+        imageName="append-after-local-biometric-ios-native.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-local-biometric-android-native.png"
+        caption="Native: Android In-App Nudge after unlock"
+        imageName="append-after-local-biometric-android-native.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+     <Step title="App unlock using local biometric">
+        - User unlocks the app using local biometrics (e.g., Touch ID, Face ID or PIN).
+        - User is now authenticated within the app session.
+    </Step>
+    <Step title="In-App Nudge appears immediately after unlock">
+        - **Smart display logic:** [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) first determines if the nudge should appear by checking:
+          - User doesn't already have a passkey on this ecosystem/OS
+          - Device is passkey-ready (has screen lock/PIN configured)
+          - Context is appropriate
+        - If conditions are met, the In-App Nudge appears immediately offering passkey creation.
+        - This approach maximizes visibility but results in two consecutive biometric prompts (unlock + passkey creation). Some developers prefer the [After CTA](/passkey-ui-flows/native/passkey-creation/in-app-after-cta) approach to avoid this, though immediate triggering ensures higher exposure.
+    </Step>
+    <Step title="User chooses to create passkey">
+        - If user accepts, OS-native biometric modal appears for passkey creation.
+        - User authenticates via biometrics (this is the second biometric prompt in sequence).
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates passkey and is now linked with the user account for the respective native app.
+        - Future logins will use the passkey for superior security.
+    </Step>
+
+</Steps>

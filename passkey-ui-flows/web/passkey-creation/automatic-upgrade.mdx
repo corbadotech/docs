@@ -1,0 +1,72 @@
+---
+title: "Passkey Creation: Automatic Password to Passkey Upgrade"
+sidebarTitle: "Automatic Passkey Upgrade"
+description: "This flow explains the automatic passkey creation feature that browsers provide when the user used autofill to use a password from a password manager."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+<Info>
+    As of October 2025, this feature is only available in iOS, macOS and
+    Windows (Chrome+GPM). Not all password managers support it yet. Note, that it only works
+    when a password is autofilled and when there is no passkey stored for the
+    user yet.
+</Info>
+
+## Automatic Passkey Creation after Login
+
+Users logging in via a browser follow a standard login flow enriched by the automatic passkey upgrade after the successful login used a password manager to autofill a password.
+
+**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** works in the background to enable this feature, ensuring automatic passkey creation only happens when conditions are optimal for success.
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/automatic-passkey-upgrade-macos.png"
+        caption="macOS automatic passkey upgradation flow"
+        imageName="automatic-passkey-upgrade-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/automatic-passkey-upgrade-windows.png"
+        caption="Windows automatic passkey upgradation flow"
+        imageName="automatic-passkey-upgrade-windows.png"
+    />
+</Tab>
+
+<Tab title="iOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/automatic-passkey-upgrade-ios.png"
+        caption="iOS automatic passkey upgradation flow"
+        imageName="automatic-passkey-upgrade-ios.png"
+    />
+</Tab>
+</Tabs>
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code). Passkey creation is seamlessly embedded in your
+    product journey.
+</Info>
+
+<Steps>
+  <Step title="Login with password-autofill">
+    - User logs in with their password, which is then autofilled by e.g. Apple Passwords / Google Password Manager. 
+  </Step>
+  <Step title="Biometric confirmation for password auto-fill">
+    - User confirms their identity with a biometric method (like Face ID or Touch ID)
+  </Step>
+  <Step title="Provide second factor">
+    - User is asked to authenticate with a second factor (e.g. SMS OTP).
+  </Step>
+  <Step title="Automatic passkey creation">
+    - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines conditions are optimal for automatic passkey creation.
+    - Passkey creation process runs in the backend, given that the user has successfully authenticated with the second factor and no passkey exists yet.
+    - Passkey is successfully created, user is notified by the browser/operating system and is redirected to app dashboard.
+  </Step>
+  <Step title="Redirection to app dashboard">
+    - User is redirected to the app dashboard.
+  </Step>
+
+</Steps>

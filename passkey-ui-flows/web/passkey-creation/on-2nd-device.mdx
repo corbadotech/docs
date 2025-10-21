@@ -1,0 +1,77 @@
+---
+title: "Passkey Creation: On 2nd Device"
+sidebarTitle: "On 2nd Device"
+description: "This flow explains how users append a passkey when logging into a device that cannot access their existing passkeys. Passkey Intelligence declines passkey login and the user creates a new passkey on this device."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Passkey Creation on Device Without Access to Existing Passkeys
+
+Users logging into a device where their existing passkeys are not accessible (e.g., logging into a mobile phone but only having a Windows Hello passkey which is device-bound and cannot be used on mobile phones or different Windows computers) follow this flow. **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** recognizes the user has passkeys but they can't be accessed on this device, so it declines passkey login and allows the user to append a new passkey on the current device.
+
+<Tabs>
+<Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/append-on-second-device-macos.png"
+        caption="macOS passkey append on new device"
+        imageName="append-on-second-device-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/append-on-second-device-windows.png"
+        caption="Windows passkey append on new device"
+        imageName="append-on-second-device-windows.png"
+    />
+</Tab>
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/append-on-second-device-ios.png"
+        caption="iOS passkey append on new device"
+        imageName="append-on-second-device-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/append-on-second-device-android.png"
+        caption="Android passkey append on new device"
+        imageName="append-on-second-device-android.png"
+    />
+  </Tab>
+</Tabs>
+
+
+<Steps>
+    <Step title="User enters identifier">
+        - User enters their identifier (email/username) on the login page.
+        - System now knows which user account is attempting to log in.
+    </Step>
+    <Step title="Passkey Intelligence analyzes and declines passkey login">
+        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) analyzes the user's passkey availability.
+        - It detects the user has at least one passkey registered on their account.
+        - However, those existing passkeys are NOT accessible on this device (e.g., user has a Windows Hello passkey which is device-bound and cannot be used on this mobile phone).
+        - Passkey Intelligence declines to initiate passkey login because it would fail.
+    </Step>
+    <Step title="Fallback to traditional login method">
+        - System falls back to traditional login method (username + password).
+        - User successfully logs in using their password.
+    </Step>
+    <Step title="Passkey append initiates on current device">
+        - After successful login, the system offers to create a passkey on THIS device.
+        - This allows the user to have a passkey accessible on this device for future logins.
+    </Step>
+    <Step title="OS-native biometric modal appears">
+        - User chooses and continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    </Step>
+    <Step title="Passkey creation successful">
+        - User successfully creates a new passkey on the current device.
+        - The user now has passkeys on multiple devices.
+    </Step>
+    <Step title="Redirection to app dashboard">
+        - User is redirected to the app dashboard.
+    </Step>
+
+</Steps>

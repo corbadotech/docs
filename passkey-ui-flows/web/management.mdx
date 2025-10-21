@@ -1,0 +1,146 @@
+---
+title: "Passkey Management"
+description: "This flow describes how users can manage their passkeys within the account settings section. Passkey management allows users to register, delete, and troubleshoot passkeys."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Create, Manage or Delete Passkeys via Passkey List Component
+
+Passkey management lets users view, update, and remove the passkeys saved on their devices. It ensures users stay in control of which passkeys exist for an account and gives them the option to revoke passkeys if a device is lost or no longer in use.
+
+### General Passkey Management
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/general-passkey-management-macos.png"
+        caption="macOS passkey management flow"
+        imageName="general-passkey-management-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/general-passkey-management-windows.png"
+        caption="Windows passkey management flow"
+        imageName="general-passkey-management-windows.png"
+    />
+</Tab>
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/general-passkey-management-ios.png"
+        caption="iOS passkey management flow"
+        imageName="general-passkey-management-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/general-passkey-management-android.png"
+        caption="Android passkey management flow"
+        imageName="general-passkey-management-android.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="General Passkey Settings in Profile Section">
+        - Users can see all the passkeys created for the current account here
+        and can initiate passkey registration for new devices, delete or update
+        existing credentials.
+    </Step>
+    <Step title="When no Passkey is created for the User Account">
+        - When the user has no passkey created, the passkey list is shown empty.
+    </Step>
+    <Step title="Passkey Delete Modal">
+        - User can simply delete existing passkeys from the list shown by
+        clicking on the "X" icon on the top right corner of any passkey listed.
+        - This action is not reversible, so the user is again asked for
+        confirmation on deletion of passkey. This leads to permanent passkey
+        deletion (of the public key). - User has the possibility to create a new
+        one.
+    </Step>
+</Steps>
+
+### WebAuthn Signal API for Client-Side Synchronization
+
+<Info>
+    **Advanced Feature:** The [WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) enables seamless synchronization between your server and the user's device. When a user deletes a passkey from your account settings or updates their user information (like email or display name), this API automatically removes or updates the corresponding passkey on the client-side authenticator (password manager or OS).
+</Info>
+
+**Platform Support:**
+- ✅ **iOS and macOS:** Supported on newer versions
+- ✅ **Windows:** Chrome with Google Password Manager
+- ✅ **Android:** Native support and Chrome support following
+
+**What the Signal API Does:**
+
+1. **Automatic Deletion on Client:** When users delete a passkey from your passkey list, the [WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) signals the client-side authenticator to remove it. This prevents deleted passkeys from appearing in future login prompts (Conditional UI), improving user experience.
+
+2. **Metadata Updates:** If user information changes (e.g., email address update), the Signal API updates the passkey's metadata (`user.name`, `user.displayName`) on the client-side. This ensures users see current information when selecting passkeys during login.
+
+<Tip>
+    The Signal API operates silently and privacy-preserving - it doesn't provide feedback about whether the update succeeded, maintaining user privacy while keeping credentials synchronized.
+</Tip>
+
+### Passkey List Error States
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/passkey-list-errors-macos.png"
+        caption="macOS passkey list error states"
+        imageName="passkey-list-errors-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/passkey-list-errors-windows.png"
+        caption="Windows passkey list error states"
+        imageName="passkey-list-errors-windows.png"
+    />
+</Tab>
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/passkey-list-errors-ios.png"
+        caption="iOS passkey list error states"
+        imageName="passkey-list-errors-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/passkey-list-errors-android.png"
+        caption="Android passkey list error states"
+        imageName="passkey-list-errors-android.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Passkey List Loading Error">
+        - The list of passkeys fails to load (e.g., due to network or system
+        error).
+    </Step>
+    <Step title="User Aborts Passkey Creation">
+        - User cancels creation during system prompts or internal dialogs. No
+        new passkey is added in the list.
+    </Step>
+    <Step title="Passkey Creation Failed Due to API Errors">
+        - User experiences errors from backend/API during passkey creation. The
+        error is communicated clearly.
+    </Step>
+    <Step title="Passkey Deletion Fails">
+        - Deletion of the passkey returns an error due to system or API failure.
+    </Step>
+    <Step title="Passkeys Already Exists">
+        - Attempting to register a passkey that is already present prompts an
+        informative error.
+    </Step>
+    <Step title="No Passkey Support">
+        - Device or browser does not support passkeys, blocking registration or
+        management.
+    </Step>
+</Steps>

@@ -1,0 +1,69 @@
+---
+title: "Passkey Login: Conditional UI"
+sidebarTitle: "Conditional UI"
+description: "This usernameless login flow explains how browsers automatically suggest available passkeys without requiring username entry. The system determines user identity after passkey selection and authentication."
+---
+
+import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+
+## Conditional UI Flow (Usernameless Login)
+
+The Conditional UI flow is automatically triggered by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. Instead, they select from available passkeys, and the system determines the user's identity after successful authentication.
+
+Passkeys appear in different ways depending on the platform: on the keyboard's suggestion bar (iOS), as an overlay (iOS/Android), or as a selection dropdown (Desktop). This allows users to select and log in quickly without opening an extra prompt.
+
+<Info>
+    **Key Technical Detail:** Unlike traditional login where users enter their username first, Conditional UI is a usernameless flow. The system displays ALL available passkeys for the domain/app, and only learns the user's identity AFTER they select and authenticate with their specific passkey. This enables a seamless experience.
+</Info>
+
+<Tabs>
+  <Tab title="macOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/desktop/autosuggest-passkeys-macos.png"
+        caption="macOS Conditional UI flow"
+        imageName="autosuggest-passkeys-macos.png"
+    />
+  </Tab>
+
+<Tab title="Windows">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/desktop/autosuggest-passkeys-windows.png"
+        caption="Windows Conditional UI flow"
+        imageName="autosuggest-passkeys-windows.png"
+    />
+</Tab>
+
+<Tab title="iOS">
+    <ToolingFrame
+        imageURL="/images/authentication-flow/web-app/mobile/autosuggest-passkeys-ios.png"
+        caption="iOS Conditional UI flow"
+        imageName="autosuggest-passkeys-ios.png"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/web-app/mobile/autosuggest-passkeys-android.png"
+        caption="Android Conditional UI flow"
+        imageName="autosuggest-passkeys-android.png"
+    />
+  </Tab>
+</Tabs>
+
+<Steps>
+    <Step title="Conditional UI automatically triggered">
+        - When the user taps on the email field, the browser/OS automatically triggers Conditional UI, displaying ALL available passkeys for that domain (usernameless approach).
+        - The presentation varies by platform: keyboard suggestion bar (iOS mobile), overlay modal (iOS/Android mobile), or dropdown selection (Desktop).
+        - Note: At this point, the system doesn't know which user is trying to log in.
+    </Step>
+     <Step title="Authenticate using the selected passkey">
+        - The user selects their passkey from the available options, which identifies them to the system.
+        - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
+        - Upon successful verification, the system receives the user's identity information from the passkey credential.
+    </Step>
+     <Step title="Access granted">
+        - The system now knows which user has authenticated based on the passkey credential response.
+        - User is seamlessly logged in and redirected to the dashboard.
+    </Step>
+
+</Steps>
