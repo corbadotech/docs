@@ -1,6 +1,6 @@
 ---
 title: "Passkey Append: On 2nd Device"
-description: "This flow explains how users can append a passkey to their account after authenticating on a new (second) device with a password and MFA. This enables seamless, passwordless sign-in on future logins, strengthening security and improving the user experience."
+description: "This flow explains how users can append a passkey to their account after authenticating on a new device with a password. Passkey Intelligence detects the user has a passkey on their mobile device and offers cross-device authentication."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
@@ -31,28 +31,38 @@ Users logging into a native app from a new device follow a standard hybrid login
     NOTE: 
     - The blue background indicates product-native steps (e.g., setup PIN, enabling biometrics). Passkey creation is seamlessly
     embedded in your product journey. 
-    - The grey background represents another compatible device linked to the
-    user’s account, used to complete biometric authentication.
+    - The grey background represents a mobile device linked to the
+    user's account, used to complete biometric authentication via QR code scanning.
 </Info>
+
+<Warning>
+    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. This dual-channel approach (QR code for initial pairing + Bluetooth proximity verification) is a critical phishing protection mechanism built into passkeys.
+</Warning>
 <Steps>
-    <Step title="Login when user has no passkeys on current device">
+    <Step title="User enters identifier">
         - User enters their identifier (email/username) on the login page.
+        - System now knows which user account is attempting to log in.
     </Step>
     <Step title="Fallback to traditional login method">
         - System detects no passkey created on the current device for this account, system falls back to traditional login method (username + password).
     </Step>
-    <Step title="Passkey detection on another device">
-        - System detects passkey linked from this account on another device.
+    <Step title="Passkey Intelligence detects mobile device passkey">
+        - After successful password authentication, [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) analyzes the user's passkey availability.
+        - It automatically detects that this user has a passkey stored on their mobile device.
+        - Based on this intelligence, the system prepares to offer cross-device authentication to append a passkey on the current device.
     </Step>
-    <Step title="System displays QR code">
-        - System generates and displays a time-limited unique QR code.
+    <Step title="OS displays QR code screen">
+        - The operating system displays a screen preparing the user for cross-device authentication.
+        - The operating system generates a QR code for secure pairing.
+        - **Requirements:** Both devices must have internet and Bluetooth enabled.
     </Step>
     <Step title="User scans QR and authenticates">
-        - User scans the QR code using their mobile device or tablet where the passkey is stored.
-        - The second device performs biometric or PIN authentication.
+        - User scans the QR code using their mobile device where the passkey is stored.
+        - **Bluetooth proximity check:** The OS verifies both devices are physically close (phishing protection).
+        - The mobile device performs biometric or PIN authentication.
     </Step>
     <Step title="Login completes on current device & passkey append initiates">
-        - Authentication response is securely sent back to complete login on the current device.
+        - Authentication response is securely sent back via the internet connection to complete login on the current device.
         - User is granted access on the current device.
         - After successful cross device authentication, user is asked to create a passkey on the current device.
     </Step>

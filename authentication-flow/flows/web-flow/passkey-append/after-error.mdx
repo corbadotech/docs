@@ -7,7 +7,19 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Passkey Creation after Error
 
-Users logging into desktop and mobile web apps experience an error during passkey login, need to use conventional login methods, and can then append a new passkey.
+Users logging into desktop and mobile web apps may experience an error during passkey login, need to use conventional login methods, and can then append a new passkey. This flow provides an intelligent recovery mechanism for various scenarios.
+
+### Common Scenarios Leading to Passkey Login Errors
+
+Passkey login errors can occur in several situations:
+
+- **Locally deleted passkeys**: The user has deleted their passkey from their device or password manager
+- **Different cloud account**: The user is logged into a similar device they've used before, but it's now connected to a different iCloud account (or different Google account on Android)
+- **Logged-out password manager**: The user has signed out of their password manager that stored the passkey
+
+### Passkey Intelligence for Auto-Healing
+
+After encountering errors that seem unlikely during normal usage, passkey intelligence automatically suggests creating a new passkey. This smart system monitors whether the newly created passkey would overwrite an existing one, helping identify underlying account or device synchronization issues. This auto-healing mechanism ensures users can quickly recover access while providing insights into potential edge cases.
 
 <Tabs>
   <Tab title="macOS">
@@ -43,23 +55,33 @@ Users logging into desktop and mobile web apps experience an error during passke
 </Tabs>
 
 <Steps>
-    <Step title="Login when user has no passkeys">
+    <Step title="User enters identifier">
         - User enters their identifier (email/username) on the login page.
+        - System now knows which user account is attempting to log in.
+    </Step>
+    <Step title="Passkey Intelligence detects existing passkey">
+        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) analyzes the user's passkey availability.
+        - It detects the user has a passkey registered and automatically initiates passkey login.
+    </Step>
+    <Step title="Passkey login errors occur">
+        - User encounters one or more passkey login errors (e.g., first error, second error).
+        - Common causes: deleted passkey, different cloud account, logged-out password manager.
+        - System recognizes repeated login failures.
     </Step>
     <Step title="Fallback to traditional login method">
-        - System detects no passkey created for the respective account, system falls back to traditional login method (username + password).
+        - After multiple failed passkey login attempts, system falls back to traditional login method (username + password).
+        - User successfully logs in using their password.
     </Step>
-    <Step title="Passkey append process initiates">
-        - User is offered an option to create a passkey for future logins.
-    </Step>
-    <Step title="Passkey append process abruptly cancels or an error occurs">
-        - There is an abrupt error faced during passkey creation process, the user is not negatively notified for the error. Instead, an informing screen appears where the user is again asked to create a passkey.
+    <Step title="Autohealing: Passkey append initiates">
+        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) detects the broken passkey situation and triggers autohealing.
+        - User is offered an option to create a new passkey to replace the broken one.
     </Step>
     <Step title="OS-native modal overlay">
-        - User continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+        - User continues to set up a new passkey using fingerprint, face, or PIN for secure sign-in.
     </Step>
-    <Step title="Passkey creation successful">
-        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+    <Step title="Passkey creation successful (healing complete)">
+        - User successfully creates a new passkey, replacing the broken one.
+        - The account is now healed with a working passkey.
     </Step>
     <Step title="Redirection to app dashboard">
         - User is redirected to the app dashboard.

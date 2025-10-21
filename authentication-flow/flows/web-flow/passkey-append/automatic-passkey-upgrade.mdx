@@ -1,20 +1,22 @@
 ---
-title: "Automatic Passkey Upgrade"
-description: "This flow explains the automatic passkey creation feature that browsers intelligently provide when the user tries to autofill a password from a password manager."
+title: "Passkey Append: Automatic Passkey Upgrade"
+description: "This flow explains the automatic passkey creation feature that browsers provide when the user used autofill to use a password from a password manager."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 <Info>
     As of October 2025, this feature is only available in iOS, macOS and
-    Windows. Not all password managers support it yet. Note, that it only works
+    Windows (Chrome+GPM). Not all password managers support it yet. Note, that it only works
     when a password is autofilled and when there is no passkey stored for the
     user yet.
 </Info>
 
 ## Automatic Passkey Creation after Login
 
-Users logging in via a browser follow a standard login flow enriched by the automatic passkey upgrade.
+Users logging in via a browser follow a standard login flow enriched by the automatic passkey upgrade after the successful login used a password manager to autofill a password.
+
+**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** works in the background to enable this feature, ensuring automatic passkey creation only happens when conditions are optimal for success.
 
 <Tabs>
   <Tab title="macOS">
@@ -58,8 +60,9 @@ Users logging in via a browser follow a standard login flow enriched by the auto
     - User is asked to authenticate with a second factor (e.g. SMS OTP).
   </Step>
   <Step title="Automatic passkey creation">
-    - Passkey creation process runs in the backend, given that they have successfully authenticated with the second factor and no passkey exists yet.
-    - Passkey is successfully created, user is notified via a push alert and is redirected to app dashboard.
+    - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines conditions are optimal for automatic passkey creation.
+    - Passkey creation process runs in the backend, given that the user has successfully authenticated with the second factor and no passkey exists yet.
+    - Passkey is successfully created, user is notified by the browser/operating system and is redirected to app dashboard.
   </Step>
   <Step title="Redirection to app dashboard">
     - User is redirected to the app dashboard.

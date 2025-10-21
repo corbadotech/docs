@@ -456,10 +456,9 @@
                                     {
                                         "group": "Passkey Login",
                                         "pages": [
-                                            "authentication-flow/flows/web-flow/passkey-login/automatic-passkey-upgrade",
                                             "authentication-flow/flows/web-flow/passkey-login/one-tap",
                                             "authentication-flow/flows/web-flow/passkey-login/conditional-ui",
-                                            "authentication-flow/flows/web-flow/passkey-login/textfield",
+                                            "authentication-flow/flows/web-flow/passkey-login/identifier-first-login",
                                             "authentication-flow/flows/web-flow/passkey-login/hybrid-via-qr-code-desktop-only",
                                             "authentication-flow/flows/web-flow/passkey-login/login-errors"
                                         ]
@@ -467,6 +466,7 @@
                                     {
                                         "group": "Passkey Append",
                                         "pages": [
+                                            "authentication-flow/flows/web-flow/passkey-append/automatic-passkey-upgrade",
                                             "authentication-flow/flows/web-flow/passkey-append/non-mfa-account",
                                             "authentication-flow/flows/web-flow/passkey-append/mfa-account",
                                             "authentication-flow/flows/web-flow/passkey-append/after-hybrid",
@@ -486,7 +486,7 @@
                                         "pages": [
                                             "authentication-flow/flows/native-app-flow/passkey-login/overlay-login",
                                             "authentication-flow/flows/native-app-flow/passkey-login/conditional-ui",
-                                            "authentication-flow/flows/native-app-flow/passkey-login/textfield",
+                                            "authentication-flow/flows/native-app-flow/passkey-login/identifier-first-login",
                                             "authentication-flow/flows/native-app-flow/passkey-login/login-errors"
                                         ]
                                     },

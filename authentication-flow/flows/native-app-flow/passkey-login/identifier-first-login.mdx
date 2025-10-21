@@ -1,19 +1,25 @@
 ---
-title: "Textfield"
-description: "This flow details how users sign in when passkeys are suggested based on email/username provided by the user in the textfield."
+title: "Identifier-first Login"
+description: "Identifier-first flow where users enter their username/email and the system uses Passkey Intelligence to automatically determine the optimal authentication method."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
-## Textfield-based Passkey Login
+## Identifier-First Login
 
-Instead of showing an immediate prompt, users can type their identifier (email, phone, or username) into a textfield.
+This is an **identifier-first flow** where users enter their identifier (email, phone, or username) into the login textfield first. The system then uses **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** to automatically determine if passkey login should be triggered on the current device or via cross-device authentication.
+
+**Critical for Login Success:** Passkey Intelligence only triggers platform or cross-device login when there's a high probability of success. This smart decision-making significantly increases overall login completion rates by avoiding failed authentication attempts.
+
+<Info>
+    **How Passkey Intelligence Works:** After the user enters their identifier, the system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to make smart decisions about authentication. It only triggers platform authentication or cross-device login when there's a high likelihood of success. This prevents users from encountering failed authentication attempts, which significantly improves overall login completion rates.
+</Info>
 
 <Tabs>
 <Tab title="iOS">
     <ToolingFrame 
         imageURL="/images/authentication-flow/native-app/textfield-passkey-ios-native.png"
-        caption="Native: iOS textfield passkey flow"
+        caption="Native: iOS identifier-first login flow"
         imageName="textfield-passkey-ios-native.png"
     />
 </Tab>
@@ -21,7 +27,7 @@ Instead of showing an immediate prompt, users can type their identifier (email, 
   <Tab title="Android">
     <ToolingFrame 
         imageURL="/images/authentication-flow/native-app/textfield-passkey-android-native.png"
-        caption="Native: Android textfield passkey flow"
+        caption="Native: Android identifier-first login flow"
         imageName="textfield-passkey-android-native.png"
     />
   </Tab>
@@ -30,12 +36,21 @@ Instead of showing an immediate prompt, users can type their identifier (email, 
 <Steps>
     <Step title="User enters identifier">
         - User types their identifier (email, phone, or username) into the login textfield in the native app.
+        - System now knows which user account is attempting to log in.
+    </Step>
+    <Step title="Passkey Intelligence determines authentication method">
+        - The system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to analyze if this user has a passkey available.
+        - It intelligently determines the best authentication approach:
+          - **Platform authentication:** If a passkey is stored on the current device
+          - **Cross-device authentication:** If a passkey exists on a mobile device
+          - **Fallback to traditional login:** If no viable passkey route is detected
+        - **Key advantage:** Only triggers passkey login if there's a high probability of success, preventing user frustration from failed attempts.
     </Step>
     <Step title="OS-native passkey prompt appears">
-        - If a saved passkey is available for the account, the system automatically suggests it.
+        - If Passkey Intelligence determines a passkey is available, the system automatically triggers the authentication prompt.
     </Step>
     <Step title="Biometric authentication prompt appears">
-        - User verifies their identity using the device’s screen lock (fingerprint, PIN, or face recognition).  
+        - User verifies their identity using the device's screen lock (fingerprint, PIN, or face recognition).  
         - Upon successful verification, the user is seamlessly logged in.
     </Step>
 

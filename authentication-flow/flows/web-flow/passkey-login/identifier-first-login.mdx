@@ -1,19 +1,25 @@
 ---
-title: "Textfield"
-description: "This flow details how users sign in when passkeys are suggested based on email/username provided by the user in the textfield."
+title: "Identifier-first Login"
+description: "Identifier-first flow where users enter their username/email and the system uses Passkey Intelligence to automatically determine the optimal authentication method."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
-## Textfield-based Passkey Login
+## Identifier-First Login
 
-Users type their identifier (email, phone, or username) into a textfield and passkey login modal appears.
+This is an **identifier-first flow** where users enter their identifier (email, phone, or username) into the login textfield first. The system then uses **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** to automatically determine if passkey login should be triggered on the current device or via cross-device authentication.
+
+**Critical for Login Success:** Passkey Intelligence only triggers platform or cross-device login when there's a high probability of success. This smart decision-making significantly increases overall login completion rates by avoiding failed authentication attempts.
+
+<Info>
+    **How Passkey Intelligence Works:** After the user enters their identifier, the system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to make smart decisions about authentication. It only triggers platform authentication or cross-device login (via QR code) when there's a high likelihood of success. This prevents users from encountering failed authentication attempts, which significantly improves overall login completion rates.
+</Info>
 
 <Tabs>
   <Tab title="macOS">
     <ToolingFrame 
         imageURL="/images/authentication-flow/web-app/desktop/textfield-passkeys-macos.png"
-        caption="macOS textfield passkey flow"
+        caption="macOS identifier-first login flow"
         imageName="textfield-passkeys-macos.png"
     />
   </Tab>
@@ -21,7 +27,7 @@ Users type their identifier (email, phone, or username) into a textfield and pas
 <Tab title="Windows">
     <ToolingFrame
         imageURL="/images/authentication-flow/web-app/desktop/textfield-passkeys-windows.png"
-        caption="Windows textfield passkey flow"
+        caption="Windows identifier-first login flow"
         imageName="textfield-passkeys-windows.png"
     />
 </Tab>
@@ -29,7 +35,7 @@ Users type their identifier (email, phone, or username) into a textfield and pas
 <Tab title="iOS">
     <ToolingFrame
         imageURL="/images/authentication-flow/web-app/mobile/textfield-passkeys-ios.png"
-        caption="iOS textfield passkey flow"
+        caption="iOS identifier-first login flow"
         imageName="textfield-passkeys-ios.png"
     />
 </Tab>
@@ -37,7 +43,7 @@ Users type their identifier (email, phone, or username) into a textfield and pas
   <Tab title="Android">
     <ToolingFrame 
         imageURL="/images/authentication-flow/web-app/mobile/textfield-passkeys-android.png"
-        caption="Android textfield passkey flow"
+        caption="Android identifier-first login flow"
         imageName="textfield-passkeys-android.png"
     />
   </Tab>
@@ -46,9 +52,18 @@ Users type their identifier (email, phone, or username) into a textfield and pas
 <Steps>
     <Step title="User enters identifier">
         - User types their identifier (email, phone, or username) into the login textfield on the web-app.
+        - System now knows which user account is attempting to log in.
+    </Step>
+    <Step title="Passkey Intelligence determines authentication method">
+        - The system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to analyze if this user has a passkey available.
+        - It intelligently determines the best authentication approach:
+          - **Platform authentication:** If a passkey is stored on the current device
+          - **Cross-device authentication:** If a passkey exists on a mobile device (via QR code)
+          - **Fallback to traditional login:** If no viable passkey route is detected
+        - **Key advantage:** Only triggers passkey login if there's a high probability of success, preventing user frustration from failed attempts.
     </Step>
     <Step title="OS-native biometric modal appears">
-        - If a passkey is available for that account, the system automatically suggests it as the preferred login method.
+        - If Passkey Intelligence determines a passkey is available, the system automatically triggers the authentication prompt.
         - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
     </Step>
      <Step title="Access granted">
