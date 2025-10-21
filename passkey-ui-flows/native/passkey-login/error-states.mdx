@@ -1,49 +1,35 @@
 ---
-title: "Login Errors"
-description: "This page describes various error states users may encounter when attempting to sign in using a passkey."
+title: "Passkey Login: Error States"
+sidebarTitle: "Error States"
+description: "This flow describes various error states users may encounter when attempting to sign in using a passkey or traditional credentials in native apps. Understanding these scenarios ensures a smooth user experience by providing clear, actionable error messages and fallback options."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Error States During User Login
 
-Resilient user login on desktops & mobile, with visual guidance in all failure scenarios.
+Resilient user login on native app, with visual guidance in all failure scenarios.
 
 These error states are part of a comprehensive [fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery) that ensures users can always access their accounts securely, even when passkey authentication encounters issues.
 
 ### General Login Errors
 
-Error scenarios, user experience while general login into the web-application.
+Error scenarios, user experience while general login into the application.
 
 <Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/passkey-login-errorstates-macos.png"
-        caption="macOS general login error states"
-        imageName="passkey-login-errorstates-macos.png"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/passkey-login-errorstates-windows.png"
-        caption="Windows general login error states"
-        imageName="passkey-login-errorstates-windows.png"
-    />
-</Tab>
 <Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/passkey-login-errorstates-ios.png"
-        caption="iOS general login error states"
-        imageName="passkey-login-errorstates-ios.png"
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-login-errorstates-ios-native.png"
+        caption="Native: iOS general login error states"
+        imageName="passkey-login-errorstates-ios-native.png"
     />
 </Tab>
 
   <Tab title="Android">
     <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/passkey-login-errorstates-android.png"
-        caption="Android general login error states"
-        imageName="passkey-login-errorstates-android.png"
+        imageURL="/images/authentication-flow/native-app/passkey-login-errorstates-android-native.png"
+        caption="Native: Android general login error states"
+        imageName="passkey-login-errorstates-android-native.png"
     />
   </Tab>
 </Tabs>
@@ -75,41 +61,26 @@ Error scenarios, user experience while general login into the web-application.
 
 ### Passkey Login Errors
 
-Error scenarios, user experience while login into the web-application via passkeys.
+Error scenarios, user experience while login into the application via passkeys.
 
 <Info>
     **Handling Passkey Ceremony Aborts:** When users cancel or abort passkey authentication, it's important to provide clear guidance and retry options. Learn more about best practices for handling [passkey ceremony aborts and fallback strategies](https://www.corbado.com/blog/passkey-fallback-recovery) in our comprehensive guide.
 </Info>
 
 <Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/passkey-errorstates-macos.png"
-        caption="macOS passkey login error states"
-        imageName="passkey-errorstates-macos.png"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/passkey-errorstates-windows.png"
-        caption="Windows passkey login error states"
-        imageName="passkey-errorstates-windows.png"
-    />
-</Tab>
 <Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/passkey-errorstates-ios.png"
-        caption="iOS passkey login error states"
-        imageName="passkey-errorstates-ios.png"
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/passkey-errorstates-ios-native.png"
+        caption="Native: iOS passkey login error states"
+        imageName="passkey-errorstates-ios-native.png"
     />
 </Tab>
 
   <Tab title="Android">
     <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/passkey-errorstates-android.png"
-        caption="Android passkey login error states"
-        imageName="passkey-errorstates-android.png"
+        imageURL="/images/authentication-flow/native-app/passkey-errorstates-android-native.png"
+        caption="Native: Android passkey login error states"
+        imageName="passkey-errorstates-android-native.png"
     />
   </Tab>
 </Tabs>

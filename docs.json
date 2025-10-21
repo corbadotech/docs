@@ -452,11 +452,11 @@
                             {
                                 "group": "Passkey Login",
                                 "pages": [
-                                    "passkey-ui-flows/web/login/one-tap",
-                                    "passkey-ui-flows/web/login/conditional-ui",
-                                    "passkey-ui-flows/web/login/identifier-first",
-                                    "passkey-ui-flows/web/login/cross-device-qr",
-                                    "passkey-ui-flows/web/login/error-states"
+                                    "passkey-ui-flows/web/passkey-login/one-tap",
+                                    "passkey-ui-flows/web/passkey-login/conditional-ui",
+                                    "passkey-ui-flows/web/passkey-login/identifier-first",
+                                    "passkey-ui-flows/web/passkey-login/cross-device-qr",
+                                    "passkey-ui-flows/web/passkey-login/error-states"
                                 ]
                             },
                             {
@@ -479,10 +479,10 @@
                             {
                                 "group": "Passkey Login",
                                 "pages": [
-                                    "passkey-ui-flows/native/login/overlay",
-                                    "passkey-ui-flows/native/login/conditional-ui",
-                                    "passkey-ui-flows/native/login/identifier-first",
-                                    "passkey-ui-flows/native/login/error-states"
+                                    "passkey-ui-flows/native/passkey-login/overlay",
+                                    "passkey-ui-flows/native/passkey-login/conditional-ui",
+                                    "passkey-ui-flows/native/passkey-login/identifier-first",
+                                    "passkey-ui-flows/native/passkey-login/error-states"
                                 ]
                             },
                             {
