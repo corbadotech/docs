@@ -32,11 +32,11 @@ Users logging into a native app follow a standard login flow for MFA users with 
     **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
 </Info>
 <Steps>
-    <Step title="Login when user has no passkeys and activated MFA">
+    <Step title="Login when user has no passkeys and has activated MFA">
         - User enters their identifier (email/username) on the login page.
     </Step>
     <Step title="Fallback to traditional login method">
-        - System detects no passkey created for the respective account, system falls back to traditional login method (username + password).
+        - If no passkey exists for the account, the system falls back to the traditional login method (username and password).
     </Step>
     <Step title="System prompts for user verification">
         - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
@@ -48,7 +48,7 @@ Users logging into a native app follow a standard login flow for MFA users with 
         - User chooses and continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
     </Step>
     <Step title="Passkey creation successful">
-        - User successfully creates passkey and is now linked with the user account for the respective native app.
+        - User successfully creates a passkey and it is now linked with the user account for the respective native app.
     </Step>
     <Step title="App PIN setup">
         - After successful passkey creation, the user is signed in and is asked

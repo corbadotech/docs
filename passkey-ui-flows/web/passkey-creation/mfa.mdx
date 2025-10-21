@@ -50,11 +50,11 @@ MFA users logging in via desktop and mobile browsers, follow a standard login fl
 </Info>
 
 <Steps>
-    <Step title="Login when user has no passkeys and activated MFA">
+    <Step title="Login when user has no passkeys and has activated MFA">
         - User enters their identifier (email/username) on the login page.
     </Step>
     <Step title="Fallback to traditional login method">
-        - System detects no passkey created for the respective account, system falls back to traditional login method (username + password).
+        - If no passkey exists for the account, the system falls back to the traditional login method (username and password).
     </Step>
     <Step title="System prompts for user verification">
         - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
@@ -66,7 +66,7 @@ MFA users logging in via desktop and mobile browsers, follow a standard login fl
         - User chooses and continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
     </Step>
     <Step title="Passkey creation successful">
-        - User successfully creates passkey and is now linked with the user account for the respective web-app.
+        - User successfully creates a passkey and it is now linked with the user account for the respective web-app.
     </Step>
     <Step title="Redirection to app dashboard">
         - User is redirected to the app dashboard.
