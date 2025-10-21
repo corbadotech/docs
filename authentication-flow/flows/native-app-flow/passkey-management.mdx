@@ -47,6 +47,27 @@ Passkey management lets users view, update, and remove the passkeys saved on the
     </Step>
 </Steps>
 
+### WebAuthn Signal API for Client-Side Synchronization
+
+<Info>
+    **Advanced Feature:** The [WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) enables seamless synchronization between your server and the user's device. When a user deletes a passkey from your account settings or updates their user information (like email or display name), this API automatically removes or updates the corresponding passkey on the client-side authenticator (password manager or OS).
+</Info>
+
+**Platform Support:**
+- ✅ **iOS and macOS:** Supported on newer versions
+- ✅ **Windows:** Chrome with Google Password Manager
+- ✅ **Android:** Native support and Chrome support following
+
+**What the Signal API Does:**
+
+1. **Automatic Deletion on Client:** When users delete a passkey from your passkey list, the [WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) signals the client-side authenticator to remove it. This prevents deleted passkeys from appearing in future login prompts (Conditional UI), improving user experience.
+
+2. **Metadata Updates:** If user information changes (e.g., email address update), the Signal API updates the passkey's metadata (`user.name`, `user.displayName`) on the client-side. This ensures users see current information when selecting passkeys during login.
+
+<Tip>
+    The Signal API operates silently and privacy-preserving - it doesn't provide feedback about whether the update succeeded, maintaining user privacy while keeping credentials synchronized.
+</Tip>
+
 ### Passkey List Error States
 
 <Tabs>

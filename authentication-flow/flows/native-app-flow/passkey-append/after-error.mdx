@@ -1,5 +1,5 @@
 ---
-title: "Passkey Append: After Error"
+title: "Post-Login Nudge: After Error"
 description: "This flow details how a user appends a new passkey after they faced an error when logging in with an existing passkey (autohealing)."
 ---
 
@@ -20,6 +20,10 @@ Passkey login errors can occur in several situations:
 ### How Passkey Intelligence Enables Auto-Healing
 
 **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** monitors the authentication flow and detects when passkey login fails repeatedly. After the user successfully authenticates via traditional methods, it automatically suggests creating a new passkey to heal the broken authentication state. This smart system helps identify underlying account or device synchronization issues while ensuring users can quickly recover access.
+
+<Tip>
+    This autohealing mechanism is part of a broader [passkey fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery). Learn more about designing resilient authentication systems that handle passkey errors gracefully while maintaining security.
+</Tip>
 
 <Tabs>
 <Tab title="iOS">

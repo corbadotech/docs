@@ -9,6 +9,8 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 Resilient user login on desktops & mobile, with visual guidance in all failure scenarios.
 
+These error states are part of a comprehensive [fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery) that ensures users can always access their accounts securely, even when passkey authentication encounters issues.
+
 ### General Login Errors
 
 Error scenarios, user experience while general login into the web-application.
@@ -74,6 +76,10 @@ Error scenarios, user experience while general login into the web-application.
 ### Passkey Login Errors
 
 Error scenarios, user experience while login into the web-application via passkeys.
+
+<Info>
+    **Handling Passkey Ceremony Aborts:** When users cancel or abort passkey authentication, it's important to provide clear guidance and retry options. Learn more about best practices for handling [passkey ceremony aborts and fallback strategies](https://www.corbado.com/blog/passkey-fallback-recovery) in our comprehensive guide.
+</Info>
 
 <Tabs>
   <Tab title="macOS">

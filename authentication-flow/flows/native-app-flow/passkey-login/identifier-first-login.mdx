@@ -15,6 +15,16 @@ This is an **identifier-first flow** where users enter their identifier (email, 
     **How Passkey Intelligence Works:** After the user enters their identifier, the system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to make smart decisions about authentication. It only triggers platform authentication or cross-device login when there's a high likelihood of success. This prevents users from encountering failed authentication attempts, which significantly improves overall login completion rates.
 </Info>
 
+<Info>
+    **Configuration Options:** This flow can be configured in different ways based on your requirements:
+    
+    - **Option 1: `preferImmediatelyAvailableCredentials`** - Restricts to immediately available passkeys on this device. When the user enters their identifier, this configuration filters the displayed passkeys to only show those matching the entered identifier, providing a streamlined experience.
+    
+    - **Option 2: Full support** - Allows security keys and cross-device authentication (CDA). Security key support may be desired for certain use cases, while CDA is less commonly used on native apps.
+    
+    [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) helps determine which configuration is optimal for your use case. Contact us for implementation guidance on advanced configurations.
+</Info>
+
 <Tabs>
 <Tab title="iOS">
     <ToolingFrame 

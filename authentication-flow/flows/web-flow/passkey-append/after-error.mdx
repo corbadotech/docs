@@ -1,6 +1,6 @@
 ---
-title: "Passkey Append: After Error"
-description: "This flow details how a user appends a new passkey after they faced an error when logging in with an existing passkey (autohealing)."
+title: "Post-Login Nudge: After Error"
+description: "This flow details how a user appends a new passkey after they faced an error when logging in with an existing passkey (autohealing)."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
@@ -17,9 +17,13 @@ Passkey login errors can occur in several situations:
 - **Different cloud account**: The user is logged into a similar device they've used before, but it's now connected to a different iCloud account (or different Google account on Android)
 - **Logged-out password manager**: The user has signed out of their password manager that stored the passkey
 
-### Passkey Intelligence for Auto-Healing
+### How Passkey Intelligence Enables Auto-Healing
 
-After encountering errors that seem unlikely during normal usage, passkey intelligence automatically suggests creating a new passkey. This smart system monitors whether the newly created passkey would overwrite an existing one, helping identify underlying account or device synchronization issues. This auto-healing mechanism ensures users can quickly recover access while providing insights into potential edge cases.
+**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** monitors the authentication flow and detects when passkey login fails repeatedly. After the user successfully authenticates via traditional methods, it automatically suggests creating a new passkey to heal the broken authentication state. This smart system helps identify underlying account or device synchronization issues while ensuring users can quickly recover access.
+
+<Tip>
+    This autohealing mechanism is part of a broader [passkey fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery). Learn more about designing resilient authentication systems that handle passkey errors gracefully while maintaining security.
+</Tip>
 
 <Tabs>
   <Tab title="macOS">

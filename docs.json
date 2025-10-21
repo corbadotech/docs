@@ -496,9 +496,8 @@
                                             "authentication-flow/flows/native-app-flow/passkey-append/non-mfa-account",
                                             "authentication-flow/flows/native-app-flow/passkey-append/mfa-account",
                                             "authentication-flow/flows/native-app-flow/passkey-append/after-error",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/on-2nd-device",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/after-local-biometric",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge"
+                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge-after-unlock",
+                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge-after-cta"
                                         ]
                                     },
                                     "authentication-flow/flows/native-app-flow/passkey-management"
