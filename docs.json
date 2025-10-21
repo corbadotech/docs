@@ -440,69 +440,64 @@
                 ]
             },
             {
-                "tab": "Authentication Flow",
+                "tab": "Passkey UI Flows",
                 "groups": [
                     {
                         "group": "Overview",
-                        "pages": ["authentication-flow/overview"]
+                        "pages": ["passkey-ui-flows/overview"]
                     },
                     {
-                        "group": "Flows",
+                        "group": "Web",
                         "pages": [
+                            "passkey-ui-flows/web/sign-up",
                             {
-                                "group": "Web Flow",
+                                "group": "Login",
                                 "pages": [
-                                    "authentication-flow/flows/web-flow/passkey-sign-up",
-                                    {
-                                        "group": "Passkey Login",
-                                        "pages": [
-                                            "authentication-flow/flows/web-flow/passkey-login/one-tap",
-                                            "authentication-flow/flows/web-flow/passkey-login/conditional-ui",
-                                            "authentication-flow/flows/web-flow/passkey-login/identifier-first-login",
-                                            "authentication-flow/flows/web-flow/passkey-login/hybrid-via-qr-code-desktop-only",
-                                            "authentication-flow/flows/web-flow/passkey-login/login-errors"
-                                        ]
-                                    },
-                                    {
-                                        "group": "Passkey Append",
-                                        "pages": [
-                                            "authentication-flow/flows/web-flow/passkey-append/automatic-passkey-upgrade",
-                                            "authentication-flow/flows/web-flow/passkey-append/non-mfa-account",
-                                            "authentication-flow/flows/web-flow/passkey-append/mfa-account",
-                                            "authentication-flow/flows/web-flow/passkey-append/after-hybrid",
-                                            "authentication-flow/flows/web-flow/passkey-append/after-error",
-                                            "authentication-flow/flows/web-flow/passkey-append/on-2nd-device"
-                                        ]
-                                    },
-                                    "authentication-flow/flows/web-flow/passkey-management"
+                                    "passkey-ui-flows/web/login/one-tap",
+                                    "passkey-ui-flows/web/login/conditional-ui",
+                                    "passkey-ui-flows/web/login/identifier-first",
+                                    "passkey-ui-flows/web/login/cross-device-qr",
+                                    "passkey-ui-flows/web/login/error-states"
                                 ]
                             },
                             {
-                                "group": "Native App Flow",
+                                "group": "Post-Login Nudges",
                                 "pages": [
-                                    "authentication-flow/flows/native-app-flow/passkey-sign-up",
-                                    {
-                                        "group": "Passkey Login",
-                                        "pages": [
-                                            "authentication-flow/flows/native-app-flow/passkey-login/overlay-login",
-                                            "authentication-flow/flows/native-app-flow/passkey-login/conditional-ui",
-                                            "authentication-flow/flows/native-app-flow/passkey-login/identifier-first-login",
-                                            "authentication-flow/flows/native-app-flow/passkey-login/login-errors"
-                                        ]
-                                    },
-                                    {
-                                        "group": "Passkey Append",
-                                        "pages": [
-                                            "authentication-flow/flows/native-app-flow/passkey-append/non-mfa-account",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/mfa-account",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/after-error",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge-after-unlock",
-                                            "authentication-flow/flows/native-app-flow/passkey-append/in-app-nudge-after-cta"
-                                        ]
-                                    },
-                                    "authentication-flow/flows/native-app-flow/passkey-management"
+                                    "passkey-ui-flows/web/post-login-nudges/automatic-upgrade",
+                                    "passkey-ui-flows/web/post-login-nudges/non-mfa",
+                                    "passkey-ui-flows/web/post-login-nudges/mfa",
+                                    "passkey-ui-flows/web/post-login-nudges/after-hybrid",
+                                    "passkey-ui-flows/web/post-login-nudges/after-error",
+                                    "passkey-ui-flows/web/post-login-nudges/on-2nd-device"
                                 ]
-                            }
+                            },
+                            "passkey-ui-flows/web/management"
+                        ]
+                    },
+                    {
+                        "group": "Native",
+                        "pages": [
+                            "passkey-ui-flows/native/sign-up",
+                            {
+                                "group": "Login",
+                                "pages": [
+                                    "passkey-ui-flows/native/login/overlay",
+                                    "passkey-ui-flows/native/login/conditional-ui",
+                                    "passkey-ui-flows/native/login/identifier-first",
+                                    "passkey-ui-flows/native/login/error-states"
+                                ]
+                            },
+                            {
+                                "group": "Post-Login Nudges",
+                                "pages": [
+                                    "passkey-ui-flows/native/post-login-nudges/non-mfa",
+                                    "passkey-ui-flows/native/post-login-nudges/mfa",
+                                    "passkey-ui-flows/native/post-login-nudges/after-error",
+                                    "passkey-ui-flows/native/post-login-nudges/in-app-after-unlock",
+                                    "passkey-ui-flows/native/post-login-nudges/in-app-after-cta"
+                                ]
+                            },
+                            "passkey-ui-flows/native/management"
                         ]
                     }
                 ]
