@@ -10,6 +10,14 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 Users logging in via desktop and mobile browsers follow a standard login flow enriched by the One-Tap passkey experience, leading to higher login rates on trusted devices.
 
+<Info>
+**Feature Documentation**: For comprehensive details about One-Tap Login implementation, benefits, and configuration, see the [Corbado Connect One-Tap Login feature documentation](/corbado-connect/features/one-tap-login).
+</Info>
+
+### Platform-Specific Implementations
+
+The One-Tap Login experience adapts seamlessly to each platform's native authentication UI, ensuring users receive a familiar and trusted interface:
+
 <Tabs>
   <Tab title="macOS">
     <ToolingFrame 
@@ -47,13 +55,58 @@ Users logging in via desktop and mobile browsers follow a standard login flow en
 <Steps>
     <Step title="Users log in via One-Tap">
         - Corbado detects the user has a passkey linked to the platform. User taps "Login with Passkey" button on the login screen to start authentication.
+        - The button displays personalized information (e.g., "Login as alice@example.com") for improved user recognition.
     </Step>
     <Step title="Automatic OS-native biometric modal appears">
         - The system prompts for available saved passkey using the browser's or OS-native modal (for example, Touch ID).
         - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
+        - The authentication happens locally on the device - no passwords are transmitted over the network.
     </Step>
     <Step title="Access granted">
         - User is seamlessly logged in and redirected to the dashboard.
+        - The entire process typically completes in under 2 seconds.
     </Step>
 
 </Steps>
+
+## Technical Considerations
+
+### Device Recognition
+The One-Tap Login button appears intelligently based on:
+- **Passkey availability**: Whether the user has previously created a passkey on this device
+- **Browser support**: Automatic detection of WebAuthn compatibility
+- **Session history**: Recognition of the last used account on the device
+
+### Security Benefits
+<Check>
+**Phishing-resistant**: Passkeys are bound to specific domains, preventing credential theft
+</Check>
+<Check>
+**No password transmission**: Authentication happens locally with cryptographic proof
+</Check>
+<Check>
+**Biometric verification**: Adds an additional layer of security through device-level authentication
+</Check>
+
+### Edge Cases and Fallbacks
+
+<AccordionGroup>
+<Accordion title="Multiple accounts on the same device">
+When multiple accounts exist on a device, the One-Tap button defaults to the most recently used account. Users can easily switch accounts through a dropdown or "Use another account" option.
+</Accordion>
+
+<Accordion title="First-time device access">
+On a new device, users complete the standard authentication flow once. After successful passkey creation or migration, One-Tap Login becomes available for all subsequent visits.
+</Accordion>
+
+<Accordion title="Passkey unavailable scenarios">
+If a passkey becomes unavailable (e.g., deleted by user, browser issues), the system gracefully falls back to alternative authentication methods without user confusion.
+</Accordion>
+</AccordionGroup>
+
+## Related Resources
+
+- [Corbado Connect One-Tap Login Feature](/corbado-connect/features/one-tap-login) - Comprehensive feature documentation
+- [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) - Learn how smart detection powers One-Tap
+- [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) - Alternative passkey login approach
+- [Cross-Device Login via QR](/passkey-ui-flows/web/passkey-login/cross-device-qr) - Login from another device
