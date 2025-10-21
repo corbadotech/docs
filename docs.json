@@ -450,7 +450,7 @@
                         "group": "Web",
                         "pages": [
                             {
-                                "group": "Login",
+                                "group": "Passkey Login",
                                 "pages": [
                                     "passkey-ui-flows/web/login/one-tap",
                                     "passkey-ui-flows/web/login/conditional-ui",
@@ -460,14 +460,14 @@
                                 ]
                             },
                             {
-                                "group": "Post-Login Nudges",
+                                "group": "Passkey Creation",
                                 "pages": [
-                                    "passkey-ui-flows/web/post-login-nudges/automatic-upgrade",
-                                    "passkey-ui-flows/web/post-login-nudges/non-mfa",
-                                    "passkey-ui-flows/web/post-login-nudges/mfa",
-                                    "passkey-ui-flows/web/post-login-nudges/after-hybrid",
-                                    "passkey-ui-flows/web/post-login-nudges/after-error",
-                                    "passkey-ui-flows/web/post-login-nudges/on-2nd-device"
+                                    "passkey-ui-flows/web/passkey-creation/automatic-upgrade",
+                                    "passkey-ui-flows/web/passkey-creation/non-mfa",
+                                    "passkey-ui-flows/web/passkey-creation/mfa",
+                                    "passkey-ui-flows/web/passkey-creation/after-hybrid",
+                                    "passkey-ui-flows/web/passkey-creation/after-error",
+                                    "passkey-ui-flows/web/passkey-creation/on-2nd-device"
                                 ]
                             },
                             "passkey-ui-flows/web/management"
@@ -477,7 +477,7 @@
                         "group": "Native",
                         "pages": [
                             {
-                                "group": "Login",
+                                "group": "Passkey Login",
                                 "pages": [
                                     "passkey-ui-flows/native/login/overlay",
                                     "passkey-ui-flows/native/login/conditional-ui",
@@ -486,13 +486,13 @@
                                 ]
                             },
                             {
-                                "group": "Post-Login Nudges",
+                                "group": "Passkey Creation",
                                 "pages": [
-                                    "passkey-ui-flows/native/post-login-nudges/non-mfa",
-                                    "passkey-ui-flows/native/post-login-nudges/mfa",
-                                    "passkey-ui-flows/native/post-login-nudges/after-error",
-                                    "passkey-ui-flows/native/post-login-nudges/in-app-after-unlock",
-                                    "passkey-ui-flows/native/post-login-nudges/in-app-after-cta"
+                                    "passkey-ui-flows/native/passkey-creation/non-mfa",
+                                    "passkey-ui-flows/native/passkey-creation/mfa",
+                                    "passkey-ui-flows/native/passkey-creation/after-error",
+                                    "passkey-ui-flows/native/passkey-creation/in-app-after-unlock",
+                                    "passkey-ui-flows/native/passkey-creation/in-app-after-cta"
                                 ]
                             },
                             "passkey-ui-flows/native/management"

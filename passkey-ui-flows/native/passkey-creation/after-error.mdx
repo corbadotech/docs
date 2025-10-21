@@ -1,14 +1,14 @@
 ---
-title: "Post-Login Nudge: After Error"
+title: "Passkey Creation: After Passkey Login Error"
 sidebarTitle: "After Error"
 description: "This flow details how a user appends a new passkey after they faced an error when logging in with an existing passkey (autohealing)."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
-## Passkey Creation after Error
+## Passkey Creation after Login Error (Autohealing)
 
-Users logging into desktop and mobile web apps may experience an error during passkey login, need to use conventional login methods, and can then append a new passkey. This flow provides an intelligent recovery mechanism for various scenarios.
+When users experience errors during passkey login, the system intelligently falls back to traditional authentication and then offers to create a new passkey to replace the broken one. This **autohealing** mechanism ensures users can quickly recover access.
 
 ### Common Scenarios Leading to Passkey Login Errors
 
@@ -27,38 +27,28 @@ Passkey login errors can occur in several situations:
 </Tip>
 
 <Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/append-after-error-macos.png"
-        caption="macOS passkey append after error"
-        imageName="append-after-error-macos.png"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/append-after-error-windows.png"
-        caption="Windows passkey append after error"
-        imageName="append-after-error-windows.png"
-    />
-</Tab>
 <Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/append-after-error-ios.png"
-        caption="iOS passkey append after error"
-        imageName="append-after-error-ios.png"
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/append-after-error-ios-native.png"
+        caption="Native: iOS passkey append after error"
+        imageName="append-after-error-ios-native.png"
     />
 </Tab>
 
   <Tab title="Android">
     <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/append-after-error-android.png"
-        caption="Android passkey append after error"
-        imageName="append-after-error-android.png"
+        imageURL="/images/authentication-flow/native-app/append-after-error-android-native.png"
+        caption="Native: Android passkey append after error"
+        imageName="append-after-error-android-native.png"
     />
   </Tab>
 </Tabs>
 
+<Info>
+    NOTE: The blue background indicates product-native steps (e.g., verification
+    code, setup PIN, enabling biometrics). Passkey creation is seamlessly
+    embedded in your product journey.
+</Info>
 <Steps>
     <Step title="User enters identifier">
         - User enters their identifier (email/username) on the login page.
@@ -81,15 +71,20 @@ Passkey login errors can occur in several situations:
         - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) detects the broken passkey situation and triggers autohealing.
         - User is offered an option to create a new passkey to replace the broken one.
     </Step>
-    <Step title="OS-native modal overlay">
+    <Step title="OS-native biometric modal appears">
         - User continues to set up a new passkey using fingerprint, face, or PIN for secure sign-in.
     </Step>
     <Step title="Passkey creation successful (healing complete)">
         - User successfully creates a new passkey, replacing the broken one.
         - The account is now healed with a working passkey.
     </Step>
-    <Step title="Redirection to app dashboard">
-        - User is redirected to the app dashboard.
+     <Step title="App PIN setup">
+        - After successful passkey creation, the user is signed in and is asked
+        to set up PIN.
+    </Step>
+    <Step title="Enable local biometric for app login">
+        - User is allowed to enable/disable local biometric app login (provided
+        as product feature).
     </Step>
 
 </Steps>
