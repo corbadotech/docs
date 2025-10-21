@@ -449,7 +449,6 @@
                     {
                         "group": "Web",
                         "pages": [
-                            "passkey-ui-flows/web/sign-up",
                             {
                                 "group": "Login",
                                 "pages": [
@@ -477,7 +476,6 @@
                     {
                         "group": "Native",
                         "pages": [
-                            "passkey-ui-flows/native/sign-up",
                             {
                                 "group": "Login",
                                 "pages": [
