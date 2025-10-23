@@ -1,13 +1,17 @@
 export const ToolingFrame = ({ imageURL, caption, imageName }) => {
+    const [showLightbox, setShowLightbox] = React.useState(false);
+    const imgRef = React.useRef(null);
+
     const handleDownload = async (e) => {
         e.preventDefault();
+        e.stopPropagation();
         try {
             const response = await fetch(imageURL);
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = imageName;
+            link.download = imageName || 'image.png';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -17,23 +21,134 @@ export const ToolingFrame = ({ imageURL, caption, imageName }) => {
         }
     };
 
+    const handleImageClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowLightbox(true);
+    };
+
+    const closeLightbox = () => {
+        setShowLightbox(false);
+    };
+
+    React.useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && showLightbox) {
+                closeLightbox();
+            }
+        };
+
+        if (showLightbox) {
+            document.addEventListener('keydown', handleEscape);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [showLightbox]);
+
     return (
-        <div className="flex flex-col">
-            <Frame caption={caption}>
-                <img src={imageURL} alt={imageName || caption} />
-            </Frame>
-            <div className="flex justify-end my-2">
-                <Tooltip tip="Download as PNG">
-                    <button
-                        onClick={handleDownload}
-                        className="bg-white text-black text-xs px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition-all cursor-pointer"
-                    >
-                    <Icon icon="arrow-down-to-line" iconType="regular" color="black"/> 
-                    </button>
-                </Tooltip>
+        <>
+            <div className="flex flex-col">
+                <div onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}>
+                    <Frame caption={caption}>
+                        <div 
+                            onClick={handleImageClick}
+                            className="cursor-zoom-in"
+                            style={{ display: 'block', position: 'relative' }}
+                        >
+                            <img 
+                                ref={imgRef}
+                                src={imageURL} 
+                                alt={imageName || caption} 
+                                className="w-full h-auto"
+                                style={{ pointerEvents: 'none' }}
+                            />
+                        </div>
+                    </Frame>
+                </div>
+                <div className="flex justify-end my-2">
+                    <Tooltip tip="Download image">
+                        <button
+                            onClick={handleDownload}
+                            className="bg-white text-black text-xs px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition-all cursor-pointer"
+                        >
+                            <Icon icon="arrow-down-to-line" iconType="regular" color="black"/> 
+                        </button>
+                    </Tooltip>
+                </div>
             </div>
-            
-        </div>
+
+            {showLightbox && (
+                <div 
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                        zIndex: 999999,
+                        overflow: 'auto',
+                        cursor: 'default'
+                    }}
+                >
+                    <button
+                        onClick={closeLightbox}
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            color: 'white',
+                            fontSize: '24px',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'background 0.2s',
+                            zIndex: 1000000
+                        }}
+                        onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                        onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                    >
+                        ×
+                    </button>
+                    <div
+                        style={{
+                            minHeight: '100%',
+                            minWidth: '100%',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '80px 40px 40px 40px'
+                        }}
+                    >
+                        <img 
+                            src={imageURL}
+                            alt={imageName || caption}
+                            style={{
+                                display: 'block',
+                                width: 'auto',
+                                height: 'auto',
+                                maxWidth: '3000px',
+                                maxHeight: '3000px',
+                                boxShadow: '0 0 50px rgba(0, 0, 0, 0.5)',
+                                cursor: 'default',
+                                pointerEvents: 'none'
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+        </>
     );
 
 };
