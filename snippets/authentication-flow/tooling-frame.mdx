@@ -1,4 +1,4 @@
-export const ToolingFrame = ({ imageURL, caption, imageName }) => {
+export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px', maxHeight = '3000px' }) => {
     const [showLightbox, setShowLightbox] = React.useState(false);
     const imgRef = React.useRef(null);
 
@@ -138,8 +138,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName }) => {
                                 display: 'block',
                                 width: 'auto',
                                 height: 'auto',
-                                maxWidth: '3000px',
-                                maxHeight: '3000px',
+                                maxWidth: maxWidth,
+                                maxHeight: maxHeight,
                                 boxShadow: '0 0 50px rgba(0, 0, 0, 0.5)',
                                 cursor: 'default',
                                 pointerEvents: 'none'
