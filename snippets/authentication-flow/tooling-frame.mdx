@@ -1,4 +1,4 @@
-export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground = 'white' }) => {
+export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground = 'rgb(249,250,252,1)' }) => {
     const [showLightbox, setShowLightbox] = React.useState(false);
     const imgRef = React.useRef(null);
     const [isDragging, setIsDragging] = React.useState(false);
