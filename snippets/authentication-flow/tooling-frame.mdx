@@ -69,24 +69,19 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
             const imgWidth = imageDimensions.width * scale;
             const imgHeight = imageDimensions.height * scale;
             
-            if (imgWidth > containerWidth) {
+            const isWider = (imgWidth - containerWidth) >= 1;
+            const isTaller = (imgHeight - containerHeight) >= 1;
+            
+            if (isWider) {
                 const halfOverflowX = (imgWidth - containerWidth) / 2;
-                const maxX = halfOverflowX;
-                const minX = -halfOverflowX;
-                
-                if (newX > maxX) newX = maxX;
-                if (newX < minX) newX = minX;
+                newX = Math.min(Math.max(newX, -halfOverflowX), halfOverflowX);
             } else {
                 newX = 0;
             }
             
-            if (imgHeight > containerHeight) {
+            if (isTaller) {
                 const halfOverflowY = (imgHeight - containerHeight) / 2;
-                const maxY = halfOverflowY;
-                const minY = -halfOverflowY;
-                
-                if (newY > maxY) newY = maxY;
-                if (newY < minY) newY = minY;
+                newY = Math.min(Math.max(newY, -halfOverflowY), halfOverflowY);
             } else {
                 newY = 0;
             }
@@ -103,9 +98,11 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     };
 
     const handleZoom = (newScale, centerX, centerY) => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !imageDimensions.width || !imageDimensions.height) return;
         
         const boundedScale = Math.max(minScale, Math.min(maxScale, newScale));
+        let newX = position.x;
+        let newY = position.y;
         
         if (centerX !== undefined && centerY !== undefined) {
             const rect = containerRef.current.getBoundingClientRect();
@@ -113,12 +110,35 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
             const offsetY = centerY - rect.top - rect.height / 2;
             
             const scaleRatio = boundedScale / scale;
-            const newX = position.x - offsetX * (scaleRatio - 1);
-            const newY = position.y - offsetY * (scaleRatio - 1);
-            
-            setPosition({ x: newX, y: newY });
+            newX = position.x - offsetX * (scaleRatio - 1);
+            newY = position.y - offsetY * (scaleRatio - 1);
         }
         
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+        const imgWidth = imageDimensions.width * boundedScale;
+        const imgHeight = imageDimensions.height * boundedScale;
+        
+        const isWiderThanContainer = (imgWidth - containerWidth) >= 1;
+        const isTallerThanContainer = (imgHeight - containerHeight) >= 1;
+        
+        if (isWiderThanContainer) {
+            const maxX = (imgWidth - containerWidth) / 2;
+            const minX = -maxX;
+            newX = Math.min(Math.max(newX, minX), maxX);
+        } else {
+            newX = 0;
+        }
+        
+        if (isTallerThanContainer) {
+            const maxY = (imgHeight - containerHeight) / 2;
+            const minY = -maxY;
+            newY = Math.min(Math.max(newY, minY), maxY);
+        } else {
+            newY = 0;
+        }
+        
+        setPosition({ x: newX, y: newY });
         setScale(boundedScale);
     };
 
@@ -184,24 +204,19 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                 const imgWidth = imageDimensions.width * scale;
                 const imgHeight = imageDimensions.height * scale;
                 
-                if (imgWidth > containerWidth) {
+                const isWider = (imgWidth - containerWidth) >= 1;
+                const isTaller = (imgHeight - containerHeight) >= 1;
+                
+                if (isWider) {
                     const halfOverflowX = (imgWidth - containerWidth) / 2;
-                    const maxX = halfOverflowX;
-                    const minX = -halfOverflowX;
-                    
-                    if (newX > maxX) newX = maxX;
-                    if (newX < minX) newX = minX;
+                    newX = Math.min(Math.max(newX, -halfOverflowX), halfOverflowX);
                 } else {
                     newX = 0;
                 }
                 
-                if (imgHeight > containerHeight) {
+                if (isTaller) {
                     const halfOverflowY = (imgHeight - containerHeight) / 2;
-                    const maxY = halfOverflowY;
-                    const minY = -halfOverflowY;
-                    
-                    if (newY > maxY) newY = maxY;
-                    if (newY < minY) newY = minY;
+                    newY = Math.min(Math.max(newY, -halfOverflowY), halfOverflowY);
                 } else {
                     newY = 0;
                 }
@@ -340,8 +355,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                 transition: 'background 0.2s',
                                 zIndex: 1000000
                             }}
-                            onMouseEnter={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.9)'}
-                            onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                            onMouseEnter={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                            onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                         >
                             ×
                         </button>
@@ -374,8 +389,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                     transition: 'background 0.2s',
                                     opacity: scale >= maxScale ? 0.5 : 1
                                 }}
-                                onMouseEnter={(e) => scale < maxScale && (e.target.style.background = 'rgba(36, 36, 36, 0.9)')}
-                                onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                                onMouseEnter={(e) => { if (scale !== maxScale) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                                onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                             >
                                 +
                             </button>
@@ -398,8 +413,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                     transition: 'background 0.2s',
                                     opacity: scale <= minScale ? 0.5 : 1
                                 }}
-                                onMouseEnter={(e) => scale > minScale && (e.target.style.background = 'rgba(36, 36, 36, 0.9)')}
-                                onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                                onMouseEnter={(e) => { if (scale !== minScale) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                                onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                             >
                                 −
                             </button>
@@ -422,8 +437,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                     transition: 'background 0.2s',
                                     opacity: (scale === 1 && position.x === 0 && position.y === 0) ? 0.5 : 1
                                 }}
-                                onMouseEnter={(e) => (scale !== 1 || position.x !== 0 || position.y !== 0) && (e.target.style.background = 'rgba(36, 36, 36, 0.9)')}
-                                onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                                onMouseEnter={(e) => { if (scale !== 1 || position.x !== 0 || position.y !== 0) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                                onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                             >
                                 ⟲
                             </button>
