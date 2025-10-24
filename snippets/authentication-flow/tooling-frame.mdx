@@ -132,6 +132,10 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                     }}
                     onMouseDown={handleMouseDown}
                 >
+
+                    <div style={{ position: 'fixed', left: '20px', top: '20px', zIndex: 1000000, backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)'  }}>
+                            <p style={{ fontSize: '16px', fontWeight: 'bold', color: 'white', marginLeft: '10px' }}>{caption}</p>
+                    </div>
                     <div
                         ref={containerRef}
                         style={{
