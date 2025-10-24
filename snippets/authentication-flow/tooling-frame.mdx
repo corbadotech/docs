@@ -8,6 +8,12 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     const [imageLoaded, setImageLoaded] = React.useState(false);
     const [imageDimensions, setImageDimensions] = React.useState({ width: 0, height: 0 });
     const [containerDimensions, setContainerDimensions] = React.useState({ width: '100%', height: '100%' });
+    const [scale, setScale] = React.useState(1);
+    const [initialDistance, setInitialDistance] = React.useState(0);
+    const [isZooming, setIsZooming] = React.useState(false);
+    const minScale = 1;
+    const maxScale = 2;
+    const zoomStep = 0.2;
 
     const handleDownload = async (e) => {
         e.preventDefault();
@@ -37,6 +43,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     const closeLightbox = () => {
         setShowLightbox(false);
         setPosition({ x: 0, y: 0 });
+        setScale(1);
         setImageLoaded(false);
         setImageDimensions({ width: 0, height: 0 });
         setContainerDimensions({ width: '100%', height: '100%' });
@@ -59,8 +66,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
         if (imageDimensions.width && imageDimensions.height) {
             const containerWidth = containerRef.current.offsetWidth;
             const containerHeight = containerRef.current.offsetHeight;
-            const imgWidth = imageDimensions.width;
-            const imgHeight = imageDimensions.height;
+            const imgWidth = imageDimensions.width * scale;
+            const imgHeight = imageDimensions.height * scale;
             
             if (imgWidth > containerWidth) {
                 const halfOverflowX = (imgWidth - containerWidth) / 2;
@@ -95,6 +102,124 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
         setIsDragging(false);
     };
 
+    const handleZoom = (newScale, centerX, centerY) => {
+        if (!containerRef.current) return;
+        
+        const boundedScale = Math.max(minScale, Math.min(maxScale, newScale));
+        
+        if (centerX !== undefined && centerY !== undefined) {
+            const rect = containerRef.current.getBoundingClientRect();
+            const offsetX = centerX - rect.left - rect.width / 2;
+            const offsetY = centerY - rect.top - rect.height / 2;
+            
+            const scaleRatio = boundedScale / scale;
+            const newX = position.x - offsetX * (scaleRatio - 1);
+            const newY = position.y - offsetY * (scaleRatio - 1);
+            
+            setPosition({ x: newX, y: newY });
+        }
+        
+        setScale(boundedScale);
+    };
+
+    const zoomIn = () => {
+        handleZoom(scale + zoomStep);
+    };
+
+    const zoomOut = () => {
+        handleZoom(scale - zoomStep);
+    };
+
+    const resetTransform = () => {
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
+    };
+
+    const handleWheel = (e) => {
+        e.preventDefault();
+        const delta = -e.deltaY * 0.001;
+        const newScale = scale + delta;
+        handleZoom(newScale, e.clientX, e.clientY);
+    };
+
+    const getTouchDistance = (touches) => {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const handleTouchStart = (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            setIsZooming(true);
+            setInitialDistance(getTouchDistance(e.touches));
+        } else if (e.touches.length === 1) {
+            setIsDragging(true);
+            setDragStart({
+                x: e.touches[0].clientX - position.x,
+                y: e.touches[0].clientY - position.y
+            });
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (e.touches.length === 2 && isZooming) {
+            e.preventDefault();
+            const currentDistance = getTouchDistance(e.touches);
+            const scaleDelta = currentDistance / initialDistance;
+            const newScale = scale * scaleDelta;
+            
+            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            
+            handleZoom(newScale, centerX, centerY);
+            setInitialDistance(currentDistance);
+        } else if (e.touches.length === 1 && isDragging && containerRef.current) {
+            let newX = e.touches[0].clientX - dragStart.x;
+            let newY = e.touches[0].clientY - dragStart.y;
+            
+            if (imageDimensions.width && imageDimensions.height) {
+                const containerWidth = containerRef.current.offsetWidth;
+                const containerHeight = containerRef.current.offsetHeight;
+                const imgWidth = imageDimensions.width * scale;
+                const imgHeight = imageDimensions.height * scale;
+                
+                if (imgWidth > containerWidth) {
+                    const halfOverflowX = (imgWidth - containerWidth) / 2;
+                    const maxX = halfOverflowX;
+                    const minX = -halfOverflowX;
+                    
+                    if (newX > maxX) newX = maxX;
+                    if (newX < minX) newX = minX;
+                } else {
+                    newX = 0;
+                }
+                
+                if (imgHeight > containerHeight) {
+                    const halfOverflowY = (imgHeight - containerHeight) / 2;
+                    const maxY = halfOverflowY;
+                    const minY = -halfOverflowY;
+                    
+                    if (newY > maxY) newY = maxY;
+                    if (newY < minY) newY = minY;
+                } else {
+                    newY = 0;
+                }
+            }
+            
+            setPosition({ x: newX, y: newY });
+        }
+    };
+
+    const handleTouchEnd = (e) => {
+        if (e.touches.length < 2) {
+            setIsZooming(false);
+        }
+        if (e.touches.length === 0) {
+            setIsDragging(false);
+        }
+    };
+
     React.useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape' && showLightbox) {
@@ -113,7 +238,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [showLightbox, isDragging, position, dragStart]);
+    }, [showLightbox, isDragging, position, dragStart, scale, imageDimensions]);
 
     return (
         <>
@@ -186,6 +311,10 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                             border: '2px solid rgba(255, 255, 255, 0.3)'
                         }}
                         onMouseDown={handleMouseDown}
+                        onWheel={handleWheel}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                     >
                         <div style={{ position: 'absolute', left: '20px', top: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
                                 <p style={{ fontSize: '16px', fontWeight: 'bold', color: 'white', marginLeft: '10px' }}>{caption}</p>
@@ -216,15 +345,118 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                         >
                             ×
                         </button>
-                        <div style={{ position: 'absolute', right: '20px', bottom: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
+                        <div 
+                            style={{
+                                position: 'absolute',
+                                bottom: '20px',
+                                left: '20px',
+                                display: 'flex',
+                                gap: '10px',
+                                zIndex: 1000000
+                            }}
+                        >
+                            <button
+                                onClick={(e) => { e.stopPropagation(); zoomIn(); }}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                disabled={scale >= maxScale}
+                                style={{
+                                    background: 'rgba(36, 36, 36, 0.76)',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    color: 'white',
+                                    fontSize: '20px',
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '8px',
+                                    cursor: scale >= maxScale ? 'not-allowed' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'background 0.2s',
+                                    opacity: scale >= maxScale ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => scale < maxScale && (e.target.style.background = 'rgba(36, 36, 36, 0.9)')}
+                                onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                            >
+                                +
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); zoomOut(); }}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                disabled={scale <= minScale}
+                                style={{
+                                    background: 'rgba(36, 36, 36, 0.76)',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    color: 'white',
+                                    fontSize: '20px',
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '8px',
+                                    cursor: scale <= minScale ? 'not-allowed' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'background 0.2s',
+                                    opacity: scale <= minScale ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => scale > minScale && (e.target.style.background = 'rgba(36, 36, 36, 0.9)')}
+                                onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                            >
+                                −
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); resetTransform(); }}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                disabled={scale === 1 && position.x === 0 && position.y === 0}
+                                style={{
+                                    background: 'rgba(36, 36, 36, 0.76)',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    color: 'white',
+                                    fontSize: '16px',
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '8px',
+                                    cursor: (scale === 1 && position.x === 0 && position.y === 0) ? 'not-allowed' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'background 0.2s',
+                                    opacity: (scale === 1 && position.x === 0 && position.y === 0) ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => (scale !== 1 || position.x !== 0 || position.y !== 0) && (e.target.style.background = 'rgba(36, 36, 36, 0.9)')}
+                                onMouseLeave={(e) => e.target.style.background = 'rgba(36, 36, 36, 0.76)'}
+                            >
+                                ⟲
+                            </button>
+                            <div 
+                                style={{
+                                    background: 'rgba(36, 36, 36, 0.76)',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    padding: '0 12px',
+                                    height: '40px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    minWidth: '60px',
+                                    pointerEvents: 'none'
+                                }}
+                            >
+                                {Math.round(scale * 100)}%
+                            </div>
+                        </div>
+                        <div style={{ position: 'absolute', right: '20px', bottom: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px 15px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
                             <Icon icon="hand" iconType="regular" color="white"/>
-                            <p style={{ fontSize: '12px', color: 'white', marginLeft: '10px' }}>Drag to move</p>
+                                <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
+                            </div>
                         </div>
                         <div
                             style={{
                                 position: 'relative',
-                                transform: `translate(${position.x}px, ${position.y}px)`,
-                                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+                                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                                transition: isDragging || isZooming ? 'none' : 'transform 0.2s ease-out'
                             }}
                         >
                             <img 
