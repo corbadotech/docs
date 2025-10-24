@@ -50,6 +50,16 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     };
 
     const handleMouseDown = (e) => {
+        if (!containerRef.current || !imageDimensions.width || !imageDimensions.height) return;
+        
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+        const imgWidth = imageDimensions.width * scale;
+        const imgHeight = imageDimensions.height * scale;
+        
+        const isOverflowing = (imgWidth - containerWidth) >= 1 || (imgHeight - containerHeight) >= 1;
+        if (!isOverflowing) return;
+        
         setIsDragging(true);
         setDragStart({ 
             x: e.clientX - position.x, 
@@ -157,6 +167,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
 
     const handleWheel = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const delta = -e.deltaY * 0.001;
         const newScale = scale + delta;
         handleZoom(newScale, e.clientX, e.clientY);
@@ -174,6 +185,16 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
             setIsZooming(true);
             setInitialDistance(getTouchDistance(e.touches));
         } else if (e.touches.length === 1) {
+            if (!containerRef.current || !imageDimensions.width || !imageDimensions.height) return;
+            
+            const containerWidth = containerRef.current.offsetWidth;
+            const containerHeight = containerRef.current.offsetHeight;
+            const imgWidth = imageDimensions.width * scale;
+            const imgHeight = imageDimensions.height * scale;
+            
+            const isOverflowing = (imgWidth - containerWidth) >= 1 || (imgHeight - containerHeight) >= 1;
+            if (!isOverflowing) return;
+            
             setIsDragging(true);
             setDragStart({
                 x: e.touches[0].clientX - position.x,
@@ -242,10 +263,43 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
             }
         };
 
+        const preventScroll = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        };
+
         if (showLightbox) {
+            const originalOverflow = document.body.style.overflow;
+            const originalPosition = document.body.style.position;
+            const scrollY = window.scrollY;
+            
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            
+            window.addEventListener('wheel', preventScroll, { passive: false });
+            window.addEventListener('touchmove', preventScroll, { passive: false });
+            window.addEventListener('scroll', preventScroll, { passive: false });
             document.addEventListener('keydown', handleEscape);
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
+            
+            return () => {
+                document.body.style.overflow = originalOverflow;
+                document.body.style.position = originalPosition;
+                document.body.style.top = '';
+                document.body.style.width = '';
+                window.scrollTo(0, scrollY);
+                
+                window.removeEventListener('wheel', preventScroll);
+                window.removeEventListener('touchmove', preventScroll);
+                window.removeEventListener('scroll', preventScroll);
+                document.removeEventListener('keydown', handleEscape);
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
         }
 
         return () => {
@@ -304,7 +358,12 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                         alignItems: 'center',
                         cursor: 'default',
                         justifyContent: 'center',
-                        padding: '50px'
+                        padding: '50px',
+                        touchAction: 'none'
+                    }}
+                    onWheel={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                     }}
                 >
 
@@ -315,15 +374,22 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                             position: 'relative',
                             width: containerDimensions.width,
                             height: containerDimensions.height,
+                            minWidth: 'calc(100vw - 100px)',
+                            minHeight: 'calc(100vh - 100px)',
                             maxWidth: '100%',
                             maxHeight: '100%',
                             overflow: 'hidden',
-                            cursor: imageLoaded ? (isDragging ? 'grabbing' : 'grab') : 'wait',
+                            cursor: imageLoaded ? (
+                                isDragging ? 'grabbing' : 
+                                (imageDimensions.width * scale > (containerRef.current?.offsetWidth || 0) || 
+                                 imageDimensions.height * scale > (containerRef.current?.offsetHeight || 0)) ? 'grab' : 'default'
+                            ) : 'wait',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderRadius: '15px',
-                            border: '2px solid rgba(255, 255, 255, 0.3)'
+                            border: '2px solid rgba(255, 255, 255, 0.3)',
+                            touchAction: 'none'
                         }}
                         onMouseDown={handleMouseDown}
                         onWheel={handleWheel}
@@ -461,12 +527,15 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                 {Math.round(scale * 100)}%
                             </div>
                         </div>
-                        <div style={{ position: 'absolute', right: '20px', bottom: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px 15px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
-                            <Icon icon="hand" iconType="regular" color="white"/>
-                                <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
+                        {(imageDimensions.width * scale > (containerRef.current?.offsetWidth || 0) || 
+                          imageDimensions.height * scale > (containerRef.current?.offsetHeight || 0)) && (
+                            <div style={{ position: 'absolute', right: '20px', bottom: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px 15px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                <Icon icon="hand" iconType="regular" color="white"/>
+                                    <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                         <div
                             style={{
                                 position: 'relative',
