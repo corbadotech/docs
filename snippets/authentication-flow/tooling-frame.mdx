@@ -12,7 +12,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     const [initialDistance, setInitialDistance] = React.useState(0);
     const [isZooming, setIsZooming] = React.useState(false);
     const minScale = 1;
-    const maxScale = 2;
+    const maxScale = 5;
     const zoomStep = 0.2;
 
     const handleDownload = async (e) => {
@@ -304,7 +304,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                         alignItems: 'center',
                         cursor: 'default',
                         justifyContent: 'center',
-                        padding: '100px'
+                        padding: '50px'
                     }}
                 >
 
@@ -505,8 +505,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                     display: 'block',
                                     width: 'auto',
                                     height: 'auto',
-                                    maxWidth: maxWidth,
-                                    maxHeight: maxHeight,
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
                                     boxShadow: '0 0 50px rgba(0, 0, 0, 0.5)',
                                     pointerEvents: 'none',
                                     userSelect: 'none'
