@@ -7,6 +7,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     const containerRef = React.useRef(null);
     const [imageLoaded, setImageLoaded] = React.useState(false);
     const [imageDimensions, setImageDimensions] = React.useState({ width: 0, height: 0 });
+    const [containerDimensions, setContainerDimensions] = React.useState({ width: '100%', height: '100%' });
 
     const handleDownload = async (e) => {
         e.preventDefault();
@@ -38,6 +39,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
         setPosition({ x: 0, y: 0 });
         setImageLoaded(false);
         setImageDimensions({ width: 0, height: 0 });
+        setContainerDimensions({ width: '100%', height: '100%' });
     };
 
     const handleMouseDown = (e) => {
@@ -173,8 +175,10 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                         ref={containerRef}
                         style={{
                             position: 'relative',
-                            width: '100%',
-                            height: '100%',
+                            width: containerDimensions.width,
+                            height: containerDimensions.height,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
                             overflow: 'hidden',
                             cursor: imageLoaded ? (isDragging ? 'grabbing' : 'grab') : 'wait',
                             display: 'flex',
@@ -226,10 +230,27 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                 src={imageURL}
                                 alt={imageName || caption}
                                 onLoad={(e) => {
+                                    const imgWidth = e.target.offsetWidth;
+                                    const imgHeight = e.target.offsetHeight;
+                                    
                                     setImageDimensions({
-                                        width: e.target.offsetWidth,
-                                        height: e.target.offsetHeight
+                                        width: imgWidth,
+                                        height: imgHeight
                                     });
+                                    
+                                    if (containerRef.current) {
+                                        const availableWidth = containerRef.current.offsetWidth;
+                                        const availableHeight = containerRef.current.offsetHeight;
+                                        
+                                        const newWidth = imgWidth < availableWidth ? imgWidth + 'px' : '100%';
+                                        const newHeight = imgHeight < availableHeight ? imgHeight + 'px' : '100%';
+                                        
+                                        setContainerDimensions({
+                                            width: newWidth,
+                                            height: newHeight
+                                        });
+                                    }
+                                    
                                     setTimeout(() => setImageLoaded(true), 500);
                                 }}
                                 style={{
