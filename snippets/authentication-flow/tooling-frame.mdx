@@ -6,6 +6,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
     const containerRef = React.useRef(null);
     const [imageLoaded, setImageLoaded] = React.useState(false);
+    const [imageDimensions, setImageDimensions] = React.useState({ width: 0, height: 0 });
 
     const handleDownload = async (e) => {
         e.preventDefault();
@@ -36,6 +37,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
         setShowLightbox(false);
         setPosition({ x: 0, y: 0 });
         setImageLoaded(false);
+        setImageDimensions({ width: 0, height: 0 });
     };
 
     const handleMouseDown = (e) => {
@@ -47,11 +49,43 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
     };
 
     const handleMouseMove = (e) => {
-        if (!isDragging) return;
+        if (!isDragging || !containerRef.current) return;
+        
+        let newX = e.clientX - dragStart.x;
+        let newY = e.clientY - dragStart.y;
+        
+        if (imageDimensions.width && imageDimensions.height) {
+            const containerWidth = containerRef.current.offsetWidth;
+            const containerHeight = containerRef.current.offsetHeight;
+            const imgWidth = imageDimensions.width;
+            const imgHeight = imageDimensions.height;
+            
+            if (imgWidth > containerWidth) {
+                const halfOverflowX = (imgWidth - containerWidth) / 2;
+                const maxX = halfOverflowX;
+                const minX = -halfOverflowX;
+                
+                if (newX > maxX) newX = maxX;
+                if (newX < minX) newX = minX;
+            } else {
+                newX = 0;
+            }
+            
+            if (imgHeight > containerHeight) {
+                const halfOverflowY = (imgHeight - containerHeight) / 2;
+                const maxY = halfOverflowY;
+                const minY = -halfOverflowY;
+                
+                if (newY > maxY) newY = maxY;
+                if (newY < minY) newY = minY;
+            } else {
+                newY = 0;
+            }
+        }
         
         setPosition({
-            x: e.clientX - dragStart.x,
-            y: e.clientY - dragStart.y
+            x: newX,
+            y: newY
         });
     };
 
@@ -130,7 +164,6 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                         justifyContent: 'center',
                         padding: '100px'
                     }}
-                    onMouseDown={handleMouseDown}
                 >
 
                     <div style={{ position: 'fixed', left: '20px', top: '20px', zIndex: 1000000, backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)'  }}>
@@ -192,7 +225,11 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                             <img 
                                 src={imageURL}
                                 alt={imageName || caption}
-                                onLoad={() => {
+                                onLoad={(e) => {
+                                    setImageDimensions({
+                                        width: e.target.offsetWidth,
+                                        height: e.target.offsetHeight
+                                    });
                                     setTimeout(() => setImageLoaded(true), 500);
                                 }}
                                 style={{
