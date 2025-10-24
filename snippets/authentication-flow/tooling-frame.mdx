@@ -1,4 +1,4 @@
-export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px', maxHeight = '3000px' }) => {
+export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground = 'white' }) => {
     const [showLightbox, setShowLightbox] = React.useState(false);
     const imgRef = React.useRef(null);
     const [isDragging, setIsDragging] = React.useState(false);
@@ -389,7 +389,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                             justifyContent: 'center',
                             borderRadius: '15px',
                             border: '2px solid rgba(255, 255, 255, 0.3)',
-                            touchAction: 'none'
+                            touchAction: 'none',
+                            backgroundColor: containerBackground
                         }}
                         onMouseDown={handleMouseDown}
                         onWheel={handleWheel}
@@ -576,7 +577,6 @@ export const ToolingFrame = ({ imageURL, caption, imageName, maxWidth = '3000px'
                                     height: 'auto',
                                     maxWidth: '100%',
                                     maxHeight: '100%',
-                                    boxShadow: '0 0 50px rgba(0, 0, 0, 0.5)',
                                     pointerEvents: 'none',
                                     userSelect: 'none'
                                 }}
