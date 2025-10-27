@@ -1,4 +1,28 @@
 export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground = 'rgb(249,250,252,1)' }) => {
+    React.useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .drag-hint {
+                bottom: 20px;
+            }
+            .caption-text {
+                font-size: 16px;
+            }
+            @media (max-width: 768px) {
+                .drag-hint {
+                    bottom: 80px !important;
+                }
+                .caption-text {
+                    font-size: 12px !important;
+                }
+                .caption-container {
+                    padding: 6px !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        return () => document.head.removeChild(style);
+    }, []);
     const [showLightbox, setShowLightbox] = React.useState(false);
     const imgRef = React.useRef(null);
     const [isDragging, setIsDragging] = React.useState(false);
@@ -11,6 +35,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
     const [scale, setScale] = React.useState(1);
     const [initialDistance, setInitialDistance] = React.useState(0);
     const [isZooming, setIsZooming] = React.useState(false);
+    const [isMobile, setIsMobile] = React.useState(false);
     const minScale = 1;
     const maxScale = 5;
     const zoomStep = 0.2;
@@ -24,7 +49,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = imageName || 'image.png';
+            link.download = imageName || 'image.webp';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -390,7 +415,13 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                             borderRadius: '15px',
                             border: '2px solid rgba(255, 255, 255, 0.3)',
                             touchAction: 'none',
-                            backgroundColor: containerBackground
+                            backgroundColor: containerBackground,
+                            userSelect: 'none',
+                            WebkitUserSelect: 'none',
+                            MozUserSelect: 'none',
+                            msUserSelect: 'none',
+                            WebkitTouchCallout: 'none',
+                            WebkitTapHighlightColor: 'transparent'
                         }}
                         onMouseDown={handleMouseDown}
                         onWheel={handleWheel}
@@ -398,8 +429,31 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         onTouchMove={handleTouchMove}
                         onTouchEnd={handleTouchEnd}
                     >
-                        <div style={{ position: 'absolute', left: '20px', top: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
-                                <p style={{ fontSize: '16px', fontWeight: 'bold', color: 'white', marginLeft: '10px' }}>{caption}</p>
+                        <div 
+                            className="caption-container"
+                            style={{ 
+                                position: 'absolute', 
+                                left: '20px', 
+                                top: '20px', 
+                                zIndex: 1000000, 
+                                backgroundColor: 'rgba(36, 36, 36, 0.76)', 
+                                padding: '10px', 
+                                borderRadius: '15px', 
+                                border: '1px solid rgba(255, 255, 255, 0.3)', 
+                                pointerEvents: 'none' 
+                            }}
+                        >
+                                <p 
+                                    className="caption-text"
+                                    style={{ 
+                                        fontSize: '16px', 
+                                        fontWeight: 'bold', 
+                                        color: 'white', 
+                                        marginLeft: '10px' 
+                                    }}
+                                >
+                                    {caption}
+                                </p>
                         </div>
                         <button
                             onClick={closeLightbox}
@@ -530,7 +584,20 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         </div>
                         {(imageDimensions.width * scale > (containerRef.current?.offsetWidth || 0) || 
                           imageDimensions.height * scale > (containerRef.current?.offsetHeight || 0)) && (
-                            <div style={{ position: 'absolute', right: '20px', bottom: '20px', zIndex: 1000000, backgroundColor: 'rgba(36, 36, 36, 0.76)', padding: '10px 15px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.3)', pointerEvents: 'none'  }}>
+                            <div 
+                                className="drag-hint"
+                                style={{ 
+                                    position: 'absolute', 
+                                    right: '20px', 
+                                    bottom: '20px',
+                                    zIndex: 1000000, 
+                                    backgroundColor: 'rgba(36, 36, 36, 0.76)', 
+                                    padding: '10px 15px', 
+                                    borderRadius: '15px', 
+                                    border: '1px solid rgba(255, 255, 255, 0.3)', 
+                                    pointerEvents: 'none'
+                                }}
+                            >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
                                 <Icon icon="hand" iconType="regular" color="white"/>
                                     <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
@@ -559,9 +626,17 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                     if (containerRef.current) {
                                         const availableWidth = containerRef.current.offsetWidth;
                                         const availableHeight = containerRef.current.offsetHeight;
+                                        const isMobile = window.innerWidth <= 768;
                                         
-                                        const newWidth = imgWidth < availableWidth ? imgWidth + 'px' : '100%';
-                                        const newHeight = imgHeight < availableHeight ? imgHeight + 'px' : '100%';
+                                        let newWidth, newHeight;
+                                        
+                                        if (isMobile) {
+                                            newWidth = '100%';
+                                            newHeight = '100%';
+                                        } else {
+                                            newWidth = imgWidth < availableWidth ? imgWidth + 'px' : '100%';
+                                            newHeight = imgHeight < availableHeight ? imgHeight + 'px' : '100%';
+                                        }
                                         
                                         setContainerDimensions({
                                             width: newWidth,
@@ -574,12 +649,22 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                 style={{
                                     display: 'block',
                                     width: 'auto',
-                                    height: 'auto',
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
+                                    height: window.innerWidth <= 768 ? '100vh' : 'auto',
+                                    maxWidth: window.innerWidth <= 768 ? 'none' : '100%',
+                                    maxHeight: window.innerWidth <= 768 ? 'none' : '100%',
+                                    objectFit: window.innerWidth <= 768 ? 'contain' : 'cover',
                                     pointerEvents: 'none',
-                                    userSelect: 'none'
+                                    userSelect: 'none',
+                                    WebkitUserSelect: 'none',
+                                    MozUserSelect: 'none',
+                                    msUserSelect: 'none',
+                                    WebkitTouchCallout: 'none',
+                                    WebkitTapHighlightColor: 'transparent',
+                                    WebkitDrag: 'none',
+                                    WebkitUserDrag: 'none',
+                                    KhtmlUserSelect: 'none'
                                 }}
+                                draggable="false"
                             />
                         </div>
                     </div>
