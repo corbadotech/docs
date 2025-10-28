@@ -44,13 +44,13 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
         imageDimensions: { width: 0, height: 0 },
         imageLoaded: false,
         naturalDimensions: { width: 0, height: 0 },
-        initialDimensions: { width: 0, height: 0 }
+        initialDimensions: { width: 0, height: 0 },
+        gestureBaseWidth: 0
     });
     
     const maxScale = 3;
     const zoomStep = 0.2;
 
-    
     const getViewportPadding = React.useCallback(() => {
         const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
         if (width < 640) return 20; 
@@ -123,7 +123,6 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             const imgHeight = imageDimensions.height;
             const containerWidth = containerRef.current.offsetWidth;
             const containerHeight = containerRef.current.offsetHeight;
-            
             const shouldShow = imgWidth > containerWidth || imgHeight > containerHeight;
             dragHintRef.current.style.display = shouldShow ? 'block' : 'none';
         }
@@ -188,7 +187,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             imageDimensions: { width: 0, height: 0 },
             imageLoaded: false,
             naturalDimensions: { width: 0, height: 0 },
-            initialDimensions: { width: 0, height: 0 }
+            initialDimensions: { width: 0, height: 0 },
+            gestureBaseWidth: 0
         };
     };
 
@@ -271,7 +271,6 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             const rect = containerRef.current.getBoundingClientRect();
             const offsetX = centerX - rect.left - rect.width / 2;
             const offsetY = centerY - rect.top - rect.height / 2;
-            
             const sizeRatio = boundedWidth / state.imageDimensions.width;
             newX = state.position.x - offsetX * (sizeRatio - 1);
             newY = state.position.y - offsetY * (sizeRatio - 1);
@@ -337,6 +336,14 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
         e.stopPropagation();
         const state = stateRef.current;
         if (!state.imageDimensions.width) return;
+
+        if (e.ctrlKey) {
+            const zoomFactor = 1 - e.deltaY * 0.01;
+            const newWidth = state.imageDimensions.width * zoomFactor;
+            handleZoom(newWidth, e.clientX, e.clientY);
+            return;
+        }
+
         const delta = -e.deltaY * 0.001;
         const sizeChange = state.imageDimensions.width * delta;
         const newWidth = state.imageDimensions.width + sizeChange;
@@ -382,10 +389,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             const currentDistance = getTouchDistance(e.touches);
             const sizeDelta = currentDistance / state.initialDistance;
             const newWidth = state.imageDimensions.width * sizeDelta;
-            
             const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-            
             handleZoom(newWidth, centerX, centerY);
             state.initialDistance = currentDistance;
         } else if (e.touches.length === 1 && state.isDragging && containerRef.current) {
@@ -479,6 +484,59 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
         }
     }, [showLightbox]);
 
+    React.useEffect(() => {
+        if (!showLightbox || !containerRef.current) return;
+
+        const el = containerRef.current;
+        const state = stateRef.current;
+
+        const onGestureStart = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            state.isZooming = true;
+            state.gestureBaseWidth = state.imageDimensions.width || state.initialDimensions.width || 0;
+        };
+
+        const onGestureChange = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!state.gestureBaseWidth) return;
+            const newWidth = state.gestureBaseWidth * e.scale;
+            const cx = e.clientX ?? (el.getBoundingClientRect().left + el.getBoundingClientRect().width / 2);
+            const cy = e.clientY ?? (el.getBoundingClientRect().top + el.getBoundingClientRect().height / 2);
+            handleZoom(newWidth, cx, cy);
+        };
+
+        const onGestureEnd = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            state.isZooming = false;
+            state.gestureBaseWidth = 0;
+        };
+
+        const onWheelCapture = (e) => {
+            if (e.ctrlKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                const zoomFactor = 1 - e.deltaY * 0.01;
+                const newWidth = state.imageDimensions.width * zoomFactor;
+                handleZoom(newWidth, e.clientX, e.clientY);
+            }
+        };
+
+        el.addEventListener('gesturestart', onGestureStart, { passive: false });
+        el.addEventListener('gesturechange', onGestureChange, { passive: false });
+        el.addEventListener('gestureend', onGestureEnd, { passive: false });
+        el.addEventListener('wheel', onWheelCapture, { passive: false });
+
+        return () => {
+            el.removeEventListener('gesturestart', onGestureStart);
+            el.removeEventListener('gesturechange', onGestureChange);
+            el.removeEventListener('gestureend', onGestureEnd);
+            el.removeEventListener('wheel', onWheelCapture);
+        };
+    }, [showLightbox]);
+
     return (
         <>
             <div className="flex flex-col">
@@ -528,7 +586,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         alignItems: 'center',
                         cursor: 'default',
                         justifyContent: 'center',
-                            padding: `${Math.round(viewportPadding / 2)}px`,
+                        padding: `${Math.round(viewportPadding / 2)}px`,
                         touchAction: 'none'
                     }}
                     onWheel={(e) => {
@@ -536,8 +594,6 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         e.stopPropagation();
                     }}
                 >
-
-                    
                     <div
                         ref={containerRef}
                         style={{
@@ -584,17 +640,17 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                 pointerEvents: 'none' 
                             }}
                         >
-                                <p 
-                                    className="caption-text"
-                                    style={{ 
-                                        fontSize: '16px', 
-                                        fontWeight: 'bold', 
-                                        color: 'white', 
-                                        marginLeft: '10px' 
-                                    }}
-                                >
-                                    {caption}
-                                </p>
+                            <p 
+                                className="caption-text"
+                                style={{ 
+                                    fontSize: '16px', 
+                                    fontWeight: 'bold', 
+                                    color: 'white', 
+                                    marginLeft: '10px' 
+                                }}
+                            >
+                                {caption}
+                            </p>
                         </div>
                         <button
                             onClick={closeLightbox}
@@ -739,22 +795,22 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                             className="drag-hint"
                             style={{
                                 display: 'none', 
-                                    position: 'absolute', 
-                                    right: '20px', 
-                                    bottom: '20px',
-                                    zIndex: 1000000, 
-                                    backgroundColor: 'rgba(36, 36, 36, 0.76)', 
-                                    padding: '10px 15px', 
-                                    borderRadius: '15px', 
-                                    border: '1px solid rgba(255, 255, 255, 0.3)', 
-                                    pointerEvents: 'none'
-                                }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                position: 'absolute', 
+                                right: '20px', 
+                                bottom: '20px',
+                                zIndex: 1000000, 
+                                backgroundColor: 'rgba(36, 36, 36, 0.76)', 
+                                padding: '10px 15px', 
+                                borderRadius: '15px', 
+                                border: '1px solid rgba(255, 255, 255, 0.3)', 
+                                pointerEvents: 'none'
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
                                 <Icon icon="hand" iconType="regular" color="white"/>
-                                    <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
-                                </div>
+                                <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
                             </div>
+                        </div>
                         <div
                             ref={imageTransformRef}
                             style={{
@@ -840,5 +896,4 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             )}
         </>
     );
-
 };
