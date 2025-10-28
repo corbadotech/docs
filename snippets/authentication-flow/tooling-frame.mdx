@@ -23,22 +23,118 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
     }, []);
+    
     const [showLightbox, setShowLightbox] = React.useState(false);
     const imgRef = React.useRef(null);
-    const [isDragging, setIsDragging] = React.useState(false);
-    const [position, setPosition] = React.useState({ x: 0, y: 0 });
-    const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
     const containerRef = React.useRef(null);
-    const [imageLoaded, setImageLoaded] = React.useState(false);
-    const [imageDimensions, setImageDimensions] = React.useState({ width: 0, height: 0 });
-    const [containerDimensions, setContainerDimensions] = React.useState({ width: '100%', height: '100%' });
-    const [scale, setScale] = React.useState(1);
-    const [initialDistance, setInitialDistance] = React.useState(0);
-    const [isZooming, setIsZooming] = React.useState(false);
-    const [isMobile, setIsMobile] = React.useState(false);
-    const minScale = 1;
-    const maxScale = 5;
+    const imageTransformRef = React.useRef(null);
+    const scaleDisplayRef = React.useRef(null);
+    const dragHintRef = React.useRef(null);
+    const zoomInBtnRef = React.useRef(null);
+    const zoomOutBtnRef = React.useRef(null);
+    const resetBtnRef = React.useRef(null);
+    
+    const stateRef = React.useRef({
+        isDragging: false,
+        isZooming: false,
+        position: { x: 0, y: 0 },
+        dragStart: { x: 0, y: 0 },
+        initialDistance: 0,
+        imageDimensions: { width: 0, height: 0 },
+        imageLoaded: false,
+        naturalDimensions: { width: 0, height: 0 },
+        initialDimensions: { width: 0, height: 0 }
+    });
+    
+    const maxScale = 3;
     const zoomStep = 0.2;
+
+    const updateTransform = () => {
+        if (imageTransformRef.current) {
+            const { position, imageDimensions } = stateRef.current;
+            imageTransformRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
+            
+            const img = imageTransformRef.current.querySelector('img');
+            if (img && imageDimensions.width) {
+                img.style.width = `${imageDimensions.width}px`;
+                img.style.height = 'auto';
+                
+                void img.offsetHeight;
+                const actualHeight = img.offsetHeight;
+                if (actualHeight && actualHeight !== imageDimensions.height) {
+                    stateRef.current.imageDimensions.height = actualHeight;
+                }
+            }
+        }
+        if (scaleDisplayRef.current) {
+            const { imageDimensions, initialDimensions } = stateRef.current;
+            if (initialDimensions.width) {
+                const relativeScale = (imageDimensions.width / initialDimensions.width) * 100;
+                scaleDisplayRef.current.textContent = `${Math.round(relativeScale)}%`;
+            }
+        }
+        updateButtonStates();
+        updateDragHint();
+    };
+
+    const updateButtonStates = () => {
+        const { imageDimensions, position, initialDimensions } = stateRef.current;
+        
+        if (zoomInBtnRef.current && initialDimensions.width) {
+            const absoluteMaxWidth = initialDimensions.width * maxScale;
+            const isDisabled = imageDimensions.width >= absoluteMaxWidth;
+            zoomInBtnRef.current.style.opacity = isDisabled ? '0.5' : '1';
+            zoomInBtnRef.current.style.cursor = isDisabled ? 'not-allowed' : 'pointer';
+        }
+        
+        if (zoomOutBtnRef.current && initialDimensions.width) {
+            const isDisabled = imageDimensions.width <= initialDimensions.width;
+            zoomOutBtnRef.current.style.opacity = isDisabled ? '0.5' : '1';
+            zoomOutBtnRef.current.style.cursor = isDisabled ? 'not-allowed' : 'pointer';
+        }
+        
+        if (resetBtnRef.current && initialDimensions.width) {
+            const isDisabled = imageDimensions.width === initialDimensions.width && position.x === 0 && position.y === 0;
+            resetBtnRef.current.style.opacity = isDisabled ? '0.5' : '1';
+            resetBtnRef.current.style.cursor = isDisabled ? 'not-allowed' : 'pointer';
+        }
+    };
+
+    const updateDragHint = () => {
+        if (dragHintRef.current && containerRef.current) {
+            const { imageDimensions } = stateRef.current;
+            const imgWidth = imageDimensions.width;
+            const imgHeight = imageDimensions.height;
+            const containerWidth = containerRef.current.offsetWidth;
+            const containerHeight = containerRef.current.offsetHeight;
+            
+            const shouldShow = imgWidth > containerWidth || imgHeight > containerHeight;
+            dragHintRef.current.style.display = shouldShow ? 'block' : 'none';
+        }
+    };
+
+    const updateContainerCursor = () => {
+        if (!containerRef.current) return;
+        const { isDragging, imageLoaded, imageDimensions } = stateRef.current;
+        
+        if (!imageLoaded) {
+            containerRef.current.style.cursor = 'wait';
+            return;
+        }
+        
+        if (isDragging) {
+            containerRef.current.style.cursor = 'grabbing';
+            return;
+        }
+        
+        const imgWidth = imageDimensions.width;
+        const imgHeight = imageDimensions.height;
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+        
+        const isOverflowing = imgWidth > containerWidth || imgHeight > containerHeight;
+        containerRef.current.style.cursor = isOverflowing ? 'grab' : 'default';
+    };
 
     const handleDownload = async (e) => {
         e.preventDefault();
@@ -67,42 +163,51 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
 
     const closeLightbox = () => {
         setShowLightbox(false);
-        setPosition({ x: 0, y: 0 });
-        setScale(1);
-        setImageLoaded(false);
-        setImageDimensions({ width: 0, height: 0 });
-        setContainerDimensions({ width: '100%', height: '100%' });
+        stateRef.current = {
+            isDragging: false,
+            isZooming: false,
+            position: { x: 0, y: 0 },
+            dragStart: { x: 0, y: 0 },
+            initialDistance: 0,
+            imageDimensions: { width: 0, height: 0 },
+            imageLoaded: false,
+            naturalDimensions: { width: 0, height: 0 },
+            initialDimensions: { width: 0, height: 0 }
+        };
     };
 
     const handleMouseDown = (e) => {
-        if (!containerRef.current || !imageDimensions.width || !imageDimensions.height) return;
+        const state = stateRef.current;
+        if (!containerRef.current || !state.imageDimensions.width || !state.imageDimensions.height) return;
         
         const containerWidth = containerRef.current.offsetWidth;
         const containerHeight = containerRef.current.offsetHeight;
-        const imgWidth = imageDimensions.width * scale;
-        const imgHeight = imageDimensions.height * scale;
+        const imgWidth = state.imageDimensions.width;
+        const imgHeight = state.imageDimensions.height;
         
         const isOverflowing = (imgWidth - containerWidth) >= 1 || (imgHeight - containerHeight) >= 1;
         if (!isOverflowing) return;
         
-        setIsDragging(true);
-        setDragStart({ 
-            x: e.clientX - position.x, 
-            y: e.clientY - position.y 
-        });
+        state.isDragging = true;
+        state.dragStart = { 
+            x: e.clientX - state.position.x, 
+            y: e.clientY - state.position.y 
+        };
+        updateContainerCursor();
     };
 
     const handleMouseMove = (e) => {
-        if (!isDragging || !containerRef.current) return;
+        const state = stateRef.current;
+        if (!state.isDragging || !containerRef.current) return;
         
-        let newX = e.clientX - dragStart.x;
-        let newY = e.clientY - dragStart.y;
+        let newX = e.clientX - state.dragStart.x;
+        let newY = e.clientY - state.dragStart.y;
         
-        if (imageDimensions.width && imageDimensions.height) {
+        if (state.imageDimensions.width && state.imageDimensions.height) {
             const containerWidth = containerRef.current.offsetWidth;
             const containerHeight = containerRef.current.offsetHeight;
-            const imgWidth = imageDimensions.width * scale;
-            const imgHeight = imageDimensions.height * scale;
+            const imgWidth = state.imageDimensions.width;
+            const imgHeight = state.imageDimensions.height;
             
             const isWider = (imgWidth - containerWidth) >= 1;
             const isTaller = (imgHeight - containerHeight) >= 1;
@@ -122,43 +227,48 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
             }
         }
         
-        setPosition({
-            x: newX,
-            y: newY
-        });
+        state.position = { x: newX, y: newY };
+        updateTransform();
     };
 
     const handleMouseUp = () => {
-        setIsDragging(false);
+        stateRef.current.isDragging = false;
+        updateContainerCursor();
     };
 
-    const handleZoom = (newScale, centerX, centerY) => {
-        if (!containerRef.current || !imageDimensions.width || !imageDimensions.height) return;
+    const handleZoom = (newWidth, centerX, centerY) => {
+        const state = stateRef.current;
+        if (!containerRef.current || !state.imageDimensions.width || !state.imageDimensions.height) return;
+        if (!state.initialDimensions.width || !state.initialDimensions.height) return;
+        if (!state.naturalDimensions.width || !state.naturalDimensions.height) return;
         
-        const boundedScale = Math.max(minScale, Math.min(maxScale, newScale));
-        let newX = position.x;
-        let newY = position.y;
+        const absoluteMaxWidth = state.initialDimensions.width * maxScale;
+        const boundedWidth = Math.max(state.initialDimensions.width, Math.min(absoluteMaxWidth, newWidth));
+        
+        const aspectRatio = state.naturalDimensions.height / state.naturalDimensions.width;
+        const boundedHeight = boundedWidth * aspectRatio;
+        
+        let newX = state.position.x;
+        let newY = state.position.y;
         
         if (centerX !== undefined && centerY !== undefined) {
             const rect = containerRef.current.getBoundingClientRect();
             const offsetX = centerX - rect.left - rect.width / 2;
             const offsetY = centerY - rect.top - rect.height / 2;
             
-            const scaleRatio = boundedScale / scale;
-            newX = position.x - offsetX * (scaleRatio - 1);
-            newY = position.y - offsetY * (scaleRatio - 1);
+            const sizeRatio = boundedWidth / state.imageDimensions.width;
+            newX = state.position.x - offsetX * (sizeRatio - 1);
+            newY = state.position.y - offsetY * (sizeRatio - 1);
         }
         
         const containerWidth = containerRef.current.offsetWidth;
         const containerHeight = containerRef.current.offsetHeight;
-        const imgWidth = imageDimensions.width * boundedScale;
-        const imgHeight = imageDimensions.height * boundedScale;
         
-        const isWiderThanContainer = (imgWidth - containerWidth) >= 1;
-        const isTallerThanContainer = (imgHeight - containerHeight) >= 1;
+        const isWiderThanContainer = (boundedWidth - containerWidth) >= 1;
+        const isTallerThanContainer = (boundedHeight - containerHeight) >= 1;
         
         if (isWiderThanContainer) {
-            const maxX = (imgWidth - containerWidth) / 2;
+            const maxX = (boundedWidth - containerWidth) / 2;
             const minX = -maxX;
             newX = Math.min(Math.max(newX, minX), maxX);
         } else {
@@ -166,36 +276,55 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
         }
         
         if (isTallerThanContainer) {
-            const maxY = (imgHeight - containerHeight) / 2;
+            const maxY = (boundedHeight - containerHeight) / 2;
             const minY = -maxY;
             newY = Math.min(Math.max(newY, minY), maxY);
         } else {
             newY = 0;
         }
         
-        setPosition({ x: newX, y: newY });
-        setScale(boundedScale);
+        state.position = { x: newX, y: newY };
+        state.imageDimensions = { width: boundedWidth, height: boundedHeight };
+        updateTransform();
+        updateContainerCursor();
     };
 
     const zoomIn = () => {
-        handleZoom(scale + zoomStep);
+        const state = stateRef.current;
+        if (!state.initialDimensions.width) return;
+        const absoluteMaxWidth = state.initialDimensions.width * maxScale;
+        if (state.imageDimensions.width >= absoluteMaxWidth) return;
+        const relativeZoomStep = state.initialDimensions.width * zoomStep;
+        handleZoom(state.imageDimensions.width + relativeZoomStep);
     };
 
     const zoomOut = () => {
-        handleZoom(scale - zoomStep);
+        const state = stateRef.current;
+        if (!state.initialDimensions.width) return;
+        if (state.imageDimensions.width <= state.initialDimensions.width) return;
+        const relativeZoomStep = state.initialDimensions.width * zoomStep;
+        handleZoom(state.imageDimensions.width - relativeZoomStep);
     };
 
     const resetTransform = () => {
-        setScale(1);
-        setPosition({ x: 0, y: 0 });
+        const state = stateRef.current;
+        if (!state.initialDimensions.width || !state.initialDimensions.height) return;
+        if (state.imageDimensions.width === state.initialDimensions.width && state.position.x === 0 && state.position.y === 0) return;
+        state.imageDimensions = { ...state.initialDimensions };
+        state.position = { x: 0, y: 0 };
+        updateTransform();
+        updateContainerCursor();
     };
 
     const handleWheel = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        const state = stateRef.current;
+        if (!state.imageDimensions.width) return;
         const delta = -e.deltaY * 0.001;
-        const newScale = scale + delta;
-        handleZoom(newScale, e.clientX, e.clientY);
+        const sizeChange = state.imageDimensions.width * delta;
+        const newWidth = state.imageDimensions.width + sizeChange;
+        handleZoom(newWidth, e.clientX, e.clientY);
     };
 
     const getTouchDistance = (touches) => {
@@ -205,50 +334,53 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
     };
 
     const handleTouchStart = (e) => {
+        const state = stateRef.current;
         if (e.touches.length === 2) {
             e.preventDefault();
-            setIsZooming(true);
-            setInitialDistance(getTouchDistance(e.touches));
+            state.isZooming = true;
+            state.initialDistance = getTouchDistance(e.touches);
         } else if (e.touches.length === 1) {
-            if (!containerRef.current || !imageDimensions.width || !imageDimensions.height) return;
+            if (!containerRef.current || !state.imageDimensions.width || !state.imageDimensions.height) return;
             
             const containerWidth = containerRef.current.offsetWidth;
             const containerHeight = containerRef.current.offsetHeight;
-            const imgWidth = imageDimensions.width * scale;
-            const imgHeight = imageDimensions.height * scale;
+            const imgWidth = state.imageDimensions.width;
+            const imgHeight = state.imageDimensions.height;
             
             const isOverflowing = (imgWidth - containerWidth) >= 1 || (imgHeight - containerHeight) >= 1;
             if (!isOverflowing) return;
             
-            setIsDragging(true);
-            setDragStart({
-                x: e.touches[0].clientX - position.x,
-                y: e.touches[0].clientY - position.y
-            });
+            state.isDragging = true;
+            state.dragStart = {
+                x: e.touches[0].clientX - state.position.x,
+                y: e.touches[0].clientY - state.position.y
+            };
+            updateContainerCursor();
         }
     };
 
     const handleTouchMove = (e) => {
-        if (e.touches.length === 2 && isZooming) {
+        const state = stateRef.current;
+        if (e.touches.length === 2 && state.isZooming) {
             e.preventDefault();
             const currentDistance = getTouchDistance(e.touches);
-            const scaleDelta = currentDistance / initialDistance;
-            const newScale = scale * scaleDelta;
+            const sizeDelta = currentDistance / state.initialDistance;
+            const newWidth = state.imageDimensions.width * sizeDelta;
             
             const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             
-            handleZoom(newScale, centerX, centerY);
-            setInitialDistance(currentDistance);
-        } else if (e.touches.length === 1 && isDragging && containerRef.current) {
-            let newX = e.touches[0].clientX - dragStart.x;
-            let newY = e.touches[0].clientY - dragStart.y;
+            handleZoom(newWidth, centerX, centerY);
+            state.initialDistance = currentDistance;
+        } else if (e.touches.length === 1 && state.isDragging && containerRef.current) {
+            let newX = e.touches[0].clientX - state.dragStart.x;
+            let newY = e.touches[0].clientY - state.dragStart.y;
             
-            if (imageDimensions.width && imageDimensions.height) {
+            if (state.imageDimensions.width && state.imageDimensions.height) {
                 const containerWidth = containerRef.current.offsetWidth;
                 const containerHeight = containerRef.current.offsetHeight;
-                const imgWidth = imageDimensions.width * scale;
-                const imgHeight = imageDimensions.height * scale;
+                const imgWidth = state.imageDimensions.width;
+                const imgHeight = state.imageDimensions.height;
                 
                 const isWider = (imgWidth - containerWidth) >= 1;
                 const isTaller = (imgHeight - containerHeight) >= 1;
@@ -268,16 +400,19 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                 }
             }
             
-            setPosition({ x: newX, y: newY });
+            state.position = { x: newX, y: newY };
+            updateTransform();
         }
     };
 
     const handleTouchEnd = (e) => {
+        const state = stateRef.current;
         if (e.touches.length < 2) {
-            setIsZooming(false);
+            state.isZooming = false;
         }
         if (e.touches.length === 0) {
-            setIsDragging(false);
+            state.isDragging = false;
+            updateContainerCursor();
         }
     };
 
@@ -326,13 +461,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                 document.removeEventListener('mouseup', handleMouseUp);
             };
         }
-
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [showLightbox, isDragging, position, dragStart, scale, imageDimensions]);
+    }, [showLightbox]);
 
     return (
         <>
@@ -397,18 +526,14 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         ref={containerRef}
                         style={{
                             position: 'relative',
-                            width: containerDimensions.width,
-                            height: containerDimensions.height,
+                            width: '100%',
+                            height: '100%',
                             minWidth: 'calc(100vw - 100px)',
                             minHeight: 'calc(100vh - 100px)',
                             maxWidth: '100%',
                             maxHeight: '100%',
                             overflow: 'hidden',
-                            cursor: imageLoaded ? (
-                                isDragging ? 'grabbing' : 
-                                (imageDimensions.width * scale > (containerRef.current?.offsetWidth || 0) || 
-                                 imageDimensions.height * scale > (containerRef.current?.offsetHeight || 0)) ? 'grab' : 'default'
-                            ) : 'wait',
+                            cursor: 'wait',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -492,9 +617,9 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                             }}
                         >
                             <button
+                                ref={zoomInBtnRef}
                                 onClick={(e) => { e.stopPropagation(); zoomIn(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
-                                disabled={scale >= maxScale}
                                 style={{
                                     background: 'rgba(36, 36, 36, 0.76)',
                                     border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -503,22 +628,22 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                     width: '40px',
                                     height: '40px',
                                     borderRadius: '8px',
-                                    cursor: scale >= maxScale ? 'not-allowed' : 'pointer',
+                                    cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     transition: 'background 0.2s',
-                                    opacity: scale >= maxScale ? 0.5 : 1
+                                    opacity: 1
                                 }}
-                                onMouseEnter={(e) => { if (scale !== maxScale) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                                onMouseEnter={(e) => { if (!e.target.disabled) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
                                 onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                             >
                                 +
                             </button>
                             <button
+                                ref={zoomOutBtnRef}
                                 onClick={(e) => { e.stopPropagation(); zoomOut(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
-                                disabled={scale <= minScale}
                                 style={{
                                     background: 'rgba(36, 36, 36, 0.76)',
                                     border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -527,22 +652,27 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                     width: '40px',
                                     height: '40px',
                                     borderRadius: '8px',
-                                    cursor: scale <= minScale ? 'not-allowed' : 'pointer',
+                                    cursor: 'not-allowed',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     transition: 'background 0.2s',
-                                    opacity: scale <= minScale ? 0.5 : 1
+                                    opacity: 0.5,
+                                    pointerEvents: 'auto'
                                 }}
-                                onMouseEnter={(e) => { if (scale !== minScale) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                                onMouseEnter={(e) => { 
+                                    if (e.target.style.opacity !== '0.5') {
+                                        e.target.style.background = 'rgba(36, 36, 36, 0.9)'; 
+                                    }
+                                }}
                                 onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                             >
                                 −
                             </button>
                             <button
+                                ref={resetBtnRef}
                                 onClick={(e) => { e.stopPropagation(); resetTransform(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
-                                disabled={scale === 1 && position.x === 0 && position.y === 0}
                                 style={{
                                     background: 'rgba(36, 36, 36, 0.76)',
                                     border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -551,19 +681,25 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                     width: '40px',
                                     height: '40px',
                                     borderRadius: '8px',
-                                    cursor: (scale === 1 && position.x === 0 && position.y === 0) ? 'not-allowed' : 'pointer',
+                                    cursor: 'not-allowed',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     transition: 'background 0.2s',
-                                    opacity: (scale === 1 && position.x === 0 && position.y === 0) ? 0.5 : 1
+                                    opacity: 0.5,
+                                    pointerEvents: 'auto'
                                 }}
-                                onMouseEnter={(e) => { if (scale !== 1 || position.x !== 0 || position.y !== 0) e.target.style.background = 'rgba(36, 36, 36, 0.9)'; }}
+                                onMouseEnter={(e) => { 
+                                    if (e.target.style.opacity !== '0.5') {
+                                        e.target.style.background = 'rgba(36, 36, 36, 0.9)'; 
+                                    }
+                                }}
                                 onMouseLeave={(e) => { e.target.style.background = 'rgba(36, 36, 36, 0.76)'; }}
                             >
                                 ⟲
                             </button>
                             <div 
+                                ref={scaleDisplayRef}
                                 style={{
                                     background: 'rgba(36, 36, 36, 0.76)',
                                     border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -579,14 +715,14 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                     pointerEvents: 'none'
                                 }}
                             >
-                                {Math.round(scale * 100)}%
+                                100%
                             </div>
                         </div>
-                        {(imageDimensions.width * scale > (containerRef.current?.offsetWidth || 0) || 
-                          imageDimensions.height * scale > (containerRef.current?.offsetHeight || 0)) && (
-                            <div 
-                                className="drag-hint"
-                                style={{ 
+                        <div 
+                            ref={dragHintRef}
+                            className="drag-hint"
+                            style={{
+                                display: 'none', 
                                     position: 'absolute', 
                                     right: '20px', 
                                     bottom: '20px',
@@ -603,56 +739,72 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                     <p style={{ fontSize: '12px', color: 'white', margin: 0 }}>Drag to move image</p>
                                 </div>
                             </div>
-                        )}
                         <div
+                            ref={imageTransformRef}
                             style={{
                                 position: 'relative',
-                                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-                                transition: isDragging || isZooming ? 'none' : 'transform 0.2s ease-out'
+                                transform: 'translate(0px, 0px)',
+                                transition: 'none',
+                                willChange: 'transform',
+                                flexShrink: 0,
+                                minWidth: 0,
+                                minHeight: 0
                             }}
                         >
                             <img 
                                 src={imageURL}
                                 alt={imageName || caption}
                                 onLoad={(e) => {
-                                    const imgWidth = e.target.offsetWidth;
-                                    const imgHeight = e.target.offsetHeight;
+                                    const state = stateRef.current;
+                                    const naturalWidth = e.target.naturalWidth;
+                                    const naturalHeight = e.target.naturalHeight;
                                     
-                                    setImageDimensions({
-                                        width: imgWidth,
-                                        height: imgHeight
-                                    });
+                                    if (!containerRef.current) return;
                                     
-                                    if (containerRef.current) {
-                                        const availableWidth = containerRef.current.offsetWidth;
-                                        const availableHeight = containerRef.current.offsetHeight;
-                                        const isMobile = window.innerWidth <= 768;
+                                    const containerWidth = containerRef.current.offsetWidth;
+                                    const containerHeight = containerRef.current.offsetHeight;
+                                    
+                                    const scaleX = containerWidth / naturalWidth;
+                                    const scaleY = containerHeight / naturalHeight;
+                                    const initialScale = Math.min(scaleX, scaleY, 1);
+                                    
+                                    const initialWidth = naturalWidth * initialScale;
+                                    const initialHeight = naturalHeight * initialScale;
+                                    
+                                    state.naturalDimensions = {
+                                        width: naturalWidth,
+                                        height: naturalHeight
+                                    };
+                                    
+                                    state.initialDimensions = {
+                                        width: initialWidth,
+                                        height: initialHeight
+                                    };
+                                    
+                                    state.imageDimensions = {
+                                        width: initialWidth,
+                                        height: initialHeight
+                                    };
+                                    
+                                    setTimeout(() => {
+                                        state.imageLoaded = true;
+                                        updateTransform();
+                                        updateContainerCursor();
+                                        updateDragHint();
                                         
-                                        let newWidth, newHeight;
-                                        
-                                        if (isMobile) {
-                                            newWidth = '100%';
-                                            newHeight = '100%';
-                                        } else {
-                                            newWidth = imgWidth < availableWidth ? imgWidth + 'px' : '100%';
-                                            newHeight = imgHeight < availableHeight ? imgHeight + 'px' : '100%';
+                                        if (e.target) {
+                                            e.target.style.opacity = '1';
                                         }
-                                        
-                                        setContainerDimensions({
-                                            width: newWidth,
-                                            height: newHeight
-                                        });
-                                    }
-                                    
-                                    setTimeout(() => setImageLoaded(true), 500);
+                                    }, 100);
                                 }}
                                 style={{
                                     display: 'block',
                                     width: 'auto',
-                                    height: window.innerWidth <= 768 ? '100vh' : 'auto',
-                                    maxWidth: window.innerWidth <= 768 ? 'none' : '100%',
-                                    maxHeight: window.innerWidth <= 768 ? 'none' : '100%',
-                                    objectFit: window.innerWidth <= 768 ? 'contain' : 'cover',
+                                    height: 'auto',
+                                    maxWidth: 'none',
+                                    maxHeight: 'none',
+                                    opacity: 0,
+                                    transition: 'opacity 0.2s ease-in-out',
                                     pointerEvents: 'none',
                                     userSelect: 'none',
                                     WebkitUserSelect: 'none',
