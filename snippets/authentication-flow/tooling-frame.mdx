@@ -25,6 +25,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
     }, []);
     
     const [showLightbox, setShowLightbox] = React.useState(false);
+    const [viewportPadding, setViewportPadding] = React.useState(100);
     const imgRef = React.useRef(null);
     const containerRef = React.useRef(null);
     const imageTransformRef = React.useRef(null);
@@ -48,6 +49,21 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
     
     const maxScale = 3;
     const zoomStep = 0.2;
+
+    
+    const getViewportPadding = React.useCallback(() => {
+        const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+        if (width < 640) return 20; 
+        if (width < 1024) return 40;
+        return 100;
+    }, []);
+
+    React.useEffect(() => {
+        const updatePadding = () => setViewportPadding(getViewportPadding());
+        updatePadding();
+        window.addEventListener('resize', updatePadding);
+        return () => window.removeEventListener('resize', updatePadding);
+    }, [getViewportPadding]);
 
     const updateTransform = () => {
         if (imageTransformRef.current) {
@@ -512,7 +528,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         alignItems: 'center',
                         cursor: 'default',
                         justifyContent: 'center',
-                        padding: '50px',
+                            padding: `${Math.round(viewportPadding / 2)}px`,
                         touchAction: 'none'
                     }}
                     onWheel={(e) => {
@@ -528,8 +544,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                             position: 'relative',
                             width: '100%',
                             height: '100%',
-                            minWidth: 'calc(100vw - 100px)',
-                            minHeight: 'calc(100vh - 100px)',
+                            minWidth: `calc(100vw - ${viewportPadding}px)`,
+                            minHeight: `calc(100vh - ${viewportPadding}px)`,
                             maxWidth: '100%',
                             maxHeight: '100%',
                             overflow: 'hidden',
