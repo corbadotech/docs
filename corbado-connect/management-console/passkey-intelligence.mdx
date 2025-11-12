@@ -1,0 +1,101 @@
+---
+title: "Passkey Intelligence"
+description: "Configure intelligent passkey behavior and customize adoption strategies with data-driven decision rules."
+sidebarTitle: "Passkey Intelligence"
+---
+
+**Passkey Intelligence** is the core decision and prediction engine that optimizes passkey adoption through customizable, data-driven rules tailored to your specific use case.
+
+<Frame>
+
+    <iframe
+              className="w-full aspect-video rounded-xl"
+      src="https://www.youtube.com/embed/THsuaaHmn1I"
+      title="Passkey Intelligence Configuration"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    
+    />
+</Frame>
+
+## Example Use Cases
+
+### 1. Hardware Security Key Control
+**Configure whether users can use hardware security keys (YubiKeys)**
+- Some applications may want to disable external authenticators
+- Control security key usage per user segment
+- Balance security needs with user convenience
+
+### 2. Third-Party Password Manager Behavior
+**Define how the system handles password managers like Bitwarden**
+
+**Scenario**: User has Bitwarden passkey on Machine 1, accesses from Machine 2
+- System assumes Bitwarden is synced across devices
+- After 2 failed attempts, assumes Bitwarden not installed
+- Stops offering passkey login on third attempt
+- Provides fallback authentication instead
+
+<Info>
+This experimental behavior learns from user patterns to improve experience while maintaining high adoption rates.
+</Info>
+
+### 3. Cross-Browser Passkey Handling
+**Manage passkeys across different browsers on same device**
+
+**Example**: Windows user with passkey in Chrome opens Firefox
+- System attempts to use existing passkey twice
+- After 2 failures, assumes different machine (not same Windows device)
+- Offers fallback login for convenient access
+- User can create new passkey after authentication
+
+### 4. Cross-Device Authentication
+**Control QR code and Bluetooth proximity features**
+- Enable/disable cross-device authentication
+- Manage QR code scanning options
+- Control Bluetooth proximity requirements
+- Balance security with user convenience
+
+### 5. Credential Manager Restrictions
+**Limit which credential managers can create passkeys**
+
+**Regulated Industry Example**:
+- Allow only: Apple iCloud Keychain, Google Password Manager, Windows Hello
+- Block all third-party password managers
+- User can still create local passkey (private key stored)
+- Backend prevents completion, blocking future login use
+
+<Warning>
+This is critical for regulated industries with strict security requirements. Users may create passkeys client-side, but the system prevents their use if from unauthorized managers.
+</Warning>
+
+## Trade-offs and Optimization
+
+### Balancing Act
+Configure the balance between:
+- **High Adoption**: Maximize passkey usage
+- **User Experience**: Minimize friction and confusion
+- **Security Requirements**: Meet compliance needs
+- **Technical Constraints**: Handle device limitations
+
+### Customization Benefits
+- **Industry-Specific**: Tailor to regulatory requirements
+- **User-Specific**: Different rules for different segments
+- **Progressive Enhancement**: Evolve rules based on data
+- **A/B Testing**: Compare different approaches
+
+<Tip>
+Work with a Corbado adoption engineer to fine-tune your Passkey Intelligence configuration based on your specific traffic patterns and user behavior.
+</Tip>
+
+## Best Practices
+
+- **Start Conservative**: Begin with fewer restrictions
+- **Monitor Impact**: Track adoption and success rates
+- **Iterate Gradually**: Make incremental adjustments
+- **Document Decisions**: Keep records of rule rationale
+- **Regular Reviews**: Reassess rules as ecosystem evolves
+
+<Note>
+Passkey Intelligence is crucial for maximizing adoption while maintaining security and user experience standards. The system continuously learns and improves based on user behavior patterns.
+</Note>

@@ -1,0 +1,69 @@
+---
+title: "Passkey User Management"
+description: "Manage individual passkey user accounts, blacklist problematic users and handle passkey-related support issues."
+sidebarTitle: "Users"
+---
+
+**Passkey User Management** provides tools for supporting individual users and managing their passkey configurations.
+
+<Frame>
+    <iframe
+      className="w-full aspect-video rounded-xl"
+      src="https://www.youtube.com/embed/wQdQfHuthxU"
+      title="User Management Overview"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+
+</Frame>
+
+## Primary Use Cases
+
+### 1. User Blacklisting
+**Prevent problematic users from using passkeys**
+- Users experiencing persistent errors
+- Users with incompatible devices
+- Temporary exclusion during troubleshooting
+- Prevent repeated failed attempts
+
+### 2. Passkey Management
+**Support users with passkey issues**
+- Delete public keys when requested
+- Remove corrupted passkeys
+- Help users start fresh
+- Resolve authentication problems
+
+
+
+<Warning>
+Blacklisting should be used carefully. Always investigate the root cause of issues before blacklisting users.
+</Warning>
+
+
+## Common Scenarios
+
+### Corrupted Passkey
+User reports authentication always fails:
+1. Search for user
+2. Identify problematic passkey
+3. Delete the passkey
+4. User creates new passkey
+
+### Device Incompatibility
+User's device doesn't support passkeys properly:
+1. Blacklist user temporarily
+2. Investigate device-specific issue
+3. Implement fix if possible
+4. Unblacklist when resolved
+
+### Password Manager Conflicts
+Third-party password manager causing issues:
+1. Review user's passkey inventory
+2. Delete passkeys from problematic manager
+3. Guide user to use platform authenticator
+4. Monitor for recurrence
+
+<Info>
+The user management feature is essential for providing quality support at scale, ensuring users have a smooth passkey experience even when edge cases occur.
+</Info>

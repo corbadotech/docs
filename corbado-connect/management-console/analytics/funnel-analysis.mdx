@@ -1,0 +1,82 @@
+---
+title: "Passkey Funnel Analysis"
+description: "Visual representation of passkey / user authentication flows to identify bottlenecks and optimize passkey adoption paths."
+sidebarTitle: "Funnel Analysis"
+---
+
+**Passkey Funnel Analysis** provides process mining for authentication, showing exactly how users navigate through your passkey implementation to identify optimization opportunities.
+
+<Frame>
+  <iframe
+    className="w-full aspect-video rounded-xl"
+    src="https://www.youtube.com/embed/Q9cTYkMhnHw"
+    title="Funnel Analysis Overview"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</Frame>
+
+## Overview
+
+The funnel visualization shows:
+- **User Flow Paths**: How users progress through authentication
+- **Drop-off Points**: Where users abandon or fail
+- **Success Rates**: Completion percentages at each step
+- **Platform Comparisons**: Performance across web/app
+
+## Key Performance Indicators
+
+### Top-Level Metrics
+- **Gradual Rollout Progress**: Percentage of users eligible for passkeys
+- **Passkey Intelligence Filtering**: Users filtered by intelligence rules
+- **Append Rates**: Most critical metric for passkey creation
+- **Login Success**: Authentication completion rates
+
+## Append (Creation) Analysis
+
+### Primary Append Flow
+Track passkey creation during login:
+1. User completes conventional login
+2. Gradual rollout allows passkey creation
+3. Passkey Intelligence approves
+4. Append screen shown
+5. Passkey successfully created
+
+### Additional Append Scenarios
+- **Auto-Healing**: Append after authentication errors
+- **Post-Hybrid**: Creation after cross-device authentication
+- **Account Settings**: Manual creation from passkey list
+
+<Tip>
+Monitor append rates across all scenarios - users who fail initial creation often succeed through alternative paths.
+</Tip>
+
+## Login Flow Analysis
+
+### Authentication Paths
+Visualize how users authenticate:
+- **Passkey Offered**: Users eligible for passkey login
+- **Method Selection**: Platform authenticator vs. cross-device
+- **Completion Rates**: Success percentages for each path
+- **Fallback Usage**: Automatic and manual fallback rates
+
+### Critical Metrics
+- **Usage Success**: Successful passkey authentications
+- **Fallback Frequency**: How often fallbacks are used
+- **Auto-Switch Rate**: System-initiated fallbacks
+
+## Bottleneck Identification
+
+### Abort Analysis
+Focus on high abort rates:
+- **Explicit Aborts**: Users actively canceling
+- **Implicit Aborts**: System-initiated cancellations
+- **Error Patterns**: Recurring failure points
+
+### Investigation Workflow
+1. Identify high abort/error nodes
+2. Filter debugging section for specific outcomes
+3. Analyze user processes
+4. Implement fixes
+5. Monitor improvement

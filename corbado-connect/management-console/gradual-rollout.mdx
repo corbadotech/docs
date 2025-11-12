@@ -1,0 +1,91 @@
+---
+title: "Gradual Passkey Rollout Management"
+description: "Control and simulate phased passkey deployment to reduce risk and ensure successful implementation at scale."
+sidebarTitle: "Gradual rollout"
+---
+
+**Gradual Passkey Rollout** enables controlled, risk-free passkey deployment by starting with small user groups and expanding gradually based on success metrics.
+
+<Frame>
+    <iframe
+      className="w-full aspect-video rounded-xl"
+      src="https://www.youtube.com/embed/vg0C89Z2wtg"
+      title="Gradual Rollout Configuration"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+</Frame>
+
+## Rollout Strategy
+
+### Deployment Phases
+1. **Internal Pilot**: Employees, developers, and testers only
+2. **Customer Beta**: Small subset of actual users
+3. **Gradual Expansion**: Progressively larger user groups
+4. **Full Deployment**: All users have access
+
+<Info>
+Control passkey creation (append) rather than login. Users who create passkeys can always use them to log in, giving you precise control over adoption rates.
+</Info>
+
+## Segmentation Options
+
+### Web Applications
+- **Geographic Regions**: Deploy by country or region
+- **IP Addresses**: Target specific network ranges
+- **Browser Versions**: Test on specific browsers first
+- **Operating Systems**: Control by OS version
+
+### Native Applications
+- **Device Models**: Target specific devices (e.g., iPhone 15)
+- **Manufacturers**: Enable for Apple, Samsung, etc.
+- **OS Versions**: Control by iOS/Android version
+- **App Versions**: Gradual rollout with app updates
+
+### User-Based Rules
+- **User Subsets**: Custom user segments
+- **Whitelist/Blacklist**: Individual user overrides
+- **Invitation Tokens**: URL-based access control
+
+<Warning>
+Pay special attention to Android devices from certain manufacturers (particularly from China) which may have non-standard implementations. Test these thoroughly before broad rollout.
+</Warning>
+
+## Rule Configuration
+
+Configure separate rules for different UI components:
+- **Login Component**: Control passkey login availability
+- **Append Component**: Control passkey creation opportunities  
+- **List Component**: Control passkey management features
+
+
+## Traffic Simulation
+
+Before activating rules, simulate their effect:
+- **7-Day Traffic Analysis**: Uses past week's data
+- **Rule Impact Preview**: See how many users would be affected
+- **Risk Assessment**: Understand potential issues before deployment
+
+
+<Tip>
+Always run simulations before activating new rules. This helps prevent unexpected impacts on user experience.
+</Tip>
+
+## Benefits
+
+### Risk Reduction
+- **Avoid Big Bang**: No risky all-at-once deployments
+- **Early Issue Detection**: Find problems with small user groups
+- **Quick Fixes**: Address issues before they affect many users
+- **Controlled Exposure**: Limit impact of unexpected problems
+
+### Data-Driven Approach
+- **Real Metrics**: Make decisions based on actual data
+- **A/B Testing**: Compare different approaches
+- **Performance Tracking**: Monitor success at each phase
+- **User Feedback**: Gather insights from early adopters
+
+<Note>
+The gradual rollout feature is essential for enterprise deployments. It transforms a potentially risky migration into a controlled, measurable process with clear success indicators.
+</Note>

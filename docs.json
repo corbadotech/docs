@@ -57,6 +57,33 @@
                         ]
                     },
                     {
+                        "group": "Management Console",
+                        "pages": [
+                            "corbado-connect/management-console/overview",
+                            {
+                                "group": "Analytics",
+                                "pages": [
+                                    "corbado-connect/management-console/analytics/devices",
+                                    "corbado-connect/management-console/analytics/login",
+                                    "corbado-connect/management-console/analytics/activation",
+                                    "corbado-connect/management-console/analytics/reporting",
+                                    "corbado-connect/management-console/analytics/passkey-insights",
+                                    "corbado-connect/management-console/analytics/funnel-analysis"
+                                ]
+                            },
+                            {
+                                "group": "Debugging",
+                                "pages": [
+                                    "corbado-connect/management-console/debugging/events",
+                                    "corbado-connect/management-console/debugging/process-user-search"
+                                ]
+                            },
+                            "corbado-connect/management-console/users",
+                            "corbado-connect/management-console/gradual-rollout",
+                            "corbado-connect/management-console/passkey-intelligence"
+                        ]
+                    },
+                    {
                         "group": "Integration",
                         "pages": [
                             {

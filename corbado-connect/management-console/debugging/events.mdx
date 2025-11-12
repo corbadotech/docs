@@ -1,0 +1,121 @@
+---
+title: "Passkey Event Monitoring"
+description: "Proactively identify and debug passkey authentication issues at scale with comprehensive event monitoring and anomaly detection."
+sidebarTitle: "Events"
+---
+
+**EPasskey vent Monitoring** provides essential debugging capabilities for large-scale passkey deployments, helping you identify unusual behavior, spot client-side issues, and maintain system health proactively.
+
+<Frame>
+    <iframe
+        className="w-full aspect-video rounded-xl"
+      src="https://www.youtube.com/embed/8GaNhrY5TMY"
+      title="Event Monitoring and Debugging"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+</Frame>
+
+## Why Event Monitoring matters
+
+When deploying passkeys at scale, you'll encounter edge cases that are difficult to predict:
+
+- **OS and Browser Updates**: New iOS betas or Android updates can introduce unexpected behaviors
+- **Device Manufacturer Variations**: Certain Android manufacturers may have unique implementations
+- **Third-Party Password Managers**: Different password managers behave differently across platforms
+- **Regional Variations**: Users in different locations may experience unique issues
+
+<Warning>
+While device-specific issues may only affect a small fraction of users, they create poor experiences. Event monitoring helps you identify and fix these issues proactively before they impact more users.
+</Warning>
+
+## Event Categories
+
+### Expected Events
+Normal user behaviors that are part of standard flows:
+
+- **User Cancellations**: Users canceling append or login processes
+- **Navigation Events**: Users clicking "Learn More" or "Manage" buttons
+- **Timeout Events**: Authentication attempts that exceed time limits
+- **User Choice Events**: Users selecting different authentication options
+
+### Unexpected Events
+Issues requiring investigation and potential action:
+
+- **Unclassified Errors**: New error patterns not yet categorized
+- **Client-Side Failures**: Device or browser-specific issues
+- **Integration Problems**: Issues with third-party services or password managers
+- **Anomalous Patterns**: Unusual spikes or changes in error rates
+
+<Tip>
+Focus on the unexpected events chart. Steep increases in any category typically indicate an emerging issue that needs immediate attention.
+</Tip>
+
+## Working with Event Monitoring
+
+### Daily Health Checks
+Establish a routine for monitoring system health:
+
+1. **Review Event Trends**: Check if error categories are increasing or decreasing
+2. **Filter by Severity**: Focus on statistically significant anomalies
+3. **Investigate Spikes**: Look for sudden changes in error patterns
+4. **Drill Down**: Examine specific processes causing issues
+
+### Anomaly Detection
+
+The system uses statistical analysis to identify significant issues:
+
+- **Z-Score Calculation**: Automatically calculates statistical significance
+- **Severity Thresholds**: Filter events by statistical significance levels
+- **Pattern Recognition**: Identifies recurring issues across users
+- **Trend Analysis**: Tracks whether issues are increasing or decreasing
+
+<Info>
+The Z-score helps prioritize which anomalies need immediate attention. Lower Z-scores indicate more significant deviations from normal patterns.
+</Info>
+
+## Pattern Management
+
+### Creating Custom Patterns
+Define patterns to categorize and track specific issues:
+
+<Steps>
+<Step title="Identify the Pattern">
+    Find recurring error messages or behaviors in your event logs.
+</Step>
+
+<Step title="Create Pattern Definition">
+    Provide a name, description, and regex pattern to match the events.
+</Step>
+
+<Step title="Assign Priority">
+    Set priority levels based on user impact:
+    - **High Priority**: Append cancellations or login failures
+    - **Medium Priority**: Navigation events like "Learn More" clicks
+    - **Low Priority**: Informational events
+</Step>
+
+<Step title="Monitor and Adjust">
+    Track how often the pattern occurs and adjust priority as needed.
+</Step>
+</Steps>
+
+
+## Best Practices
+
+### Proactive Monitoring
+- **Daily Reviews**: Check event monitoring at least once daily
+- **Set Baselines**: Understand normal error rates for your system
+- **Track Trends**: Monitor how error rates change over time
+- **Document Patterns**: Keep records of resolved issues for future reference
+
+### Issue Prevention
+- **Early Detection**: Address issues before users report them
+- **Pattern Recognition**: Use historical data to predict potential problems
+- **Testing Coverage**: Focus testing on problematic device/browser combinations
+- **User Communication**: Proactively inform users about known issues and workarounds
+
+<Warning>
+Android fragmentation and third-party password managers are common sources of edge cases. Pay special attention to errors from these sources.
+</Warning>
