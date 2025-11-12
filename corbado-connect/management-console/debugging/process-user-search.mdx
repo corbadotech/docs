@@ -1,0 +1,104 @@
+---
+title: "Process & User Search"
+description: "Advanced debugging tools for investigating specific user issues and authentication processes across devices."
+sidebarTitle: "Process & User Search"
+---
+
+**Process & User Search** provides powerful debugging capabilities for investigating authentication issues at the individual user level, essential for supporting users at scale.
+
+<Frame>
+    <iframe
+        className="w-full aspect-video rounded-xl"
+      src="https://www.youtube.com/embed/0hRYXHESA24"
+      title="Process and User Search Debugging"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+
+</Frame>
+
+## Process Search (90% of Cases)
+
+The primary debugging tool for investigating user-reported issues.
+
+### Search Capabilities
+- **User Identification**: Search by email address or user ID
+- **Process Filtering**: Filter by process type, time range, OS, and browser
+- **Pro Mode**: Advanced filtering options for detailed investigation
+
+### Process Details View
+
+Each process provides comprehensive debugging information:
+
+#### User Information (Top Left)
+- User ID
+- All passkeys and credentials (active/deleted)
+- Password managers detected
+
+#### Technical Context (Top Right)
+- Platform and user agent details
+- Device capabilities (Bluetooth)
+-  WebAuthn features: Conditional UI, hybrid support status
+
+#### Event Timeline (Bottom)
+Two lanes showing the authentication flow:
+- **Sub-processes**: High-level authentication steps
+- **Events**: Detailed technical data with 2-3 events per sub-process
+
+<Warning>
+The real debugging work happens in the event lane at the bottom. Look for errors, timeouts, and unexpected behaviors in the technical details.
+</Warning>
+
+### Common Issues to look for
+- **Timeout Errors**: User didn't complete authentication in time
+- **Duplicate Passkey Attempts**: User trying to create passkey on already-registered device
+- **Client-Side Errors**: Browser or device-specific failures
+- **Password Manager Conflicts**: Issues with third-party credential managers
+
+## User Search (10% of Cases)
+
+For complex multi-device scenarios and cross-device authentication issues.
+
+### When to use User Search
+- Investigating cross-device authentication problems
+- Understanding multi-device user journeys
+- Analyzing long-term user behavior patterns
+- Debugging edge cases not visible in single processes
+
+### User Search Features
+
+#### Comprehensive User View
+- All processes concatenated over months/years
+- Complete device inventory and usage patterns
+- Cross-platform authentication history
+
+#### Device Analysis
+Track user activity across all devices:
+- **Device Inventory**: All devices user has accessed from
+- **Passkey Distribution**: Which devices have passkeys
+- **Usage Patterns**: Login and creation statistics per device
+- **Browser Breakdown**: Activity across different browsers
+
+<Tip>
+Multi-device scenarios are common sources of confusion. Use User Search to understand which devices have passkeys and where users are experiencing issues.
+</Tip>
+
+
+## Key Insights from Debugging
+
+### Client-Side Visibility
+Corbado provides unique client-side telemetry that was previously a black box:
+- Detailed passkey intelligence data
+- Device capability information
+- Password manager interactions
+- WebAuthn API responses
+
+### Proactive Issue Resolution
+- Once you identify an issue, search for other affected users
+- Check if specific OS versions or browsers are impacted
+- Implement fixes before more users encounter the problem
+
+<Info>
+The debugging tools are particularly valuable for understanding edge cases with specific Android manufacturers or third-party password managers, which may only affect a small percentage of users but create significant friction.
+</Info>

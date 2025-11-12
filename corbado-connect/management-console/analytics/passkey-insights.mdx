@@ -1,0 +1,86 @@
+---
+title: "Passkey Insights"
+description: "Detailed analytics on authenticator distribution, sync status, and passkey usage patterns across your user base."
+sidebarTitle: "Passkey Insights"
+---
+
+**Passkey Insights** provides comprehensive analytics about how users store and use passkeys across different authenticators and platforms.
+
+<Frame>
+  <iframe
+    className="w-full aspect-video rounded-xl"
+    src="https://www.youtube.com/embed/THsuaaHmn1I"
+    title="Passkey Insights Overview"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</Frame>
+
+## Authenticator Distribution
+
+### Total View
+View pie charts showing authenticator market share:
+- **Major Authenticators** (>5% share): iCloud Keychain, Google Password Manager, Windows Hello
+- **Third-Party Managers**: 1Password, Bitwarden, and other password managers
+- **Detailed Breakdown**: Complete list of all authenticators in use
+
+### Combined Analytics
+Combine authenticator data with:
+- **Operating System**: See how authenticators distribute across iOS, Android, Windows, macOS
+- **Browser Usage**: Understand which browsers are used with each authenticator
+- **Market Share Insights**: Identify dominant combinations (e.g., iCloud Keychain + Safari)
+
+<Info>
+The most interesting insights come from third-party password manager usage patterns. For example, 1Password usage may be highest on iOS, followed by macOS and Windows.
+</Info>
+
+## Sync Status Analysis
+
+Track whether passkeys are synced or device-bound:
+- **Synced Passkeys**: Most iOS and Android passkeys via platform authenticators
+- **Device-Bound**: Windows Hello passkeys (as of late 2024)
+- **Cross-Platform Sync**: Passkeys synced via third-party managers on Windows
+
+<Tip>
+Monitor the percentage of Windows users with synced passkeys - these are using third-party password managers like 1Password or Bitwarden.
+</Tip>
+
+## Transport Capabilities
+
+Understanding passkey transport tags:
+- **Hybrid**: Passkeys that support cross-device authentication via QR code
+- **Internal**: Platform authenticator passkeys
+- **USB/NFC**: External security key support
+
+## Time Series Analysis
+
+### Trend Monitoring
+Track changes over time by switching to daily/monthly views:
+- **Authenticator Shifts**: Monitor adoption of new authenticators
+- **OS Update Impact**: See how iOS/Android updates affect passkey behavior
+- **Implementation Changes**: Track impact of your rollout changes
+
+### Example Patterns
+Common patterns to watch for:
+- **iOS Updates**: Sharp changes in transport tags after iOS releases
+- **Gradual Adoption**: Slow increase in third-party manager usage
+- **Platform Shifts**: Migration between authenticators over time
+
+<Warning>
+Sudden drops in hybrid/internal transport tags may indicate iOS updates or implementation issues that need investigation.
+</Warning>
+
+## Use Cases
+
+### Planning and Decision Making
+- **Exclusion Policies**: See impact before blocking third-party managers
+- **Error Investigation**: Correlate error patterns with specific authenticators
+- **Rollout Planning**: Understand user preferences for targeted rollouts
+- **Support Preparation**: Anticipate support needs based on authenticator distribution
+
+### Key Metrics to Track
+- Third-party password manager adoption rates
+- Sync vs. device-bound ratios by platform
+- Authenticator diversity in your user base
+- Platform-specific preferences
