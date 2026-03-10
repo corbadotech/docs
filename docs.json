@@ -20,6 +20,27 @@
                 ]
             },
             {
+                "tab": "Corbado Observe",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": [
+                            "corbado-observe/overview/welcome",
+                            "corbado-observe/overview/getting-started"
+                        ]
+                    },
+                    {
+                        "group": "Tracking",
+                        "pages": [
+                            "corbado-observe/tracking/overview",
+                            "corbado-observe/tracking/flows",
+                            "corbado-observe/tracking/subflows",
+                            "corbado-observe/tracking/events"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Corbado Connect",
                 "groups": [
                     {
