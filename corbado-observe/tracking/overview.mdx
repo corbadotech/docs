@@ -9,3 +9,34 @@ sidebarTitle: "Overview"
 - Explain container/flows
 - Explain sub flows
 - Explain events
+
+
+Martin:
+
+mind 2 dinge erklären:
+
+- "Blöckchen" => subflows (passkey, password etc.)
+- container/flow (ist zb nicht mandatory einen container "drum rum zu haben"), bei login empfehlen wir einen container drum rum zu machen
+- als beispiel: login/signup flow die "generisch starten" und dann entscheiden ob login oder signup
+- ich muss keinen flow haben
+- vllt auch mehrere "application erklären": eine wo signup/login zusammewn is und eine wo es klar getrennt
+- mit decided teile ich system entscheidung des users vorher mit, ansonsten wird es auch über finish klar (aber wenn user kein finish macht wüssten wir das nicht)
+- "3." decicions erlkären: entweder user verhalten oder system verhalten erklären:
+    - system verhalten: zb PI (hat was entschieden)
+    - funnel kann sehr kompliziet werden, viele verästelungen, decisions führen "zwiswchennodes" ein und entscheidungen werden expliziter (anstatt das ich mir den baum anschaue und es "selbst ableite")
+    - user verhalten: bei logins hat man oft stellen, wo der user sich entscheiden muss (auch x mal meinung ändern, switcht 10 mal die login methode etc.)
+        - beispiel: user hat 3 login methoden (passkey, email otp, social) und user kann auswählen aber vllt macht er mit keiner weiter, flippt wild zwischen methoden, mit user decisions können wir das messen und visualisieren
+    - mit decisions kann ich auch den funnel einfacher filtern
+    - empfehlungen für common decisions: login methoden auswählen
+    - mit decision kann ich auch one-tap sauber messen ("da erscheint was das kann der user nutzen oder wegklicken" kann man mit decisions sauber messen)
+- 3 types von events: container, subflows und decisions
+- corbado/backend/internal/domain/observe/service/tracking_classification_paths_e_com_1.md studieren für verständnis, vllt auch in teilen gut für docs
+- subflows können alleine exisitieren in der DB, tauchen dann aber nicht in dem funnel auf (in user detail drawer würden sie aber auftauchen ohne "flow parent")
+- tags und user references erklären
+- applications erklären
+- vllt unterteilen in must haves und nice to haves (user reference ist must have, tags optional, application optional => im grunde erst ab 2. application relevant für einen)
+
+schritt 1:
+    - begriffe einführen (container, subflow, decisions)
+    - dann deepdives pro begriff
+    - event types haben fest mapping zu subflows, subflows aber nicht zu containern/flows
