@@ -4,21 +4,56 @@ description: "TODO"
 sidebarTitle: "Overview"
 ---
 
+As described Corbado Observe works by sending events from your application. To fully understand how those events are structured and work you first need to understand the data model. The following diagram provides an overview of the data model:
+
+(DIAGRAM TODO)
+
+Projects:
+
+Projects are the top-level entities in the data model. They contain all data and are the storage for all events. In Corbado you can create multiple projects. They have nothing to do with each other.
+
+Applications:
+
+Applications are entities that represent your application. E.g. if you have a website and an native app you usually do not create two different projects but create multiple applications. Read our section on [Applications](/corbado-observe/tracking/applications) for more details.
+
+Flows:
+
+Flows are composed of decisions and subflows and describe a longer journey of your user like a login flow or recovery flow. Read our section on [Flows](/corbado-observe/tracking/flows) for more details.
+
+Decisions:
+
+Decisions are used to track systen decisions and user decisions. For example if you represent a list of login methods (password, email OTP and social login) you can track this decisions. In the funnel analysis this decision point will be a distinct node which increases visibility and understanding and you can filter the funnel by decisions. Decisions are created by sending special events. Read our section on [Decisions](/corbado-observe/tracking/decisions) for more details.
+
+Subflows:
+
+Subflows are smaller building blocks of flows. They combine events into a unit for e.g. a passkey login or recovery step. Read our section on [Subflows](/corbado-observe/tracking/subflows) for more details.
+
+Events:
+
+From a tracking perspective everything is done by sending events. There are different types of events and different events then create flows, subflows or decisions.
+
+
+
+
+
+# Notes (NOT PART OF THE DOCUMENTATION)
+
 - To understand Corbado Observe it is important to understand the data model
 - Make a chart/boxes like https://docs.mixpanel.com/docs/data-structure/concepts
 - Explain container/flows
 - Explain sub flows
 - Explain events
 
-
 Martin:
 
-mind 2 dinge erklären:
+- corbado/backend/internal/domain/observe/service/tracking_classification_paths_e_com_1.md studieren für verständnis, vllt auch in teilen gut für docs
+
+dann mind 3 dinge erklären:
 
 - "Blöckchen" => subflows (passkey, password etc.)
 - container/flow (ist zb nicht mandatory einen container "drum rum zu haben"), bei login empfehlen wir einen container drum rum zu machen
 - als beispiel: login/signup flow die "generisch starten" und dann entscheiden ob login oder signup
-- ich muss keinen flow haben
+- ich muss keinen flow/container haben, subflows können alleine exisitieren in der DB, tauchen dann aber nicht in dem funnel auf (in user detail drawer würden sie aber auftauchen ohne "flow parent")
 - vllt auch mehrere "application erklären": eine wo signup/login zusammewn is und eine wo es klar getrennt
 - mit decided teile ich system entscheidung des users vorher mit, ansonsten wird es auch über finish klar (aber wenn user kein finish macht wüssten wir das nicht)
 - "3." decicions erlkären: entweder user verhalten oder system verhalten erklären:
@@ -29,9 +64,7 @@ mind 2 dinge erklären:
     - mit decisions kann ich auch den funnel einfacher filtern
     - empfehlungen für common decisions: login methoden auswählen
     - mit decision kann ich auch one-tap sauber messen ("da erscheint was das kann der user nutzen oder wegklicken" kann man mit decisions sauber messen)
-- 3 types von events: container, subflows und decisions
-- corbado/backend/internal/domain/observe/service/tracking_classification_paths_e_com_1.md studieren für verständnis, vllt auch in teilen gut für docs
-- subflows können alleine exisitieren in der DB, tauchen dann aber nicht in dem funnel auf (in user detail drawer würden sie aber auftauchen ohne "flow parent")
+- 3 "types" von events: container, subflows und decisions
 - tags und user references erklären
 - applications erklären
 - vllt unterteilen in must haves und nice to haves (user reference ist must have, tags optional, application optional => im grunde erst ab 2. application relevant für einen)
