@@ -35,8 +35,7 @@
                             "corbado-observe/tracking/overview",
                             "corbado-observe/tracking/applications",
                             "corbado-observe/tracking/flows",
-                            "corbado-observe/tracking/subflows",
-                            "corbado-observe/tracking/events"
+                            "corbado-observe/tracking/subflows"
                         ]
                     }
                 ]
