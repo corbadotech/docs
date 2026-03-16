@@ -17,7 +17,7 @@ Use flows to answer high-level questions such as:
 - How does recovery conversion compare to normal login?
 - Which touchpoints produce the highest completion rate?
 
-## Supported flow types
+## 1. Supported flow types
 
 Use one of these flow names when you send flow events:
 
@@ -28,7 +28,7 @@ Use one of these flow names when you send flow events:
 | `recovery` | Account recovery journey | User regains access and is authenticated |
 | `enrollment` | Authenticator enrollment journey (for example passkey setup) | Additional auth method is configured |
 
-## Flow lifecycle events
+## 2. Flow lifecycle events
 
 These SDK events define and update flow state:
 
@@ -44,7 +44,7 @@ These SDK events define and update flow state:
   In most implementations, you always send `flowStarted()` and `flowFinished()`. Send `flowDecided()` when you start with multiple possible flows and resolve later.
 </Info>
 
-## `flowName` vs `flowNames` and `defaultFlowName`
+## 3. `flowName` vs `flowNames` and `defaultFlowName`
 
 Use the flow fields based on how many outcomes are possible at the start:
 
@@ -52,7 +52,7 @@ Use the flow fields based on how many outcomes are possible at the start:
 - `flowNames`: Use when multiple paths are possible at entry time (for example combined identifier-first form that can lead to login or sign-up).
 - `defaultFlowName`: Optional fallback used with `flowNames` when you need an initial default (for example `login`).
 
-## Pattern 1: Split login and sign-up routes
+## 4. Pattern 1: Split login and sign-up routes
 
 Use this pattern when login and sign-up are hard-separated by route or UI entry point.
 
@@ -134,7 +134,7 @@ Use this pattern when login and sign-up are hard-separated by route or UI entry 
   </Tab>
 </Tabs>
 
-## Pattern 2: One combined auth entry point
+## 5. Pattern 2: One combined auth entry point
 
 Use this pattern when one form can result in either login or sign-up.
 
@@ -219,7 +219,7 @@ At entry time, you do not know the final flow yet, so send `flowNames` and optio
   </Tab>
 </Tabs>
 
-## Next steps
+## 6. Next steps
 
 - Continue with [Decisions](/corbado-observe/tracking/decisions) to model branch points inside flows.
 - Continue with [Subflows](/corbado-observe/tracking/subflows) to map concrete auth steps.

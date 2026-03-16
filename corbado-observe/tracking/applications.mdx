@@ -8,7 +8,7 @@ Applications let you segment tracking data by product channel inside one **Corba
 
 Use applications when you want to compare authentication behavior across channels without splitting your analytics into multiple projects.
 
-## Default application behavior
+## 1. Default application behavior
 
 Each Corbado project includes a default application automatically.
 
@@ -18,14 +18,14 @@ You only need to configure `applicationId` when you want to split analytics by c
   If you only track one channel, you do not need to configure anything. **Corbado Observe** already has a default application for your project.
 </Info>
 
-## When to create multiple applications
+## 2. When to create multiple applications
 
 Create separate applications when the user journey differs by channel, for example:
 
 - Web checkout login vs. native in-app login
 - iOS vs. Android passkey UX differences
 
-## Send application context from the SDK
+## 3. Send application context from the SDK
 
 The **Corbado Observe SDK** supports `applicationId` in tracker initialization options (`TrackerOptions`). The SDK normalizes this value to lowercase before sending it.
 
@@ -128,13 +128,13 @@ You can pass application context in two ways:
   Pick short, stable IDs such as `web`, `ios`, and `android`. Avoid renaming IDs frequently so trend charts stay comparable over time.
 </Tip>
 
-## Recommended naming strategy
+## 4. Recommended naming strategy
 
 - Use one canonical ID per channel (`web`, `ios`, `android`)
 - Keep IDs lowercase and immutable
 - Avoid environment-specific IDs (for example `web-staging`) inside the same project
 
-## Environments: use separate projects
+## 5. Environments: use separate projects
 
 Use separate **Corbado Observe** projects for separate environments, for example:
 
@@ -144,7 +144,7 @@ Use separate **Corbado Observe** projects for separate environments, for example
 
 This keeps environment traffic isolated and prevents non-production data from distorting production analytics.
 
-## Next steps
+## 6. Next steps
 
 - Continue with [Flows](/corbado-observe/tracking/flows) to model complete auth journeys.
 - Continue with [Decisions](/corbado-observe/tracking/decisions) to track method choices within each application.

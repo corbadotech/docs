@@ -12,7 +12,7 @@ Every tracking event type maps to exactly one subflow. This gives you clear and 
   Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Getting started](/corbado-observe/overview/getting-started). This page focuses only on subflow-to-event mapping.
 </Info>
 
-## Provide identifier
+## 1. Provide identifier
 
 The provide identifier subflow can be used to track when users enter and submit their identifier, such as an email address or phone number.
 
@@ -22,7 +22,7 @@ The provide identifier subflow can be used to track when users enter and submit 
 - [`provideIdentifierFinished`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifierfinished)
 - [`provideIdentifierError`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifiererror)
 
-## Password login
+## 2. Password login
 
 The password login subflow can be used to track password-based login attempts from start to success or error.
 
@@ -32,13 +32,13 @@ The password login subflow can be used to track password-based login attempts fr
 - [`passwordLoginFinished`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginfinished)
 - [`passwordLoginError`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginerror)
 
-## Passkey login
+## 3. Passkey login
 
 The passkey login subflow can be used to track passkey-based sign-in attempts.
 
 - [`passkeyLoginStart`](https://github.com/corbado/js?tab=readme-ov-file#passkeyloginstart)
 
-## Social login
+## 4. Social login
 
 The social login subflow can be used to track authentication with social identity providers.
 
@@ -46,13 +46,13 @@ The social login subflow can be used to track authentication with social identit
 - [`socialLoginError`](https://github.com/corbado/js?tab=readme-ov-file#socialloginerror)
 - [`socialLoginFinish`](https://github.com/corbado/js?tab=readme-ov-file#socialloginfinish)
 
-## Passkey enrollment
+## 5. Passkey enrollment
 
 The passkey enrollment subflow can be used to track passkey registration and setup.
 
 - [`passkeyEnrollmentStartable`](https://github.com/corbado/js?tab=readme-ov-file#passkeyenrollmentstartable)
 
-## Email link
+## 6. Email link
 
 The email link subflow can be used to track authentication flows where users sign in through a link sent by email.
 
@@ -61,7 +61,7 @@ The email link subflow can be used to track authentication flows where users sig
 - [`emailLinkFinished`](https://github.com/corbado/js?tab=readme-ov-file#emaillinkfinished)
 - [`emailLinkError`](https://github.com/corbado/js?tab=readme-ov-file#emaillinkerror)
 
-## Email OTP
+## 7. Email OTP
 
 The email OTP subflow can be used to track one-time-password verification sent by email.
 
@@ -72,7 +72,7 @@ The email OTP subflow can be used to track one-time-password verification sent b
 - [`emailOTPError`](https://github.com/corbado/js?tab=readme-ov-file#emailotperror)
 - [`emailOTPResent`](https://github.com/corbado/js?tab=readme-ov-file#emailotpresent)
 
-## Set password
+## 8. Set password
 
 The set password subflow can be used to track password creation or updates during authentication journeys.
 
