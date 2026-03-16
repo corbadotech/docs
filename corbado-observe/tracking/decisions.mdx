@@ -4,4 +4,46 @@ description: "Understand the Corbado Observe decision tracking and its core enti
 sidebarTitle: "Decisions"
 ---
 
-- Explain decisions
+- Explain decisions using the content from below  (got it from multiple talks)
+- explain authDecisionStarted and authDecisionFinished events
+
+Source 1:
+
+decicions erlkären: entweder user verhalten oder system verhalten erklären:
+    - system verhalten: zb PI (hat was entschieden)
+    - funnel kann sehr kompliziet werden, viele verästelungen, decisions führen "zwiswchennodes" ein und entscheidungen werden expliziter (anstatt das ich mir den baum anschaue und es "selbst ableite")
+    - user verhalten: bei logins hat man oft stellen, wo der user sich entscheiden muss (auch x mal meinung ändern, switcht 10 mal die login methode etc.)
+        - beispiel: user hat 3 login methoden (passkey, email otp, social) und user kann auswählen aber vllt macht er mit keiner weiter, flippt wild zwischen methoden, mit user decisions können wir das messen und visualisieren
+    - mit decisions kann ich auch den funnel einfacher filtern
+    - empfehlungen für common decisions: login methoden auswählen
+    - mit decision kann ich auch one-tap sauber messen ("da erscheint was das kann der user nutzen oder wegklicken" kann man mit decisions sauber messen)
+
+Source 2:
+
+A decision is a tracked choice point — either by the **user** or the **system** — within a flow. Decisions are defined by the integrating developer, not auto-discovered.
+
+| Decision | ID | Type | Relevant Flows |
+| --- | --- | --- | --- |
+| Pre-identifier | d0 | user | login, signup |
+| Post-identifier | d1 | user | login |
+| Enrollment-allowed | d2 | system | login, signup |
+| Prefilling-accepted | d3 | system/user | login |
+
+**Decision anatomy:**
+
+- Has **available options** (can change within a single flow)
+- Has **outcomes** (0, 1, or more per flow)
+- User can make the same decision **multiple times** in a flow (e.g., retry after error)
+- System can make decisions automatically (e.g., auto-switch after failed passkey)
+
+**Decision lifecycle:**
+
+- **Starts** when options become visible
+- **Ends** when an outcome is selected (subflow state changes from offered → startable, or startable → started)
+
+**Visualization:**
+
+- End-state funnel (last decision outcome)
+- DGF / Decision Graph Flow (all decision outcomes)
+- Decision input/outcome analysis panels
+- Observe funnel filters

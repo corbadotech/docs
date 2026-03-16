@@ -1,0 +1,125 @@
+---
+title: "Tags with Corbado Observe"
+description: "Use optional key-value tags to enrich Corbado Observe events for segmentation and filtering."
+sidebarTitle: "Tags"
+---
+
+Tags are optional key-value pairs that you can attach to events in **Corbado Observe**.
+
+Use tags to add business context, so you can segment and filter analytics without changing your flow or subflow model.
+
+## 1. Why use tags
+
+Use tags when you want to answer questions like:
+
+- How does login conversion differ by `country`?
+- Does auth success differ between experiment variants (`auth_variant = A` vs `B`)?
+
+<Info>
+  Tags are optional. If you do not send tags, tracking still works.
+</Info>
+
+## 2. Send tags from the SDK
+
+In the **Corbado Observe SDK**, most tracking methods accept tags as an optional second argument (`Record<string, string>`).
+
+You can attach tags:
+
+1. Globally via `defaultTags` in tracker initialization.
+2. Per event by passing a tags object to a tracking call.
+
+<Tabs>
+  <Tab title="NPM">
+    <Info>
+      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
+    </Info>
+
+    ### Option 1: Define global default tags
+
+    ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+      defaultTags: {
+        country: "de"
+      },
+    });
+
+    getTracker().flowStarted({
+      flowName: "login",
+      touchpoint: "account",
+    });
+    ```
+
+    ### Option 2: Pass tags per event
+
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    getTracker().flowStarted(
+      {
+        flowName: "login",
+        touchpoint: "checkout",
+      },
+      {
+        country: "de"
+      },
+    );
+    ```
+  </Tab>
+
+  <Tab title="CDN">
+    <Info>
+      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
+    </Info>
+
+    ### Option 1: Define global default tags
+
+    ```html
+    <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+        defaultTags: {
+          country: "de"
+        },
+      });
+
+      Corbado.get().flowStarted({
+        flowName: "login",
+        touchpoint: "account",
+      });
+    </script>
+    ```
+
+    ### Option 2: Pass tags per event
+
+    ```html
+    <script>
+      Corbado.get().flowStarted(
+        {
+          flowName: "login",
+          touchpoint: "checkout",
+        },
+        {
+          country: "de"
+        },
+      );
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## 3. Tagging best practices
+
+- Keep tags short, predictable, and business-relevant.
+- Use strings for all values (for example `is_new_user: "true"`).
+- Avoid high-cardinality identifiers (for example raw user IDs) as tags.
+- Prefer user references for identity mapping and tags for segmentation.
+
+## 4. Next steps
+
+- Continue with [Flows](/corbado-observe/tracking/flows) to model complete journeys.
+- Continue with [Decisions](/corbado-observe/tracking/decisions) to track explicit user and system choices.

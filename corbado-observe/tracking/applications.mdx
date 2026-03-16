@@ -25,7 +25,7 @@ Create separate applications when the user journey differs by channel, for examp
 - Web checkout login vs. native in-app login
 - iOS vs. Android passkey UX differences
 
-## 3. Send application context from the SDK
+## 3. Send application context
 
 The **Corbado Observe SDK** supports `applicationId` in tracker initialization options (`TrackerOptions`). The SDK normalizes this value to lowercase before sending it.
 
@@ -40,7 +40,7 @@ You can pass application context in two ways:
       **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
     </Info>
 
-    ### Option 1: Configure `applicationId` globally
+    ### 3.1 Configure `applicationId` globally
 
     ```typescript
     import { init, getTracker } from "@corbado/observe";
@@ -57,7 +57,7 @@ You can pass application context in two ways:
     });
     ```
 
-    ### Option 2: Set `applicationId` per event
+    ### 3.2 Set `applicationId` per event
 
     ```typescript
     import { init, getTracker } from "@corbado/observe";
@@ -84,7 +84,7 @@ You can pass application context in two ways:
       **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
     </Info>
 
-    ### Option 1: Configure `applicationId` globally
+    ### 3.1 Configure `applicationId` globally
 
     ```html
     <script>
@@ -101,7 +101,7 @@ You can pass application context in two ways:
     </script>
     ```
 
-    ### Option 2: Set `applicationId` per event
+    ### 3.2 Set `applicationId` per event
 
     ```html
     <script>
