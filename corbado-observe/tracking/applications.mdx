@@ -39,6 +39,14 @@ You can pass application context in two ways:
     ### Option 1: Configure `applicationId` globally
 
     ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+      applicationId: "web",
+    });
+
     getTracker().flowStarted({
       flowName: "login",
       touchpoint: "account",
@@ -48,6 +56,13 @@ You can pass application context in two ways:
     ### Option 2: Set `applicationId` per event
 
     ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+    });
+
     getTracker().flowStarted(
       {
         flowName: "login",
@@ -65,6 +80,12 @@ You can pass application context in two ways:
 
     ```html
     <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+        applicationId: "web",
+      });
+
       Corbado.get().flowStarted({
         flowName: "login",
         touchpoint: "account",
@@ -76,6 +97,11 @@ You can pass application context in two ways:
 
     ```html
     <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+      });
+
       Corbado.get().flowStarted(
         {
           flowName: "login",
