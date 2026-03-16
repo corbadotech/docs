@@ -8,3 +8,5 @@ sidebarTitle: "Flows"
 - explain again that flows are composed of decisions and subflows
 - make a table with different flow types (see ob_flow mysql table)
 - make list of events that you can use to create flows (see corbado JS sdk, flow* events types, see corbado JS README.md to better understand the flow* events types)
+- explain flowName and flowNames parameter
+- make two example "applications" one where we have hard splitted sign-up and login flows (so we single flowName for each path is passed) and one where we have a single flow that can be used for both sign-up and login (so we pass flowNames and defaultFlowName), and the "result" of the flow is only later derived if i know the user existed or not (if it exists the flow finishes as login, otherwise as sign-up)
