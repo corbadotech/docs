@@ -1,49 +1,129 @@
 ---
 title: "Decisions with Corbado Observe"
-description: "Understand the Corbado Observe decision tracking and its core entities."
+description: "Track explicit user and system choices with decisions in Corbado Observe."
 sidebarTitle: "Decisions"
 ---
 
-- Explain decisions using the content from below  (got it from multiple talks)
-- explain authDecisionStarted and authDecisionFinished events
+Decisions capture explicit choice points in an authentication journey.
 
-Source 1:
+Use decisions to track:
 
-decicions erlkären: entweder user verhalten oder system verhalten erklären:
-    - system verhalten: zb PI (hat was entschieden)
-    - funnel kann sehr kompliziet werden, viele verästelungen, decisions führen "zwiswchennodes" ein und entscheidungen werden expliziter (anstatt das ich mir den baum anschaue und es "selbst ableite")
-    - user verhalten: bei logins hat man oft stellen, wo der user sich entscheiden muss (auch x mal meinung ändern, switcht 10 mal die login methode etc.)
-        - beispiel: user hat 3 login methoden (passkey, email otp, social) und user kann auswählen aber vllt macht er mit keiner weiter, flippt wild zwischen methoden, mit user decisions können wir das messen und visualisieren
-    - mit decisions kann ich auch den funnel einfacher filtern
-    - empfehlungen für common decisions: login methoden auswählen
-    - mit decision kann ich auch one-tap sauber messen ("da erscheint was das kann der user nutzen oder wegklicken" kann man mit decisions sauber messen)
+- **User choices**, for example selecting `passkey`, `password`, or `social-google`
+- **System choices**, for example policy or backend logic selecting an auth path automatically
 
-Source 2:
+Unlike [subflows](/corbado-observe/tracking/subflows), decisions are **not auto-discovered**. You define them by sending decision events from your integration.
 
-A decision is a tracked choice point — either by the **user** or the **system** — within a flow. Decisions are defined by the integrating developer, not auto-discovered.
+## 1. Why decisions matter
 
-| Decision | ID | Type | Relevant Flows |
-| --- | --- | --- | --- |
-| Pre-identifier | d0 | user | login, signup |
-| Post-identifier | d1 | user | login |
-| Enrollment-allowed | d2 | system | login, signup |
-| Prefilling-accepted | d3 | system/user | login |
+Without decision events, complex authentication funnels can be hard to interpret because branch points are only implied by downstream events.
 
-**Decision anatomy:**
+With decision tracking, you make branch points explicit, which helps you:
 
-- Has **available options** (can change within a single flow)
-- Has **outcomes** (0, 1, or more per flow)
-- User can make the same decision **multiple times** in a flow (e.g., retry after error)
-- System can make decisions automatically (e.g., auto-switch after failed passkey)
+- Understand where users hesitate or switch methods repeatedly
+- Analyze system-driven routing behavior (for example post-identifier routing)
+- Filter and segment funnels by concrete choice outcomes
+- Measure prompt-style interactions such as "accept" vs "dismiss"
 
-**Decision lifecycle:**
+## 2. Decision model
 
-- **Starts** when options become visible
-- **Ends** when an outcome is selected (subflow state changes from offered → startable, or startable → started)
+A decision in **Corbado Observe** has:
 
-**Visualization:**
+- A stable `decisionName` (for example `login-method` or `passkey-enrollment`)
+- A list of offered `options` at the decision point
+- An optional chosen value (`explicitDecisionValue`) when the decision resolves
 
-- End-state funnel (last decision outcome)
-- DGF / Decision Graph Flow (all decision outcomes)
-- Decision input/outcome analysis panels
-- Observe funnel filters
+Common properties:
+
+- The same decision can occur multiple times in one flow
+- Available options can change between attempts
+- Decision outcomes can be user-driven or system-driven
+
+## 3. Decision lifecycle events
+
+Use these **Corbado Observe SDK** events:
+
+| Event method | When to send | Required fields |
+| --- | --- | --- |
+| `authDecisionStarted()` | A decision point becomes visible/active | `decisionName`, `options` |
+| `authDecisionFinished()` | A concrete decision outcome is known | `decisionName`, `options` |
+
+<Info>
+  Set `explicitDecisionValue` in `authDecisionFinished()` whenever you know the selected option and want explicit outcome analytics.
+</Info>
+
+## 4. Track decisions in your integration
+
+Use `authDecisionStarted()` when choices are shown or become available, and `authDecisionFinished()` when a final option is selected.
+
+<Tabs>
+  <Tab title="NPM">
+    <Info>
+      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
+    </Info>
+
+    ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+    });
+
+    // User sees available auth method choices
+    getTracker().authDecisionStarted({
+      decisionName: "login-method",
+      options: ["passkey", "password", "social-google"],
+    });
+
+    // Later, user chooses password
+    getTracker().authDecisionFinished({
+      decisionName: "login-method",
+      options: ["passkey", "password", "social-google"],
+      explicitDecisionValue: "password",
+    });
+    ```
+  </Tab>
+
+  <Tab title="CDN">
+    <Info>
+      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
+    </Info>
+
+    ```html
+    <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+      });
+
+      Corbado.get().authDecisionStarted({
+        decisionName: "login-method",
+        options: ["passkey", "password", "social-google"],
+      });
+
+      Corbado.get().authDecisionFinished({
+        decisionName: "login-method",
+        options: ["passkey", "password", "social-google"],
+        explicitDecisionValue: "password",
+      });
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## 5. Recommended best practices
+
+- Track every important branch point with one consistent `decisionName`
+- Send `authDecisionStarted()` whenever options are shown
+- Send `authDecisionFinished()` as soon as the outcome is known
+- Include all currently offered options in both events for clear context
+- Re-send decision events if users revisit the same choice point
+
+<Tip>
+  Keep `decisionName` values short, stable, and implementation-agnostic. Avoid naming that changes with experiments or UI wording.
+</Tip>
+
+## 6. Next steps
+
+- Continue with [Flows](/corbado-observe/tracking/flows) to model complete journeys.
+- Continue with [Subflows](/corbado-observe/tracking/subflows) to map concrete auth steps.
