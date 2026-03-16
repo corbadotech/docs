@@ -66,16 +66,17 @@ Initialize Corbado Observe as early as possible in your app startup.
   </Tab>
 </Tabs>
 
-## 4. Track your first event (`loginVisible`)
+## 4. Track your first event
 
-When your login UI is rendered and visible, send `loginVisible`:
+When your login UI is rendered and visible, send `flowStarted`:
 
 <Tabs>
   <Tab title="NPM">
     ```typescript
     import { getTracker } from "@corbado/observe";
 
-    getTracker().loginVisible({
+    getTracker().flowStarted({
+      flowName: "login",
       touchpoint: "account",
     });
     ```
@@ -83,7 +84,8 @@ When your login UI is rendered and visible, send `loginVisible`:
   <Tab title="CDN">
     ```html
     <script>
-      Corbado.get().loginVisible({
+      Corbado.get().flowStarted({
+        flowName: "login",
         touchpoint: "account",
       });
     </script>
@@ -101,5 +103,4 @@ When your login UI is rendered and visible, send `loginVisible`:
 
 ## 5. Next steps
 
-- Continue with the [event catalog](/corbado-observe/tracking/events) to instrument the full auth flow.
 - Learn the data model and event structure in [Tracking overview](/corbado-observe/tracking/overview).
