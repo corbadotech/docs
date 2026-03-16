@@ -1,12 +1,209 @@
 ---
-title: "TODO"
-description: "TODO"
+title: "Flows with Corbado Observe"
+description: "Model complete authentication journeys with flows and track them consistently in Corbado Observe."
 sidebarTitle: "Flows"
 ---
 
-- Explain flows that they are complete user journeys
-- explain again that flows are composed of decisions and subflows
-- make a table with different flow types (see ob_flow mysql table)
-- make list of events that you can use to create flows (see corbado JS sdk, flow* events types, see corbado JS README.md to better understand the flow* events types)
-- explain flowName and flowNames parameter
-- make two example "applications" one where we have hard splitted sign-up and login flows (so we single flowName for each path is passed) and one where we have a single flow that can be used for both sign-up and login (so we pass flowNames and defaultFlowName), and the "result" of the flow is only later derived if i know the user existed or not (if it exists the flow finishes as login, otherwise as sign-up)
+Flows represent complete authentication journeys in **Corbado Observe**, for example login, sign-up, recovery, or enrollment.
+
+Each flow is built from smaller units:
+
+- [**Decisions**](/corbado-observe/tracking/decisions) (for example method selection or route choice)
+- [**Subflows**](/corbado-observe/tracking/subflows) (for example passkey login, password login, or email OTP)
+
+Use flows to answer high-level questions such as:
+
+- Where do users drop off in login vs sign-up?
+- How does recovery conversion compare to normal login?
+- Which touchpoints produce the highest completion rate?
+
+## Supported flow types
+
+Use one of these flow names when you send flow events:
+
+| Flow type | Meaning | Typical outcome |
+| --- | --- | --- |
+| `login` | Existing user authentication journey | User is authenticated |
+| `signup` | New user registration journey | User account is created and authenticated |
+| `recovery` | Account recovery journey | User regains access and is authenticated |
+| `enrollment` | Authenticator enrollment journey (for example passkey setup) | Additional auth method is configured |
+
+## Flow lifecycle events
+
+These SDK events define and update flow state:
+
+| Event method | When to send | Required fields |
+| --- | --- | --- |
+| `flowStarted()` | User enters an auth touchpoint or flow chooser | `flowName` **or** `flowNames` |
+| `flowDecided()` | Flow is resolved to one concrete path | `flowName` |
+| `flowFinished()` | Flow completes explicitly | `flowName` |
+| `flowReset()` | In-progress flow is restarted | `flowName` |
+| `flowAutoFinished()` | One flow is completed implicitly by another flow | `flowName`, `finishedByFlowName` |
+
+<Info>
+  In most implementations, you always send `flowStarted()` and `flowFinished()`. Send `flowDecided()` when you start with multiple possible flows and resolve later.
+</Info>
+
+## `flowName` vs `flowNames` and `defaultFlowName`
+
+Use the flow fields based on how many outcomes are possible at the start:
+
+- `flowName`: Use when the path is already known (for example a dedicated `/login` page).
+- `flowNames`: Use when multiple paths are possible at entry time (for example combined identifier-first form that can lead to login or sign-up).
+- `defaultFlowName`: Optional fallback used with `flowNames` when you need an initial default (for example `login`).
+
+## Pattern 1: Split login and sign-up routes
+
+Use this pattern when login and sign-up are hard-separated by route or UI entry point.
+
+<Tabs>
+  <Tab title="NPM">
+    ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>"
+    });
+
+    // /login route
+    getTracker().flowStarted({
+      flowName: "login",
+      touchpoint: "account_login",
+    });
+
+    // ... authentication succeeds
+    getTracker().flowFinished({
+      flowName: "login",
+      userId: "usr_123",
+    });
+
+    // /signup route
+    getTracker().flowStarted({
+      flowName: "signup",
+      touchpoint: "account_signup",
+    });
+
+    // ... registration succeeds
+    getTracker().flowFinished({
+      flowName: "signup",
+      userId: "usr_456",
+    });
+    ```
+  </Tab>
+
+  <Tab title="CDN">
+    ```html
+    <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+      });
+
+      // /login route
+      Corbado.get().flowStarted({
+        flowName: "login",
+        touchpoint: "account_login",
+      });
+
+      Corbado.get().flowFinished({
+        flowName: "login",
+        userId: "usr_123",
+      });
+
+      // /signup route
+      Corbado.get().flowStarted({
+        flowName: "signup",
+        touchpoint: "account_signup",
+      });
+
+      Corbado.get().flowFinished({
+        flowName: "signup",
+        userId: "usr_456",
+      });
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Pattern 2: One combined auth entry point
+
+Use this pattern when one form can result in either login or sign-up.
+
+At entry time, you do not know the final flow yet, so send `flowNames` and optional `defaultFlowName`. Later, after identifier lookup or backend checks, decide and finish the resolved flow.
+
+<Tabs>
+  <Tab title="NPM">
+    ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+    });
+
+    // Combined /auth route
+    getTracker().flowStarted({
+      flowNames: ["login", "signup"],
+      defaultFlowName: "login",
+      touchpoint: "account",
+    });
+
+    // Later after user exists check:
+    var userExists = true;
+
+    if (userExists) {
+      getTracker().flowDecided({ flowName: "login" });
+      getTracker().flowFinished({
+        flowName: "login",
+        userId: "usr_123",
+      });
+    } else {
+      getTracker().flowDecided({ flowName: "signup" });
+      getTracker().flowFinished({
+        flowName: "signup",
+        userId: "usr_789",
+      });
+    }
+    ```
+  </Tab>
+
+  <Tab title="CDN">
+    ```html
+    <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+      });
+
+      Corbado.get().flowStarted({
+        flowNames: ["login", "signup"],
+        defaultFlowName: "login",
+        touchpoint: "account",
+      });
+
+      // Later after user exists check:
+      var userExists = true;
+
+      if (userExists) {
+        Corbado.get().flowDecided({ flowName: "login" });
+        Corbado.get().flowFinished({
+          flowName: "login",
+          userId: "usr_123",
+        });
+      } else {
+        Corbado.get().flowDecided({ flowName: "signup" });
+        Corbado.get().flowFinished({
+          flowName: "signup",
+          userId: "usr_789",
+        });
+      }
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Next steps
+
+- Continue with [Decisions](/corbado-observe/tracking/decisions) to model branch points inside flows.
+- Continue with [Subflows](/corbado-observe/tracking/subflows) to map concrete auth steps.
