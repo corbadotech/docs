@@ -37,6 +37,7 @@
                             "corbado-observe/tracking/flows",
                             "corbado-observe/tracking/decisions",
                             "corbado-observe/tracking/subflows",
+                            "corbado-observe/tracking/user",
                             "corbado-observe/tracking/tags"
                         ]
                     }
