@@ -101,6 +101,30 @@ When your login UI is rendered and visible, send `flowStarted`:
   Use `touchpoint` consistently (for example `account`, `checkout`, `modal`) so you can compare funnel metrics across entry points.
 </Tip>
 
-## 5. Next steps
+## 5. Debugging
+
+Use debug mode during integration to verify that events are sent with the expected payload.
+
+Set `debug: true` in your `init()` call while developing:
+
+```typescript
+init({
+  projectId: "<ProjectID>",
+  apiBaseUrl: "<APIBaseURL>",
+  debug: true,
+});
+```
+
+With debug mode enabled, **Corbado Observe** logs tracked events to the browser console so you can confirm:
+
+- The event name is correct (for example `flowStarted`)
+- Required fields such as `flowName` and `touchpoint` are present
+- Events are fired at the correct time in your UI flow
+
+<Tip>
+  Keep `debug` enabled in local and staging environments. Set `debug: false` in production to reduce console noise.
+</Tip>
+
+## 6. Next steps
 
 - Learn the data model and event structure in [Tracking overview](/corbado-observe/tracking/overview).
