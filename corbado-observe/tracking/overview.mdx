@@ -1,0 +1,29 @@
+---
+title: "Tracking Events with Corbado Observe"
+description: "Understand the Corbado Observe tracking data model and its core entities."
+sidebarTitle: "Overview"
+---
+
+**Corbado Observe** helps you track authentication journeys across your product so you can understand user behavior, identify drop-offs, and improve conversion. It does this by capturing structured events from your application and mapping them to a clear data model.
+
+The following diagram shows an example passkey login journey and gives you a high-level overview:
+
+<Frame>
+  <img 
+    src="/images/corbado-observe/data-model.png" 
+    alt="Corbado Observe data model showing user, application, flow, subflow, and event relationships during an example passkey login" 
+  />
+</Frame>
+
+## 1. Data model entities
+
+| Entity | Description |
+| --- | --- |
+| [Projects](https://app.corbado.com) | Projects are the top-level container in the data model. Each project stores its own tracking data and events, and projects are fully isolated from each other. |
+| [Applications](/corbado-observe/tracking/applications) | Applications represent the channels of your product (for example, web and native app). In most cases, you keep them in one project and model them as separate applications. Read our section on [Applications](/corbado-observe/tracking/applications) for more details. |
+| [Flows](/corbado-observe/tracking/flows) | Flows describe larger user journeys, such as sign-up, login, or account recovery. A flow is composed of decisions and subflows. Read our section on [Flows](/corbado-observe/tracking/flows) for more details. |
+| [Decisions](/corbado-observe/tracking/decisions) | Decisions capture system and user choices, such as selecting a login method (password, email OTP, or social login). In funnel analysis, decisions create explicit nodes and can be used as filters. Decisions are created by sending specific events. Read our section on [Decisions](/corbado-observe/tracking/decisions) for more details. |
+| [Subflows](/corbado-observe/tracking/subflows) | Subflows are smaller building blocks within a flow. They group related events into a logical unit, such as a passkey login or recovery step. Read our section on [Subflows](/corbado-observe/tracking/subflows) for more details. |
+| [Events](/corbado-observe/tracking/subflows) | Events are the foundation of tracking in **Corbado Observe**. Different event types are used to model flows, subflows, and decisions. A single event type is always mapped to a single subflow. Read our section on [Subflows](/corbado-observe/tracking/subflows) for more details. |
+| [Users](/corbado-observe/tracking/user) | Users in **Corbado Observe** mirror your own user entities. User references are used to group multiple flows for one user and enable a per-user view on authentication behavior. Read our section on [Users](/corbado-observe/tracking/user) for more details. |
+| [Tags](/corbado-observe/tracking/tags) | Tags are key-value pairs that can be used to add additional metadata to events. Read our section on [Tags](/corbado-observe/tracking/tags) for more details. |

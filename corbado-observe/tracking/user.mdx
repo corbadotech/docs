@@ -1,0 +1,95 @@
+---
+title: "Users with Corbado Observe"
+description: "Understand user entities in Corbado Observe and pass user references from the SDK."
+sidebarTitle: "Users"
+---
+
+In **Corbado Observe**, users are a mirror of your own user entities.
+
+**Corbado Observe** does not create an independent user model for authentication logic. Instead, it links events to your users so you can analyze authentication per user across multiple flows.
+
+## 1. Why user mapping matters
+
+Adding user information to events helps you:
+
+- Group multiple flows (for example login retries and recovery) under the same user
+- Analyze authentication behavior in a per-user view
+- Connect anonymous pre-login events with known users as soon as identity is available
+
+<Info>
+  User references are strongly recommended because they power reliable per-user analysis in **Corbado Observe**.
+</Info>
+
+## 2. User reference model
+
+**Corbado Observe** supports these user reference fields:
+
+- `userId`: Your stable internal user ID
+- `identifier`: A user-facing identifier (for example email)
+- `crossEnvironmentTransactionID`: Optional correlation ID for cross-device or email-link flows
+
+Use at least one stable identifier (`userId` is recommended). Send both `userId` and `identifier` whenever available.
+
+<Info>
+  User reference fields are limited to `userId`, `identifier`, and `crossEnvironmentTransactionID`.
+</Info>
+
+## 3. Send user references from the SDK
+
+In the **Corbado Observe SDK**, user references are sent in event payloads for methods that support identity fields (for example `flowFinished()`, `provideIdentifierFinished()`, `socialLoginFinish()`).
+
+<Tabs>
+  <Tab title="NPM">
+    <Info>
+      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
+    </Info>
+
+    ```typescript
+    import { init, getTracker } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+    });
+
+    getTracker().flowFinished({
+      flowName: "login",
+      userId: "usr_12345",
+      identifier: "max@example.com",
+    });
+    ```
+  </Tab>
+
+  <Tab title="CDN">
+    <Info>
+      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
+    </Info>
+
+    ```html
+    <script>
+      Corbado.init({
+        projectId: "<ProjectID>",
+        apiBaseUrl: "<APIBaseURL>",
+      });
+
+      Corbado.get().flowFinished({
+        flowName: "login",
+        userId: "usr_12345",
+        identifier: "max@example.com",
+      });
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## 4. Best practices
+
+- Prefer your immutable internal user ID for `userId` (or a hash of it if you prefer not to expose your user IDs)
+- Add `identifier` when it improves debugging or support workflows
+- Send the same user reference consistently across all relevant auth events
+- Do not use tags for identity mapping; use tags for segmentation
+
+## 5. Next steps
+
+- Continue with [Tags](/corbado-observe/tracking/tags) to add optional segmentation metadata.
+- Continue with [Flows](/corbado-observe/tracking/flows) to model complete user journeys.

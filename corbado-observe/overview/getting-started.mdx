@@ -1,0 +1,106 @@
+---
+title: "Getting Started with Corbado Observe"
+description: "Install Corbado Observe with npm or CDN, initialize the tracker, and send your first authentication event."
+sidebarTitle: "Getting started"
+---
+
+**Corbado Observe** helps you measure authentication and passkey flows in your application by instrumenting your application with events. This guide shows how to install the SDK, initialize it, and send your first event.
+
+## 1. Prerequisites
+
+Before you start, make sure you have:
+
+- An active Corbado project in the [Corbado management console](https://app.corbado.com)
+- Your `Project ID` and `API Base URL` from [settings](https://app.corbado.com/observe/settings/general)
+
+## 2. Add Corbado Observe to your app
+
+Choose one integration path depending on your stack:
+
+<Tabs>
+  <Tab title="NPM">
+    Install the package:
+
+    ```bash
+    npm install @corbado/observe
+    ```
+  </Tab>
+  <Tab title="CDN">
+    Add the Corbado Observe snippet to your page and initialize it in the same block.
+    Place this snippet right before your closing `</head>` tag:
+
+    <Warning>
+      Enter your `ProjectID` and `APIBaseURL` as provided in the [Corbado management console](https://app.corbado.com/observe/settings/general).
+    </Warning>
+
+    ```html
+    <script>
+       (function(b,r){r.Corbado=r.Corbado||{};var v="/script.global.js",s,c,p,u,i,a;r.Corbado.__SV||(r.Corbado.__SV=1,r.Corbado.IQ=[],r.Corbado.MQ=[],r.Corbado.OQ=[],r.Corbado.init=function(f,n){r.Corbado.IQ.push([f,n||"default"])},r.Corbado.get=function(f){var n=f||"default",l={};s="loginVisible provideIdentifierSubmitted provideIdentifierFinished provideIdentifierError loginReset passwordLoginSubmitted passwordLoginFinished passwordLoginError socialLoginError socialLoginFinish loginFinish signupVisible signupFinish loginMethodsDecisionOffered authDecisionVisible authDecisionFinished securityEnrollmentStarted securityEnrollmentFinished accountRecoveryStarted accountRecoveryFinished emailLinkFinished emailLinkError emailOTPSubmitted emailOTPFinished emailOTPError emailOTPResent setPasswordSubmitted setPasswordFinished setPasswordError resetSession".split(" "),c="provideIdentifierStartable provideIdentifierStarted passwordLoginStartable passwordLoginStarted passkeyLoginStart socialLoginStart passkeyEnrollmentStartable emailLinkStartable emailLinkSubmitted emailOTPStartable emailOTPStarted setPasswordStartable setPasswordStarted".split(" "),p="identifierStarted identifierSubmitted identifierFinished identifierError conditionalUIStartable conditionalUISubmitted conditionalUIFinished conditionalUIClientError conditionalUIServerErrorConditionalUICredentialDeleted conditionalUIServerErrorUnknown startable started submitted finished error forgotPasswordClicked clientError serverErrorUnknown skipped resent".split(" ");function h(t,o,e){typeof r.Corbado.__dispatchMethod=="function"?r.Corbado.__dispatchMethod(n,t,o,e):r.Corbado.MQ.push([n,t,o,e])}function C(t,o,e){typeof r.Corbado.__dispatchOp=="function"?r.Corbado.__dispatchOp(t,o,e):r.Corbado.OQ.push([t,o,e])}function g(t){var o={},e,d;for(e=0;e<p.length;e++)d=p[e],o[d]=(function(y){return function(){C(t,y,Array.prototype.slice.call(arguments,0))}})(d);return o}for(a=0;a<s.length;a++)(function(t){l[t]=function(){h(t,Array.prototype.slice.call(arguments,0))}})(s[a]);for(a=0;a<c.length;a++)(function(t){l[t]=function(){var o=String(Date.now())+"-"+Math.random().toString(36).slice(2);return h(t,Array.prototype.slice.call(arguments,0),o),g(o)}})(c[a]);return l},i=b.createElement("script"),i.type="text/javascript",i.async=!0,i.crossOrigin="anonymous",i.src=v,u=b.getElementsByTagName("script")[0],u.parentNode.insertBefore(i,u))})(document,window);
+       Corbado.init({projectId: "<ProjectID>", apiBaseUrl: "<APIBaseURL>", debug: true});
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## 3. Initialize the tracker
+
+Initialize Corbado Observe as early as possible in your app startup.
+
+<Tabs>
+  <Tab title="NPM">
+    ```typescript
+    import { init } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+    });
+    ```
+
+    <Info>
+      Enter your `ProjectID` and `APIBaseURL` as provided in the [Corbado management console](https://app.corbado.com/observe/settings/general).
+    </Info>
+  </Tab>
+  <Tab title="CDN">
+    Initialization is already included in the snippet from step 1.
+  </Tab>
+</Tabs>
+
+## 4. Track your first event
+
+When your login UI is rendered and visible, send `flowStarted`:
+
+<Tabs>
+  <Tab title="NPM">
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    getTracker().flowStarted({
+      flowName: "login",
+      touchpoint: "account",
+    });
+    ```
+  </Tab>
+  <Tab title="CDN">
+    ```html
+    <script>
+      Corbado.get().flowStarted({
+        flowName: "login",
+        touchpoint: "account",
+      });
+    </script>
+    ```
+
+    <Warning>
+      It is important that you call `Corbado.get()` for each event and do not store the instance in a variable. This ensures robust and asynchronous loading of the SDK without losing any events.
+    </Warning>
+  </Tab>
+</Tabs>
+
+<Tip>
+  Use `touchpoint` consistently (for example `account`, `checkout`, `modal`) so you can compare funnel metrics across entry points.
+</Tip>
+
+## 5. Next steps
+
+- Learn the data model and event structure in [Tracking overview](/corbado-observe/tracking/overview).
