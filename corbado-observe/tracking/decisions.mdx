@@ -38,22 +38,46 @@ Common properties:
 - Available options can change between attempts
 - Decision outcomes can be user-driven or system-driven
 
-## 3. Decision lifecycle events
+## 3. Decision types
 
-Use these **Corbado Observe SDK** events:
+The SDK offers two decision event variants. Both follow the same started/finished lifecycle, but differ in how options are typed.
+
+### 3.1 Auth method decisions
+
+Use `authMethodsDecisionStarted()` / `authMethodsDecisionFinished()` when the decision involves choosing an authentication method. This is the more convenient variant for auth method selection because options use predefined `AuthMethodType` values, which reduces tracking code and enables richer analytics out of the box.
+
+| Event method | When to send | Required fields |
+| --- | --- | --- |
+| `authMethodsDecisionStarted()` | Auth method choices are shown or become available | `decisionName`, `options` |
+| `authMethodsDecisionFinished()` | A concrete auth method outcome is known | `decisionName`, `options` |
+
+Available `AuthMethodType` values include: `passkey-login-known-identifier`, `passkey-login-no-identifier`, `passkey-login-cui`, `passkey-enrollment`, `password-login-known-identifier`, `password-login-with-identifier`, `password-enrollment`, `email-otp-login`, `email-otp-enrollment`, `email-link-login`, `email-link-enrollment`, `social-google`, `social-apple`, `social-facebook`, `social-other`, `identifier-email`, `reset-flow`. You can also pass custom strings alongside these predefined values.
+
+### 3.2 Generic decisions
+
+Use `authDecisionStarted()` / `authDecisionFinished()` for decisions that are not about selecting an authentication method, for example prompt-style interactions like "accept" vs "dismiss" or binary choices like "keep me logged in".
 
 | Event method | When to send | Required fields |
 | --- | --- | --- |
 | `authDecisionStarted()` | A decision point becomes visible/active | `decisionName`, `options` |
 | `authDecisionFinished()` | A concrete decision outcome is known | `decisionName`, `options` |
 
-<Info>
-  Set `explicitDecisionValue` in `authDecisionFinished()` whenever you know the selected option and want explicit outcome analytics.
-</Info>
+### 3.3 `explicitDecisionValue`
+
+Both decision types support an optional `explicitDecisionValue` field. Use it when you want to record which option was selected.
+
+Common patterns:
+
+- **On `finished` events**: Set `explicitDecisionValue` to record the user's final choice (for example `"password-login"` or `"skip"`).
+- **On `started` events**: Set `explicitDecisionValue` when the decision is re-offered after a user action and you want to capture what triggered the transition (for example `"switch-method"` when the user navigated back to a different set of options).
+
+If the decision resolves implicitly (for example the user proceeds with the only available option), you can omit `explicitDecisionValue`.
 
 ## 4. Track decisions in your integration
 
-Use `authDecisionStarted()` when choices are shown or become available, and `authDecisionFinished()` when a final option is selected.
+### 4.1 Example: post-identifier auth method selection
+
+After identifier lookup, the user sees available login methods. Each time the available options change (for example the user switches between method sets), a new decision event is sent.
 
 <Tabs>
   <Tab title="NPM">
@@ -69,17 +93,17 @@ Use `authDecisionStarted()` when choices are shown or become available, and `aut
       apiBaseUrl: "<APIBaseURL>",
     });
 
-    // User sees available auth method choices
-    getTracker().authDecisionStarted({
-      decisionName: "login-method",
-      options: ["passkey", "password", "social-google"],
+    // User sees passkey + other method options after identifier check
+    getTracker().authMethodsDecisionStarted({
+      decisionName: "post-identifier",
+      options: ["passkey-login-known-identifier", "social-google", "reset-flow"],
     });
 
-    // Later, user chooses password
-    getTracker().authDecisionFinished({
-      decisionName: "login-method",
-      options: ["passkey", "password", "social-google"],
-      explicitDecisionValue: "password",
+    // User clicks "show other methods", new options are presented
+    getTracker().authMethodsDecisionStarted({
+      decisionName: "post-identifier",
+      options: ["social-google", "password-login-known-identifier", "reset-flow"],
+      explicitDecisionValue: "switch-method",
     });
     ```
   </Tab>
@@ -96,26 +120,65 @@ Use `authDecisionStarted()` when choices are shown or become available, and `aut
         apiBaseUrl: "<APIBaseURL>",
       });
 
-      Corbado.get().authDecisionStarted({
-        decisionName: "login-method",
-        options: ["passkey", "password", "social-google"],
+      Corbado.get().authMethodsDecisionStarted({
+        decisionName: "post-identifier",
+        options: ["passkey-login-known-identifier", "social-google", "reset-flow"],
       });
 
-      Corbado.get().authDecisionFinished({
-        decisionName: "login-method",
-        options: ["passkey", "password", "social-google"],
-        explicitDecisionValue: "password",
+      Corbado.get().authMethodsDecisionStarted({
+        decisionName: "post-identifier",
+        options: ["social-google", "password-login-known-identifier", "reset-flow"],
+        explicitDecisionValue: "switch-method",
       });
     </script>
     ```
   </Tab>
 </Tabs>
 
+### 4.2 Example: passkey enrollment prompt
+
+After login, the user is prompted to enroll a passkey. This is a binary decision: enroll or skip.
+
+```typescript
+// Enrollment prompt is shown
+getTracker().authMethodsDecisionStarted({
+  decisionName: "enrollment-user",
+  options: ["passkey-enrollment", "skip"],
+});
+
+// User skips enrollment
+getTracker().authMethodsDecisionFinished({
+  decisionName: "enrollment-user",
+  options: ["passkey-enrollment", "skip"],
+  explicitDecisionValue: "skip",
+});
+```
+
+### 4.3 Example: generic decision (identifier prefilling)
+
+A non-auth-method decision, for example whether the user accepts a pre-filled identifier.
+
+```typescript
+// Pre-filled identifier is shown, user can accept or change it
+getTracker().authDecisionStarted({
+  decisionName: "prefilling-accepted",
+  options: ["accept", "deny"],
+});
+
+// User proceeds with the pre-filled identifier
+getTracker().authDecisionFinished({
+  decisionName: "prefilling-accepted",
+  options: ["accept", "deny"],
+  explicitDecisionValue: "accept",
+});
+```
+
 ## 5. Recommended best practices
 
+- Use `authMethodsDecision*` for authentication method selection and `authDecision*` for everything else
 - Track every important branch point with one consistent `decisionName`
-- Send `authDecisionStarted()` whenever options are shown
-- Send `authDecisionFinished()` as soon as the outcome is known
+- Send a `started` event whenever options are shown or change
+- Send a `finished` event as soon as the outcome is known
 - Include all currently offered options in both events for clear context
 - Re-send decision events if users revisit the same choice point
 
@@ -126,4 +189,4 @@ Use `authDecisionStarted()` when choices are shown or become available, and `aut
 ## 6. Next steps
 
 - Continue with [Flows](/corbado-observe/tracking/flows) to model complete journeys.
-- Continue with [Subflows](/corbado-observe/tracking/subflows) to map concrete auth steps.
+- Continue with [Subflows](/corbado-observe/tracking/subflows) to learn about subflow types and their steps.

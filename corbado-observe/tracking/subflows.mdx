@@ -22,7 +22,7 @@ The **trigger** (`subflow_trigger`) marks the moment of interaction with the sub
 
 Note that steps can run **before** the trigger fires. For example, during passkey login the `get-options` step may complete in the background while the UI renders a "Sign in with passkey" button. The trigger fires only when the user clicks that button. If the user never clicks, there is no trigger — meaning there was no interaction with this subflow.
 
-Corbado Observe uses the trigger to calculate **how long it takes the user to interact** with a subflow.
+Corbado Observe uses the trigger to calculate **how long it takes the user to interact** with a subflow and to determine if a subflow **should be included in certain dashboards or not**.
 
 The trigger carries:
 
@@ -67,6 +67,128 @@ The position of the trigger is not fixed — it depends on your implementation. 
 | … | | | |
 
 If any step fails, a `subflow_step_error` replaces the corresponding `subflow_step_finished`.
+
+### Code example: passkey login
+
+The SDK provides a dedicated class for each subflow type. Each class exposes its predefined steps as properties with `.start()`, `.finished()`, and `.error()` methods.
+
+<Tabs>
+  <Tab title="Manual trigger (post-identifier)">
+    The user's identifier is already known. A "Sign in with passkey" button is shown, and the user clicks it to start. The trigger fires on click with `actor: "user"`.
+
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    const handlePasskeyLogin = async (email: string) => {
+      const passkeyOp = getTracker().passkeyLoginFullOperation();
+      passkeyOp.trigger({ actor: "user" });
+
+      try {
+        passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
+        const options = await fetchAssertionOptions(email);
+        passkeyOp.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+      } catch (e) {
+        passkeyOp.getOptions.error(e);
+        return;
+      }
+
+      try {
+        passkeyOp.ceremony.start({});
+        const response = await startWebAuthnAuthentication(options);
+        passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+      } catch (e) {
+        passkeyOp.ceremony.error(e);
+        return;
+      }
+
+      try {
+        passkeyOp.postResponse.start({});
+        await verifyOnServer(response);
+        passkeyOp.postResponse.finished({});
+      } catch (e) {
+        passkeyOp.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+
+  <Tab title="Auto trigger (post-identifier)">
+    The user's identifier is already known and the system automatically starts the passkey ceremony (for example as the preferred login method). The trigger fires immediately with `actor: "system"`.
+
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    const autoStartPasskeyLogin = async (email: string) => {
+      const passkeyOp = getTracker().passkeyLoginFullOperation();
+      passkeyOp.trigger({ actor: "system" });
+
+      try {
+        passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
+        const options = await fetchAssertionOptions(email);
+        passkeyOp.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+      } catch (e) {
+        passkeyOp.getOptions.error(e);
+        return;
+      }
+
+      try {
+        passkeyOp.ceremony.start({});
+        const response = await startWebAuthnAuthentication(options);
+        passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+      } catch (e) {
+        passkeyOp.ceremony.error(e);
+        return;
+      }
+
+      try {
+        passkeyOp.postResponse.start({});
+        await verifyOnServer(response);
+        passkeyOp.postResponse.finished({});
+      } catch (e) {
+        passkeyOp.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+
+  <Tab title="Conditional UI (pre-identifier)">
+    No identifier is known yet. The SDK binds to the identifier input field and tracks both the provide-identifier subflow and a CUI passkey login subflow together. The CUI trigger and ceremony start are **auto-detected** by the SDK when the user interacts with the browser autofill prompt.
+
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    const identifierInput = document.getElementById("email") as HTMLInputElement;
+    const op = getTracker().provideIdentifierOperationFull(identifierInput);
+
+    const startConditionalUI = async () => {
+      try {
+        op.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
+        const options = await fetchConditionalUIOptions();
+        op.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+      } catch (e) {
+        op.cui.getOptions.error(e);
+        return;
+      }
+
+      try {
+        const response = await startWebAuthnAuthentication(options, { useBrowserAutofill: true });
+        op.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+      } catch (e) {
+        op.cui.ceremony.error(e);
+        return;
+      }
+
+      try {
+        op.cui.postResponse.start({});
+        const result = await verifyOnServer(response);
+        op.cui.postResponse.finished({}, { userReference: { userId: result.userId } });
+      } catch (e) {
+        op.cui.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+</Tabs>
 
 ---
 
