@@ -36,7 +36,13 @@ Use at least one stable identifier (`userId` is recommended). Send both `userId`
 
 ## 3. Send user references from the SDK
 
-In the **Corbado Observe SDK**, user references are sent in event payloads for methods that support identity fields (for example `flowFinished()`, `provideIdentifierFinished()`, `socialLoginFinish()`).
+In the **Corbado Observe SDK**, every event supports an optional user reference. You can pass user references with flow events, subflow step events, and any other tracking call.
+
+The most common points to send user references are:
+
+- **When a login or signup flow completes** — this covers all successful authentication flows. Pass the user reference in `flowFinished()`.
+- **During a flow when the user identity becomes known** — typically after the provide-identifier [subflow](/corbado-observe/tracking/subflows) step completes and your backend resolves the identifier to a user. Pass the user reference in the corresponding subflow step event.
+- **When an enrollment flow starts** — before a user can enroll a new authentication method (for example a passkey), their identity must already be known. Pass the user reference in the first subflow step event of the enrollment.
 
 <Tabs>
   <Tab title="NPM">
@@ -52,6 +58,7 @@ In the **Corbado Observe SDK**, user references are sent in event payloads for m
       apiBaseUrl: "<APIBaseURL>",
     });
 
+    // Most common: pass user reference when a flow finishes
     getTracker().flowFinished({
       flowName: "login",
       userId: "usr_12345",
@@ -72,6 +79,7 @@ In the **Corbado Observe SDK**, user references are sent in event payloads for m
         apiBaseUrl: "<APIBaseURL>",
       });
 
+      // Most common: pass user reference when a flow finishes
       Corbado.get().flowFinished({
         flowName: "login",
         userId: "usr_12345",

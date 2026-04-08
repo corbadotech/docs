@@ -4,96 +4,390 @@ description: "Track concrete authentication steps with subflows."
 sidebarTitle: "Subflows"
 ---
 
-Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows) and are **auto-discovered** by **Corbado Observe** based on the event types you send.
-
-They represent a specific authentication step, for example password login, passkey enrollment, or email OTP login.
+Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows) and are **auto-discovered** by **Corbado Observe** based on the events you send. They represent a specific authentication method, for example passkey login, password enrollment, or email OTP verification.
 
 <Info>
-  Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Getting started](/corbado-observe/overview/getting-started). This page focuses only on subflow-to-event mapping.
+  Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Getting started](/corbado-observe/overview/getting-started). This page explains the subflow concept and documents all available subflow types.
 </Info>
 
-## 1. Provide identifier
+On SDK level, every subflow type has a dedicated class that helps with tracking. Each class defines the default steps you typically want to track for that subflow. If you need to track additional steps beyond the defaults, you can do so by using the generic step events with a custom `stepName`.
 
-The provide identifier subflow can be used to track when users enter and submit their identifier, such as an email address or phone number.
+## How subflows work
 
-The following events map to the provide identifier subflow:
+A subflow groups related events for one authentication method. Every subflow has a **type** (e.g., `passkey-login` or `password-login`) and consists of a **trigger** and one or more **steps**.
 
-- [`provideIdentifierStartable`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifierstartable)
-- [`provideIdentifierStarted`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifierstarted)
-- [`provideIdentifierSubmitted`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifiersubmitted)
-- [`provideIdentifierFinished`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifierfinished)
-- [`provideIdentifierError`](https://github.com/corbado/js?tab=readme-ov-file#provideidentifiererror)
+### Trigger
 
-## 2. Password login
+The **trigger** (`subflow_trigger`) marks the moment of interaction with the subflow. Usually the actor is the user (e.g., clicking "Sign in with passkey"), but in some cases the system can be the actor too (e.g., during passkey enrollment with conditional mediation).
 
-The password login subflow can be used to track password-based login attempts from start to success or error.
+Note that steps can run **before** the trigger fires. For example, during passkey login the `get-options` step may complete in the background while the UI renders a "Sign in with passkey" button. The trigger fires only when the user clicks that button. If the user never clicks, there is no trigger — meaning there was no interaction with this subflow.
 
-The following events map to the password login subflow:
+Corbado Observe uses the trigger to calculate **how long it takes the user to interact** with a subflow and to determine if a subflow **should be included in certain dashboards or not**.
 
-- [`passwordLoginStartable`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginstartable)
-- [`passwordLoginStarted`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginstarted)
-- [`passwordLoginSubmitted`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginsubmitted)
-- [`passwordLoginFinished`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginfinished)
-- [`passwordLoginError`](https://github.com/corbado/js?tab=readme-ov-file#passwordloginerror)
+The trigger carries:
 
-## 3. Passkey login
+| Field | Description |
+| --- | --- |
+| `actor` | Who initiated the interaction: `user` (e.g., clicked a button) or `system` (e.g., auto-started passkey enrollment with conditional mediation). |
+| `explicitSpecType` | Optional. A variant label that distinguishes different flavors of the same subflow type (see the spec type tables for each subflow below). |
 
-The passkey login subflow can be used to track passkey-based sign-in attempts.
+### Steps
 
-The following events map to the passkey login subflow:
+Each step represents one phase of the subflow. A step is identified by its `stepName` (e.g., `get-options`, `ceremony`, `post-response`) and tracked with three generic events:
 
-- [`passkeyLoginStart`](https://github.com/corbado/js?tab=readme-ov-file#passkeyloginstart)
+| Event | Description |
+| --- | --- |
+| `subflow_step_started` | The step began. |
+| `subflow_step_finished` | The step completed successfully. |
+| `subflow_step_error` | The step failed. |
 
-## 4. Social login
+Every subflow type defines a set of predefined steps (documented in the sections below). You can also define **custom steps** by passing any `stepName` string to the generic step events.
 
-The social login subflow can be used to track authentication with social identity providers.
+### Example: passkey login
 
-The following events map to the social login subflow:
+A successful passkey login subflow where assertion options are pre-fetched in the background:
 
-- [`socialLoginStart`](https://github.com/corbado/js?tab=readme-ov-file#socialloginstart)
-- [`socialLoginError`](https://github.com/corbado/js?tab=readme-ov-file#socialloginerror)
-- [`socialLoginFinish`](https://github.com/corbado/js?tab=readme-ov-file#socialloginfinish)
+| # | Event | Step | Description |
+| --- | --- | --- | --- |
+| 1 | `subflow_step_started` | `get-options` | SDK requests assertion options from your server in the background. |
+| 2 | `subflow_step_finished` | `get-options` | Server returns assertion options. UI can now show a "Sign in with passkey" button. |
+| 3 | `subflow_trigger` | — | User clicks the button (`actor: user`). |
+| 4 | `subflow_step_started` | `ceremony` | Browser WebAuthn ceremony begins. |
+| 5 | `subflow_step_finished` | `ceremony` | User completes the ceremony. |
+| 6 | `subflow_step_started` | `post-response` | SDK sends the assertion response to your server for verification. |
+| 7 | `subflow_step_finished` | `post-response` | Server confirms the login. |
 
-## 5. Passkey enrollment
+The position of the trigger is not fixed — it depends on your implementation. If assertion options are only fetched after the user clicks the button, the trigger would come first:
 
-The passkey enrollment subflow can be used to track passkey registration and setup.
+| # | Event | Step | Description |
+| --- | --- | --- | --- |
+| 1 | `subflow_trigger` | — | User clicks "Sign in with passkey" (`actor: user`). |
+| 2 | `subflow_step_started` | `get-options` | SDK requests assertion options from your server. |
+| 3 | `subflow_step_finished` | `get-options` | Server returns assertion options. |
+| … | | | |
 
-The following events map to the passkey enrollment subflow:
+If any step fails, a `subflow_step_error` replaces the corresponding `subflow_step_finished`.
 
-- [`passkeyEnrollmentStartable`](https://github.com/corbado/js?tab=readme-ov-file#passkeyenrollmentstartable)
+### Code example: passkey login
 
-## 6. Email link
+The SDK provides a dedicated class for each subflow type. Each class exposes its predefined steps as properties with `.start()`, `.finished()`, and `.error()` methods.
 
-The email link subflow can be used to track authentication flows where users sign in through a link sent by email.
+<Tabs>
+  <Tab title="Manual trigger (post-identifier)">
+    The user's identifier is already known. A "Sign in with passkey" button is shown, and the user clicks it to start. The trigger fires on click with `actor: "user"`.
 
-The following events map to the email link subflow:
+    ```typescript
+    import { getTracker } from "@corbado/observe";
 
-- [`emailLinkStartable`](https://github.com/corbado/js?tab=readme-ov-file#emaillinkstartable)
-- [`emailLinkSubmitted`](https://github.com/corbado/js?tab=readme-ov-file#emaillinksubmitted)
-- [`emailLinkFinished`](https://github.com/corbado/js?tab=readme-ov-file#emaillinkfinished)
-- [`emailLinkError`](https://github.com/corbado/js?tab=readme-ov-file#emaillinkerror)
+    const handlePasskeyLogin = async (email: string) => {
+      const passkeyOp = getTracker().passkeyLoginFullOperation();
+      passkeyOp.trigger({ actor: "user" });
 
-## 7. Email OTP
+      try {
+        passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
+        const options = await fetchAssertionOptions(email);
+        passkeyOp.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+      } catch (e) {
+        passkeyOp.getOptions.error(e);
+        return;
+      }
 
-The email OTP subflow can be used to track one-time-password verification sent by email.
+      try {
+        passkeyOp.ceremony.start({});
+        const response = await startWebAuthnAuthentication(options);
+        passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+      } catch (e) {
+        passkeyOp.ceremony.error(e);
+        return;
+      }
 
-The following events map to the email OTP subflow:
+      try {
+        passkeyOp.postResponse.start({});
+        await verifyOnServer(response);
+        passkeyOp.postResponse.finished({});
+      } catch (e) {
+        passkeyOp.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
 
-- [`emailOTPStartable`](https://github.com/corbado/js?tab=readme-ov-file#emailotpstartable)
-- [`emailOTPStarted`](https://github.com/corbado/js?tab=readme-ov-file#emailotpstarted)
-- [`emailOTPSubmitted`](https://github.com/corbado/js?tab=readme-ov-file#emailotpsubmitted)
-- [`emailOTPFinished`](https://github.com/corbado/js?tab=readme-ov-file#emailotpfinished)
-- [`emailOTPError`](https://github.com/corbado/js?tab=readme-ov-file#emailotperror)
-- [`emailOTPResent`](https://github.com/corbado/js?tab=readme-ov-file#emailotpresent)
+  <Tab title="Auto trigger (post-identifier)">
+    The user's identifier is already known and the system automatically starts the passkey ceremony (for example as the preferred login method). The trigger fires immediately with `actor: "system"`.
 
-## 8. Set password
+    ```typescript
+    import { getTracker } from "@corbado/observe";
 
-The set password subflow can be used to track password creation or updates during authentication journeys.
+    const autoStartPasskeyLogin = async (email: string) => {
+      const passkeyOp = getTracker().passkeyLoginFullOperation();
+      passkeyOp.trigger({ actor: "system" });
 
-The following events map to the set password subflow:
+      try {
+        passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
+        const options = await fetchAssertionOptions(email);
+        passkeyOp.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+      } catch (e) {
+        passkeyOp.getOptions.error(e);
+        return;
+      }
 
-- [`setPasswordStartable`](https://github.com/corbado/js?tab=readme-ov-file#setpasswordstartable)
-- [`setPasswordStarted`](https://github.com/corbado/js?tab=readme-ov-file#setpasswordstarted)
-- [`setPasswordSubmitted`](https://github.com/corbado/js?tab=readme-ov-file#setpasswordsubmitted)
-- [`setPasswordFinished`](https://github.com/corbado/js?tab=readme-ov-file#setpasswordfinished)
-- [`setPasswordError`](https://github.com/corbado/js?tab=readme-ov-file#setpassworderror)
+      try {
+        passkeyOp.ceremony.start({});
+        const response = await startWebAuthnAuthentication(options);
+        passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+      } catch (e) {
+        passkeyOp.ceremony.error(e);
+        return;
+      }
+
+      try {
+        passkeyOp.postResponse.start({});
+        await verifyOnServer(response);
+        passkeyOp.postResponse.finished({});
+      } catch (e) {
+        passkeyOp.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+
+  <Tab title="Conditional UI (pre-identifier)">
+    No identifier is known yet. The SDK binds to the identifier input field and tracks both the provide-identifier subflow and a CUI passkey login subflow together. The CUI trigger and ceremony start are **auto-detected** by the SDK when the user interacts with the browser autofill prompt.
+
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    const identifierInput = document.getElementById("email") as HTMLInputElement;
+    const op = getTracker().provideIdentifierOperationFull(identifierInput);
+
+    const startConditionalUI = async () => {
+      try {
+        op.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
+        const options = await fetchConditionalUIOptions();
+        op.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+      } catch (e) {
+        op.cui.getOptions.error(e);
+        return;
+      }
+
+      try {
+        const response = await startWebAuthnAuthentication(options, { useBrowserAutofill: true });
+        op.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+      } catch (e) {
+        op.cui.ceremony.error(e);
+        return;
+      }
+
+      try {
+        op.cui.postResponse.start({});
+        const result = await verifyOnServer(response);
+        op.cui.postResponse.finished({}, { userReference: { userId: result.userId } });
+      } catch (e) {
+        op.cui.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Subflow types
+
+### 1. Provide identifier
+
+Tracks when users enter and submit their identifier (e.g., an email address).
+
+Because passkey Conditional UI (CUI) is always bound to the same input field as the identifier, **CUI passkey login events are tracked together with the provide-identifier subflow**. This means a single integration point covers both the identifier input and an optional CUI-initiated passkey login.
+
+#### Steps
+
+| Step | Subflow type | Description |
+| --- | --- | --- |
+| `post-response` | `provide-identifier` | Server-side identifier check (e.g., does user exist, which login methods are available). |
+| `get-options` | `passkey-login` | CUI requests assertion options from the server. |
+| `ceremony` | `passkey-login` | Browser CUI ceremony (auto-fill prompt). |
+| `post-response` | `passkey-login` | Server verifies the CUI assertion response. |
+
+#### Spec types
+
+| `explicitSpecType` | Subflow type | Description |
+| --- | --- | --- |
+| `email` | `provide-identifier` | User typed into the identifier field (auto-detected by the SDK). |
+| `passkey-cui` | `passkey-login` | User interacted with the Conditional UI auto-fill prompt (auto-detected by the SDK). |
+
+---
+
+### 2. Passkey login
+
+Tracks passkey-based sign-in attempts where the relying party explicitly triggers the WebAuthn ceremony (not via Conditional UI — see [Provide identifier](#1-provide-identifier) for CUI).
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `get-options` | Request assertion options from the server. |
+| `ceremony` | Browser WebAuthn authentication ceremony. |
+| `post-response` | Server verifies the assertion response. |
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `passkey-known-identifier` | User's identifier is already known (e.g., post-identifier screen). The server can scope the allowed credentials to this user. |
+| `passkey-no-identifier` | No identifier is known. The server returns a broad set of allowed credentials. |
+| `passkey-cui` | Conditional UI initiated passkey login (typically tracked via the provide-identifier integration). |
+
+---
+
+### 3. Passkey enrollment
+
+Tracks passkey registration and setup after authentication (e.g., during a post-login enrollment prompt).
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `get-options` | Request attestation options from the server. |
+| `ceremony` | Browser WebAuthn registration ceremony. |
+| `post-response` | Server verifies the attestation response and stores the credential. |
+
+Custom steps are supported via the generic step events for additional logic around enrollment.
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `conditional-auto-manual` | System first attempts conditional (auto-register) enrollment, then falls back to a regular prompt if it fails, and finally allows the user to trigger it manually. |
+| `auto-manual` | System auto-triggers the enrollment prompt, with a manual fallback. |
+| `manual` | User explicitly triggers enrollment (e.g., clicks "Create passkey"). |
+
+---
+
+### 4. Password login
+
+Tracks password-based login attempts. The trigger is **auto-detected** by the SDK when the user starts typing into the password input field.
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `post-response` | Server verifies the submitted password. |
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `password-known-identifier` | Identifier was already submitted in a previous step (e.g., post-identifier screen with a pre-filled email). |
+| `password-with-identifier` | Identifier and password are submitted together on the same screen. |
+
+#### Typed errors
+
+In addition to passing raw errors, the password login subflow supports typed error codes:
+
+| Code | Description |
+| --- | --- |
+| `invalid_password` | The submitted password is incorrect. |
+| `user_not_found` | No user exists for the given identifier. |
+| `account_locked` | The account has been locked. |
+
+---
+
+### 5. Password enrollment
+
+Tracks password creation or password reset during authentication journeys.
+
+The trigger is **auto-detected** by the SDK when the user starts typing into the password input field.
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `post-response` | Server processes the new or updated password. |
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `password-set` | User sets a password for the first time (e.g., during signup). |
+| `password-reset` | User resets an existing password (e.g., via a recovery flow). |
+
+#### Typed errors
+
+| Code | Description |
+| --- | --- |
+| `requirements_not_fulfilled` | The password does not meet the required complexity rules. |
+
+---
+
+### 6. Email OTP
+
+Tracks one-time-password verification sent by email.
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `send` | Server sends the OTP email to the user. |
+| `post-response` | Server verifies the OTP code the user submitted. |
+| `resend` | User requests a new OTP code. |
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `email-otp-login` | OTP is used as a login method. |
+| `email-otp-enrollment` | OTP is used for enrollment or account activation. |
+
+---
+
+### 7. Email link
+
+Tracks authentication flows where users sign in or verify their identity through a link sent by email.
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `send` | Server sends the email containing the magic link. |
+| `post-response` | Server verifies the token from the clicked link. |
+| `resend` | User requests a new email link. |
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `email-link-login` | Email link is used as a login or recovery method. |
+| `email-link-enrollment` | Email link is used for enrollment or account activation. |
+
+---
+
+### 8. Social login
+
+Tracks authentication with social identity providers (e.g., Google, Apple, Facebook).
+
+#### Steps
+
+| Step | Description |
+| --- | --- |
+| `get-redirect-url` | Application initiates the OAuth redirect to the social provider. |
+| `exchange-code` | Application exchanges the authorization code for tokens after the user returns from the provider. |
+
+#### Spec types
+
+| `explicitSpecType` | Description |
+| --- | --- |
+| `pre-identifier` | Social login button is shown before the user enters any identifier (e.g., on the initial login screen). |
+| `post-identifier` | Social login is offered after the user has already provided an identifier. |
+
+---
+
+### 9. Coming soon
+
+The following subflow types are planned but not yet available:
+
+| Subflow type | Description |
+| --- | --- |
+| `sms-otp` | OTP verification sent via SMS. |
+| `provide-data` | Collecting additional user data during a flow (e.g., name, address). |
+| `totp` | Time-based one-time password (authenticator app). |
