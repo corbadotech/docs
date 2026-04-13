@@ -418,12 +418,6 @@
                         ]
                     },
                     {
-                        "group": "Analytics",
-                        "pages": [
-                            "corbado-complete/analytics/passkeys-analyzer"
-                        ]
-                    },
-                    {
                         "group": "Helpful Guides",
                         "pages": [
                             "corbado-complete/helpful-guides/url-overview",
