@@ -15,7 +15,9 @@
                 "groups": [
                     {
                         "group": "Welcome",
-                        "pages": ["start"]
+                        "pages": [
+                            "start"
+                        ]
                     }
                 ]
             },
@@ -155,8 +157,21 @@
                                     "corbado-connect/helpful-guides/rpid-configuration/native-mobile"
                                 ]
                             },
+                            {
+                                "group": "Passkeys",
+                                "pages": [
+                                    "corbado-connect/helpful-guides/passkeys",
+                                    "corbado-connect/helpful-guides/passkeys/relying-party-id",
+                                    "corbado-connect/helpful-guides/passkeys/passkeys-in-web-apps",
+                                    "corbado-connect/helpful-guides/passkeys/passkeys-in-native-apps",
+                                    "corbado-connect/helpful-guides/passkeys/fallback-options"
+                                ]
+                            },
                             "corbado-connect/helpful-guides/ios-testing",
-                            "corbado-connect/helpful-guides/android-testing"
+                            "corbado-connect/helpful-guides/android-testing",
+                            "corbado-connect/helpful-guides/cross-origin-resource-sharing-cors",
+                            "corbado-connect/helpful-guides/google-chrome-virtual-authenticator",
+                            "corbado-connect/helpful-guides/local-multi-device-testing-with-ngrok"
                         ]
                     },
                     {
@@ -167,285 +182,6 @@
                             "corbado-connect/security-compliance/audit-log",
                             "corbado-connect/security-compliance/passkey-export"
                         ]
-                    }
-                ]
-            },
-            {
-                "tab": "Corbado Complete",
-                "groups": [
-                    {
-                        "group": "Overview",
-                        "pages": [
-                            "corbado-complete/overview/welcome",
-                            "corbado-complete/overview/getting-started",
-                            {
-                                "group": "Configuration",
-                                "pages": [
-                                    "corbado-complete/overview/configuration",
-                                    "corbado-complete/overview/configuration/user-flow-configuration",
-                                    "corbado-complete/overview/configuration/url-id-configuration",
-                                    "corbado-complete/overview/configuration/passkey-configuration",
-                                    {
-                                        "group": "Social Logins",
-                                        "pages": [
-                                            "corbado-complete/overview/configuration/social-logins/overview",
-                                            "corbado-complete/overview/configuration/social-logins/google",
-                                            "corbado-complete/overview/configuration/social-logins/microsoft",
-                                            "corbado-complete/overview/configuration/social-logins/github"
-                                        ]
-                                    }
-                                ]
-                            },
-                            "corbado-complete/overview/system-architecture"
-                        ]
-                    },
-                    {
-                        "group": "UI Components",
-                        "pages": [
-                            "corbado-complete/ui-components/overview",
-                            "corbado-complete/ui-components/corbadoauth",
-                            "corbado-complete/ui-components/passkeylist",
-                            {
-                                "group": "Customization",
-                                "pages": [
-                                    "corbado-complete/ui-components/customization/styling",
-                                    "corbado-complete/ui-components/customization/translation"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "group": "Fullstack Integration",
-                        "pages": [
-                            {
-                                "group": "Next.js",
-                                "pages": [
-                                    "corbado-complete/fullstack-integration/next-js",
-                                    "corbado-complete/fullstack-integration/next-js/corbadoauth",
-                                    "corbado-complete/fullstack-integration/next-js/passkeylist",
-                                    "corbado-complete/fullstack-integration/next-js/authentication-state-client",
-                                    "corbado-complete/fullstack-integration/next-js/authentication-state-server",
-                                    "corbado-complete/fullstack-integration/next-js/pages-router",
-                                    "corbado-complete/fullstack-integration/next-js/link-to-nextjs-blog"
-                                ]
-                            },
-                            {
-                                "group": "Svelte",
-                                "pages": [
-                                    "corbado-complete/fullstack-integration/svelte",
-                                    "corbado-complete/fullstack-integration/svelte/corbadoauth",
-                                    "corbado-complete/fullstack-integration/svelte/passkeylist",
-                                    "corbado-complete/fullstack-integration/svelte/authentication-state-client",
-                                    "corbado-complete/fullstack-integration/svelte/authentication-state-server",
-                                    "corbado-complete/fullstack-integration/svelte/link-to-svelte-blog"
-                                ]
-                            },
-                            {
-                                "group": "Nuxt.js",
-                                "pages": [
-                                    "corbado-complete/fullstack-integration/nuxt-js",
-                                    "corbado-complete/fullstack-integration/nuxt-js/corbadoauth",
-                                    "corbado-complete/fullstack-integration/nuxt-js/passkeylist",
-                                    "corbado-complete/fullstack-integration/nuxt-js/authentication-state-client",
-                                    "corbado-complete/fullstack-integration/nuxt-js/authentication-state-server",
-                                    "corbado-complete/fullstack-integration/nuxt-js/link-to-nuxtjs-blog"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "group": "Frontend Integration",
-                        "pages": [
-                            {
-                                "group": "React",
-                                "pages": [
-                                    "corbado-complete/frontend-integration/react",
-                                    "corbado-complete/frontend-integration/react/corbadoauth",
-                                    "corbado-complete/frontend-integration/react/passkeylist",
-                                    "corbado-complete/frontend-integration/react/authentication-state",
-                                    "corbado-complete/frontend-integration/react/session-refresh",
-                                    "corbado-complete/frontend-integration/react/link-to-react-blog"
-                                ]
-                            },
-                            {
-                                "group": "VanillaJS",
-                                "pages": [
-                                    "corbado-complete/frontend-integration/vanilla-js",
-                                    "corbado-complete/frontend-integration/vanilla-js/corbadoauth",
-                                    "corbado-complete/frontend-integration/vanilla-js/passkeylist",
-                                    "corbado-complete/frontend-integration/vanilla-js/authentication-state",
-                                    "corbado-complete/frontend-integration/vanilla-js/session-refresh",
-                                    "corbado-complete/frontend-integration/vanilla-js/link-to-vanillajs-blog"
-                                ]
-                            },
-                            {
-                                "group": "Flutter",
-                                "pages": [
-                                    "corbado-complete/frontend-integration/flutter/introduction",
-                                    {
-                                        "group": "Frontend",
-                                        "pages": [
-                                            "corbado-complete/frontend-integration/flutter/frontend/frontend-integration",
-                                            {
-                                                "group": "Blocks",
-                                                "pages": [
-                                                    "corbado-complete/frontend-integration/flutter/frontend/blocks/blocks",
-                                                    "corbado-complete/frontend-integration/flutter/frontend/blocks/login-init-block",
-                                                    "corbado-complete/frontend-integration/flutter/frontend/blocks/signup-init-block",
-                                                    "corbado-complete/frontend-integration/flutter/frontend/blocks/passkey-append-block",
-                                                    "corbado-complete/frontend-integration/flutter/frontend/blocks/passkey-verify-block",
-                                                    "corbado-complete/frontend-integration/flutter/frontend/blocks/email-verify-block"
-                                                ]
-                                            },
-                                            "corbado-complete/frontend-integration/flutter/frontend/getting-user-data-frontend",
-                                            "corbado-complete/frontend-integration/flutter/frontend/making-requests"
-                                        ]
-                                    },
-                                    "corbado-complete/frontend-integration/flutter/backend",
-                                    {
-                                        "group": "Run on physical device",
-                                        "pages": [
-                                            "corbado-complete/frontend-integration/flutter/run-on-physical-device/introduction",
-                                            "corbado-complete/frontend-integration/flutter/run-on-physical-device/general",
-                                            {
-                                                "group": "iOS",
-                                                "pages": [
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/overview",
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-device",
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-xcode",
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/configure-project",
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/ios/run"
-                                                ]
-                                            },
-                                            {
-                                                "group": "Android",
-                                                "pages": [
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/overview",
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/configure-project",
-                                                    "corbado-complete/frontend-integration/flutter/run-on-physical-device/android/run"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    "corbado-complete/frontend-integration/flutter/blog"
-                                ]
-                            },
-                            {
-                                "group": "Vue.js",
-                                "pages": [
-                                    "corbado-complete/frontend-integration/vue-js",
-                                    "corbado-complete/frontend-integration/vue-js/corbadoauth",
-                                    "corbado-complete/frontend-integration/vue-js/passkeylist",
-                                    "corbado-complete/frontend-integration/vue-js/authentication-state",
-                                    "corbado-complete/frontend-integration/vue-js/session-refresh",
-                                    "corbado-complete/frontend-integration/vue-js/link-to-vuejs-blog"
-                                ]
-                            },
-                            {
-                                "group": "Angular",
-                                "pages": [
-                                    "corbado-complete/frontend-integration/angular",
-                                    "corbado-complete/frontend-integration/angular/corbadoauth",
-                                    "corbado-complete/frontend-integration/angular/passkeylist",
-                                    "corbado-complete/frontend-integration/angular/authentication-state",
-                                    "corbado-complete/frontend-integration/angular/session-refresh",
-                                    "corbado-complete/frontend-integration/angular/link-to-angular-blog"
-                                ]
-                            },
-                            "corbado-complete/frontend-integration/link-to-api-ref"
-                        ]
-                    },
-                    {
-                        "group": "Backend Integration",
-                        "pages": [
-                            "corbado-complete/backend-integration/node-js-sdk",
-                            "corbado-complete/backend-integration/php-sdk",
-                            "corbado-complete/backend-integration/go-sdk",
-                            "corbado-complete/backend-integration/java-sdk",
-                            "corbado-complete/backend-integration/python-sdk",
-                            "corbado-complete/backend-integration/csharp-sdk",
-                            "corbado-complete/backend-integration/ruby-sdk",
-                            "corbado-complete/backend-integration/cpp-sdk",
-                            "corbado-complete/backend-integration/rust-sdk",
-                            "corbado-complete/backend-integration/perl-sdk",
-                            "corbado-complete/backend-integration/link-to-api-ref"
-                        ]
-                    },
-                    {
-                        "group": "Sessions",
-                        "pages": [
-                            "corbado-complete/sessions/overview",
-                            "corbado-complete/sessions/protecting-routes",
-                            {
-                                "group": "session-token Handling",
-                                "pages": [
-                                    "corbado-complete/sessions/session-token-handling",
-                                    "corbado-complete/sessions/session-token-handling/write",
-                                    "corbado-complete/sessions/session-token-handling/read"
-                                ]
-                            },
-                            "corbado-complete/sessions/session-refresh",
-                            "corbado-complete/sessions/own-session-management",
-                            {
-                                "group": "Security",
-                                "pages": [
-                                    "corbado-complete/sessions/security",
-                                    "corbado-complete/sessions/security/jwt-security",
-                                    "corbado-complete/sessions/security/cookie-security",
-                                    "corbado-complete/sessions/security/xss-protection",
-                                    "corbado-complete/sessions/security/csrf-protection",
-                                    "corbado-complete/sessions/security/session-fixation-protection"
-                                ]
-                            },
-                            {
-                                "group": "Other",
-                                "pages": [
-                                    "corbado-complete/sessions/other/revocation",
-                                    "corbado-complete/sessions/other/oauth2-comparison",
-                                    "corbado-complete/sessions/other/development-mode"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "group": "Webhooks",
-                        "pages": [
-                            "corbado-complete/webhooks/overview",
-                            "corbado-complete/webhooks/delivery",
-                            "corbado-complete/webhooks/events",
-                            "corbado-complete/webhooks/authentication",
-                            "corbado-complete/webhooks/local-development"
-                        ]
-                    },
-                    {
-                        "group": "Helpful Guides",
-                        "pages": [
-                            "corbado-complete/helpful-guides/url-overview",
-                            {
-                                "group": "Go Live",
-                                "pages": [
-                                    "corbado-complete/helpful-guides/go-live",
-                                    "corbado-complete/helpful-guides/go-live/troubleshooting"
-                                ]
-                            },
-                            {
-                                "group": "Passkeys",
-                                "pages": [
-                                    "corbado-complete/helpful-guides/passkeys",
-                                    "corbado-complete/helpful-guides/passkeys/relying-party-id",
-                                    "corbado-complete/helpful-guides/passkeys/passkeys-in-web-apps",
-                                    "corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps",
-                                    "corbado-complete/helpful-guides/passkeys/fallback-options"
-                                ]
-                            },
-                            "corbado-complete/helpful-guides/cross-origin-resource-sharing-cors",
-                            "corbado-complete/helpful-guides/google-chrome-virtual-authenticator",
-                            "corbado-complete/helpful-guides/local-multi-device-testing-with-ngrok"
-                        ]
-                    },
-                    {
-                        "group": "Other",
-                        "pages": ["corbado-complete/other/telemetry"]
                     }
                 ]
             },
@@ -489,7 +225,9 @@
                 "groups": [
                     {
                         "group": "Overview",
-                        "pages": ["passkey-ui-flows/overview"]
+                        "pages": [
+                            "passkey-ui-flows/overview"
+                        ]
                     },
                     {
                         "group": "Web",
@@ -590,7 +328,12 @@
         }
     },
     "contextual": {
-        "options": ["copy", "view", "chatgpt", "claude"]
+        "options": [
+            "copy",
+            "view",
+            "chatgpt",
+            "claude"
+        ]
     },
     "integrations": {
         "hotjar": {
@@ -613,75 +356,159 @@
         },
         {
             "source": "/frontend-integration/ui-components",
-            "destination": "/corbado-complete/ui-components/"
+            "destination": "/corbado-connect/web-ui-components/overview"
         },
         {
             "source": "/frontend-integration/ui-components/corbadoprovider",
-            "destination": "/corbado-complete/frontend-integration/react"
+            "destination": "/corbado-connect/overview/welcome"
         },
         {
             "source": "/frontend-integration/ui-components/corbadoauth",
-            "destination": "/corbado-complete/ui-components/corbadoauth"
+            "destination": "/corbado-connect/web-ui-components/corbadoconnectlogin"
         },
         {
             "source": "/frontend-integration/ui-components/passkeylist",
-            "destination": "/corbado-complete/ui-components/passkeylist"
+            "destination": "/corbado-connect/web-ui-components/corbadoconnectpasskeylist"
         },
         {
             "source": "/frontend-integration/ui-components/customization",
-            "destination": "/corbado-complete/ui-components/customization"
+            "destination": "/corbado-connect/web-ui-components/overview"
         },
         {
             "source": "/frontend-integration/next-js",
-            "destination": "/corbado-complete/fullstack-integration/next-js"
+            "destination": "/corbado-connect/integration/generic/overview"
         },
         {
             "source": "/frontend-integration/next-js/:slug*",
-            "destination": "/corbado-complete/fullstack-integration/next-js/:slug*"
+            "destination": "/corbado-connect/integration/generic/:slug*"
         },
         {
             "source": "/frontend-integration/svelte",
-            "destination": "/corbado-complete/fullstack-integration/svelte"
+            "destination": "/corbado-connect/integration/generic/overview"
         },
         {
             "source": "/frontend-integration/svelte/:slug*",
-            "destination": "/corbado-complete/fullstack-integration/svelte/:slug*"
+            "destination": "/corbado-connect/integration/generic/:slug*"
         },
         {
             "source": "/frontend-integration/nuxt-js",
-            "destination": "/corbado-complete/fullstack-integration/nuxt-js"
+            "destination": "/corbado-connect/integration/generic/overview"
         },
         {
             "source": "/frontend-integration/nuxt-js/:slug*",
-            "destination": "/corbado-complete/fullstack-integration/nuxt-js/:slug*"
+            "destination": "/corbado-connect/integration/generic/:slug*"
         },
         {
             "source": "/analytics/:slug*",
-            "destination": "/corbado-complete/analytics/:slug*"
+            "destination": "/corbado-connect/management-console/overview"
         },
         {
             "source": "/backend-integration/:slug*",
-            "destination": "/corbado-complete/backend-integration/:slug*"
+            "destination": "/corbado-connect/integration/generic/backend"
         },
         {
             "source": "/frontend-integration/:slug*",
-            "destination": "/corbado-complete/frontend-integration/:slug*"
+            "destination": "/corbado-connect/integration/generic/web"
         },
         {
             "source": "/fullstack-integration/:slug*",
-            "destination": "/corbado-complete/fullstack-integration/:slug*"
+            "destination": "/corbado-connect/integration/generic/overview"
         },
         {
             "source": "/overview/:slug*",
-            "destination": "/corbado-complete/overview/:slug*"
+            "destination": "/corbado-connect/overview/welcome"
         },
         {
             "source": "/sessions/:slug*",
-            "destination": "/corbado-complete/sessions/:slug*"
+            "destination": "/corbado-connect/concepts/client-state"
         },
         {
             "source": "/ui-components/:slug*",
-            "destination": "/corbado-complete/ui-components/:slug*"
+            "destination": "/corbado-connect/web-ui-components/overview"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/local-multi-device-testing-with-ngrok",
+            "destination": "/corbado-connect/helpful-guides/local-multi-device-testing-with-ngrok"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/google-chrome-virtual-authenticator",
+            "destination": "/corbado-connect/helpful-guides/google-chrome-virtual-authenticator"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/cross-origin-resource-sharing-cors",
+            "destination": "/corbado-connect/helpful-guides/cross-origin-resource-sharing-cors"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/passkeys",
+            "destination": "/corbado-connect/helpful-guides/passkeys"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/passkeys/passkeys-in-web-apps",
+            "destination": "/corbado-connect/helpful-guides/passkeys/passkeys-in-web-apps"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/passkeys/passkeys-in-native-apps",
+            "destination": "/corbado-connect/helpful-guides/passkeys/passkeys-in-native-apps"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/passkeys/fallback-options",
+            "destination": "/corbado-connect/helpful-guides/passkeys/fallback-options"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/passkeys/relying-party-id",
+            "destination": "/corbado-connect/helpful-guides/passkeys/relying-party-id"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/url-overview",
+            "destination": "/corbado-connect/helpful-guides/rpid-configuration/overview"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/go-live",
+            "destination": "/corbado-connect/overview/welcome"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/go-live/troubleshooting",
+            "destination": "/corbado-connect/overview/welcome"
+        },
+        {
+            "source": "/corbado-complete/backend-integration/:slug*",
+            "destination": "/corbado-connect/integration/generic/backend"
+        },
+        {
+            "source": "/corbado-complete/frontend-integration/:slug*",
+            "destination": "/corbado-connect/integration/generic/web"
+        },
+        {
+            "source": "/corbado-complete/fullstack-integration/:slug*",
+            "destination": "/corbado-connect/integration/generic/overview"
+        },
+        {
+            "source": "/corbado-complete/ui-components/:slug*",
+            "destination": "/corbado-connect/web-ui-components/overview"
+        },
+        {
+            "source": "/corbado-complete/webhooks/:slug*",
+            "destination": "/corbado-connect/overview/welcome"
+        },
+        {
+            "source": "/corbado-complete/other/:slug*",
+            "destination": "/corbado-connect/overview/welcome"
+        },
+        {
+            "source": "/corbado-complete/overview/:slug*",
+            "destination": "/corbado-connect/overview/welcome"
+        },
+        {
+            "source": "/corbado-complete/sessions/:slug*",
+            "destination": "/corbado-connect/concepts/client-state"
+        },
+        {
+            "source": "/corbado-complete/helpful-guides/:slug*",
+            "destination": "/corbado-connect/helpful-guides/:slug*"
+        },
+        {
+            "source": "/corbado-complete/:slug*",
+            "destination": "/corbado-connect/overview/welcome"
         }
     ]
 }
