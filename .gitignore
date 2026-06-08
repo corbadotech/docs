@@ -3,3 +3,4 @@ package-lock.js
 .idea
 local-context
 cursor.code-workspace
+code/

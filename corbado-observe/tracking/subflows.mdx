@@ -531,6 +531,62 @@ Tracks authentication flows where users sign in or verify their identity through
 | `email-link-login` | Email link is used as a login or recovery method. |
 | `email-link-enrollment` | Email link is used for enrollment or account activation. |
 
+#### Cross-environment transactions
+
+Email links often continue in a different browser tab, browser profile, device, or app than the one where the link was requested. For example, a user can start password recovery on desktop but open the email link on mobile.
+
+Use `crossEnvironmentTransactionID` to connect the `send` step with the later `post-response` step. The value can be chosen as needed: you can generate a new ID for the email-link transaction or reuse an existing transaction ID from your system. The only requirement is that the same value is available when sending the email and when verifying the link after it has been clicked.
+
+`crossEnvironmentTransactionID` does not replace `userId` or `identifier`. Use it to correlate the transaction across environments, and still provide `userId` as soon as it is known.
+
+```typescript
+import { getTracker } from "@corbado/observe";
+
+const tracker = () => getTracker()!;
+
+async function sendRecoveryLink(email: string) {
+  const crossEnvironmentTransactionID = crypto.randomUUID();
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.send.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  await sendPasswordResetEmail(email, {
+    callbackState: { crossEnvironmentTransactionID },
+  });
+
+  emailLink.send.finished({});
+
+  return crossEnvironmentTransactionID;
+}
+
+async function verifyRecoveryLink(
+  token: string,
+  crossEnvironmentTransactionID: string,
+) {
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.postResponse.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  const result = await verifyPasswordResetToken(token);
+
+  emailLink.postResponse.finished(
+    {},
+    {
+      userReference: {
+        userId: result.userId,
+        crossEnvironmentTransactionID,
+      },
+    },
+  );
+}
+```
+
 ---
 
 ### 8. Social login
