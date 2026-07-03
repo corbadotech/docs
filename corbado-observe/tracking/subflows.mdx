@@ -6,6 +6,17 @@ sidebarTitle: "Subflows"
 
 Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows) and are **auto-discovered** by **Corbado Observe** based on the events you send. They represent a specific authentication method, for example passkey login, password enrollment, or email OTP verification.
 
+<Frame>
+  <iframe
+    className="w-full aspect-video rounded-xl"
+    src="https://www.youtube.com/embed/ImkgPLTKKcQ"
+    title="Track Passkey Enrollment in Real-Time | Corbado Observe"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</Frame>
+
 <Info>
   Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Getting started](/corbado-observe/overview/getting-started). This page explains the subflow concept and documents all available subflow types.
 </Info>
@@ -20,11 +31,13 @@ A subflow groups related events for one authentication method. Every subflow has
 
 The **trigger** (`subflow_trigger`) marks the moment of interaction with the subflow. Usually the actor is the user (e.g., clicking "Sign in with passkey"), but in some cases the system can be the actor too (e.g., during passkey enrollment with conditional mediation).
 
-Note that steps can run **before** the trigger fires. For example, during passkey login the `get-options` step may complete in the background while the UI renders a "Sign in with passkey" button. The trigger fires only when the user clicks that button. If the user never clicks, there is no trigger — meaning there was no interaction with this subflow.
+Note that steps can run **before** the interaction happens. For example, during passkey login the `get-options` step may complete in the background while the UI renders a "Sign in with passkey" button. The interaction happens only when the user clicks that button. If the user never clicks, there was no interaction with this subflow.
 
-Corbado Observe uses the trigger to calculate **how long it takes the user to interact** with a subflow and to determine if a subflow **should be included in certain dashboards or not**.
+Corbado Observe uses the interaction moment to calculate **how long it takes the user to interact** with a subflow and to determine if a subflow **should be included in certain dashboards or not**.
 
-The trigger carries:
+**Not every subflow needs an explicit trigger event.** Check the documentation of each subflow type below: some detect the interaction on their own (e.g., provide-identifier from typing into the bound input field, passkey-login from the started `ceremony` step), while others still require you to send `subflow_trigger` (e.g., passkey enrollment). For subflow types with automatic detection, explicit triggers are deprecated.
+
+Where an explicit trigger is required, it carries:
 
 | Field | Description |
 | --- | --- |
@@ -51,20 +64,12 @@ A successful passkey login subflow where assertion options are pre-fetched in th
 | --- | --- | --- | --- |
 | 1 | `subflow_step_started` | `get-options` | SDK requests assertion options from your server in the background. |
 | 2 | `subflow_step_finished` | `get-options` | Server returns assertion options. UI can now show a "Sign in with passkey" button. |
-| 3 | `subflow_trigger` | — | User clicks the button (`actor: user`). |
-| 4 | `subflow_step_started` | `ceremony` | Browser WebAuthn ceremony begins. |
-| 5 | `subflow_step_finished` | `ceremony` | User completes the ceremony. |
-| 6 | `subflow_step_started` | `post-response` | SDK sends the assertion response to your server for verification. |
-| 7 | `subflow_step_finished` | `post-response` | Server confirms the login. |
+| 3 | `subflow_step_started` | `ceremony` | User clicks the button — the browser WebAuthn ceremony begins. This step marks the interaction. |
+| 4 | `subflow_step_finished` | `ceremony` | User completes the ceremony. |
+| 5 | `subflow_step_started` | `post-response` | SDK sends the assertion response to your server for verification. |
+| 6 | `subflow_step_finished` | `post-response` | Server confirms the login. |
 
-The position of the trigger is not fixed — it depends on your implementation. If assertion options are only fetched after the user clicks the button, the trigger would come first:
-
-| # | Event | Step | Description |
-| --- | --- | --- | --- |
-| 1 | `subflow_trigger` | — | User clicks "Sign in with passkey" (`actor: user`). |
-| 2 | `subflow_step_started` | `get-options` | SDK requests assertion options from your server. |
-| 3 | `subflow_step_finished` | `get-options` | Server returns assertion options. |
-| … | | | |
+The `get-options` steps run in the background without any user involvement — only the started `ceremony` step counts as the interaction. If the user never clicks the button, the ceremony never starts and there was no interaction with this subflow.
 
 If any step fails, a `subflow_step_error` replaces the corresponding `subflow_step_finished`.
 
@@ -100,6 +105,10 @@ Because passkey Conditional UI (CUI) is always bound to the same input field as 
 
 The operation is bound to the identifier input field. This enables the SDK to **automatically detect** user interaction: when the user starts typing, the provide-identifier trigger fires; when the user interacts with the browser's CUI autofill prompt, the CUI trigger and ceremony start fire automatically. The SDK also auto-detects CUI cancellation.
 
+<Note>
+  You do not need to send `subflow_trigger` events for this subflow — interaction is handled automatically. Explicit triggers for provide-identifier are deprecated and will be removed in a future SDK version.
+</Note>
+
 <Tabs>
   <Tab title="Provide identifier + CUI">
     ```typescript
@@ -126,8 +135,8 @@ The operation is bound to the identifier input field. This enables the SDK to **
         op.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
 
         op.cui.postResponse.start({});
-        const result = await verifyOnServer(response);
-        op.cui.postResponse.finished({}, { userReference: { userId: result.userId } });
+        await verifyOnServer(response);
+        op.cui.postResponse.finished({});
       } catch (e) {
         op.cui.ceremony.error(e);
       }
@@ -139,10 +148,8 @@ The operation is bound to the identifier input field. This enables the SDK to **
       op.provideIdentifier.postResponse.start({ explicitSpecType: "email" });
 
       try {
-        const result = await checkUserOnServer(email);
-        op.provideIdentifier.postResponse.finished({}, {
-          userReference: { userId: result.userId },
-        });
+        await checkUserOnServer(email);
+        op.provideIdentifier.postResponse.finished({});
       } catch (e) {
         op.provideIdentifier.postResponse.error(e);
       }
@@ -160,7 +167,7 @@ The operation is bound to the identifier input field. This enables the SDK to **
 
 **SDK class:** `passkeyLoginFullOperation()`
 
-Tracks passkey-based sign-in attempts where the relying party explicitly triggers the WebAuthn ceremony (not via Conditional UI — see [Provide identifier](#1-provide-identifier) for CUI).
+Tracks passkey-based sign-in attempts where the WebAuthn ceremony is started explicitly — by the relying party or via immediate mediation (not via Conditional UI — see [Provide identifier](#1-provide-identifier) for CUI).
 
 #### Steps
 
@@ -177,35 +184,42 @@ Tracks passkey-based sign-in attempts where the relying party explicitly trigger
 | `passkey-known-identifier` | User's identifier is already known (e.g., post-identifier screen). The server can scope the allowed credentials to this user. |
 | `passkey-no-identifier` | No identifier is known. The server returns a broad set of allowed credentials. |
 | `passkey-cui` | Conditional UI initiated passkey login (typically tracked via the provide-identifier integration). |
+| `passkey-immediate` | Immediate-mediation login (`navigator.credentials.get({ mediation: "immediate" })`): the browser offers a passkey prompt right when the login page loads, before the user enters an identifier and before Conditional UI. |
+
+<Note>
+  You do not need to send `subflow_trigger` events for this subflow — the started `ceremony` step marks the interaction. Explicit triggers for passkey-login are deprecated and will be removed in a future SDK version.
+</Note>
 
 #### Code example
 
 <Tabs>
-  <Tab title="Manual trigger (post-identifier)">
-    The user's identifier is already known. A "Sign in with passkey" button is shown, and the user clicks it to start. The trigger fires on click with `actor: "user"`.
+  <Tab title="Immediate mediation (pre-identifier)">
+    The browser offers a passkey prompt immediately when the login page loads — before the user has entered an identifier and before Conditional UI starts. **No trigger is sent**: there is no user click and the prompt is owned by the browser, so the started `ceremony` step marks the interaction.
 
     ```typescript
     import { getTracker } from "@corbado/observe";
 
-    const handlePasskeyLogin = async (email: string) => {
+    const attemptImmediatePasskeyLogin = async () => {
       const passkeyOp = getTracker().passkeyLoginFullOperation();
-      passkeyOp.trigger({ actor: "user" });
 
-      try {
-        passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
-        const options = await fetchAssertionOptions(email);
-        passkeyOp.getOptions.finished({ assertionOptions: JSON.stringify(options) });
-      } catch (e) {
-        passkeyOp.getOptions.error(e);
-        return;
-      }
+      // Assertion options are typically embedded in the page or pre-fetched
+      // before any UI is shown, so no get-options step is tracked here.
+      const options = await fetchAssertionOptions();
 
+      let response;
       try {
-        passkeyOp.ceremony.start({});
-        const response = await startWebAuthnAuthentication(options);
+        passkeyOp.ceremony.start({
+          explicitSpecType: "passkey-immediate",
+          assertionOptions: JSON.stringify(options),
+        });
+        response = await startWebAuthnAuthentication(options, { mediation: "immediate" });
         passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
       } catch (e) {
         passkeyOp.ceremony.error(e);
+
+        // Continue with the regular login: redirect the user to your login
+        // component, or — if you are already on the login page — start
+        // Conditional UI on the identifier field (see Provide identifier).
         return;
       }
 
@@ -220,15 +234,14 @@ Tracks passkey-based sign-in attempts where the relying party explicitly trigger
     ```
   </Tab>
 
-  <Tab title="Auto trigger (post-identifier)">
-    The user's identifier is already known and the system automatically starts the passkey ceremony (for example as the preferred login method). The trigger fires immediately with `actor: "system"`.
+  <Tab title="Button click (post-identifier)">
+    The user's identifier is already known. A "Sign in with passkey" button is shown, and the user clicks it to start.
 
     ```typescript
     import { getTracker } from "@corbado/observe";
 
-    const autoStartPasskeyLogin = async (email: string) => {
+    const handlePasskeyLogin = async (email: string) => {
       const passkeyOp = getTracker().passkeyLoginFullOperation();
-      passkeyOp.trigger({ actor: "system" });
 
       try {
         passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
@@ -420,7 +433,11 @@ Tracks passkey registration and setup after authentication (e.g., during a post-
 
 **SDK class:** `passwordLoginFullOperation(autoTrackConfig?)`
 
-Tracks password-based login attempts. The trigger is **auto-detected** by the SDK when the user starts typing into the password input field.
+Tracks password-based login attempts. The operation is bound to the password input field via `autoTrackConfig`, so the SDK **automatically detects** the interaction when the user starts typing.
+
+<Note>
+  You do not need to send `subflow_trigger` events for this subflow — interaction is handled automatically. Explicit triggers for password-login are deprecated and will be removed in a future SDK version.
+</Note>
 
 #### Steps
 
@@ -444,6 +461,75 @@ In addition to passing raw errors, the password login subflow supports typed err
 | `invalid_password` | The submitted password is incorrect. |
 | `user_not_found` | No user exists for the given identifier. |
 | `account_locked` | The account has been locked. |
+
+#### Code example
+
+The operation is bound to the password input field. When the user starts typing, the SDK detects the interaction automatically — your code only tracks the server-side verification step.
+
+<Tabs>
+  <Tab title="Identifier + password (pre-identifier)">
+    Identifier and password are entered together on the same screen (no separate identifier step before).
+
+    ```typescript
+    import { getTracker, PasswordLoginOperationFull } from "@corbado/observe";
+
+    let passwordOp: PasswordLoginOperationFull;
+
+    // Run when the login component mounts; returns the cleanup for unmount.
+    const handleOnLoad = () => {
+      const passwordInput = document.getElementById("password") as HTMLInputElement;
+      passwordOp = getTracker().passwordLoginFullOperation({
+        explicitSpecType: "password-with-identifier",
+        inputHtmlField: passwordInput,
+      });
+
+      return () => passwordOp.destroy();
+    };
+
+    const handleLoginSubmit = async (email: string, password: string) => {
+      passwordOp.postResponse.start({});
+
+      try {
+        await verifyCredentialsOnServer(email, password);
+        passwordOp.postResponse.finished({});
+      } catch (e) {
+        passwordOp.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+
+  <Tab title="Password login (post-identifier)">
+    The identifier was already submitted in a previous step; only the password is entered on this screen.
+    ```typescript
+    import { getTracker, PasswordLoginOperationFull } from "@corbado/observe";
+
+    let passwordOp: PasswordLoginOperationFull;
+
+    // Run when the login component mounts; returns the cleanup for unmount.
+    const handleOnLoad = () => {
+      const passwordInput = document.getElementById("password") as HTMLInputElement;
+      passwordOp = getTracker().passwordLoginFullOperation({
+        explicitSpecType: "password-known-identifier",
+        inputHtmlField: passwordInput,
+      });
+
+      return () => passwordOp.destroy();
+    };
+
+    const handlePasswordSubmit = async (email: string, password: string) => {
+      passwordOp.postResponse.start({});
+
+      try {
+        await verifyPasswordOnServer(email, password);
+        passwordOp.postResponse.finished({});
+      } catch (e) {
+        passwordOp.postResponse.error(e);
+      }
+    };
+    ```
+  </Tab>
+</Tabs>
 
 ---
 
@@ -519,6 +605,54 @@ Tracks authentication flows where users sign in or verify their identity through
 | --- | --- |
 | `email-link-login` | Email link is used as a login or recovery method. |
 | `email-link-enrollment` | Email link is used for enrollment or account activation. |
+
+#### Cross-environment transactions
+
+Email links often continue in a different browser tab, browser profile, device, or app than the one where the link was requested. For example, a user can start password recovery on desktop but open the email link on mobile.
+
+Use `crossEnvironmentTransactionID` to connect the `send` step with the later `post-response` step. The value can be chosen as needed: you can generate a new ID for the email-link transaction or reuse an existing transaction ID from your system. The only requirement is that the same value is available when sending the email and when verifying the link after it has been clicked.
+
+`crossEnvironmentTransactionID` does not replace `userId` or `identifier`. Use it to correlate the transaction across environments, and still provide `userId` via a user reference as soon as it is known.
+
+```typescript
+import { getTracker } from "@corbado/observe";
+
+const tracker = () => getTracker()!;
+
+async function sendRecoveryLink(email: string) {
+  const crossEnvironmentTransactionID = crypto.randomUUID();
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.send.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  await sendPasswordResetEmail(email, {
+    callbackState: { crossEnvironmentTransactionID },
+  });
+
+  emailLink.send.finished({});
+
+  return crossEnvironmentTransactionID;
+}
+
+async function verifyRecoveryLink(
+  token: string,
+  crossEnvironmentTransactionID: string,
+) {
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.postResponse.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  await verifyPasswordResetToken(token);
+
+  emailLink.postResponse.finished({});
+}
+```
 
 ---
 

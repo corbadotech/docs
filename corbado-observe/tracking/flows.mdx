@@ -4,216 +4,446 @@ description: "Model complete authentication journeys with flows and track them c
 sidebarTitle: "Flows"
 ---
 
-Flows represent an end-to-end user journey in **Corbado Observe**, for example login or sign-up.
+Flows represent an end-to-end user journey in **Corbado Observe**, for example login or sign-up. The flow concept powers dashboards that show the different paths of a given flow. For example, the **Login Funnel** dashboard can render an overview of all variants that exist for a login journey.
+
+<Frame>
+  <iframe
+    className="w-full aspect-video rounded-xl"
+    src="https://www.youtube.com/embed/n_ztfoPszsM"
+    title="Find Passkey Drop-Offs in your Funnel | Corbado Observe"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</Frame>
 
 Each flow is built from smaller units:
 
 - [**Decisions**](/corbado-observe/tracking/decisions) (for example method selection or route choice)
 - [**Subflows**](/corbado-observe/tracking/subflows) (for example passkey login, password login, or email OTP)
+- **Nested flows** (for example a recovery flow like a password reset that completes a surrounding login flow)
 
-In contrast to [subflows](/corbado-observe/tracking/subflows), flows are **not auto-discovered** by **Corbado Observe**. You need to manually define flows by sending the appropriate flow events which are listed below.
+Nested flows are flows that happen inside another flow. They are useful when a user journey temporarily enters another complete journey, such as a password reset that completes a surrounding login flow. Nested flows are described in more detail in the examples below.
 
-## 1. Supported flow types
+## 1. Flow names
 
-Use one of these flow names when you send flow events:
+Use one of these predefined flow names when you send flow events:
 
-| Flow type | Meaning | Typical outcome |
-| --- | --- | --- |
-| `login` | Existing user authentication journey | User is authenticated |
-| `signup` | New user registration journey | User account is created and authenticated |
-| `recovery` | Account recovery journey | User regains access and is authenticated |
-| `enrollment` | Authenticator enrollment journey (for example passkey setup) | Additional auth method is configured |
+<table>
+  <thead>
+    <tr>
+      <th style={{ width: "20%", textAlign: "left" }}>Flow name</th>
+      <th style={{ width: "20%", textAlign: "left" }}>Outcome states</th>
+      <th style={{ width: "60%", textAlign: "left" }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>login</code></td>
+      <td><code>completed</code> or <code>incomplete</code>.</td>
+      <td>Existing user authentication journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows (<code>provide-identifier</code>, <code>passkey-login</code>, <code>social-login</code>, <code>password-login</code>, <code>email-link</code>, <code>email-otp</code>, <code>sms-otp</code>, etc.), and potentially nested flows (<code>enrollment</code>, <code>recovery</code>).</td>
+    </tr>
+    <tr>
+      <td><code>signup</code></td>
+      <td><code>completed</code> or <code>incomplete</code>.</td>
+      <td>New user registration journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows similar to login but often with different <code>explicitSpecType</code> values, and potentially nested flows (<code>enrollment</code>).</td>
+    </tr>
+    <tr>
+      <td><code>recovery</code></td>
+      <td><code>completed</code> or <code>incomplete</code>.</td>
+      <td>Account recovery journey that a user goes through to regain access to the account, for example a password reset. This is often nested inside a login flow.</td>
+    </tr>
+    <tr>
+      <td><code>enrollment</code></td>
+      <td><code>completed</code>, <code>skipped</code>, <code>invisible</code>, or <code>incomplete</code>.</td>
+      <td>Authenticator enrollment journey, for example passkey setup after a successful login. Typically, we observe auth method decisions and subflows such as <code>passkey-enrollment</code>, <code>email-link</code>, or <code>sms-otp</code>.</td>
+    </tr>
+  </tbody>
+</table>
 
-## 2. Flow lifecycle events
+You can also use custom flow names when your product has authentication-related journeys that do not fit the predefined flow names. For example, you can track a `profile` flow when users manage authentication methods from their account settings.
 
-These **Corbado Observe SDK** events define and update flow state:
+Custom flow names can be used to build custom dashboards. The pre-existing dashboards in **Corbado Observe** do not automatically work with custom flow names.
 
-| Event method | When to send | Required fields |
-| --- | --- | --- |
-| `flowStarted()` | User enters an auth touchpoint or flow chooser | `flowName` **or** `flowNames` |
-| `flowDecided()` | Flow is resolved to one concrete path | `flowName` |
-| `flowFinished()` | Flow completes explicitly | `flowName` |
-| `flowReset()` | In-progress flow is restarted | `flowName` |
-| `flowAutoFinished()` | One flow is completed implicitly by another flow | `flowName`, `finishedByFlowName` |
+## 2. Flow events
 
-<Info>
-  In most implementations, you always send `flowStarted()` and `flowFinished()`. Send `flowDecided()` when you start with multiple possible flows and resolve later.
-</Info>
+These **Corbado Observe SDK** events define and update the state of a flow:
 
-## 3. `flowName` vs `flowNames`
+- `flowStarted()`
+- `flowDecided()`
+- `flowFinished()`
+- `flowReset()`
+- `flowAutoFinished()`
 
-Use the flow fields based on how many outcomes are possible at the start:
+### 2.1 `flowStarted()`
 
-- `flowName`: Use when the path is already known (for example a dedicated `/login` page).
-- `flowNames`: Use when multiple paths are possible at entry time (for example combined identifier-first form that can lead to login or sign-up).
-- `defaultFlowName`: Optional fallback used with `flowNames` when you need an initial default (for example `login`).
+Emit `flowStarted()` when a new flow has started, for example when the user enters a login, sign-up, recovery, or enrollment journey.
 
-### 3.1 Example: Split login and sign-up routes
+Use `flowName`, `flowNames`, and `defaultFlowName` to indicate which flow name has been started:
 
-Use this pattern when login and sign-up are hard-separated by route or UI entry point.
+- Use `flowName` if the flow name is known from the start. For example, if your application has separate login and sign-up pages, use `login` on the login page and `signup` on the sign-up page.
+- Use `flowNames` if multiple flow names are possible at the beginning of the journey. This is common when login and sign-up are merged into one identifier-first journey: the user enters an identifier first, and your system later decides whether this is a login or a sign-up. In this case, list all possible flow names, usually `login` and `signup`.
+- Use `defaultFlowName` together with `flowNames` to indicate which flow name Corbado Observe should prefer if no more information is provided through `flowDecided()` or `flowFinished()`.
 
-<Tabs>
-  <Tab title="NPM">
-    <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
-    </Info>
+We recommend setting `touchpoint` to describe where the flow was initiated. The same flow name can start from different places in an application, and metrics often depend heavily on that context. For example, a login started from checkout can behave very differently from a login started from the account page because the user's intent is different.
 
-    ```typescript
-    import { init, getTracker } from "@corbado/observe";
+If the user is already known when the flow starts, provide the user reference as early as possible. This is common for enrollment flows, because the user usually has to be authenticated before enrollment is allowed. In that case, include the `userId` already with `flowStarted()`.
 
-    init({
-      projectId: "<ProjectID>",
-      apiBaseUrl: "<APIBaseURL>"
-    });
+It is fine if `flowStarted()` is emitted multiple times during a journey because it is tricky to deduplicate start events in some applications. Corbado Observe deduplicates repeated start events during classification.
 
-    // /login route
-    getTracker().flowStarted({
-      flowName: "login",
-      touchpoint: "account_login",
-    });
+### 2.2 `flowDecided()`
 
-    // ... authentication succeeds
-    getTracker().flowFinished({
-      flowName: "login",
-      userId: "usr_123",
-    });
+Emit `flowDecided()` when a journey that started with multiple possible flow names is resolved to one concrete flow name.
 
-    // /signup route
-    getTracker().flowStarted({
-      flowName: "signup",
-      touchpoint: "account_signup",
-    });
+This usually follows a `flowStarted()` event with `flowNames`. For example, an identifier-first journey might start with `login` and `signup` as possible flow names. After your backend checks whether the identifier belongs to an existing user, use `flowDecided()` to resolve the journey to `login` or `signup`.
 
-    // ... registration succeeds
-    getTracker().flowFinished({
-      flowName: "signup",
-      userId: "usr_456",
-    });
-    ```
-  </Tab>
+It is fine if `flowDecided()` is emitted multiple times during a journey. Corbado Observe uses the last provided flow name. The same applies if a later `flowFinished()` event provides a flow name: the latest resolved flow name wins.
 
-  <Tab title="CDN">
-    <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
-    </Info>
+### 2.3 `flowFinished()`
 
-    ```html
-    <script>
-      Corbado.init({
-        projectId: "<ProjectID>",
-        apiBaseUrl: "<APIBaseURL>",
-      });
+Emit `flowFinished()` when a flow reaches its explicit end state.
 
-      // /login route
-      Corbado.get().flowStarted({
-        flowName: "login",
-        touchpoint: "account_login",
-      });
+For login, this is usually the moment the user is authenticated. For sign-up, it is the moment the account has been created and the user is authenticated. For recovery, it is the moment the user has regained access. For enrollment, it is the moment the authenticator setup has completed, has been skipped, or is known to be invisible.
 
-      Corbado.get().flowFinished({
-        flowName: "login",
-        userId: "usr_123",
-      });
+If available, include `userId` or `identifier` so Corbado Observe can link the completed flow to a user reference. For flows that end without a normal completion, use `explicitOutcome`, for example `skipped` or `invisible` during enrollment.
 
-      // /signup route
-      Corbado.get().flowStarted({
-        flowName: "signup",
-        touchpoint: "account_signup",
-      });
+### 2.4 `flowReset()`
 
-      Corbado.get().flowFinished({
-        flowName: "signup",
-        userId: "usr_456",
-      });
-    </script>
-    ```
-  </Tab>
-</Tabs>
+Emit `flowReset()` when an in-progress flow is restarted explicitly by the user.
+The typical example use case for this is when a user navigates back to the start of a login (e.g. by changing the identifier).
 
-### 3.2 Example: One combined auth entry point
+Use `flowName` when one concrete flow is being reset, or `flowNames` when the reset applies to a still-ambiguous flow chooser.
 
-Use this pattern when one form can result in either login or sign-up.
+### 2.5 `flowAutoFinished()`
 
-At entry time, you do not know the final flow yet, so send `flowNames` and optional `defaultFlowName`. Later, after identifier lookup or backend checks, decide and finish the resolved flow.
+Emit `flowAutoFinished()` when one flow should be considered complete because another flow completed it implicitly.
 
-<Tabs>
-  <Tab title="NPM">
-    <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
-    </Info>
+This question usually comes up when two related flows can lead to the same final state, for example login and recovery, or login and signup. The important distinction is whether the flow you want to finish has already been started.
 
-    ```typescript
-    import { init, getTracker } from "@corbado/observe";
+- Use `flowFinished()` if the flow has already been started. This is common for nested flows. For example, if a login flow is started first, then a recovery flow is started inside it, both flows can be finished explicitly after recovery completes and the user is logged in.
+- Use `flowAutoFinished()` if the flow you want to finish has not been started before. For example, if a user completes a signup flow and is automatically logged in as a result, no separate login flow may have been started. In that case, the signup flow can explicitly finish, and the login flow can be auto-finished by the signup flow.
 
-    init({
-      projectId: "<ProjectID>",
-      apiBaseUrl: "<APIBaseURL>",
-    });
+This can be tricky to decide in real integrations. The examples below show the recommended patterns.
 
-    // Combined /auth route
-    getTracker().flowStarted({
-      flowNames: ["login", "signup"],
-      defaultFlowName: "login",
-      touchpoint: "account",
-    });
+## 3. Examples
 
-    // Later after user exists check:
-    var userExists = true;
+In a real application, flow tracking is usually spread across pages, components, server actions, and callback routes. The examples below keep the relevant snippets together to show the complete event sequence for each journey.
 
-    if (userExists) {
-      getTracker().flowDecided({ flowName: "login" });
-      getTracker().flowFinished({
-        flowName: "login",
-        userId: "usr_123",
-      });
-    } else {
-      getTracker().flowDecided({ flowName: "signup" });
-      getTracker().flowFinished({
-        flowName: "signup",
-        userId: "usr_789",
-      });
-    }
-    ```
-  </Tab>
+### 3.1 Recovery with automatic login
 
-  <Tab title="CDN">
-    <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Getting started](/corbado-observe/overview/getting-started).
-    </Info>
+A login flow is started, but the user cannot complete the login directly and has to switch to a recovery flow. After completing recovery through an email link and setting a new password, the user is automatically logged in.
 
-    ```html
-    <script>
-      Corbado.init({
-        projectId: "<ProjectID>",
-        apiBaseUrl: "<APIBaseURL>",
-      });
+Track this as a recovery flow nested inside the surrounding login flow. Because the login flow was already started before the recovery flow began, finish both flows explicitly: first `flowFinished()` for `recovery`, then `flowFinished()` for `login`.
 
-      Corbado.get().flowStarted({
-        flowNames: ["login", "signup"],
-        defaultFlowName: "login",
-        touchpoint: "account",
-      });
+Because the email link can be opened in a different browser, device, or session, pass a stable `crossEnvironmentTransactionID` from the email-send step to the reset-link verification step.
 
-      // Later after user exists check:
-      var userExists = true;
+```typescript
+import { getTracker, OperationFullProvideIdentifierWithCUI } from "@corbado/observe";
 
-      if (userExists) {
-        Corbado.get().flowDecided({ flowName: "login" });
-        Corbado.get().flowFinished({
-          flowName: "login",
-          userId: "usr_123",
-        });
-      } else {
-        Corbado.get().flowDecided({ flowName: "signup" });
-        Corbado.get().flowFinished({
-          flowName: "signup",
-          userId: "usr_789",
-        });
-      }
-    </script>
-    ```
-  </Tab>
-</Tabs>
+const tracker = () => getTracker()!;
+
+let provideIdentifier: OperationFullProvideIdentifierWithCUI;
+
+// Step 1: User navigates to the login page.
+async function showLoginPage(emailInput: HTMLInputElement) {
+  tracker().flowStarted({
+    flowName: "login",
+    touchpoint: "account",
+  });
+
+  tracker().authMethodsDecisionStarted({
+    decisionName: "pre-identifier",
+    options: ["identifier-email", "passkey-login-cui", "social-other"],
+  });
+
+  provideIdentifier = tracker().provideIdentifierOperationFull(emailInput);
+}
+
+// Step 2: User submits their identifier.
+async function submitIdentifier(email: string) {
+  provideIdentifier.provideIdentifier.postResponse.start({
+    explicitSpecType: "email",
+  });
+
+  const result = await checkIdentifier(email);
+
+  provideIdentifier.provideIdentifier.postResponse.finished(
+    {},
+    { userReference: { userId: result.userId } },
+  );
+
+  tracker().authMethodsDecisionStarted({
+    decisionName: "post-identifier",
+    options: ["password-login-known-identifier", "reset-flow"],
+  });
+}
+
+// Step 3 (optional): User tries password login, but the password is wrong.
+// Not every user submits a password before starting recovery.
+async function submitWrongPassword(password: string, passwordInput: HTMLInputElement) {
+  const passwordLogin = tracker().passwordLoginFullOperation({
+    inputHtmlField: passwordInput,
+    explicitSpecType: "password-known-identifier",
+  });
+
+  passwordLogin.postResponse.start({});
+
+  const result = await loginWithPassword(password);
+
+  if (!result.success) {
+    passwordLogin.postResponse.errorTyped({ code: "invalid_password" });
+  }
+}
+
+// Step 4: User starts password recovery from the login flow.
+async function startPasswordRecovery(email: string) {
+  tracker().flowStarted({
+    flowName: "recovery",
+    touchpoint: "login",
+  });
+
+  const crossEnvironmentTransactionID = crypto.randomUUID();
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.send.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  await sendPasswordResetEmail(email, { crossEnvironmentTransactionID });
+
+  emailLink.send.finished({});
+
+  return crossEnvironmentTransactionID;
+}
+
+// Step 5: User opens the password reset link from the email.
+async function verifyResetLink(token: string, crossEnvironmentTransactionID: string) {
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.postResponse.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  const result = await verifyPasswordResetToken(token);
+
+  emailLink.postResponse.finished(
+    {},
+    {
+      userReference: {
+        userId: result.userId,
+        crossEnvironmentTransactionID,
+      },
+    },
+  );
+
+  return result.userId;
+}
+
+// Step 6: User sets a new password and is logged in automatically.
+async function setNewPasswordAndLogin(
+  token: string,
+  newPassword: string,
+  newPasswordInput: HTMLInputElement,
+) {
+  const passwordReset = tracker().passwordEnrollmentFullOperation({
+    inputHtmlField: newPasswordInput,
+    explicitSpecType: "password-reset",
+  });
+
+  passwordReset.postResponse.start({});
+
+  const result = await completePasswordResetAndLogin(token, newPassword);
+
+  passwordReset.postResponse.finished({});
+
+  tracker().flowFinished({
+    flowName: "recovery",
+    userId: result.userId,
+  });
+
+  tracker().flowFinished({
+    flowName: "login",
+    userId: result.userId,
+  });
+}
+```
+
+### 3.2 Recovery without automatic login
+
+A login flow is started, but the user cannot complete the login directly and has to switch to a recovery flow. The user completes recovery through an email link and sets a new password, but is not logged in automatically. Instead, the user has to run through a fresh login, for example by using the password they just reset.
+
+Track this similar to the previous example: recovery is nested inside the surrounding login flow. The difference is that the login flow continues after the nested recovery flow and includes additional subflows, such as `password-login`, before the login flow is finished.
+
+Because the email link can be opened in a different browser, device, or session, pass a stable `crossEnvironmentTransactionID` from the email-send step to the reset-link verification step.
+
+```typescript
+import {
+  getTracker,
+  OperationFullProvideIdentifierWithCUI,
+  PasswordEnrollmentOperationFull,
+  PasswordLoginOperationFull,
+} from "@corbado/observe";
+
+const tracker = () => getTracker()!;
+
+let provideIdentifier: OperationFullProvideIdentifierWithCUI;
+let passwordLogin: PasswordLoginOperationFull;
+let passwordReset: PasswordEnrollmentOperationFull;
+
+// Step 1: User navigates to the login page.
+async function showLoginPage(emailInput: HTMLInputElement) {
+  tracker().flowStarted({
+    flowName: "login",
+    touchpoint: "account",
+  });
+
+  tracker().authMethodsDecisionStarted({
+    decisionName: "pre-identifier",
+    options: ["identifier-email", "passkey-login-cui", "social-other"],
+  });
+
+  provideIdentifier = tracker().provideIdentifierOperationFull(emailInput);
+}
+
+// Step 2: User submits their identifier.
+async function submitIdentifier(email: string) {
+  provideIdentifier.provideIdentifier.postResponse.start({
+    explicitSpecType: "email",
+  });
+
+  const result = await checkIdentifier(email);
+
+  provideIdentifier.provideIdentifier.postResponse.finished(
+    {},
+    { userReference: { userId: result.userId } },
+  );
+}
+
+// Step 3: Password login page loads after the identifier check.
+function showPasswordLoginMethod(passwordInput: HTMLInputElement) {
+  tracker().authMethodsDecisionStarted({
+    decisionName: "post-identifier",
+    options: ["password-login-known-identifier", "reset-flow"],
+  });
+
+  passwordLogin = tracker().passwordLoginFullOperation({
+    inputHtmlField: passwordInput,
+    explicitSpecType: "password-known-identifier",
+  });
+}
+
+// Step 4: User clicks "forgot password" and starts recovery from the login flow.
+async function startPasswordRecovery(email: string) {
+  tracker().flowStarted({
+    flowName: "recovery",
+    touchpoint: "login",
+  });
+
+  const crossEnvironmentTransactionID = crypto.randomUUID();
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.send.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  await sendPasswordResetEmail(email, { crossEnvironmentTransactionID });
+
+  emailLink.send.finished({});
+
+  return crossEnvironmentTransactionID;
+}
+
+// Step 5: User opens the password reset link from the email.
+async function verifyResetLink(token: string, crossEnvironmentTransactionID: string) {
+  const emailLink = tracker().emailLinkOperationFull();
+
+  emailLink.postResponse.start(
+    { explicitSpecType: "email-link-login" },
+    { userReference: { crossEnvironmentTransactionID } },
+  );
+
+  const result = await verifyPasswordResetToken(token);
+
+  emailLink.postResponse.finished(
+    {},
+    {
+      userReference: {
+        userId: result.userId,
+        crossEnvironmentTransactionID,
+      },
+    },
+  );
+
+  return result.userId;
+}
+
+// Step 6: Password reset page loads.
+function showSetNewPasswordPage(newPasswordInput: HTMLInputElement) {
+  passwordReset = tracker().passwordEnrollmentFullOperation({
+    inputHtmlField: newPasswordInput,
+    explicitSpecType: "password-reset",
+  });
+}
+
+// Step 7: User submits the new password, but is not logged in automatically.
+async function setNewPassword(token: string, newPassword: string) {
+  passwordReset.postResponse.start({});
+
+  const result = await completePasswordReset(token, newPassword);
+
+  passwordReset.postResponse.finished({});
+
+  tracker().flowFinished({
+    flowName: "recovery",
+    userId: result.userId,
+  });
+
+  return result.userId;
+}
+
+// Step 8: User returns to login and submits their identifier again.
+// Reuse showLoginPage() and submitIdentifier() from above; no new functions are needed.
+
+// Step 9: Password login page loads again after the second identifier check.
+function showPasswordLoginAfterRecovery(passwordInput: HTMLInputElement) {
+  tracker().authMethodsDecisionStarted({
+    decisionName: "post-identifier",
+    options: ["password-login-known-identifier", "reset-flow"],
+  });
+
+  passwordLogin = tracker().passwordLoginFullOperation({
+    inputHtmlField: passwordInput,
+    explicitSpecType: "password-known-identifier",
+  });
+}
+
+// Step 10: User logs in with the password they just set.
+async function loginWithNewPassword(newPassword: string, userId: string) {
+  passwordLogin.postResponse.start({});
+
+  await loginWithPassword(newPassword);
+
+  passwordLogin.postResponse.finished({});
+
+  tracker().flowFinished({
+    flowName: "login",
+    userId,
+  });
+}
+
+```
+
+{/*
+Planned examples:
+- 3.3 Signup with automatic login
+- 3.4 Signup without automatic login
+- 3.5 Signup from a combined login/signup component with automatic login
+- 3.6 Signup from a combined login/signup component without automatic login
+- 3.7 Login from a combined login/signup component
+*/}
 
 ## 4. Next steps
 
