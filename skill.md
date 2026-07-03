@@ -11,8 +11,50 @@ description: Integrate Corbado Observe into a frontend application to measure
 
 Corbado Observe is fire-and-forget telemetry for authentication journeys. You instrument the
 customer's frontend with structured events; Corbado turns them into funnels, flows, and
-drop-off analytics. Instrumentation must NEVER change or break existing app behavior — add
-tracking calls at semantically correct points with minimal diffs.
+drop-off analytics.
+
+**Guardrails (read before touching code):**
+
+- Instrumentation must NEVER change or break existing app behavior. It is pure telemetry —
+  add tracking calls at semantically correct points with minimal diffs; never reorder,
+  gate, or alter auth logic to make tracking easier.
+- Every tracking call goes through the guarded accessor and optional chaining (see Setup),
+  so a missing SDK or config can never throw.
+- Do NOT read, print, or commit secrets or `.env` files. Ask the user for `projectId` /
+  `apiBaseUrl` if they are not already wired into the app's config.
+- Do NOT invent event names, methods, spec types, or payload fields. Use only what is in
+  the event catalog and helper tables below.
+
+## Working method (do this first)
+
+Instrumentation is a cross-cutting change that touches many files, so plan before editing:
+
+1. **Discover the auth surface.** Search the codebase for the auth entry points and
+   methods actually in use — do not assume. For example:
+
+   ```bash
+   rg -il "login|signin|sign-in|signup|register|passkey|webauthn|otp|verify|oauth|social" \
+     --glob '*.{ts,tsx,js,jsx,vue,svelte}'
+   ```
+
+   Identify each login/signup/recovery/enrollment entry point, and which methods each
+   offers (password, passkey, email OTP/link, social, ...).
+
+2. **Present a plan and get confirmation.** Before writing tracking code, show the user a
+   short map and ask to proceed, e.g.:
+
+   ```
+   I found these auth touchpoints and will instrument them with Corbado Observe:
+   - /login  → flow "login" (touchpoint "account")   methods: password, passkey
+   - /signup → flow "signup" (touchpoint "account")  methods: password + email OTP
+   - post-login passkey prompt → flow "enrollment"
+   No auth behavior will change; only tracking calls are added. Proceed?
+   ```
+
+3. **Instrument** flows → decisions → subflows → user references (sections 2–5), reusing
+   the guarded accessor everywhere.
+
+4. **Verify** by walking each journey (section 6).
 
 ## Setup
 
@@ -72,17 +114,15 @@ https://docs.corbado.com/corbado-observe/overview/getting-started (with the CDN,
   email OTP, ...). Auto-discovered from the step events you send via SDK helpers.
 - **User references** — link events to the app's own users (`userId`, `identifier`).
 
-## Integration playbook
+## Instrumentation checklist
 
-1. Map every auth entry point (login page, signup page, combined auth form, checkout
-   login, post-login passkey prompt) to a flow type and a stable `touchpoint` string.
-2. Fire flow lifecycle events at those points.
-3. Fire decision events wherever the user or system picks between auth methods.
-4. Wrap each concrete auth method with its subflow operation helper.
-5. Pass user references as soon as identity is known — at minimum on `flow_finished`
-   (`flowFinished()`).
-6. Verify with `debug: true` (events log to the browser console) — check event names,
-   payloads, and ordering by walking through each journey.
+For each auth touchpoint identified in the plan:
+
+1. Fire flow lifecycle events at the entry point and on completion (section 2).
+2. Fire decision events wherever the user or system picks between auth methods (section 3).
+3. Wrap each concrete auth method with its subflow operation helper (section 4).
+4. Pass user references as soon as identity is known — at minimum on `flow_finished`
+   (`flowFinished()`) (section 5).
 
 ## 1. Event catalog
 
@@ -305,10 +345,17 @@ is known: `op.postResponse.errorTyped({ code: "invalid_password" })` (login code
 3. In the network tab, confirm event batches POST to the configured `apiBaseUrl`.
 4. Check the dashboards at https://app.corbado.com to see flows and subflows appear.
 
-Common mistakes: forgetting `flow_finished` (`flowFinished()`) on success paths that
-redirect immediately; firing `flow_started` (`flowStarted()`) on every re-render instead
-of once per journey entry; sending `subflow_step_finished` (`.finished()`) for a step
-that failed instead of `subflow_step_error` (`.error()`); omitting `explicitSpecType` on
-the first step; sending `auth_method_decision_finished` when a subflow follows the
-choice (it resolves the decision automatically) or forgetting it when none does
-(skip/dismiss).
+## Critical rules
+
+- Never change, reorder, or gate auth logic for tracking. Telemetry is additive only.
+- Always go through the guarded accessor with `?.`; never store the tracker/operation in a
+  long-lived variable that could be used without the guard.
+- Fire `flow_started` (`flowStarted()`) once per journey entry — NOT on every re-render.
+- Always send `flow_finished` (`flowFinished()`) on success paths, including ones that
+  redirect immediately (send it before the redirect).
+- On a failed step send `subflow_step_error` (`.error()`), never `subflow_step_finished`
+  (`.finished()`); then stop tracking the rest of that attempt.
+- Always set `explicitSpecType` on the first step of a subflow.
+- Send `auth_method_decision_finished` only when NO subflow follows (skip/dismiss); when a
+  subflow follows, it resolves the decision automatically (section 3).
+- Do not read/print `.env` or secrets; do not invent event names, methods, or spec types.
