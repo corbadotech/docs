@@ -1,0 +1,59 @@
+---
+title: "Use Corbado Observe with AI coding agents"
+description: "Point your AI coding agent at the Corbado Observe Agent Skill \u2014 or install it with npx skills add \u2014 to instrument authentication flows for you."
+sidebarTitle: "Use with AI agents"
+---
+
+Corbado Observe ships an **Agent Skill** (the open [agentskills.io](https://agentskills.io) standard) that teaches your AI coding agent exactly how to instrument Corbado Observe in your frontend: which events to fire, where to fire them, and how to verify the result.
+
+The skill uses the `SKILL.md` format read by most AI coding tools, including **Cursor**, **Claude Code**, **Codex**, **GitHub Copilot**, **Windsurf**, and **Gemini CLI** — plus ~70 more compatible agents.
+
+There are two ways to use the skill with your agent, explained below.
+
+## 1. Use it in a prompt
+
+The fastest way — point your agent at the skill directly in a chat prompt, no install required:
+
+```text
+Integrate Corbado Observe into my frontend using https://docs.corbado.com/skill.md
+```
+
+## 2. Install it
+
+To make the skill permanently available to your agent, install it into your project root:
+
+```bash
+npx skills add https://docs.corbado.com
+```
+
+<Warning>
+  The `https://` scheme is required. The bare domain form (`npx skills add docs.corbado.com`) is not accepted by the Skills CLI.
+</Warning>
+
+The command detects your installed agents and writes the skill into each one's namespaced skills folder (for example `.cursor/skills/`, `.claude/skills/`). It never edits or overwrites your existing `AGENTS.md` or `CLAUDE.md`.
+
+<Info>
+  Manually installed skills don't auto-update. Run `npx skills update -y` to pull the latest version.
+</Info>
+
+### 2.1 Example prompts
+
+Once the skill is installed, ask your agent in natural language:
+
+- "Integrate Corbado Observe into my frontend"
+- "Add Corbado Observe tracking to my login and signup flows"
+- "Instrument my passkey login with Corbado Observe events"
+
+## 3. What the agent does
+
+The skill guides the agent through a safe, telemetry-only integration:
+
+1. **Discovers the auth surface** — finds your login, signup, recovery, and enrollment entry points and the methods each offers.
+2. **Proposes a plan** — shows you a short map of the touchpoints it will instrument and asks for confirmation before writing code.
+3. **Instruments** flows, decisions, and subflows with the correct events and payloads, using guarded tracking calls that can never break your app's behavior.
+4. **Verifies** by walking each journey with debug mode on and confirming events fire as expected — see the [Getting started](/corbado-observe/overview/getting-started) verify step.
+
+## 4. See also
+
+- [Getting started](/corbado-observe/overview/getting-started) — install the SDK and send your first event manually.
+- [Tracking overview](/corbado-observe/tracking/overview) — the full data model the skill instruments against.

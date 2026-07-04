@@ -28,7 +28,8 @@
                         "group": "Overview",
                         "pages": [
                             "corbado-observe/overview/welcome",
-                            "corbado-observe/overview/getting-started"
+                            "corbado-observe/overview/getting-started",
+                            "corbado-observe/overview/use-with-ai-agents"
                         ]
                     },
                     {
