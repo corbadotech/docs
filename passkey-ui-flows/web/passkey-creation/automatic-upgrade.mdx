@@ -10,9 +10,9 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
     **Support (July 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It only triggers when the password was filled by the user's credential manager, and only when no passkey exists yet for the account.
 </Info>
 
-## Automatic Passkey Creation after Login
+## Automatic Passkey Creation after Login (Conditional Create)
 
-Users logging in via a browser follow a standard login flow enriched by the automatic passkey upgrade after the successful login used a password manager to autofill a password.
+Users logging in via a browser follow a standard login flow enriched by automatic passkey creation via Conditional Create after successfully using a password manager to autofill their password.
 
 **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** works in the background to enable this feature, ensuring automatic passkey creation only happens when conditions are optimal for success.
 
