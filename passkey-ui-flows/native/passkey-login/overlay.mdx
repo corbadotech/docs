@@ -39,7 +39,7 @@ This flow leverages the **`preferImmediatelyAvailableCredentials`** configuratio
 </Tabs>
 
 <Info>
-    **Technical Implementation:** This flow uses `preferImmediatelyAvailableCredentials` to ensure the overlay only displays when passkeys are immediately available on the device. This configuration is only available natively (with some exceptions). If you need support for security keys or cross-device authentication (CDA), a different configuration must be used - contact us for implementation guidance.
+    **Technical Implementation:** This flow uses `preferImmediatelyAvailableCredentials` — an `ASAuthorizationController` request option on iOS 16+ and a `GetCredentialRequest` parameter on Android — to ensure the overlay only displays when passkeys are immediately available on the device. On the web, Chrome 149+ offers the equivalent through immediate mode (`uiMode: 'immediate'`). Because it excludes credentials that are not stored locally, it also rules out security keys and cross-device authentication (CDA); if you need those, a different configuration must be used - contact us for implementation guidance.
 </Info>
 
 <Info>

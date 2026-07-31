@@ -7,10 +7,7 @@ description: "This flow explains the automatic passkey creation feature that bro
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 <Info>
-    As of October 2025, this feature is only available in iOS, macOS and
-    Windows (Chrome+GPM). Not all password managers support it yet. Note, that it only works
-    when a password is autofilled and when there is no passkey stored for the
-    user yet.
+    **Support (July 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It only triggers when the password was filled by the user's credential manager, and only when no passkey exists yet for the account.
 </Info>
 
 ## Automatic Passkey Creation after Login
@@ -62,8 +59,8 @@ Users logging in via a browser follow a standard login flow enriched by the auto
   </Step>
   <Step title="Automatic passkey creation">
     - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines conditions are optimal for automatic passkey creation.
-    - Passkey creation process runs in the backend, given that the user has successfully authenticated with the second factor and no passkey exists yet.
-    - Passkey is successfully created, user is notified by the browser/operating system and is redirected to app dashboard.
+    - The passkey is created in the background via conditional create (`navigator.credentials.create({ mediation: 'conditional' })`), given that the user has successfully authenticated with the second factor and no passkey exists yet.
+    - Passkey is successfully created and the user is notified by the browser or operating system.
   </Step>
   <Step title="Redirection to app dashboard">
     - User is redirected to the app dashboard.

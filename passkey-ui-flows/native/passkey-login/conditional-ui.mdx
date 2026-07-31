@@ -8,7 +8,11 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Conditional UI Flow (Usernameless Login)
 
-The Conditional UI flow is automatically triggered by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. On iOS, passkeys appear on the keyboard's suggestion bar. The system presents all available passkeys for the app, and determines the user's identity after they select and authenticate with their passkey.
+The Conditional UI flow is triggered by the OS as soon as the app requests it, without the user entering their username first. This is a **usernameless login flow**. On iOS, passkeys appear on the keyboard's suggestion bar. The system presents the available passkeys for the app, and determines the user's identity after they select and authenticate with their passkey.
+
+<Note>
+    **Platform support (July 2026):** iOS and iPadOS 16+ via `performAutoFillAssistedRequests()` (not available to native macOS apps), and Android 15+ via `PendingGetCredentialRequest` in `androidx.credentials` 1.5.0+, which surfaces credentials in keyboard inline and drop-down suggestions. The Android implementation is currently `View`-based only, so Compose UIs are not yet covered — the screens below show the iOS experience.
+</Note>
 
 <Info>
     **Key Technical Detail:** The system doesn't know which user is logging in until AFTER they select their passkey. This usernameless approach enables the seamless experience where all available passkeys are shown upfront.
@@ -30,7 +34,7 @@ The Conditional UI flow is automatically triggered by the browser/OS when passke
 
 <Steps>
     <Step title="Conditional UI automatically triggered">
-        - When the user taps on the email field, the OS automatically triggers Conditional UI, displaying ALL available passkeys for the app on the keyboard's suggestion bar.
+        - When the user taps on the email field, the OS presents Conditional UI, displaying the passkeys available for the app on the keyboard's suggestion bar.
         - Note: This is usernameless - the system doesn't yet know which user is trying to log in.
     </Step>
      <Step title="Authenticate using the selected passkey">

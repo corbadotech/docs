@@ -547,13 +547,21 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                     <Frame caption={caption}>
                         <div 
                             onClick={handleImageClick}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleImageClick(e);
+                                }
+                            }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Enlarge diagram: ${caption}`}
                             className="cursor-zoom-in"
                             style={{ display: 'block', position: 'relative' }}
                         >
                             <img 
                                 ref={imgRef}
                                 src={imageURL} 
-                                alt={imageName || caption} 
+                                alt={caption || imageName} 
                                 className="w-full h-auto"
                                 style={{ pointerEvents: 'none' }}
                             />
@@ -563,6 +571,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                 <div className="flex justify-end my-2">
                     <Tooltip tip="Download image">
                         <button
+                            type="button"
+                            aria-label={`Download ${caption}`}
                             onClick={handleDownload}
                             className="bg-white text-black text-xs px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition-all cursor-pointer"
                         >
@@ -574,6 +584,9 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
 
             {showLightbox && (
                 <div 
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={caption}
                     style={{
                         position: 'fixed',
                         top: 0,
@@ -653,6 +666,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                             </p>
                         </div>
                         <button
+                            type="button"
+                            aria-label="Close enlarged view"
                             onClick={closeLightbox}
                             onMouseDown={(e) => e.stopPropagation()}
                             style={{
@@ -689,6 +704,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                             }}
                         >
                             <button
+                                type="button"
+                                aria-label="Zoom in"
                                 ref={zoomInBtnRef}
                                 onClick={(e) => { e.stopPropagation(); zoomIn(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
@@ -713,6 +730,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                 +
                             </button>
                             <button
+                                type="button"
+                                aria-label="Zoom out"
                                 ref={zoomOutBtnRef}
                                 onClick={(e) => { e.stopPropagation(); zoomOut(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
@@ -742,6 +761,8 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                                 −
                             </button>
                             <button
+                                type="button"
+                                aria-label="Reset zoom"
                                 ref={resetBtnRef}
                                 onClick={(e) => { e.stopPropagation(); resetTransform(); }}
                                 onMouseDown={(e) => e.stopPropagation()}
@@ -825,7 +846,7 @@ export const ToolingFrame = ({ imageURL, caption, imageName, containerBackground
                         >
                             <img 
                                 src={imageURL}
-                                alt={imageName || caption}
+                                alt={caption || imageName}
                                 onLoad={(e) => {
                                     const state = stateRef.current;
                                     const naturalWidth = e.target.naturalWidth;

@@ -54,17 +54,16 @@ The One-Tap Login experience adapts seamlessly to each platform's native authent
 
 <Steps>
     <Step title="Users log in via One-Tap">
-        - Corbado detects the user has a passkey linked to the platform. User taps "Login with Passkey" button on the login screen to start authentication.
+        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines the user is likely to have a passkey available on this platform. User taps "Login with Passkey" button on the login screen to start authentication.
         - The button displays personalized information (e.g., "Login as alice@example.com") for improved user recognition.
     </Step>
     <Step title="Automatic OS-native biometric modal appears">
         - The system prompts for available saved passkey using the browser's or OS-native modal (for example, Touch ID).
         - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
-        - The authentication happens locally on the device - no passwords are transmitted over the network.
+        - User verification happens locally on the device; only a signed assertion is sent to your server, and no shared secret ever leaves the device.
     </Step>
     <Step title="Access granted">
         - User is seamlessly logged in and redirected to the dashboard.
-        - The entire process typically completes in under 2 seconds.
     </Step>
 
 </Steps>

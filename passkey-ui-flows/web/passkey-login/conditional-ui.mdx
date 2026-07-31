@@ -8,12 +8,16 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Conditional UI Flow (Usernameless Login)
 
-The Conditional UI flow is automatically triggered by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. Instead, they select from available passkeys, and the system determines the user's identity after successful authentication.
+The Conditional UI flow is presented by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. Instead, they select from available passkeys, and the system determines the user's identity after successful authentication.
+
+<Note>
+    **Implementation prerequisite:** Conditional UI is not automatic — your page must call `navigator.credentials.get({ mediation: 'conditional' })` and mark the input with `autocomplete="username webauthn"`. Without both, nothing is offered. Supported in Chromium 108+, Safari 16+ and Firefox 122+ (July 2026).
+</Note>
 
 Passkeys appear in different ways depending on the platform: on the keyboard's suggestion bar (iOS), as an overlay (iOS/Android), or as a selection dropdown (Desktop). This allows users to select and log in quickly without opening an extra prompt.
 
 <Info>
-    **Key Technical Detail:** Unlike traditional login where users enter their username first, Conditional UI is a usernameless flow. The system displays ALL available passkeys for the domain/app, and only learns the user's identity AFTER they select and authenticate with their specific passkey. This enables a seamless experience.
+    **Key Technical Detail:** Unlike traditional login where users enter their username first, Conditional UI is a usernameless flow. The system displays the discoverable passkeys for your domain from the user's credential provider, and only learns the user's identity AFTER they select and authenticate with their specific passkey. This enables a seamless experience.
 </Info>
 
 <Tabs>

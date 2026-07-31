@@ -8,12 +8,12 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 ## Passkey Creation after Hybrid Login
 
-This approach uses the operating system's built-in **hybrid transport** functionality (part of the CTAP 2 specification) for secure cross-device authentication.
+This approach uses the operating system's built-in **hybrid transport** functionality (defined in CTAP 2.2) for secure cross-device authentication.
 
 **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** automatically determines when to offer QR code login based on detecting that the user has a passkey on their mobile device.
 
 <Warning>
-    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. This dual-channel approach (QR code for initial pairing + Bluetooth proximity verification) is a critical phishing protection mechanism built into passkeys.
+    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. Passkeys are phishing-resistant because the credential is bound to your origin; the Bluetooth exchange adds anti-relay protection on top, requiring the authenticating phone to be physically near the device being signed in to.
 </Warning>
 
 <Tabs>
@@ -51,7 +51,7 @@ This approach uses the operating system's built-in **hybrid transport** function
     </Step>
     <Step title="User scans QR and authenticates">
         - User scans the QR code using their mobile device where the passkey is stored.
-        - **Bluetooth proximity check:** The OS verifies both devices are physically close (phishing protection).
+        - **Bluetooth proximity check:** The OS verifies both devices are physically close (anti-relay protection).
         - The mobile device performs biometric or PIN authentication.
     </Step>
     <Step title="Login completes on current device & passkey append initiates">
