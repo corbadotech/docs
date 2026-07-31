@@ -236,6 +236,7 @@
                             {
                                 "group": "Passkey Login",
                                 "pages": [
+                                    "passkey-ui-flows/web/passkey-login/immediate-mode",
                                     "passkey-ui-flows/web/passkey-login/one-tap",
                                     "passkey-ui-flows/web/passkey-login/conditional-ui",
                                     "passkey-ui-flows/web/passkey-login/identifier-first",
