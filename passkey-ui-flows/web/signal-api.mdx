@@ -1,0 +1,68 @@
+---
+title: "WebAuthn Signal API"
+sidebarTitle: "Signal API"
+description: "The Signal API lets a website ask credential managers to align stored passkeys with the credentials its server accepts. Without it, deleted or unknown passkeys can keep appearing in the account chooser and fail after a successful biometric prompt."
+---
+
+import SignalApiIntro from "/snippets/passkey-ui-flows/signal-api-intro.mdx";
+import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
+
+## Keeping the Authenticator and Your Server in Sync
+
+<SignalApiIntro />
+
+On the web the stale credential surfaces through [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui), which offers whatever the credential manager holds regardless of what your server still accepts.
+
+<Info>
+    **Support (August 2026):** Chrome and Edge 132+ on desktop, Chrome 144+ on Android, Safari 26 (iOS 26, macOS 26). Firefox has no implementation, and the API is **not available in Android WebView** — which is one more reason to prefer native Credential Manager over an embedded webview. For native apps see the [native Signal API](/passkey-ui-flows/native/signal-api).
+</Info>
+
+### The three signals
+
+| Method | Addresses | Call it |
+| --- | --- | --- |
+| `signalUnknownCredential` | A passkey your server has no record of stays in the account chooser and fails on every attempt | When a login fails because the credential is unknown |
+| `signalAllAcceptedCredentials` | A passkey the user deleted in your settings keeps being offered, making your own settings screen look broken | After every successful login, and after a user deletes a passkey |
+| `signalCurrentUserDetails` | A stale username or display name in the account chooser, so users pick the wrong account | After the user changes their email, username or display name |
+
+<Steps>
+    <Step title="On a failed login: signal the unknown credential">
+        - When an assertion arrives for a credential your server does not recognise, call `signalUnknownCredential({ rpId, credentialId })`.
+        - This carries no user identifier and no credential list, so it is safe to call when the user is **not** authenticated.
+        - Google Password Manager hides rather than deletes the passkey, so it can be restored if the signal was sent in error.
+    </Step>
+    <Step title="On a successful login: reconcile the full list">
+        - Call `signalAllAcceptedCredentials({ rpId, userId, allAcceptedCredentialIds })` with every credential ID your server currently accepts for that user.
+        - The provider may hide or remove passkeys missing from the list. If it supports restoration, credentials included again in a later complete list may be unhidden.
+    </Step>
+    <Step title="After the user deletes a passkey in settings">
+        - Call `signalAllAcceptedCredentials` again from your [passkey management](/passkey-ui-flows/web/passkey-management) screen so the provider can hide or remove the credential immediately, rather than waiting until the user's next login to receive the updated list.
+    </Step>
+    <Step title="After a profile change">
+        - Call `signalCurrentUserDetails({ rpId, userId, name, displayName })` so the account chooser shows current information.
+        - Note that if the user has manually edited the name in Google Password Manager, their edit wins and your signal will not override it.
+    </Step>
+</Steps>
+
+<Warning>
+    **Use the right signal for a failed login.** On a failed login call `signalUnknownCredential`, never `signalAllAcceptedCredentials`. The latter requires a user ID and the complete valid list, neither of which you can assemble safely for an unauthenticated caller, and it reveals how many passkeys an account has.
+</Warning>
+
+<SignalApiRevoke />
+
+On the web the reconcile call is `signalAllAcceptedCredentials`, and the list it hides against is `allAcceptedCredentialIds`.
+
+### Error handling
+
+Both failure modes are rejections on a `DOMException`:
+
+-   `SecurityError` — the relying party domain is not valid
+-   `TypeError` — a `credentialId`, `userId` or list entry is not valid base64url
+
+Branch on `error.name` only. Message strings are not part of the contract.
+
+### Further reading
+
+-   [Signal API](https://developer.chrome.com/docs/identity/webauthn-signal-api) and [Signal API on Android](https://developer.chrome.com/blog/signal-api-android), Chrome for Developers
+-   [Web Authentication Level 3, signal methods](https://www.w3.org/TR/webauthn-3/#sctn-signal-methods), W3C
+-   [WebAuthn Signal API explained](https://www.corbado.com/blog/webauthn-signal-api), Corbado blog

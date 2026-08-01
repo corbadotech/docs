@@ -236,12 +236,12 @@
                             {
                                 "group": "Passkey Login",
                                 "pages": [
-                                    "passkey-ui-flows/web/passkey-login/immediate-mode",
                                     "passkey-ui-flows/web/passkey-login/one-tap",
                                     "passkey-ui-flows/web/passkey-login/conditional-ui",
                                     "passkey-ui-flows/web/passkey-login/identifier-first",
                                     "passkey-ui-flows/web/passkey-login/cross-device-qr",
-                                    "passkey-ui-flows/web/passkey-login/error-states"
+                                    "passkey-ui-flows/web/passkey-login/error-states",
+                                    "passkey-ui-flows/web/passkey-login/immediate-mode"
                                 ]
                             },
                             {
@@ -255,7 +255,13 @@
                                     "passkey-ui-flows/web/passkey-creation/on-2nd-device"
                                 ]
                             },
-                            "passkey-ui-flows/web/passkey-management"
+                            {
+                                "group": "Passkey Management",
+                                "pages": [
+                                    "passkey-ui-flows/web/passkey-management",
+                                    "passkey-ui-flows/web/signal-api"
+                                ]
+                            }
                         ]
                     },
                     {
@@ -277,10 +283,17 @@
                                     "passkey-ui-flows/native/passkey-creation/mfa",
                                     "passkey-ui-flows/native/passkey-creation/after-error",
                                     "passkey-ui-flows/native/passkey-creation/in-app-after-unlock",
-                                    "passkey-ui-flows/native/passkey-creation/in-app-after-cta"
+                                    "passkey-ui-flows/native/passkey-creation/in-app-after-cta",
+                                    "passkey-ui-flows/native/passkey-creation/automatic-upgrade"
                                 ]
                             },
-                            "passkey-ui-flows/native/passkey-management"
+                            {
+                                "group": "Passkey Management",
+                                "pages": [
+                                    "passkey-ui-flows/native/passkey-management",
+                                    "passkey-ui-flows/native/signal-api"
+                                ]
+                            }
                         ]
                     }
                 ]

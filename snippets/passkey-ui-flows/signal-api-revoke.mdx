@@ -1,0 +1,13 @@
+<Warning>
+    **Never send a partial or accidentally empty credential list.** The reconcile signal may hide or remove every passkey it does not find in the accepted list. An empty list is valid only when the authoritative server state confirms that the authenticated user has no accepted credentials, for example after deleting their final passkey. Treat the code that assembles this list as high-risk, and test it against accounts with zero, one and several credentials.
+</Warning>
+
+### Why Server-Side Revocation Still Needs Client Cleanup
+
+Deleting the public key on your server revokes the credential immediately: any later assertion from it must be rejected. What that server-side action cannot do is remove the stale entry from the user's locally installed credential manager, because **your backend has no direct channel to the user's password manager**.
+
+Client-side cleanup can happen only when the user's client runs again. Signal an unknown credential after a failed assertion, and reconcile the complete accepted list during the next authenticated session. Running that reconciliation after every successful sign-in is how server-initiated changes eventually reach credential managers that were not available when the revocation happened.
+
+<Tip>
+    Signals resolve with no information about what the provider did. You never learn whether a credential existed or whether the provider acted, which is deliberate and privacy-preserving. It also means signalling can never serve as an audit trail or a source of truth. Treat it as fire-and-forget hygiene, and never block a UI flow on the result.
+</Tip>

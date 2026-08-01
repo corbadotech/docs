@@ -21,6 +21,76 @@ These visual UI flow diagrams showcase **best-practice passkey authentication** 
 
 The documentation is designed to be visual and flow-oriented, showing actual UI screens and user decision trees so you can quickly understand each scenario and integrate it into your product with confidence.
 
+## Flow catalogue
+
+Every flow in this section carries a stable ID. Use these IDs when scoping an implementation, comparing platforms or assessing an existing identity provider. They are assigned once and never renumbered or reused, so a reference stays valid even as pages are added.
+
+The prefix identifies the platform and phase: `W` for web and `N` for native, `1` for login, `2` for passkey creation and `3` for management. `E` covers the decision engine, which is not platform-specific. New flows are appended to the end of their group, so existing IDs never shift.
+
+### Web · Login
+
+| ID | Flow | Availability | Use when |
+| --- | --- | --- | --- |
+| **W1.1** | [One-Tap](/passkey-ui-flows/web/passkey-login/one-tap) | All modern browsers | A returning user should see a single, explicit passkey button |
+| **W1.2** | [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) | Chromium 108+, Safari 16+, Firefox 122+ | You want usernameless login offered inside the identifier field |
+| **W1.3** | [Identifier-first](/passkey-ui-flows/web/passkey-login/identifier-first) | All modern browsers | You already run an identifier-first login form |
+| **W1.4** | [Cross-device via QR](/passkey-ui-flows/web/passkey-login/cross-device-qr) | Desktop; needs Bluetooth and internet | The user's passkey lives on their phone |
+| **W1.5** | [Login error states](/passkey-ui-flows/web/passkey-login/error-states) | All | You are designing failure handling and fallback |
+| **W1.6** | [Immediate mode](/passkey-ui-flows/web/passkey-login/immediate-mode) | Chrome 149+ | You want a zero-input login on a device that already holds a credential |
+
+### Web · Passkey creation
+
+| ID | Flow | Availability | Use when |
+| --- | --- | --- | --- |
+| **W2.1** | [Automatic upgrade (conditional create)](/passkey-ui-flows/web/passkey-creation/automatic-upgrade) | Chrome 136+ desktop / 142+ Android; Safari 18+ macOS / iOS 18+ | A password was just filled by the user's credential manager |
+| **W2.2** | [After login, non-MFA (post-login nudge)](/passkey-ui-flows/web/passkey-creation/non-mfa) | All modern browsers | A single-factor account should be offered a passkey after login |
+| **W2.3** | [After login, MFA (post-login nudge)](/passkey-ui-flows/web/passkey-creation/mfa) | All modern browsers | An MFA account should be offered a passkey after verification |
+| **W2.4** | [After hybrid login](/passkey-ui-flows/web/passkey-creation/after-hybrid) | Desktop | The user just signed in by scanning a QR code |
+| **W2.5** | [After passkey error (autohealing)](/passkey-ui-flows/web/passkey-creation/after-error) | All modern browsers | A passkey login failed and the credential needs replacing |
+| **W2.6** | [On 2nd device](/passkey-ui-flows/web/passkey-creation/on-2nd-device) | All modern browsers | The account has passkeys, but none usable on this device |
+
+### Web · Management
+
+| ID | Flow | Availability | Use when |
+| --- | --- | --- | --- |
+| **W3.1** | [Passkey management](/passkey-ui-flows/web/passkey-management) | All modern browsers | Users need to list, add and revoke their own passkeys |
+| **W3.2** | [WebAuthn Signal API](/passkey-ui-flows/web/signal-api) | Chrome/Edge 132+ desktop; Chrome 144+ Android; Safari 26+ | Keeping the credential manager in sync with what your server accepts |
+
+### Native · Login
+
+| ID | Flow | Availability | Use when |
+| --- | --- | --- | --- |
+| **N1.1** | [App-start overlay](/passkey-ui-flows/native/passkey-login/overlay) | iOS 16+, Android | The app should offer a passkey before the user types anything |
+| **N1.2** | [Conditional UI](/passkey-ui-flows/native/passkey-login/conditional-ui) | iOS 16+, Android 15+ | You want passkeys suggested from the keyboard |
+| **N1.3** | [Identifier-first](/passkey-ui-flows/native/passkey-login/identifier-first) | iOS, Android | The app collects an identifier before authenticating |
+| **N1.4** | [Login error states](/passkey-ui-flows/native/passkey-login/error-states) | iOS, Android | You are separating no-passkey from user-cancelled outcomes |
+
+### Native · Passkey creation
+
+| ID | Flow | Availability | Use when |
+| --- | --- | --- | --- |
+| **N2.1** | [After login, non-MFA (post-login nudge)](/passkey-ui-flows/native/passkey-creation/non-mfa) | iOS, Android | A single-factor account should be offered a passkey after login |
+| **N2.2** | [After login, MFA (post-login nudge)](/passkey-ui-flows/native/passkey-creation/mfa) | iOS, Android | An MFA account should be offered a passkey after verification |
+| **N2.3** | [After passkey error (autohealing)](/passkey-ui-flows/native/passkey-creation/after-error) | iOS, Android | A passkey login failed and the credential needs replacing |
+| **N2.4** | [In-app nudge after unlock](/passkey-ui-flows/native/passkey-creation/in-app-after-unlock) | iOS, Android | Maximum exposure matters more than avoiding a second biometric prompt |
+| **N2.5** | [In-app nudge on key action](/passkey-ui-flows/native/passkey-creation/in-app-after-cta) | iOS, Android | Users stay signed in and rarely see a login screen |
+| **N2.6** | [Automatic upgrade (conditional create)](/passkey-ui-flows/native/passkey-creation/automatic-upgrade) | iOS 18+, Android (androidx.credentials 1.6.0) | A password was just filled by the user's credential manager in your app |
+
+### Native · Management
+
+| ID | Flow | Availability | Use when |
+| --- | --- | --- | --- |
+| **N3.1** | [Passkey management](/passkey-ui-flows/native/passkey-management) | iOS, Android | Users need to list, add and revoke their own passkeys |
+| **N3.2** | [WebAuthn Signal API](/passkey-ui-flows/native/signal-api) | Android 15+, Apple 26.2+ | Keeping the credential manager in sync with what your server accepts |
+
+### Decision engine
+
+These are not UI flows. They decide *whether* a flow above should run, and are documented with Corbado Connect.
+
+| ID | Capability | Documented in | What it decides |
+| --- | --- | --- | --- |
+| **E1** | [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) | Corbado Connect | Whether a passkey login or creation attempt is likely to succeed on this device |
+
 ## UI Flow Categories
 
 <CardGroup cols={2}>

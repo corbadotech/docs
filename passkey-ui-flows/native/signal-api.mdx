@@ -1,0 +1,77 @@
+---
+title: "WebAuthn Signal API"
+sidebarTitle: "Signal API"
+description: "Native apps can ask credential managers to align passkeys stored on a device with the credentials the server accepts. Without it, deleted or unknown passkeys can keep appearing in the OS account chooser and fail after a successful biometric prompt."
+---
+
+import SignalApiIntro from "/snippets/passkey-ui-flows/signal-api-intro.mdx";
+import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
+
+## Keeping the Authenticator and Your Server in Sync
+
+<SignalApiIntro />
+
+In a native app the stale credential surfaces through [Conditional UI](/passkey-ui-flows/native/passkey-login/conditional-ui) and the [app-start overlay](/passkey-ui-flows/native/passkey-login/overlay), both of which offer whatever the credential manager holds regardless of what your server still accepts.
+
+<Info>
+    **Support (August 2026):** Android 15+ via `androidx.credentials` **1.6.0** (stable since 8 April 2026). Apple platforms via `ASCredentialDataManager` on iOS, iPadOS, macOS and visionOS **26.2+**. For the browser equivalent see the [web Signal API](/passkey-ui-flows/web/signal-api).
+</Info>
+
+<Warning>
+    **Apple renamed this API one point release after shipping it.** `ASCredentialUpdater` was introduced in 26.0 and **deprecated in 26.2** in favour of `ASCredentialDataManager`. Signalling is therefore possible from 26.0, but a new build should target `ASCredentialDataManager` and treat 26.2 as the floor. Sample code from WWDC25 and 2025-era articles uses the deprecated class.
+</Warning>
+
+### The three signals
+
+| Purpose | Android | Apple |
+| --- | --- | --- |
+| Report a credential the server does not know | `SignalUnknownCredentialRequest` | `reportUnknownPublicKeyCredential(relyingPartyIdentifier:credentialID:)` |
+| Reconcile the full accepted list | `SignalAllAcceptedCredentialIdsRequest` | `reportAllAcceptedPublicKeyCredentials(relyingPartyIdentifier:userHandle:acceptedCredentialIDs:)` |
+| Update the displayed account details | `SignalCurrentUserDetailsRequest` | `reportPublicKeyCredentialUpdate(relyingPartyIdentifier:userHandle:newName:)` |
+
+On Android all three are sent through `CredentialManager.signalCredentialState()` and carry a JSON string rather than typed fields.
+
+<Steps>
+    <Step title="On a failed login: signal the unknown credential">
+        - When an assertion arrives for a credential your server does not recognise, report it. This carries no user identifier, so it is safe when the user is not authenticated.
+        - Google Password Manager hides rather than deletes, so the credential can be restored if the signal was sent in error. Apple's credential managers may remove or hide it.
+    </Step>
+    <Step title="On a successful login: reconcile the full list">
+        - Send the complete set of credential IDs your server accepts for that user. The provider may hide or remove credentials missing from the list and, if it supports restoration, may unhide credentials included again later.
+    </Step>
+    <Step title="After the user deletes a passkey in settings">
+        - Reconcile again from your [passkey management](/passkey-ui-flows/native/passkey-management) screen so the provider can hide or remove the credential immediately, rather than waiting until the user's next login to receive the updated list.
+    </Step>
+    <Step title="After a profile change">
+        - Report the updated account details so the OS account chooser shows current information.
+    </Step>
+</Steps>
+
+<SignalApiRevoke />
+
+### Platform differences worth planning for
+
+<AccordionGroup>
+<Accordion title="Apple cannot signal a display name change">
+`reportPublicKeyCredentialUpdate` accepts only `newName`. The web and Android equivalents carry both `name` and `displayName`, so a display name change cannot be signalled from an iOS or macOS app.
+</Accordion>
+
+<Accordion title="Android enforces a rate limit">
+Android permits a maximum of 10 calls in any 120-second window; exceeding it results in throttling or rejection. `SignalCredentialRateLimitExceededException` carries a `retryMillis` value, so back off by that amount rather than retrying blind. That exception only exists from 1.6.0, which is one reason to require the stable release rather than an earlier beta.
+</Accordion>
+
+<Accordion title="Apple offers a signal with no web or Android equivalent">
+`reportUnusedPasswordCredential(domain:userName:)` tells credential managers that a password is no longer in use. This is directly relevant when retiring passwords on accounts that have moved to passkeys.
+</Accordion>
+
+<Accordion title="Background execution is supported on Android">
+Android explicitly supports sending signals from a background context, within the rate limit. No user presence or user verification is required on any platform.
+</Accordion>
+</AccordionGroup>
+
+### Further reading
+
+-   [Signal API for relying parties](https://developer.android.com/identity/credential-manager/signal-api-rp), Android Developers
+-   [ASCredentialDataManager](https://developer.apple.com/documentation/authenticationservices/ascredentialdatamanager), Apple Developer
+-   [What's new in passkeys](https://developer.apple.com/videos/play/wwdc2025/279/), WWDC25 session 279
+-   [WebAuthn Signal API explained](https://www.corbado.com/blog/webauthn-signal-api), Corbado blog

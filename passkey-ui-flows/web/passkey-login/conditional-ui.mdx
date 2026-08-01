@@ -11,7 +11,7 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 The Conditional UI flow is presented by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. Instead, they select from available passkeys, and the system determines the user's identity after successful authentication.
 
 <Note>
-    **Implementation prerequisite:** Conditional UI is not automatic — your page must call `navigator.credentials.get({ mediation: 'conditional' })` and mark the input with `autocomplete="username webauthn"`. Without both, nothing is offered. Supported in Chromium 108+, Safari 16+ and Firefox 122+ (July 2026).
+    **Implementation prerequisite:** Conditional UI is not automatic — your page must call `navigator.credentials.get({ mediation: 'conditional' })` and mark the input with `autocomplete="username webauthn"`. Without both, nothing is offered. Supported in Chromium 108+, Safari 16+ and Firefox 122+ (August 2026).
 </Note>
 
 Passkeys appear in different ways depending on the platform: on the keyboard's suggestion bar (iOS), as an overlay (iOS/Android), or as a selection dropdown (Desktop). This allows users to select and log in quickly without opening an extra prompt.
@@ -71,3 +71,7 @@ Passkeys appear in different ways depending on the platform: on the keyboard's s
     </Step>
 
 </Steps>
+
+<Warning>
+    **Conditional UI is only as accurate as your credential list.** It offers whatever the credential manager holds, including passkeys your server has already deleted or no longer accepts. The user picks one, authenticates successfully, and only then does the login fail. Keep the two lists aligned with the [WebAuthn Signal API](/passkey-ui-flows/web/signal-api).
+</Warning>

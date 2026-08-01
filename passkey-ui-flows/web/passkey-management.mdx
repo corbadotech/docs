@@ -58,32 +58,14 @@ Passkey management lets users view and remove the passkeys saved on their device
         clicking on the "X" icon on the top right corner of any passkey listed.
         - This action is not reversible, so the user is again asked for
         confirmation on deletion of passkey. 
-        - This permanently deletes the credential's public key from your server. The credential is removed from the user's authenticator only if you also send a Signal API request (see below).
+        - This permanently deletes the credential's public key from your server, which revokes it for future authentication. Also send a [Signal API](/passkey-ui-flows/web/signal-api) request so the credential manager can hide or remove its stale client-side copy.
         - User has the possibility to create a new one.
     </Step>
 </Steps>
 
-### WebAuthn Signal API for Client-Side Synchronization
-
-<Info>
-    **Advanced Feature:** The [WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) enables seamless synchronization between your server and the user's device. When a user deletes a passkey from your account settings or updates their user information (like email or display name), this API automatically removes or updates the corresponding passkey on the client-side authenticator (password manager or OS).
-</Info>
-
-**Platform support (July 2026):**
-- ✅ **Chrome and Edge:** 132+ on desktop, 144+ on Android
-- ✅ **Safari:** 26+ (iOS 26, macOS 26)
-- ✅ **Android native apps:** Android 15+ via Credential Manager (`androidx.credentials` 1.6.0-beta03+)
-- ❌ **Firefox:** no implementation
-
-**What the Signal API Does:**
-
-1. **Automatic Deletion on Client:** When users delete a passkey from your passkey list, the [WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) signals the client-side authenticator to remove it. This prevents deleted passkeys from appearing in future login prompts (Conditional UI), improving user experience.
-
-2. **Metadata Updates:** If user information changes (e.g., email address update), the Signal API updates the passkey's metadata (`user.name`, `user.displayName`) on the client-side. This ensures users see current information when selecting passkeys during login.
-
-<Tip>
-    The Signal API operates silently and preserves privacy — it does not report whether the credential existed or whether the provider acted on the signal, so your server learns nothing about the user's authenticator while credentials stay synchronized.
-</Tip>
+<Warning>
+    **Server deletion completes the security revocation, but not the UX cleanup.** The stale passkey may keep appearing in [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) and the account chooser until the credential manager acts on a signal. The user then selects a passkey they just deleted, authenticates successfully, and the login fails — which makes this settings screen look broken. Call `signalAllAcceptedCredentials` from the delete action, but treat signalling as best-effort because providers may hide, remove or ignore the credential. See the [WebAuthn Signal API](/passkey-ui-flows/web/signal-api).
+</Warning>
 
 ### Passkey List Error States
 

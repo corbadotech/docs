@@ -1,13 +1,13 @@
 ---
-title: "Passkey Creation: Automatic Password to Passkey Upgrade"
-sidebarTitle: "Automatic Passkey Upgrade"
+title: "Passkey Creation: Automatic Password to Passkey Upgrade (conditional create)"
+sidebarTitle: "Automatic Upgrade"
 description: "This flow explains the automatic passkey creation feature that browsers provide when the user used autofill to log in with a password from a password manager."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 <Info>
-    **Support (July 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It only triggers when the password was filled by the user's credential manager, and only when no passkey exists yet for the account.
+    **Support (August 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It only triggers when the password was filled by the user's credential manager, and only when no passkey exists yet for the account.
 </Info>
 
 ## Automatic Passkey Creation after Login (Conditional Create)

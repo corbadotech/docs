@@ -11,7 +11,7 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 The Conditional UI flow is triggered by the OS as soon as the app requests it, without the user entering their username first. This is a **usernameless login flow**. On iOS, passkeys appear on the keyboard's suggestion bar. The system presents the available passkeys for the app, and determines the user's identity after they select and authenticate with their passkey.
 
 <Note>
-    **Platform support (July 2026):** iOS and iPadOS 16+ via `performAutoFillAssistedRequests()` (not available to native macOS apps), and Android 15+ via `PendingGetCredentialRequest` in `androidx.credentials` 1.5.0+, which surfaces credentials in keyboard inline and drop-down suggestions. The Android implementation is currently `View`-based only, so Compose UIs are not yet covered — the screens below show the iOS experience.
+    **Platform support (August 2026):** iOS and iPadOS 16+ via `performAutoFillAssistedRequests()` (not available to native macOS apps), and Android 15+ via `PendingGetCredentialRequest` in `androidx.credentials` 1.5.0+, which surfaces credentials in keyboard inline and drop-down suggestions. The Android implementation is currently `View`-based only, so Compose UIs are not yet covered — the screens below show the iOS experience.
 </Note>
 
 <Info>
@@ -55,3 +55,7 @@ The Conditional UI flow is triggered by the OS as soon as the app requests it, w
     </Step>
 
 </Steps>
+
+<Warning>
+    **Conditional UI is only as accurate as your credential list.** It offers whatever the credential manager holds, including passkeys your server has already deleted or no longer accepts. The user picks one, authenticates successfully, and only then does the login fail. Keep the two lists aligned with the [WebAuthn Signal API](/passkey-ui-flows/native/signal-api).
+</Warning>
