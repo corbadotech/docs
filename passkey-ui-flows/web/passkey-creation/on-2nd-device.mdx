@@ -1,47 +1,21 @@
 ---
 title: "Passkey Creation: On 2nd Device"
 sidebarTitle: "On 2nd Device"
-description: "This flow explains how users append a passkey when logging into a device that cannot access their existing passkeys. Passkey Intelligence declines passkey login and the user creates a new passkey on this device."
+description: "Passkey creation after fallback when the account's existing passkeys were created before the current device was first seen."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W26AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-6.mdx";
 
 ## Passkey Creation on Device Without Access to Existing Passkeys
 
-Users logging into a device where their existing passkeys are not accessible (e.g. logging in on a mobile phone when the user's only passkey is stored in the Windows Hello container, which is device-bound and does not sync to other devices) follow this flow. **[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** recognizes the user has passkeys but they can't be accessed on this device, so it declines passkey login and allows the user to append a new passkey on the current device.
+This flow applies when server state shows existing passkeys, the user completes an approved fallback, and available history indicates that those passkeys could not have been created on the current device. They may still be available through a syncing provider, so the offer remains optional.
 
-<Tabs>
-<Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/append-on-second-device-macos.webp"
-        caption="macOS passkey append on new device"
-        imageName="append-on-second-device-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/append-on-second-device-windows.webp"
-        caption="Windows passkey append on new device"
-        imageName="append-on-second-device-windows.webp"
-    />
-</Tab>
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/append-on-second-device-ios.webp"
-        caption="iOS passkey append on new device"
-        imageName="append-on-second-device-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/append-on-second-device-android.webp"
-        caption="Android passkey append on new device"
-        imageName="append-on-second-device-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/append-on-second-device-macos.webp"
+    caption="Representative web passkey creation flow on a second device shown on macOS"
+    imageName="append-on-second-device-macos.webp"
+/>
 
 
 <Steps>
@@ -49,29 +23,29 @@ Users logging into a device where their existing passkeys are not accessible (e.
         - User enters their identifier (email/username) on the login page.
         - System now knows which user account is attempting to log in.
     </Step>
-    <Step title="Passkey Intelligence analyzes and declines passkey login">
-        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) analyzes the user's passkey availability.
-        - It detects the user has at least one passkey registered on their account.
-        - However, those existing passkeys are NOT accessible on this device (e.g. the user's passkey lives in the Windows Hello container, which is device-bound and cannot be used on this mobile phone). Passkeys held in a syncing provider such as Microsoft Password Manager, Google Password Manager or Apple Passwords do not hit this case.
-        - Passkey Intelligence declines to initiate passkey login because it would fail.
+    <Step title="System identifies passkeys created elsewhere">
+        - The server shows at least one registered passkey, but the existing passkeys were created before the current device was first seen.
+        - A synced passkey may still be available through the current credential provider, so this history does not prove that passkey login will fail.
+        - If the user cannot sign in with a passkey, the system proceeds to an approved fallback.
     </Step>
-    <Step title="Fallback to traditional login method">
-        - System falls back to traditional login method (username + password).
-        - User successfully logs in using their password.
+    <Step title="Complete approved fallback or recovery">
+        - The user completes an approved policy-compliant fallback or recovery for the same account.
     </Step>
     <Step title="Passkey append initiates on current device">
-        - After successful login, the system offers to create a passkey on this device.
-        - This allows the user to have a passkey accessible on this device for future logins.
+        - After successful fallback, the system optionally offers to create an additional passkey through the current platform or credential provider.
+        - The user can decline on a shared or temporary device without losing the authenticated session.
     </Step>
-    <Step title="OS-native biometric modal appears">
-        - The user chooses a biometric method or PIN to set up the passkey.
+    <Step title="System passkey-creation sheet appears">
+        - The user authorizes creation with a platform-supported device-unlock method.
     </Step>
     <Step title="Passkey creation successful">
-        - User successfully creates a new passkey on the current device.
-        - The user now has passkeys on multiple devices.
+        - The relying party verifies and adds the new passkey.
+        - The credential becomes available according to the selected provider's storage and sync behavior; the application does not guarantee device-only or multi-device storage.
     </Step>
     <Step title="Redirection to app dashboard">
         - User is redirected to the app dashboard.
     </Step>
 
 </Steps>
+
+<W26AcceptanceCriteria />

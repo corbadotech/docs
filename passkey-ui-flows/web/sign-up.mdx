@@ -1,85 +1,54 @@
 ---
-title: Passkey Sign-Up
-description: This flow explains the end-to-end journey of a first-time user creating an account. It covers how identifiers are captured, passkeys are created, and fallback credentials (like passwords or MFA) are introduced.
+title: "Passkey Creation: During Sign-Up"
+sidebarTitle: "During Sign-Up"
+description: "Passkey creation as part of registering a new account."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W27AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-7.mdx";
 
-## Sign-Up Flow
+## Passkey Creation During Sign-Up
 
-Users registering across desktop and mobile follow the same overall journey:
+This strategy offers passkey creation while a new account is being registered. It can establish passkey use from the first session, but it reaches only new accounts and should be combined with enrollment routes for existing users.
 
-1. Create an account with an identifier (e.g. email or username) and a password.
-2. Get prompted to create a passkey.
-3. Choose to **create**, **skip**, or **abort** the process.
-
-<Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/sign-up-flow-macos.webp"
-        caption="macOS sign-up flow"
-        imageName="sign-up-flow-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/sign-up-flow-windows.webp"
-        caption="Windows sign-up flow"
-        imageName="sign-up-flow-windows.webp"
-    />
-</Tab>
-
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/sign-up-flow-ios.webp"
-        caption="iOS sign-up flow"
-        imageName="sign-up-flow-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/sign-up-flow-android.webp"
-        caption="Android sign-up flow"
-        imageName="sign-up-flow-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/sign-up-flow-macos.webp"
+    caption="Representative web sign-up flow shown on macOS"
+    imageName="sign-up-flow-macos.webp"
+/>
 
 <Info>
-    NOTE: The blue background indicates product-native steps (e.g., verification
-    code). These are steps not provided by Corbado UI components but from your
-    existing implementation. Passkey creation is seamlessly embedded in your
-    product journey.
+    The blue background represents product-specific account verification or
+    activation, not WebAuthn. If the signup method already provides enough
+    assurance to add a passkey, creation can happen before a separate fallback
+    is verified. The credential remains attached to the pending account until
+    every required signup step succeeds.
 </Info>
 
 <Steps>
-  <Step title="Registration with identifier method">
-    - User enters **username and password**.
-    - User creates an account by clicking **Sign up**.
+  <Step title="Start account registration">
+    - The user provides the information required to create the account.
+    - The product collects the fallback or recovery method required for the selected authentication setup.
+    - The application creates or reserves the account that the passkey will belong to.
   </Step>
 
-  <Step title="Auto-append immediately after registration">
-    - User is prompted via auto-append to set up a passkey using fingerprint,
-    face, or PIN.
-    - Passkey creation is successfully completed and now the user has a passkey appended to the signed up
-    account.
-    - After successful passkey creation, user continues into the main product flow (verification, app dashboard).
+  <Step title="Offer passkey creation">
+    - The application starts passkey creation as soon as the completed signup steps provide enough assurance to add the credential.
+    - Registration options are generated for the new account.
+    - The user can continue with passkey creation or skip it when creation is optional.
   </Step>
-  <Step title="Auto-append aborted/cancelled or skipped">
-    - If the user skips, cancels, or the prompt does not show, the user continues with conventional registration. 
-    - The app can later trigger the passkey append screen again for passkey creation.
 
-    **3.a. Passkey creation via manual append**
-    - User starts the append process by clicking **Continue**.
-    - User successfully creates a passkey.
-    - User continues into the main product flow (verification, app dashboard).
+  <Step title="Complete passkey creation">
+    - The browser or operating system asks the user to authorize creation with a supported device-unlock method.
+    - The server verifies and stores the credential for the new account before showing success.
+  </Step>
 
-    **3.b. Passkey creation skipped**
-    - User starts append but skips passkey creation.
-    - User continues into the main product flow (verification, app dashboard).
-
+  <Step title="Finish registration">
+    - The user completes any remaining account verification, fallback verification or activation required by the product.
+    - An email address or phone number intended for fallback is usable only after its OTP or verification link succeeds.
+    - If passkey creation was skipped or cancelled, registration continues without a passkey and another creation route can be offered later.
   </Step>
 
 </Steps>
+
+<W27AcceptanceCriteria />

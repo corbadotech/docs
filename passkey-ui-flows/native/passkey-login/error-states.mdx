@@ -1,16 +1,17 @@
 ---
 title: "Passkey Login: Error States"
 sidebarTitle: "Error States"
-description: "This flow describes various error states users may encounter when attempting to sign in using a passkey or traditional credentials in native apps. Understanding these scenarios ensures a smooth user experience by providing clear, actionable error messages and fallback options."
+description: "Native error, retry and fallback states for passkey and conventional sign-in."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import N14AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n1-4.mdx";
 
 ## Error States During User Login
 
-Resilient user login on native app, with visual guidance in all failure scenarios.
+This page covers the passkey failures that change retry and fallback behavior in a native app.
 
-These error states are part of a comprehensive [fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery) that ensures users can always access their accounts securely, even when passkey authentication encounters issues.
+These error states are part of a [fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery) that preserves an approved next route without silently weakening account assurance.
 
 ### General Login Errors
 
@@ -35,11 +36,8 @@ Error scenarios, user experience while general login into the application.
 </Tabs>
 
 <Steps>
-    <Step title="Error: no identifier / unrecognized identifier">
-        - When user attempts to login with a blank or invalid email/username. 
-    </Step>
-    <Step title="Error: account locked / not found">
-        - The email/username does not correspond to an active account, or the account is locked.
+    <Step title="Account cannot continue with this route">
+        - Follow the product's declared enumeration policy and direct the user to the available recovery or support route.
     </Step>
     <Step title="Error: system / API error related to lookup">
         - An internal error occurs while looking up the user/account.
@@ -50,11 +48,8 @@ Error scenarios, user experience while general login into the application.
     <Step title="Error: tried deleted passkey">
         - User attempts login with a credential that has been deleted.
     </Step>
-    <Step title="Error: incorrect Username / Password">
-        - User provides incorrect login credentials.
-    </Step>
-    <Step title="Error: critical account error">
-        - Major issues with the account status (e.g., banned or under administrative hold).
+    <Step title="Restricted account state">
+        - A valid passkey does not bypass closed, disabled, inactive, locked or restricted account states.
     </Step>
 
 </Steps>
@@ -64,7 +59,7 @@ Error scenarios, user experience while general login into the application.
 Error scenarios, user experience while login into the application via passkeys.
 
 <Info>
-    **Handling Passkey Ceremony Aborts:** When users cancel or abort passkey authentication, it's important to provide clear guidance and retry options. Learn more about best practices for handling [passkey ceremony aborts and fallback strategies](https://www.corbado.com/blog/passkey-fallback-recovery) in our comprehensive guide.
+    **Handling passkey ceremony aborts:** When users cancel or abort passkey authentication, provide a clear next step and a retry option where appropriate. See [passkey ceremony aborts and fallback strategies](https://www.corbado.com/blog/passkey-fallback-recovery) for implementation guidance.
 </Info>
 
 <Tabs>
@@ -88,11 +83,18 @@ Error scenarios, user experience while login into the application via passkeys.
 <Steps>
     <Step title="Passkey login aborted during OS prompt (first attempt)">
         - User begins the passkey login but cancels or dismisses the OS-native authentication prompt the first time.
-        - The system allows the user to try logging in via passkeys or skip and continue with their current login method.
+        - An automatic route returns without an error and offers a deliberate retry. It does not reopen until the user chooses retry.
     </Step>
     <Step title="Passkey login aborted during OS prompt (subsequent attempts)">
-        - After one or more cancellations in the operating system's authentication prompt (e.g., second, third, or further attempts), the user continues to see the option to retry, but may receive a supportive message encouraging completion for improved security.
-        - User can always opt to skip passkey login and proceed using traditional login credentials.
+        - After the second consecutive cancellation of an automatic route, stop opening passkey login and show the configured fallback.
+    </Step>
+    <Step title="Explicit passkey login is cancelled">
+        - Return to the unchanged login screen without an error or forced fallback.
+    </Step>
+    <Step title="The selected passkey is no longer accepted">
+        - Explain that this passkey can no longer sign in and offer another passkey plus fallback.
     </Step>
 
 </Steps>
+
+<N14AcceptanceCriteria />

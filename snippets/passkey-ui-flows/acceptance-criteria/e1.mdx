@@ -1,0 +1,28 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Supporting capability | High |
+
+The review checks which routes are selected. It does not require a named decision engine, model or product.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **E1-AC01** | Core | Preserve client-capability results as supported, unsupported or unknown: `true` is supported, `false` is unsupported and an omitted key is unknown. A failed check remains unknown unless the platform documentation clearly says that a missing API means unsupported. | Return `true`, `false` and an omitted key, then reject the capability check and remove the capability method. Confirm that each case follows the documented platform behavior rather than treating every missing value the same way. |
+| **E1-AC02** | Core | Treat credential reachability as a likelihood, not a fact. Client support, silence and ambiguous rejection do not prove that a compatible provider or usable credential exists or does not exist. | Test a capable client with no local credential, a credential available only elsewhere, an ignored conditional request and an ambiguous rejection. Confirm that the selected route and product message do not claim more than the application knows. |
+| **E1-AC03** | Core | Store cancellation and first-party skip as separate reasons, each with a defined suppression period. | Produce a first-party cancellation, a supported native cancellation and a first-party skip. Confirm that each action stores the correct reason and expires after the configured period. |
+| **E1-AC04** | Core | Keep no more than one credential ceremony active and cancel the prior request where supported before starting a conflicting login, creation or fallback action. | Start a pending conditional or modal request and then start each competing action. At most one request remains active and no overlapping credential prompt is produced. |
+| **E1-AC05** | Core | Saved passkey-availability information is tied to the correct account and environment, expires, and is cleared when the related credential or context changes. | Delete one of several credentials, return an unknown-credential result, switch accounts, sign out, forget the device and let the data expire. Unrelated credentials remain eligible and data does not cross accounts. |
+| **E1-AC06** | Core | Accept a ceremony result only while its request, challenge and account context are still current. Ignore a result from an older context and use fresh server state for every restarted request. | Delay a result, then navigate, switch accounts, sign out or restart the ceremony before returning it. The stale result creates no session or credential, while the replacement request uses a new challenge and current account context. |
+| **E1-AC07** | Core | All creation entry points targeting the same enrollment goal use one account-level nudge history. Multiple nudges across separate eligible sessions are the default until that goal succeeds, while configured daily, monthly or yearly limits apply across every entry point. | Trigger post-login and in-app nudges for the same account. Under the default policy, several eligible sessions can show the nudge. Then configure daily, monthly and yearly limits and confirm that reaching a limit suppresses every entry point, not just the one that last displayed it. Advance the relevant period and confirm eligibility returns. Complete the enrollment goal and confirm that its nudges stop. |
+
+### References
+
+- **Relevant criteria:** **E1-AC01–AC03 and E1-AC05–AC06:** [Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/) defines tri-state client capability, ambiguous authentication errors, RP-scoped credentials, request cancellation and the limits on inferring credential presence.
+- **Relevant criteria:** **E1-AC04 and E1-AC06:** [Credential Management Level 1](https://www.w3.org/TR/credential-management-1/) defines mediation modes and request cancellation.
+- **Relevant criteria:** **E1-AC01–AC02, E1-AC04 and E1-AC06:** [Chrome for Developers: Conditional Create](https://developer.chrome.com/docs/identity/webauthn-conditional-create) documents that browser capability does not guarantee provider eligibility and that a pending authentication request must be aborted before creation.
+- **Relevant criteria:** **E1-AC02–AC03:** [Android Developers: Credential Manager troubleshooting](https://developer.android.com/identity/sign-in/credential-manager-troubleshooting-guide) distinguishes cancellation, missing credentials, unsupported clients and configuration errors and warns against automatically retrying cancellation.
+- **Relevant criteria:** **E1-AC02–AC03:** [Corbado: How to get high passkey adoption in login flows](https://www.corbado.com/blog/passkey-login-best-practices) covers selective routing, avoiding unnecessary automatic prompts and retaining fallback.
+- **Relevant criteria:** **E1-AC07:** [Corbado: How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers repeated enrollment nudges, prompt frequency and measuring first, second and later nudge attempts.

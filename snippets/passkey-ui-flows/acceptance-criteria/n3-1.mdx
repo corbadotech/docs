@@ -1,0 +1,27 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Baseline | Low |
+
+Low expected adoption impact does not mean low importance. Native passkey management is a baseline lifecycle and security capability, while proactive creation and login flows usually have more direct influence on adoption.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| `N3.1-AC01` | Core | The list contains every credential the server accepts for the current account. | Compare the rendered list with server records for accounts with zero, one and several credentials, including a credential revoked through another client. |
+| `N3.1-AC02` | Core | Local passkey-creation capability gates only the add action. An unsupported device or OS can still list and revoke server-side credentials, with creation omitted or disabled using an accurate explanation. | Open management on supported and unsupported creation environments; list and revoke remain usable in both, while only supported environments can start creation. |
+| `N3.1-AC03` | Core | Revoking a selected credential changes only that server record and causes every later assertion from it to be rejected. | Give one account several credentials, revoke one, then authenticate with each on every surface that shares the RP. The revoked credential fails and every other active credential still works. |
+| `N3.1-AC04` | Core | Confirmed revocation invalidates first-party last-used or availability hints tied to that credential without clearing valid hints for unrelated credentials or accounts. | Delete the hinted credential with zero and with several accepted credentials remaining, then start the next login. Stale personalization is gone, while unrelated valid hints remain. |
+| `N3.1-AC05` | Core | After an ambiguous revoke response, the client reconciles with server state before presenting a final credential status. | Lose the response after server success and time out before server processing; in both cases, a follow-up read determines whether the entry remains or is removed. |
+| `N3.1-AC06` | Quality | Each entry shows a recognizable authenticator or passkey-provider name resolved from the credential's stored AAGUID when a trusted mapping is available. An unknown or generic AAGUID uses a neutral label instead of guessing the provider, physical device or exact storage location. | Register credentials with known AAGUIDs from different authenticators or passkey providers and one unknown AAGUID. Confirm that known entries show the mapped names and the unknown entry uses a neutral label. |
+
+### References
+
+- **Relevant criteria:** `N3.1-AC02`: [CorbadoConnectPasskeyList](https://docs.corbado.com/corbado-connect/web-ui-components/corbadoconnectpasskeylist) documents creation-capability handling in a passkey list; it supports the flow shape, not a vendor requirement.
+- **Relevant criteria:** `N3.1-AC01`, `N3.1-AC03`: [Web Authentication Level 3: Decommissioning](https://www.w3.org/TR/webauthn-3/#sctn-sample-decommissioning) requires the server to reject later assertions from a decommissioned credential.
+- **Relevant criterion:** `N3.1-AC06`: [FIDO Alliance: Synced Passkey Deployment: Emerging Practices for Consumer Use Cases](https://fidoalliance.org/wp-content/uploads/2024/05/Synced-Passkey-Deployment_-Emerging-Practices-for-Consumer-Use-Cases_2024-May-31.pdf) covers distinguishable metadata and its provenance limits.
+- **Relevant criterion:** `N3.1-AC06`: [FIDO Metadata Statement](https://fidoalliance.org/specs/mds/fido-metadata-statement-v3.1-ps-20250521.html) defines AAGUIDs and human-readable authenticator or passkey-provider names intended for display to users.
+- **Relevant criteria:** `N3.1-AC04`: [One-Tap Login: Seamless Passkey Authentication](https://docs.corbado.com/corbado-connect/features/one-tap-login) documents device-scoped returning-user state used to personalize later login; the criterion applies the server-revocation boundary to that hint rather than making it a vendor requirement.
+- **Relevant criteria:** `N3.1-AC05`: [Android Developers: Keep credentials consistent with credential providers](https://developer.android.com/identity/credential-manager/signal-api-rp) separates server state from best-effort provider cleanup; [Web Authentication Level 3 signal methods](https://www.w3.org/TR/webauthn-3/#sctn-signal-methods) defines provider action as opportunistic.

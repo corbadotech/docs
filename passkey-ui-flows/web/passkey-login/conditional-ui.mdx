@@ -1,24 +1,21 @@
 ---
 title: "Passkey Login: Conditional UI"
 sidebarTitle: "Conditional UI"
-description: "This usernameless login flow explains how browsers automatically suggest available passkeys without requiring username entry. The system determines user identity after passkey selection and authentication."
+description: "Usernameless login flow in which the browser links eligible passkey suggestions to the identifier field."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W12AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w1-2.mdx";
 
 ## Conditional UI Flow (Usernameless Login)
 
-The Conditional UI flow is presented by the browser/OS when passkeys are available. This is a **usernameless login flow** - users don't enter their username first. Instead, they select from available passkeys, and the system determines the user's identity after successful authentication.
+Conditional UI lets the user select a passkey from the username or email field without entering the identifier first. That one selection completes both parts of login: the credential ID tells the server which account and user pool to use, and the verified assertion authenticates the user.
 
 <Note>
-    **Implementation prerequisite:** Conditional UI is not automatic — your page must call `navigator.credentials.get({ mediation: 'conditional' })` and mark the input with `autocomplete="username webauthn"`. Without both, nothing is offered. Supported in Chromium 108+, Safari 16+ and Firefox 122+ (August 2026).
+    **Implementation prerequisite:** Conditional UI is not automatic: your page must call `navigator.credentials.get({ mediation: 'conditional' })` and mark the input with `autocomplete="username webauthn"`. Without both, nothing is offered. It is available in all modern web browsers. Use `isConditionalMediationAvailable()` because browser support does not guarantee that every operating system and credential-provider combination can offer a passkey.
 </Note>
 
-Passkeys appear in different ways depending on the platform: on the keyboard's suggestion bar (iOS), as an overlay (iOS/Android), or as a selection dropdown (Desktop). This allows users to select and log in quickly without opening an extra prompt.
-
-<Info>
-    **Key Technical Detail:** Unlike traditional login where users enter their username first, Conditional UI is a usernameless flow. The system displays the discoverable passkeys for your domain from the user's credential provider, and only learns the user's identity AFTER they select and authenticate with their specific passkey. This enables a seamless experience.
-</Info>
+Eligible passkeys can appear in different system autofill surfaces depending on the platform, including a keyboard suggestion, sheet, overlay or desktop dropdown. The browser and active credential providers control which credentials are shown.
 
 <Tabs>
   <Tab title="macOS">
@@ -55,23 +52,31 @@ Passkeys appear in different ways depending on the platform: on the keyboard's s
 </Tabs>
 
 <Steps>
-    <Step title="Conditional UI automatically triggered">
-        - When the user taps on the email field, the browser/OS automatically triggers Conditional UI, displaying ALL available passkeys for that domain (usernameless approach).
-        - The presentation varies by platform: keyboard suggestion bar (iOS mobile), overlay modal (iOS/Android mobile), or dropdown selection (Desktop).
-        - Note: At this point, the system doesn't know which user is trying to log in.
+    <Step title="Make Conditional UI available">
+        - The page starts the conditional request before the field can be used and focuses the annotated username or email field where the platform supports it.
+        - When the field is focused, the browser or operating system can show eligible discoverable passkeys from the active credential providers.
+        - The presentation varies by platform: keyboard suggestion, system sheet or overlay on mobile, or a desktop dropdown. Conditional mediation remains non-blocking to the page.
+        - At this point, the relying party does not know which account is signing in.
     </Step>
-     <Step title="Authenticate using the selected passkey">
-        - The user selects their passkey from the available options, which identifies them to the system.
+     <Step title="Select and authorize a passkey">
+        - The user selects a passkey from the available options.
         - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
-        - Upon successful verification, the system receives the user's identity information from the passkey credential.
+        - The browser returns the credential ID and signed assertion to the application.
     </Step>
-     <Step title="Access granted">
-        - The system now knows which user has authenticated based on the passkey credential response.
-        - User is seamlessly logged in and redirected to the dashboard.
+     <Step title="Resolve the account and validate login">
+        - The server uses the credential ID to find the account and correct user pool, then verifies the assertion.
+        - It applies the same account-status and login-policy checks used by every other login route.
+        - A wrong user pool, stale credential or blocked account receives its specific message and next action instead of a session.
+    </Step>
+     <Step title="Complete login">
+        - Only a valid assertion for an account that may sign in creates a session.
+        - If One-Tap is enabled, this successful passkey login makes One-Tap eligible for the account in the current browser profile.
     </Step>
 
 </Steps>
 
 <Warning>
-    **Conditional UI is only as accurate as your credential list.** It offers whatever the credential manager holds, including passkeys your server has already deleted or no longer accepts. The user picks one, authenticates successfully, and only then does the login fail. Keep the two lists aligned with the [WebAuthn Signal API](/passkey-ui-flows/web/signal-api).
+    **The server still decides whether login succeeds.** If it no longer accepts the selected passkey, show a clear stale-passkey message with retry and fallback. When the credential ID is conclusively unknown, a supporting browser can receive `signalUnknownCredential`. This is best effort and does not prove that the provider removed the passkey. See the [WebAuthn Signal API](/passkey-ui-flows/web/signal-api).
 </Warning>
+
+<W12AcceptanceCriteria />

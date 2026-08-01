@@ -1,14 +1,15 @@
 ---
 title: "Passkey Creation: After Login of MFA Account (post-login nudge)"
 sidebarTitle: "After Login: MFA Account"
-description: "This flow explains how users log in native apps when no passkey is set up for a MFA account. The process ensures secure access and encourages passwordless adoption by combining traditional login and passkey creation opportunities."
+description: "Native flow for offering passkey creation after the user completes the account's MFA sign-in policy."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import N22AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n2-2.mdx";
 
 ## Passkey Creation For MFA User Accounts
 
-Users logging into a native app follow a standard login flow for MFA users with passkey append experience.
+After the account's complete MFA sign-in, the app can offer passkey creation for future sign-ins.
 
 <Tabs>
 <Tab title="iOS">
@@ -28,9 +29,9 @@ Users logging into a native app follow a standard login flow for MFA users with 
   </Tab>
 </Tabs>
 
-<Info>
-    **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
-</Info>
+<Note>
+    Blue steps in the diagram are product-specific and are not part of the passkey benchmark.
+</Note>
 <Steps>
     <Step title="Login when user has no passkeys and has activated MFA">
         - User enters their identifier (email/username) on the login page.
@@ -38,25 +39,25 @@ Users logging into a native app follow a standard login flow for MFA users with 
     <Step title="Fallback to traditional login method">
         - If no passkey exists for the account, the system falls back to the traditional login method (username and password).
     </Step>
-    <Step title="System prompts for user verification">
-        - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
+    <Step title="Complete the configured MFA policy">
+        - After the primary factor, the user completes every additional factor required by the account's current policy.
     </Step>
     <Step title="Passkey append process initiates">
-        - Once the system verifies user identity, the user is offered an option to create a passkey for future logins.
+        - Show a manual nudge that explains how a passkey improves the next sign-in.
+        - A quality implementation can first open one creation ceremony automatically. If it is cancelled or fails, show the manual nudge without an error.
     </Step>
-    <Step title="OS-native biometric modal appears">
-        - User chooses and continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    <Step title="System passkey-creation sheet appears">
+        - In the manual flow, the sheet appears after the user clicks Continue.
+        - The platform asks the user to authorize creation with a supported device-unlock method.
     </Step>
     <Step title="Passkey creation successful">
         - User successfully creates a passkey and it is now linked with the user account for the respective native app.
     </Step>
-    <Step title="App PIN setup">
-        - After successful passkey creation, the user is signed in and is asked
-        to set up PIN.
-    </Step>
-    <Step title="Enable local biometric for app login">
-        - User is allowed to enable/disable local biometric app login (provided
-        as product feature).
+    <Step title="Continue to the app">
+        - Skipping the optional nudge continues without a passkey.
+        - After the configured limit of cancelled or failed attempts, the app continues without another prompt or error.
     </Step>
 
 </Steps>
+
+<N22AcceptanceCriteria />

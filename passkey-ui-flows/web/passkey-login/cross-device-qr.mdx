@@ -1,19 +1,20 @@
 ---
 title: "Passkey Login: Cross-Device via QR Code"
 sidebarTitle: "Cross-Device via QR"
-description: "This flow details how users sign in on a desktop device where their passkey is not available by leveraging their mobile device with stored passkeys via scanning a QR code. Passkey Intelligence automatically determines when to offer this option."
+description: "Desktop cross-device authentication with a nearby phone and a client-generated QR code."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W14AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w1-4.mdx";
 
 ## Login via Mobile Device (Cross-Device Authentication)
 
-This approach uses the operating system's built-in **hybrid transport** functionality (defined in CTAP 2.2) for secure cross-device authentication.
+This approach uses the browser or client platform's **hybrid transport** functionality (defined in CTAP 2.2) for secure cross-device authentication.
 
-**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** automatically determines when to offer QR code login. It only displays the QR code option when it detects that the user has a passkey on their mobile device, ensuring a high probability of successful authentication.
+A readiness layer can estimate that a remote passkey route is viable from account metadata, recorded transports and current client capabilities. It cannot inspect the phone's credential store or guarantee that a usable passkey is present.
 
 <Warning>
-    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. Passkeys are phishing-resistant because the credential is bound to your origin; the Bluetooth exchange adds anti-relay protection on top, requiring the authenticating phone to be physically near the desktop device being logged into so the ceremony cannot be forwarded to an attacker elsewhere.
+    **Security requirements:** Both devices require **internet connectivity** and **Bluetooth** for cross-device authentication. The credential remains bound to the relying-party origin. The Bluetooth exchange provides proximity checking, which reduces the risk that the ceremony is relayed to a remote attacker.
 </Warning>
 
 <Tabs>
@@ -39,26 +40,28 @@ This approach uses the operating system's built-in **hybrid transport** function
         - User enters their identifier (email/username) on the login page in textfield.
         - System now knows which user account is attempting to log in.
     </Step>
-    <Step title="Passkey Intelligence determines cross-device authentication is available">
-        - The system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to analyze the user's passkey availability.
-        - It automatically detects that this user has a passkey stored on their mobile device.
-        - Based on this intelligence, the system prepares to offer cross-device authentication via QR code.
+    <Step title="System estimates that cross-device authentication is viable">
+        - The routing layer uses server-known account metadata and client capabilities to decide whether to offer a remote passkey route.
+        - The browser or client platform performs credential discovery; the relying party does not claim certainty about what is stored on the phone.
+        - When the available evidence strongly indicates a phone route, the product first asks whether the user wants to continue with their phone. It starts WebAuthn only after confirmation where the browser allows the QR flow to be delayed.
     </Step>
-    <Step title="OS displays QR code screen">
-        - The operating system displays a screen preparing the user for cross-device authentication.
-        - The operating system generates a QR code for secure pairing.
+    <Step title="Client platform displays the QR route">
+        - The browser, operating system or client platform displays a screen preparing the user for cross-device authentication.
+        - The client platform generates a QR code for secure pairing.
         - Instructions prompt the user to scan the code with their mobile device.
         - **Requirements:** Both devices must have internet and Bluetooth enabled.
-        - Once a phone has been linked to this computer, the OS can offer it directly on later sign-ins and the QR step is skipped. Bluetooth is still required.
+        - Where the client supports linked-device reuse, it may offer a previously linked phone on later sign-ins without a new QR scan. Bluetooth is still required.
     </Step>
     <Step title="User scans QR and authenticates">
         - User scans the QR code using their mobile device where the passkey is stored.
-        - **Bluetooth proximity check:** The OS verifies both devices are physically close (anti-relay protection).
-        - The mobile device performs biometric or PIN authentication.
+        - **Bluetooth proximity check:** The client platforms establish the required proximity-bound hybrid connection.
+        - The mobile device authorizes credential use with a supported device-unlock method.
     </Step>
     <Step title="Login completes on current device">
-        - Authentication response is securely sent back via the internet connection to complete login on the desktop device.
-        - User is granted access on the current device.
+        - The hybrid exchange returns a normal WebAuthn assertion to the requesting client.
+        - The relying party verifies the assertion and grants access only after verification succeeds.
     </Step>
 
 </Steps>
+
+<W14AcceptanceCriteria />

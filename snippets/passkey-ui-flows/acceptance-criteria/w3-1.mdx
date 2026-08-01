@@ -1,0 +1,30 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Baseline | Low |
+
+Low expected adoption impact does not mean low importance. Passkey management is a baseline lifecycle and security capability: it gives users control over registered credentials and protects account continuity when a credential is lost or no longer trusted.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| `W3.1-AC01` | Core | The passkey list contains every credential the server accepts for the current account. | Compare the rendered list with server records for accounts with zero, one and several credentials, including a credential created on another client. |
+| `W3.1-AC02` | Core | Revoking a selected credential changes only that server record and causes every later assertion from it to be rejected. | Give one account several credentials, revoke one, then authenticate with each. The revoked credential fails and every other active credential still works. |
+| `W3.1-AC03` | Core | Confirmed revocation invalidates first-party One-Tap, last-used or availability hints that depend on the revoked credential. | Delete the hinted credential, then start the next login; no personalization or availability decision relies on that credential. |
+| `W3.1-AC04` | Core | Deletion copy describes server-side revocation without promising that a credential provider will remove the private key or its local entry. | Review the confirmation and success copy; it may describe best-effort provider cleanup but does not claim that local removal occurred. |
+| `W3.1-AC05` | Core | After a deletion attempt, the displayed list matches server state before presenting a final result or retry. | Test confirmed deletion, confirmed non-deletion and response loss after a server update. The entry is removed, retained or resolved by reading the current server state. |
+| `W3.1-AC06` | Core | Revoking one credential does not clear valid first-party login hints for unrelated credentials or accounts. | Revoke the hinted credential while another credential and another account retain valid hints; only state that depends on the revoked credential is removed. |
+| `W3.1-AC07` | Quality | Each entry shows a recognizable authenticator or passkey-provider name resolved from the credential's stored AAGUID when a trusted mapping is available. An unknown or generic AAGUID uses a neutral label instead of guessing the provider, physical device or exact storage location. | Register credentials with known AAGUIDs from different authenticators or passkey providers and one unknown AAGUID. Confirm that the known entries show the mapped names and the unknown entry uses a neutral label. |
+| `W3.1-AC08` | Quality | After confirmed server deletion, a client that supports credential-list reconciliation receives the current complete accepted-credential list. | Delete a credential on a supporting client and inspect the reconciliation call; its list matches the server state after deletion. |
+
+### References
+
+-   **Relevant criteria:** **W3.1-AC04 and W3.1-AC07**: [Google passkey user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) supports distinguishable entries and accurate deletion language.
+-   **Relevant criterion:** **W3.1-AC07**: [FIDO Metadata Statement](https://fidoalliance.org/specs/mds/fido-metadata-statement-v3.1-ps-20250521.html) defines AAGUIDs and human-readable authenticator or passkey-provider names intended for display to users.
+-   **Relevant criteria:** **W3.1-AC01, W3.1-AC04 and W3.1-AC07**: [FIDO Alliance: Build vs. Buy: A Guide to Deploying Passkey-Based Authentication](https://fidoalliance.org/wp-content/uploads/2023/07/Build-vs.-Buy-A-Guide-To-Deploying-Passkey-Based-Authentication.pdf) supports complete credential lists, useful metadata and server-side deletion.
+-   **Relevant criteria:** **W3.1-AC01–AC02**: [NIST SP 800-63B: Authenticator Event Management](https://pages.nist.gov/800-63-4/sp800-63b/events/) supports account-scoped authenticator records and targeted revocation.
+-   **Relevant criteria:** **W3.1-AC01–AC02**: [Web Authentication Level 3: Decommissioning](https://www.w3.org/TR/webauthn-3/#sctn-sample-decommissioning) supports server-side revocation and rejection of later assertions.
+-   **Relevant criteria:** **W3.1-AC04 and W3.1-AC08**: [Corbado: WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) explains the separation between server-side revocation and optional credential-provider cleanup.
+-   **Relevant criteria:** **W3.1-AC03 and W3.1-AC05–AC06**: These criteria keep first-party passkey hints consistent with server revocation and resolve response loss without changing an unrelated credential or account.

@@ -1,11 +1,12 @@
 ---
 title: "WebAuthn Signal API"
 sidebarTitle: "Signal API"
-description: "The Signal API lets a website ask credential managers to align stored passkeys with the credentials its server accepts. Without it, deleted or unknown passkeys can keep appearing in the account chooser and fail after a successful biometric prompt."
+description: "The Signal API lets a website ask credential managers to align stored passkeys with the credentials its server accepts. Without it, deleted or unknown passkeys can keep appearing in the account chooser and fail after device authorization."
 ---
 
 import SignalApiIntro from "/snippets/passkey-ui-flows/signal-api-intro.mdx";
 import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
+import W32AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w3-2.mdx";
 
 ## Keeping the Authenticator and Your Server in Sync
 
@@ -14,7 +15,7 @@ import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
 On the web the stale credential surfaces through [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui), which offers whatever the credential manager holds regardless of what your server still accepts.
 
 <Info>
-    **Support (August 2026):** Chrome and Edge 132+ on desktop, Chrome 144+ on Android, Safari 26 (iOS 26, macOS 26). Firefox has no implementation, and the API is **not available in Android WebView** — which is one more reason to prefer native Credential Manager over an embedded webview. For native apps see the [native Signal API](/passkey-ui-flows/native/signal-api).
+    **Support (August 2026):** Chrome and Edge 132+ on desktop, Chrome 144+ on Android, Safari 26 (iOS 26, macOS 26). Firefox has no implementation. Current Android WebView can expose Signal methods when its WebAuthn/Credential Manager integration and app-to-site association are configured; [Chromium added WebView Signal request support in March 2026](https://chromium.googlesource.com/chromium/src/+/a51af719c56a438246e49cf4b953b443c017a7b1), so use method-level feature detection rather than a blanket WebView exclusion. For native apps see the [native Signal API](/passkey-ui-flows/native/signal-api).
 </Info>
 
 ### The three signals
@@ -45,7 +46,7 @@ On the web the stale credential surfaces through [Conditional UI](/passkey-ui-fl
 </Steps>
 
 <Warning>
-    **Use the right signal for a failed login.** On a failed login call `signalUnknownCredential`, never `signalAllAcceptedCredentials`. The latter requires a user ID and the complete valid list, neither of which you can assemble safely for an unauthenticated caller, and it reveals how many passkeys an account has.
+    **Use the right signal for an unknown credential.** Call `signalUnknownCredential` only when the server conclusively rejects the assertion because its credential ID is unknown. Do not signal cancellations, invalid signatures, expired challenges, network failures or other login errors. Never call `signalAllAcceptedCredentials` for an unauthenticated caller: it requires a user ID and a complete server-side list.
 </Warning>
 
 <SignalApiRevoke />
@@ -54,12 +55,14 @@ On the web the reconcile call is `signalAllAcceptedCredentials`, and the list it
 
 ### Error handling
 
-Both failure modes are rejections on a `DOMException`:
+Signal methods can reject with:
 
--   `SecurityError` — the relying party domain is not valid
--   `TypeError` — a `credentialId`, `userId` or list entry is not valid base64url
+-   `SecurityError` (`DOMException`): the relying party domain is not valid
+-   `TypeError`: a `credentialId`, `userId` or list entry is not valid base64url
 
 Branch on `error.name` only. Message strings are not part of the contract.
+
+<W32AcceptanceCriteria />
 
 ### Further reading
 

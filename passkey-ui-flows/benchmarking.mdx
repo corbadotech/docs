@@ -1,0 +1,117 @@
+---
+title: "Benchmarking Passkey Implementations"
+description: "A practical framework for comparing passkey implementations and adoption potential."
+---
+
+This benchmark turns the [flow catalogue](/passkey-ui-flows/overview#flow-catalogue) into product-neutral requirements. Each flow includes acceptance criteria that can be used for implementation reviews, tickets and provider comparisons.
+
+## Decide what you are reviewing
+
+Before giving an implementation a rating, state what you reviewed. Include the website or app, user and account groups, browsers, operating systems, credential managers, countries and time period. Also list anything that was excluded or not tested.
+
+When comparing providers, review them under the same conditions. If a provider does not support a relevant platform or flow, show this as a gap. Use `N/A` only when a requirement does not apply to the reviewed implementation.
+
+Also state whether each capability is built in, can be configured, requires integration work or requires custom development. This separates the quality of the result from the effort needed to achieve it.
+
+## How to read the flow metadata
+
+| Field | Value | Meaning |
+| --- | --- | --- |
+| Benchmark as | **Baseline** | Expected production behavior whenever passkeys are in scope. |
+| Benchmark as | **Strategy** | One primary UX pattern that can coexist with or substitute for another strategy. Do not require every alternative. |
+| Benchmark as | **Conditional** | Required only when its documented scenario occurs in the declared scope. |
+| Benchmark as | **Enhancement** | Progressive capability that improves the flow where supported; unsupported targets are not penalized. |
+| Benchmark as | **Supporting capability** | Non-UI behavior that improves several flows. |
+| Expected adoption impact | **High** | Directly affects a frequent, broad creation or returning-login opportunity. |
+| Expected adoption impact | **Mid** | Expands device coverage, recovery or another important part of the user base. |
+| Expected adoption impact | **Low** | Primarily improves lifecycle hygiene, trust or administration rather than direct funnel exposure. |
+
+Expected adoption impact is a qualitative estimate for the full audience. It is not a measure of overall importance and does not affect whether a criterion passes. For example, credential management and Signal API reconciliation have low expected adoption impact but high reliability and lifecycle value.
+
+## Grade the criteria and flows
+
+Test important platforms separately. A feature that works on Chrome but fails on Safari should show one pass and one fail rather than one combined result.
+
+| Result | Use when |
+| --- | --- |
+| **Pass** | The implementation meets the criterion. |
+| **Fail** | The criterion applies, but the implementation does not meet it. |
+| **N/A** | The criterion does not apply. State why. |
+| **Not reviewed** | There is not enough evidence to give a result. |
+
+Core criteria cover behavior that must work, including security, account binding, completion, cancellation and fallback. Quality criteria cover measurement, testing and maintainability.
+
+| Flow rating | Meaning |
+| --- | --- |
+| **Full** | All applicable Core and Quality criteria pass. |
+| **Core met** | All Core criteria pass, but one or more Quality criteria fail or were not reviewed. |
+| **Not met** | At least one Core criterion fails. |
+| **Not reviewed** | One or more Core criteria were not reviewed and no Core criterion is known to fail. |
+| **N/A** | The complete flow does not apply to the reviewed implementation. |
+
+Use a simple review table:
+
+| Criterion | Platform | Result | Evidence | Notes |
+| --- | --- | --- | --- | --- |
+| `W1.2-AC01` | Safari 18 with Apple Passwords | Pass / Fail / N/A / Not reviewed | Test, documentation or analytics link | Result or reason |
+
+Also state how strong the available evidence is:
+
+| Confidence | Evidence |
+| --- | --- |
+| **High** | Current tests across the supported platforms, preferably with production data |
+| **Medium** | Direct tests exist, but some platforms or user groups are missing |
+| **Low** | Documentation, a demo, screenshot or narrow happy-path test |
+| **Unknown** | No evidence is available |
+
+## Rate adoption potential
+
+Do not rate adoption by counting passed criteria. A login strategy, an optional enhancement and a management feature have different purposes. Instead, review four separate areas:
+
+| Pillar | Question |
+| --- | --- |
+| **Readiness** | Does the declared audience and implementation support the required capability? |
+| **Enrollment** | Are eligible users exposed to and able to complete passkey creation? |
+| **Availability** | Can an enrolled credential be reached in the returning context, including cross-device and second-device cases? |
+| **Usage** | When a usable passkey is available, does the entry design lead users to initiate and complete passkey login? |
+
+The following table shows which flows contribute to each area. A primary flow provides the main result. A secondary flow improves or protects that result but cannot satisfy the area by itself.
+
+| Pillar | Primary flow IDs | Secondary flow IDs |
+| --- | --- | --- |
+| **Readiness** | `E1` | `W1.6`, `W2.1`, `N1.2`, `N2.6` |
+| **Enrollment** | `W2.1`–`W2.7`, `W3.1`, `N2.1`–`N2.6`, `N3.1` | `W2.8`, `E1` |
+| **Availability** | `W1.4`, `W2.4`–`W2.6`, `N2.3` | `W1.5`, `W3.1`, `W3.2`, `N1.4`, `N3.1`, `N3.2`, `E1` |
+| **Usage** | `W1.1`, `W1.3`, `N1.1`, `N1.3` | `W1.2`, `W1.4`–`W1.6`, `N1.2`, `N1.4`, `E1` |
+
+Rate each included website or app separately. If an implementation uses a different flow to achieve the same result, assess it against the same acceptance criteria.
+
+| Pillar | Basic | Managed | Optimized |
+| --- | --- | --- | --- |
+| **Readiness** | The main included platforms support the selected passkey flows. | Readiness checks and the support matrix are complete. | Relevant readiness enhancements work across the included user groups. |
+| **Enrollment** | At least one passkey-creation route works. | Account management and a broad creation strategy work for each included account type. | Relevant automatic, conditional and recovery creation flows work. |
+| **Availability** | Returning login, fallback and passkey management work. | Relevant cross-device, second-device and recovery flows work. | Credential-manager reconciliation works where supported. |
+| **Usage** | At least one primary passkey-login strategy and its error handling work. | The selected primary strategy is Full and its usage can be measured. | Readiness and relevant discovery enhancements also work. |
+
+If an area does not reach Basic or was not reviewed, the overall result is **Incomplete**. Otherwise, give each area the highest level it fully meets.
+
+Rate web and native separately, then use the lowest result across the included applications. Always show the individual results and state what was not included. For example: **Incomplete overall; web iOS: High; native: Not reviewed**.
+
+Then determine adoption potential without averaging the pillars:
+
+| Adoption potential | Rule |
+| --- | --- |
+| **Incomplete** | At least one area is below Basic or was not reviewed. |
+| **Low** | Enrollment or Usage remains Basic, so passkey creation or repeat-login discovery is limited. |
+| **Mid** | Enrollment and Usage are at least Managed, and Readiness and Availability are at least Basic. |
+| **High** | Enrollment and Usage are Optimized, and Readiness and Availability are at least Managed. |
+
+This rates adoption **potential**, not actual adoption. A live deployment should also report enrollment, passkey login share, success, fallback and error rates for a stated user group and time period.
+
+For automatic creation, calculate the upgrade rate as successful server registrations divided by conditional-registration requests sent after a completed password sign-in. Do not estimate whether the credential provider considered a request eligible.
+
+## Using evidence
+
+Use specifications and official platform documentation for protocol and API behavior. Use cross-platform UX research and named deployments for flow guidance. Corbado blog and internal implementation experience help explain feasibility, edge cases and estimated adoption impact, but proprietary performance figures are not universal pass/fail thresholds.
+
+Each criterion includes a practical check and references that explain why it is included. During a review, add the test result, documentation or analytics used for the rating.

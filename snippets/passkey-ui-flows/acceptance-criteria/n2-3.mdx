@@ -1,0 +1,20 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Conditional | Mid |
+
+This flow restores passkey coverage after a passkey could not be used on the current client. A local failure does not prove that the registered credential is globally broken: a credential can remain usable through another device or credential provider.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N2.3-AC01** | Core | A cancelled or failed passkey attempt can indicate that the expected passkey is not available on the current client, for example after a device or credential-provider change. Offer creation only when the account has a registered passkey, the user successfully signs in to the same account with fallback, and the current client can create a passkey. | Cancel or fail a passkey attempt on a client without the expected passkey, then complete fallback and confirm that creation is offered. Repeat with no registered passkey, unsuccessful fallback, fallback to another account and an unsupported client; the offer does not appear. |
+| **N2.3-AC02** | Core | Creating the new passkey does not remove an older credential from server state unless a separate lifecycle operation succeeds. | Create the new passkey and compare the server's accepted credential set before and after. It changes only through the separate lifecycle operation. Do not claim that the provider retained or replaced a credential when this cannot be confirmed. |
+| **N2.3-AC03** | Core | The additional passkey can complete a later sign-in to the same account from the target client. | Complete creation, sign out and use the additional passkey to sign in again from the target client. The assertion resolves to the same account. |
+
+### References
+
+- **Relevant criterion:** **N2.3-AC01:** [Corbado: Passkey fallback and recovery](https://www.corbado.com/blog/passkey-fallback-recovery) covers passkey-access failures and creation only after successful fallback to the same account.
+- **Relevant criteria:** **N2.3-AC02–AC03:** [Google: Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) and [W3C: Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/) cover multiple passkeys per account, later use and the separation between creation and revocation.

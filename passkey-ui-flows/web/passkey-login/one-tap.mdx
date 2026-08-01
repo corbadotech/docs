@@ -1,64 +1,33 @@
 ---
 title: "Passkey Login: One-Tap"
 sidebarTitle: "One-Tap"
-description: "This flow explains the journey of a user logging in via One-Tap passkey button."
+description: "Passkey sign-in with an explicit One-Tap button."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W11AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w1-1.mdx";
 
 ## One-Tap Login Flow
 
 Users logging in via desktop and mobile browsers follow a standard login flow enriched by the One-Tap passkey experience, leading to higher login rates on trusted devices.
 
 <Info>
-**Feature Documentation**: For comprehensive details about One-Tap Login implementation, benefits, and configuration, see the [Corbado Connect One-Tap Login feature documentation](/corbado-connect/features/one-tap-login).
+**Feature documentation:** For implementation and configuration details, see the [Corbado Connect One-Tap Login documentation](/corbado-connect/features/one-tap-login).
 </Info>
 
-### Platform-Specific Implementations
-
-The One-Tap Login experience adapts seamlessly to each platform's native authentication UI, ensuring users receive a familiar and trusted interface:
-
-<Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/one-tap-macos.webp"
-        caption="macOS one-tap passkey flow"
-        imageName="one-tap-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/one-tap-windows.webp"
-        caption="Windows one-tap passkey flow"
-        imageName="one-tap-windows.webp"
-    />
-</Tab>
-
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/one-tap-ios.webp"
-        caption="iOS one-tap passkey flow"
-        imageName="one-tap-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/one-tap-android.webp"
-        caption="Android one-tap passkey flow"
-        imageName="one-tap-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/one-tap-macos.webp"
+    caption="Representative web One-Tap login flow shown on macOS"
+    imageName="one-tap-macos.webp"
+/>
 
 <Steps>
     <Step title="Users log in via One-Tap">
         - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines the user is likely to have a passkey available on this platform. User taps "Login with Passkey" button on the login screen to start authentication.
-        - The button displays personalized information (e.g., "Login as alice@example.com") for improved user recognition.
+        - The button displays an account hint, for example "Log in as alice@example.com", so the user can identify the intended account.
     </Step>
-    <Step title="Automatic OS-native biometric modal appears">
-        - The system prompts for available saved passkey using the browser's or OS-native modal (for example, Touch ID).
+    <Step title="System passkey sheet appears">
+        - The browser or operating system presents the applicable passkey authentication surface.
         - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
         - User verification happens locally on the device; only a signed assertion is sent to your server, and no shared secret ever leaves the device.
     </Step>
@@ -70,9 +39,9 @@ The One-Tap Login experience adapts seamlessly to each platform's native authent
 
 ## Technical Considerations
 
-### Device Recognition
+### Device-scoped availability evidence
 The One-Tap Login button appears intelligently based on:
-- **Passkey availability**: Whether the user has previously created a passkey on this device
+- **Prior first-party evidence**: Whether the user previously created or used a passkey in this browser context
 - **Browser support**: Automatic detection of WebAuthn compatibility
 - **Session history**: Recognition of the last used account on the device
 
@@ -80,14 +49,16 @@ The One-Tap Login button appears intelligently based on:
 
 <AccordionGroup>
 <Accordion title="Multiple accounts on the same device">
-When multiple accounts exist on a device, the One-Tap button defaults to the most recently used account. Users can easily switch accounts through a dropdown or "Use another account" option.
+When multiple accounts exist on a device, the One-Tap button defaults to the most recently used account. Provide a dropdown or "Use another account" option for switching accounts.
 </Accordion>
 
 <Accordion title="First-time device access">
-On a new device, users complete the standard authentication flow once. After successful passkey creation or migration, One-Tap Login becomes available for all subsequent visits.
+On a new device, users complete the standard authentication flow. After successful passkey creation or use, One-Tap may become eligible on later visits while sufficient device-scoped evidence remains available.
 </Accordion>
 
 <Accordion title="Passkey unavailable scenarios">
 If a passkey becomes unavailable (e.g., deleted by user, browser issues), the system gracefully falls back to alternative authentication methods without user confusion.
 </Accordion>
 </AccordionGroup>
+
+<W11AcceptanceCriteria />

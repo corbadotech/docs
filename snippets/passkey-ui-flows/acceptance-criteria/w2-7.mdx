@@ -1,0 +1,20 @@
+## Acceptance criteria
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | Mid |
+
+This flow covers passkey creation as part of registering a new account. Its reach is high among new users but does not enroll existing accounts.
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W2.7-AC01** | Core | Before passkey creation, assign the new account its permanent WebAuthn user handle. If signup still uses a temporary account record, persist a reliable mapping from that handle and the returned credential ID to the final account. | Create a passkey before the final account record is completed, then finish signup and sign in with it. Add another passkey later. Both credentials resolve to the final account and use the same WebAuthn user handle. |
+| **W2.7-AC02** | Core | When the chosen signup method is sufficient to authorize passkey creation, create the passkey before asking the user to verify a separate fallback such as a phone OTP. If it is not sufficient, complete the required verification first. A passkey created for a pending account becomes usable only after the required signup verification succeeds. | Test one signup policy that permits creation before fallback verification and one that requires verification first. In the first case, abandon the OTP and confirm that the pending account cannot sign in, then complete it and confirm that the passkey becomes usable. In the second case, passkey creation does not start before verification. |
+| **W2.7-AC03** | Core | When the passkey is used as the account's second factor, signup also completes a usable fallback for that factor. A collected phone number or email address counts only after its OTP or verification link succeeds. | Create the passkey and abandon fallback verification. The account is not considered ready for passkey-based MFA. Complete verification and confirm that the configured fallback can be used when the passkey is unavailable. |
+
+### References
+
+- **Relevant criteria:** **W2.7-AC01–AC02:** [How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers passkey creation during registration as a distinct enrollment opportunity.
+- **Relevant criteria:** **W2.7-AC02–AC03:** [Passkey Intelligence, login identifiers and verification](https://www.corbado.com/blog/passkey-intelligence-login-identifiers-verification-flows) covers verification during signup, verification before first login and recovery identifiers.
+- **Relevant criteria:** **W2.7-AC03:** [Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) covers establishing a recovery method when creating a new account with a passkey.
+- **Relevant criteria:** **W2.7-AC01:** [Server-side passkey registration](https://developers.google.com/identity/passkeys/developer-guides/server-registration) covers account-bound registration options and credential storage.

@@ -1,52 +1,25 @@
 ---
 title: "Passkey Creation: After Login of Non-MFA Account (post-login nudge)"
 sidebarTitle: "After Login: Non-MFA Account"
-description: "This flow explains how users append a passkey to a non-MFA account."
+description: "Web flow for offering passkey creation after a successful non-passkey sign-in to a single-factor account."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W22AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-2.mdx";
 
 ## Passkey Creation for Non-MFA User Accounts
 
 Non-MFA users logging in via desktop and mobile browsers follow a standard login flow where they are offered the option to append a passkey.
 
-<Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/non-mfa-append-macos.webp"
-        caption="macOS passkey append, non-MFA accounts"
-        imageName="non-mfa-append-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/non-mfa-append-windows.webp"
-        caption="Windows passkey append, non-MFA accounts"
-        imageName="non-mfa-append-windows.webp"
-    />
-</Tab>
-
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/non-mfa-append-ios.webp"
-        caption="iOS passkey append, non-MFA accounts"
-        imageName="non-mfa-append-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/non-mfa-append-android.webp"
-        caption="Android passkey append, non-MFA accounts"
-        imageName="non-mfa-append-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/non-mfa-append-macos.webp"
+    caption="Representative web passkey creation flow for a non-MFA account shown on macOS"
+    imageName="non-mfa-append-macos.webp"
+/>
 
 <Info>
-    NOTE: The blue background indicates product-native steps (e.g., verification
-    code). Passkey creation is seamlessly embedded in your product journey.
+    The blue background indicates product-specific steps, such as a verification
+    code. Passkey creation occurs within the same application flow.
 </Info>
 
 <Steps>
@@ -57,39 +30,26 @@ Non-MFA users logging in via desktop and mobile browsers follow a standard login
         - If no passkey exists for the account, the system falls back to the traditional login method (username and password).
     </Step>
     <Step title="Passkey append process initiates">
-        - Once the user is logged in via traditional method, they are offered an option to create a passkey for future logins.
+        - After an eligible sign-in, the application shows a manual creation nudge that explains the future sign-in benefit.
+        - A quality implementation can first open one creation ceremony automatically. If the user cancels it, the manual nudge appears without an error.
     </Step>
     <Step title="Passkey append process continues">
-        - User continues with the passkey creation process.
+        - On the manual screen, the user clicks Continue before the ceremony opens. If the relying party's credential-binding policy requires step-up verification, it is completed before the registration is accepted.
 
-        **4.a. OS-native biometric prompt appears**
-        - OS biometric prompt modal appears asking the user to authenticate using fingerprint, face, or PIN for secure sign-in.
-        - User successfully authenticates via biometrics.
+        **4.a. System passkey-creation prompt appears**
+        - The browser or operating system asks the user to authorize creation with a supported device-unlock method, such as a biometric or PIN.
 
         **4.b. Passkey creation successful**
-        - User successfully creates a passkey and it is now linked with the user account for the respective web-app.
+        - The relying party verifies the registration before linking the passkey to the authenticated account.
 
-        **4.c. System prompts for user verification**
-        - The user is prompted to verify their account via a code sent through email or SMS.
-
-        **4.d. Successful account verification**
-        - User successfully completes the account verification.
-
-        **4.e. Redirection to app dashboard**
+        **4.c. Redirection to app dashboard**
         - User is redirected to the app dashboard.
 
     </Step>
     <Step title="Skips the passkey append process">
-        - User skips the passkey setup process and continues with the account verification.
-
-        **5.a. System prompts for user verification**
-        - The user is prompted to verify their account via a code sent through email or SMS.
-
-        **5.b. Successful account verification**
-        - User successfully completes the account verification.
-
-        **5.c. Redirection to app dashboard**
-        - User is redirected to the app dashboard.
+        - User skips the optional passkey setup and continues to the app dashboard without an additional factor being introduced by this flow.
     </Step>
 
 </Steps>
+
+<W22AcceptanceCriteria />

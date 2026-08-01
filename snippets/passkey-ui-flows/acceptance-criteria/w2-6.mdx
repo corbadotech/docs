@@ -1,0 +1,31 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Conditional | Mid |
+
+<Note>
+    WebAuthn cannot reliably list which account passkeys are usable in the
+    current browser. Creation history can show that the existing passkeys were
+    created before this device was first seen, but a synced passkey may still be
+    available here. The offer therefore remains optional.
+</Note>
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W2.6-AC01** | Core | This secondary-device flow is considered only when the account already has at least one registered passkey, the current session completed through an allowed non-passkey fallback, and available history indicates that the existing passkeys could not have been created on this device, for example because they were registered before the device was first seen. An account with no passkeys is routed to first-passkey enrollment instead. | Test an account with no passkeys, one with a passkey created on the current device, and one whose passkeys were registered before the current device was first seen and therefore uses fallback. Confirm the three cases route to first-passkey enrollment, normal signed-in use, and this flow respectively. |
+| **W2.6-AC02** | Core | Duplicate and concurrent registration attempts are harmless. `excludeCredentials` prevents avoidable duplicates, while `InvalidStateError` or other evidence that the provider already has the credential triggers a refresh or no-op instead of a user-facing failure. | Run concurrent registrations and a journey where the provider already contains a matching credential. Confirm that there is no duplicate server record, blocking error or repeated prompt. |
+| **W2.6-AC03** | Core | The stored credential can complete a later passkey sign-in from the target environment. | Complete creation and perform a later sign-in from the target environment with the added credential. |
+| **W2.6-AC04** | Core | Registration targets the current client's platform or passkey provider, using client-device guidance and the compatible platform-authenticator setting where supported. | Inspect creation options across supported clients. Confirm the current-client creation route is promoted instead of a QR or security-key route. |
+| **W2.6-AC05** | Quality | The offer identifies this as an additional passkey and explains the future same-environment benefit. It does not describe the operation as moving an existing passkey or guarantee that the credential is stored only on the physical device rather than a syncing provider. | Review rendered and localized copy on a personal and one-off device. Test users should distinguish additional coverage from first enrollment and understand that provider syncing may apply. |
+| **W2.6-AC06** | Quality | Registration options contain every server-known account credential ID in `excludeCredentials`, and the server still rejects a duplicate returned by the client. | Generate options for an account with several known credentials and inspect `excludeCredentials`. Every known ID is present. Then return a duplicate and confirm that the server rejects it. |
+
+### References
+
+- **Relevant criteria:** **W2.6-AC01 and W2.6-AC05:** [How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers secondary-device eligibility and differentiated additional-credential messaging.
+- **Relevant criteria:** **W2.6-AC01, W2.6-AC03 and W2.6-AC05:** [Payment provider passkeys: multi-device coverage](https://www.corbado.com/blog/payment-provider-passkeys-third-party-sdk) covers first versus additional credentials, device-healing journeys, and later device coverage.
+- **Relevant criteria:** **W2.6-AC02–AC04 and W2.6-AC06:** [Create a passkey for passwordless logins](https://web.dev/articles/passkey-registration) covers duplicate handling, response processing, later use and current-client targeting.
+- **Relevant criteria:** **W2.6-AC03–AC05:** [Synced Passkey Deployment: Emerging Practices](https://fidoalliance.org/wp-content/uploads/2024/05/Synced-Passkey-Deployment_-Emerging-Practices-for-Consumer-Use-Cases_2024-May-31.pdf) covers syncing semantics, later authentication, current-platform registration and additional-credential messaging.
+- **Relevant criteria:** **W2.6-AC02–AC04 and W2.6-AC06:** [Server-side passkey registration](https://developers.google.com/identity/passkeys/developer-guides/server-registration) covers duplicate prevention, response verification, multiple credentials and future authentication data.

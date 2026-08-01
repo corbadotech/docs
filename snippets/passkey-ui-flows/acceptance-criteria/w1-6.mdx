@@ -1,0 +1,24 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Enhancement | Mid |
+
+Immediate mode removes an identifier step for eligible returning users, but its limited client availability means it must remain a progressive enhancement.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W1.6-AC01** | Core | Unsupported clients and capability-check failures continue through the existing login journey without a blocker. | Run the flow with `immediateGet` available, unavailable and rejected; confirm only the supported case enters immediate mode and every other case reaches the standard flow. |
+| **W1.6-AC02** | Core | Every immediate-mode request starts after a user click. | Invoke the route with and without a preceding click; confirm only the clicked path can start immediate mode. |
+| **W1.6-AC03** | Core | If an immediate-mode request returns `NotAllowedError`, do not show an error or block login. Continue with the normal login flow. | Test no local credential, chooser dismissal, private or incognito mode and a rejected request. Every case continues to the normal login flow without an error. |
+| **W1.6-AC04** | Core | Immediate mode is not the only passkey route: after silent fallback, a user can deliberately start a standard ceremony that may offer cross-device authenticators or security keys where supported. | Use a client with no local credential but an available phone or security-key credential; confirm silent fallback followed by the standard route can complete. |
+| **W1.6-AC05** | Core | Successful immediate authentication resumes the action that initiated sign-in. | Complete immediate authentication from an explicit sign-in control and a contextual action; confirm each returns to its intended continuation. |
+| **W1.6-AC06** | Core | The immediate request does not surface cross-device QR or security-key options. | Test with no local credential while a phone and security key are available; confirm the request falls through silently without those options. |
+| **W1.6-AC07** | Core | Every immediate-mode request uses the documented immediate request-option shape. | Inspect the request for `uiMode: "immediate"`, `publicKey`, a fresh challenge, the correct RP ID and an omitted or empty `allowCredentials`. |
+| **W1.6-AC08** | Core | The relying-party flow does not depend on an abort signal to withdraw an immediate chooser. | Trigger an abort after chooser presentation and confirm the surrounding application state remains correct if the chooser stays visible. |
+
+### References
+
+- **Relevant criteria:** **W1.6-AC01–AC08:** [Chrome for Developers: Immediate UI mode for logins](https://developer.chrome.com/docs/identity/immediate-ui-mode) defines feature detection, request constraints, silent fallback, Sign-in and Checkout continuation, private-mode behavior and the exclusion of cross-device and security-key options.

@@ -1,16 +1,17 @@
 ---
 title: "Passkey Creation: After Hybrid Login"
 sidebarTitle: "After Hybrid"
-description: "This flow details how users create a passkey on their desktop device after they logged in via cross-device authentication. Passkey Intelligence automatically determines when to offer QR code login."
+description: "Passkey creation in the requesting environment after cross-device authentication."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W24AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-4.mdx";
 
 ## Passkey Creation after Hybrid Login
 
-This approach uses the operating system's built-in **hybrid transport** functionality (defined in CTAP 2.2) for secure cross-device authentication.
+This approach uses the browser or client platform's **hybrid transport** functionality (defined in CTAP 2.2) for secure cross-device authentication.
 
-**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** automatically determines when to offer QR code login based on detecting that the user has a passkey on their mobile device.
+A readiness layer can estimate that cross-device authentication is plausible from server-known credential history, recorded transports and current client capabilities. It cannot inspect the phone's credential store or guarantee that a usable passkey is present.
 
 <Warning>
     **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. Passkeys are phishing-resistant because the credential is bound to your origin; the Bluetooth exchange adds anti-relay protection on top, requiring the authenticating phone to be physically near the device being signed in to.
@@ -39,28 +40,27 @@ This approach uses the operating system's built-in **hybrid transport** function
         - User enters their identifier (email/username) on the login page in text field.
         - System now knows which user account is attempting to log in.
     </Step>
-    <Step title="Passkey Intelligence determines cross-device authentication is available">
-        - The system uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to analyze the user's passkey availability.
-        - It automatically detects that this user has a passkey stored on their mobile device.
-        - Based on this intelligence, the system prepares to offer cross-device authentication via QR code.
+    <Step title="System estimates that cross-device authentication is viable">
+        - The routing layer combines account metadata and client capabilities to decide whether to offer a cross-device route.
+        - This is a confidence-based decision; the operating system performs credential discovery and the relying party does not claim to know what is stored on the phone.
     </Step>
-    <Step title="OS displays QR code screen">
-        - The operating system displays a screen preparing the user for cross-device authentication.
-        - The operating system generates a QR code for secure pairing.
+    <Step title="Client platform displays the QR route">
+        - The browser, operating system or client platform displays a screen preparing the user for cross-device authentication.
+        - The client platform generates a QR code for secure pairing.
         - **Requirements:** Both devices must have internet and Bluetooth enabled.
     </Step>
     <Step title="User scans QR and authenticates">
         - User scans the QR code using their mobile device where the passkey is stored.
-        - **Bluetooth proximity check:** The OS verifies both devices are physically close (anti-relay protection).
-        - The mobile device performs biometric or PIN authentication.
+        - **Bluetooth proximity check:** The client platforms establish the required proximity-bound hybrid connection.
+        - The mobile device authorizes credential use with a supported device-unlock method.
     </Step>
     <Step title="Login completes on current device & passkey append initiates">
-        - Authentication response is securely sent back via the internet connection to complete login on the current device.
-        - User is granted access on the current device.
-        - After successful cross device authentication, user is asked to create a passkey on the current device.
+        - The hybrid exchange returns a normal WebAuthn assertion, and the relying party grants access only after server verification succeeds.
+        - A fresh successful assertion from a flow that deliberately offered cross-device authentication can make hybrid use likely. Do not claim definitive transport unless a documented client- or provider-specific signal exposes it.
+        - The user can then be asked to add a passkey through the current platform or credential provider.
     </Step>
-    <Step title="OS-native biometric modal appears">
-        - User chooses and continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    <Step title="System passkey-creation sheet appears">
+        - User authorizes creation with a platform-supported device-unlock method.
     </Step>
     <Step title="Passkey creation successful">
         - User successfully creates a passkey and it is now linked with the user account for the respective web-app.
@@ -70,3 +70,5 @@ This approach uses the operating system's built-in **hybrid transport** function
     </Step>
 
 </Steps>
+
+<W24AcceptanceCriteria />

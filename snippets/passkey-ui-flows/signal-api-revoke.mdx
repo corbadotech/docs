@@ -4,9 +4,9 @@
 
 ### Why Server-Side Revocation Still Needs Client Cleanup
 
-Deleting the public key on your server revokes the credential immediately: any later assertion from it must be rejected. What that server-side action cannot do is remove the stale entry from the user's locally installed credential manager, because **your backend has no direct channel to the user's password manager**.
+Revoking the credential in authoritative server state makes it unusable immediately: every later assertion from it must be rejected. The server may retain an inactive record for audit. What revocation cannot do is remove the stale entry from the user's locally installed credential manager, because **your backend has no direct channel to the user's password manager**.
 
-Client-side cleanup can happen only when the user's client runs again. Signal an unknown credential after a failed assertion, and reconcile the complete accepted list during the next authenticated session. Running that reconciliation after every successful sign-in is how server-initiated changes eventually reach credential managers that were not available when the revocation happened.
+Client-side cleanup can happen only when the user's client runs again. Signal an unknown credential only after the server confirms that the submitted credential is unknown. Reconcile the complete accepted list on a documented authenticated schedule, including after authoritative credential-set changes and selected refresh points. The schedule should account for capability, coalescing and rate limits; revocation itself must never wait for signalling.
 
 <Tip>
     Signals resolve with no information about what the provider did. You never learn whether a credential existed or whether the provider acted, which is deliberate and privacy-preserving. It also means signalling can never serve as an audit trail or a source of truth. Treat it as fire-and-forget hygiene, and never block a UI flow on the result.

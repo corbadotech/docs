@@ -1,0 +1,23 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | High |
+
+This flow covers passkey enrollment after the account's complete MFA sign-in.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N2.2-AC01** | Core | Show the creation offer only after the account's complete existing MFA policy succeeds. | Test successful MFA, failed and abandoned additional-factor challenges, an expired MFA session and any configured remembered-device path. The offer appears only after the policy reports complete success. |
+| **N2.2-AC02** | Core | The authentication policy states whether the passkey replaces the existing multi-factor sign-in or acts as one factor within it. | Inspect the configured policy and its next-sign-in tests. Confirm that one supported role is defined for each included account group. |
+| **N2.2-AC03** | Core | After MFA completes, show a manual creation nudge that explains how a passkey improves the next sign-in. The user can continue to creation or continue to the app without a passkey. | Complete MFA. Confirm that the nudge explains the future sign-in benefit, Continue opens one creation ceremony, and skipping continues without creating a passkey. |
+| **N2.2-AC04** | Core | When the passkey substitutes the existing multi-factor journey, registration and later authentication require and verify local user verification. | Register and authenticate with user verification present, then repeat with it absent or not requested. Only the user-verified path satisfies the substitution policy. |
+| **N2.2-AC05** | Quality | On suitable clients, open one creation ceremony automatically after MFA completes. If it is cancelled or fails before the configured attempt limit is reached, show the manual nudge without an application error and wait for the user to choose another attempt. Once the limit is reached, continue silently without another ceremony, nudge or error. | Cancel or fail the automatic attempt below the limit and confirm that the manual nudge appears without an error or immediate reopen. Reach the limit and confirm that the signed-in journey continues without another ceremony, nudge or error. |
+
+### References
+
+- **Relevant criteria:** **N2.2-AC01, N2.2-AC03 and N2.2-AC05:** [Corbado: How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers post-MFA enrollment, manual and automatic creation, and retry limits.
+- **Relevant criteria:** **N2.2-AC01 and N2.2-AC03:** [Google: Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) covers offering passkey creation after completed authentication and explaining its future sign-in benefit.
+- **Relevant criteria:** **N2.2-AC02 and N2.2-AC04:** [NIST SP 800-63B: Syncable authenticators](https://pages.nist.gov/800-63-4/sp800-63b/syncable/) covers the authenticator's policy role and enforcing user verification accordingly.

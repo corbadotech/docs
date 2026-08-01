@@ -1,11 +1,12 @@
 ---
 title: "WebAuthn Signal API"
 sidebarTitle: "Signal API"
-description: "Native apps can ask credential managers to align passkeys stored on a device with the credentials the server accepts. Without it, deleted or unknown passkeys can keep appearing in the OS account chooser and fail after a successful biometric prompt."
+description: "Native apps can ask credential managers to align passkeys stored on a device with the credentials the server accepts. Without it, deleted or unknown passkeys can keep appearing in the OS account chooser and fail after device authorization."
 ---
 
 import SignalApiIntro from "/snippets/passkey-ui-flows/signal-api-intro.mdx";
 import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
+import N32AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n3-2.mdx";
 
 ## Keeping the Authenticator and Your Server in Sync
 
@@ -14,11 +15,11 @@ import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
 In a native app the stale credential surfaces through [Conditional UI](/passkey-ui-flows/native/passkey-login/conditional-ui) and the [app-start overlay](/passkey-ui-flows/native/passkey-login/overlay), both of which offer whatever the credential manager holds regardless of what your server still accepts.
 
 <Info>
-    **Support (August 2026):** Android 15+ via `androidx.credentials` **1.6.0** (stable since 8 April 2026). Apple platforms via `ASCredentialDataManager` on iOS, iPadOS, macOS and visionOS **26.2+**. For the browser equivalent see the [web Signal API](/passkey-ui-flows/web/signal-api).
+    **Support (August 2026):** Android 15+ via `androidx.credentials` **1.6.0** (stable since 8 April 2026). Apple platforms support signalling from **26.0**: use legacy `ASCredentialUpdater` on 26.0–26.1 and current `ASCredentialDataManager` on iOS, iPadOS, macOS and visionOS 26.2+. For the browser equivalent see the [web Signal API](/passkey-ui-flows/web/signal-api).
 </Info>
 
 <Warning>
-    **Apple renamed this API one point release after shipping it.** `ASCredentialUpdater` was introduced in 26.0 and **deprecated in 26.2** in favour of `ASCredentialDataManager`. Signalling is therefore possible from 26.0, but a new build should target `ASCredentialDataManager` and treat 26.2 as the floor. Sample code from WWDC25 and 2025-era articles uses the deprecated class.
+    **Apple renamed this API one point release after shipping it.** `ASCredentialUpdater` was introduced in 26.0 and **deprecated in 26.2** in favour of `ASCredentialDataManager`. Signalling is therefore possible from 26.0; use 26.2 as the recommended new-build target for the current API, not as the feature's availability floor. Sample code from WWDC25 and 2025-era articles uses the deprecated class.
 </Warning>
 
 ### The three signals
@@ -32,18 +33,18 @@ In a native app the stale credential surfaces through [Conditional UI](/passkey-
 On Android all three are sent through `CredentialManager.signalCredentialState()` and carry a JSON string rather than typed fields.
 
 <Steps>
-    <Step title="On a failed login: signal the unknown credential">
-        - When an assertion arrives for a credential your server does not recognise, report it. This carries no user identifier, so it is safe when the user is not authenticated.
-        - Google Password Manager hides rather than deletes, so the credential can be restored if the signal was sent in error. Apple's credential managers may remove or hide it.
+    <Step title="When the server rejects an unknown credential">
+        - Send this signal only when the credential ID is conclusively absent from or no longer accepted by server state. Do not send it for invalid signatures, expired challenges, RP or origin mismatch, cancellation, network failure or other transport and verification errors.
+        - A provider may hide or remove the credential; some providers may later unhide it after a complete accepted-list signal, but do not rely on recoverability or claim that provider action occurred.
     </Step>
-    <Step title="On a successful login: reconcile the full list">
-        - Send the complete set of credential IDs your server accepts for that user. The provider may hide or remove credentials missing from the list and, if it supports restoration, may unhide credentials included again later.
+    <Step title="At an authenticated reconciliation point">
+        - According to a documented schedule, send the complete set of credential IDs your server accepts for that user. Typical points include selected authenticated refreshes and server credential-set changes, subject to platform rate limits.
     </Step>
-    <Step title="After the user deletes a passkey in settings">
-        - Reconcile again from your [passkey management](/passkey-ui-flows/native/passkey-management) screen so the provider can hide or remove the credential immediately, rather than waiting until the user's next login to receive the updated list.
+    <Step title="After a successful credential-set mutation">
+        - After creation or server-side revocation, reconcile the complete server-side list while the user is authenticated, subject to availability, coalescing and rate limits. Revocation never waits for the signal.
     </Step>
     <Step title="After a profile change">
-        - Report the updated account details so the OS account chooser shows current information.
+        - Report only the fields supported by the current platform so enabled credential managers can choose to update them. Do not block the profile change or claim that an update occurred.
     </Step>
 </Steps>
 
@@ -68,6 +69,8 @@ Android permits a maximum of 10 calls in any 120-second window; exceeding it res
 Android explicitly supports sending signals from a background context, within the rate limit. No user presence or user verification is required on any platform.
 </Accordion>
 </AccordionGroup>
+
+<N32AcceptanceCriteria />
 
 ### Further reading
 

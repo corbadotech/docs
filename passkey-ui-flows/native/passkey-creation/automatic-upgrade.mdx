@@ -1,14 +1,16 @@
 ---
 title: "Passkey Creation: Automatic Upgrade (conditional create)"
 sidebarTitle: "Automatic Upgrade"
-description: "Native apps can create a passkey silently after a user signs in with an autofilled password, with no prompt and no extra step. This flow explains the conditions, the platform APIs and what your server must tolerate."
+description: "Conditional passkey creation in a native app after sign-in with an autofilled password, including eligibility, platform APIs and server requirements."
 ---
+
+import N26AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n2-6.mdx";
 
 ## Automatic Passkey Creation in Native Apps (Conditional Create)
 
 When a user signs in to your app with a password supplied by their credential manager, the OS can create a passkey for that account **without showing any UI at all**. There is no sheet, no biometric prompt and no interruption to your app. The credential manager notifies the user afterwards.
 
-This is the same conditional create mechanism as the [web automatic upgrade](/passkey-ui-flows/web/passkey-creation/automatic-upgrade), available to native apps on both platforms. It is the highest-yield creation flow available, because it costs the user nothing.
+This is the same conditional create mechanism as the [web automatic upgrade](/passkey-ui-flows/web/passkey-creation/automatic-upgrade), available to native apps on both platforms. It requires no additional user interaction for eligible users, but provider, platform and password-autofill requirements make it an enhancement rather than a complete enrollment strategy.
 
 <Info>
     **Support (August 2026):** iOS 18+, iPadOS 18+, macOS 15+ and visionOS 2+ via `ASAuthorizationPlatformPublicKeyCredentialProvider`. Android relying parties use `androidx.credentials` **1.6.0** (stable since 8 April 2026); Google Password Manager support requires Google Play services 25.13 or newer. On both platforms, the user's preferred credential manager can participate when it supports conditional registration. Android providers receive these requests through `CredentialProviderEventsService`, whose provider-facing library is separately versioned and may not yet be implemented by every provider.
@@ -17,15 +19,16 @@ This is the same conditional create mechanism as the [web automatic upgrade](/pa
 <Steps>
     <Step title="User signs in with an autofilled password">
         - The user's credential manager fills a saved username and password for your app, and the sign-in succeeds.
+        - The user completes every additional factor required by the account's active sign-in policy. Password-only progress on an MFA account is not enough to bind a credential.
         - This is the hard precondition. Sign-ins that do not use a stored password (magic links, SMS or email OTP, and federated or SSO sign-in) do not qualify.
     </Step>
     <Step title="Your app requests a conditional registration">
-        - Immediately after the successful password sign-in, the app issues a registration request marked as conditional.
+        - Promptly after the complete configured sign-in succeeds, the app issues a registration request marked as conditional while the credential provider's recent autofill context can still apply.
         - On Apple platforms, request `ASAuthorizationPlatformPublicKeyCredentialRegistrationRequest.RequestStyle.conditional`.
         - On Android, set `isConditional = true` on `CreatePublicKeyCredentialRequest` and send it through `CredentialManager.createCredential()`.
     </Step>
     <Step title="The credential manager decides, silently">
-        - The provider checks its own conditions: a matching password was filled recently, the device is set up for passkeys, and no passkey exists yet for this account.
+        - The provider checks its own conditions, such as recent matching-password autofill, passkey readiness and whether it already holds a matching passkey. The relying party cannot infer account-wide credential absence from this result.
         - If an eligibility condition fails, the request returns an expected no-op error and **no UI is shown to the user**. Nothing went wrong; a passkey simply was not created this time.
     </Step>
     <Step title="Passkey created, user informed by the system">
@@ -44,7 +47,7 @@ This is the same conditional create mechanism as the [web automatic upgrade](/pa
 
 <AccordionGroup>
 <Accordion title="Duplicate prevention differs by platform">
-On Android, include every server-known credential ID in `excludeCredentials`. This prevents the selected provider from creating a duplicate of a credential it already holds, and a duplicate surfaces through `InvalidStateError`. On Apple platforms the native registration request has **no** `excludedCredentials` property, so duplicate avoidance is delegated entirely to the credential manager. Do not suppress the conditional request merely because your server knows that the account has another passkey: it may live in a different provider or may not be available on this device. Issue the request after an eligible password login and let the credential manager determine whether it already holds a matching passkey.
+Supply server-known credential IDs through the platform's exclusion mechanism on Android and Apple where supported, and retain server-side credential uniqueness. Exclusion helps the selected provider avoid duplicates it recognizes, but the relying party must not suppress the conditional request merely because another provider may hold a credential. Issue the request after an eligible sign-in and let the active credential manager evaluate its own context.
 </Accordion>
 
 <Accordion title="Android uses the preferred credential provider">
@@ -56,7 +59,7 @@ Credential managers implement `performWithoutUserInteractionIfPossible(passkeyRe
 </Accordion>
 
 <Accordion title="Expected failures should not interrupt the user">
-Do not show a user-facing error when conditional creation is simply ineligible, but do not swallow every exception. On Android, handle `CreateCredentialNoCreateOptionException` as an expected no-op and inspect `CreatePublicKeyCredentialDomException.domError` for expected `InvalidStateError`, `NotAllowedError` and `AbortError` outcomes. Record unsupported, provider-configuration, malformed-request and unexpected failures in telemetry. On Apple platforms, suppress UI for eligibility or cancellation outcomes while logging association, entitlement, request-construction and unexpected failures. Retry expected no-op outcomes on the user's next password sign-in.
+Do not show a user-facing error when conditional creation is simply ineligible, but do not swallow every exception. On Android, handle `CreateCredentialNoCreateOptionException` as the explicit no-op outcome. Preserve a `CreatePublicKeyCredentialDomException` as a normalized ambiguous or technical result unless the request context and current platform contract support a more specific stable interpretation; do not assume that every `InvalidStateError`, `NotAllowedError` or `AbortError` means ordinary ineligibility. Record unsupported, provider-configuration, malformed-request and unexpected failures in telemetry. On Apple platforms, suppress UI for documented eligibility or cancellation outcomes while logging association, entitlement, request-construction and unexpected failures. Retry an expected no-op on a later policy-compliant password sign-in.
 </Accordion>
 
 <Accordion title="Users can switch it off">
@@ -67,6 +70,8 @@ Google Password Manager offers a setting that disables automatic passkey creatio
 <Tip>
     Because the passkey is created without the user choosing to create it, keep [passkey management](/passkey-ui-flows/native/passkey-management) easy to find. A user who is surprised by the system notification should be able to see and remove the credential immediately.
 </Tip>
+
+<N26AcceptanceCriteria />
 
 ### Further reading
 

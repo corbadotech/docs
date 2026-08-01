@@ -1,0 +1,21 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | High |
+
+This strategy is applicable when the app can ask the operating system to limit the initial request to credentials that are immediately available. It can be layered with identifier-first or explicit login routes as the non-blocking fallback.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N1.1-AC01** | Core | When an immediately available passkey exists, the signed-out entry screen invokes the operating-system credential selector before the user enters an identifier or an OIDC system webview ceremony starts. | On physical iOS and Android devices with a matching local passkey, cold-start the signed-out app and return to it from the background. Confirm that the selector is invoked before any identifier input or OIDC system webview ceremony. |
+| **N1.1-AC02** | Core | When no immediately available credential exists, the local-only overlay request returns without starting remote or external credential discovery. | Test with no local passkey and with only a remote or external credential. Confirm that the request returns without a cross-device or security-key journey. |
+| **N1.1-AC03** | Core | A result from a passkey ceremony started on an obsolete login screen cannot affect the current screen or session. | Navigate away while the selector is open, then complete or dismiss it. Confirm that the late result is ignored by the current screen and cannot create a session there. |
+| **N1.1-AC04** | Quality | After the automatic ceremony closes, it is triggered again only after the user closes and reopens the login screen or closes and reopens the app, depending on the app architecture. Prompts do not stack, and the app does not create repeated login screens to retrigger the ceremony. | Dismiss the selector, then background and resume the app, repeat lifecycle events and rotate where supported. Confirm that the ceremony does not restart. Close and reopen the login screen or app through the architecture's intended route and confirm that one new ceremony starts without adding repeated screens to the navigation stack. |
+
+### References
+
+- **Relevant criteria:** **N1.1-AC01–AC02:** [Apple: Prefer immediately available credentials](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller/requestoptions/preferimmediatelyavailablecredentials) and [Android: `GetCredentialRequest`](https://developer.android.com/reference/androidx/credentials/GetCredentialRequest) define the immediate-credential preference and remote-discovery boundary.
+- **Relevant criteria:** **N1.1-AC03–AC04:** [Corbado: Testing Passkey Flows in Native Apps](https://www.corbado.com/blog/test-passkeys-native-ios-android-apps) covers lifecycle, cancellation and physical-device acceptance testing.

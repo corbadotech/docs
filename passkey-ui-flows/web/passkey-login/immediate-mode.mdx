@@ -1,28 +1,30 @@
 ---
 title: "Passkey Login: Immediate Mode"
 sidebarTitle: "Immediate Mode"
-description: "Immediate mode shows the passkey account chooser as soon as the login page loads, and stays silent when no credential is available. This flow explains when to use it and how it fails safely."
+description: "Immediate mode can show the passkey account chooser immediately after a sign-in-relevant user gesture and stays silent when no credential is available."
 ---
+
+import W16AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w1-6.mdx";
 
 ## Immediate Mode Login
 
-Immediate mode asks the browser a single question: *do you already hold a credential for this site on this device?* If the answer is yes, the account chooser opens right away, before the user types anything. If the answer is no, the request is rejected silently and your normal login form is what the user sees. Nothing flickers, and no empty prompt is ever shown.
+After a relevant user gesture, immediate mode asks the browser whether it can offer an immediately available credential for this site. If it can, the account chooser opens before the user types an identifier. Otherwise, the request rejects silently and the normal login flow continues.
 
 That silence is the point. Every other login surface has to guess whether a passkey attempt will succeed; immediate mode lets the browser answer, at the cost of being unable to tell you why it said no.
 
 <Info>
-    **Support (August 2026):** Chrome 149+ on Android, ChromeOS, Linux, macOS and Windows. Chrome is currently the only browser that implements it, and the API is not yet part of the WebAuthn specification — it is tracked in [w3c/webauthn#2291](https://github.com/w3c/webauthn/pull/2291), which is still open. Treat it as a progressive enhancement on top of a login flow that already works without it.
+    **Support (August 2026):** Chrome only; feature-detect the `immediateGet` capability rather than relying on a version number. Chrome 148 release notes listed the capability and Chrome 149 announced the broad launch. The API is not yet part of the WebAuthn specification, so treat it as a progressive enhancement on top of a login flow that already works without it.
 </Info>
 
 ### How this differs from the other login flows
 
 | Flow | User action needed | When the UI appears | If no passkey is available | Support |
 | --- | --- | --- | --- | --- |
-| **Immediate mode** | None beyond the gesture that triggers the call | Before any identifier is entered | Rejects silently; your login form is shown | Chrome 149+ only |
+| **Immediate mode** | The sign-in-relevant gesture that triggers the call | Before any identifier is entered | Rejects silently; the normal login flow continues | Chrome only; feature-detect `immediateGet` |
 | [One-Tap](/passkey-ui-flows/web/passkey-login/one-tap) | One tap on the passkey button | After your app decides a passkey is likely | The button is not rendered | Cross-platform |
-| [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) | Focus the identifier field | When the user taps the input | No suggestions appear | Chromium 108+, Safari 16+, Firefox 122+ |
+| [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) | Focus the identifier field | When the user taps the input | No suggestions appear | Supported browser, OS and provider combinations; feature-detect |
 | [Identifier-First](/passkey-ui-flows/web/passkey-login/identifier-first) | Enter an identifier | After the identifier is submitted | Falls back to password | Cross-platform |
-| [Cross-Device via QR](/passkey-ui-flows/web/passkey-login/cross-device-qr) | Scan a QR code with a phone | When a passkey is detected on another device | The option is not offered | Desktop; needs Bluetooth and internet |
+| [Cross-Device via QR](/passkey-ui-flows/web/passkey-login/cross-device-qr) | Scan a QR code with a phone | When the client presents a remote route | The route fails or the user chooses an alternative | Desktop; needs Bluetooth and internet |
 
 Immediate mode and Conditional UI are easy to confuse because both can present a passkey without the user typing a username. The difference is who initiates: Conditional UI waits for the user to focus the input, while immediate mode fires on your call and resolves or rejects at once.
 
@@ -48,7 +50,7 @@ Platform screenshots for this page are in production. Until they land, these rec
       </video>
     </Frame>
 
-    The user clicks something that simply benefits from being signed in — Chrome's example is **Checkout**. Returning customers authenticate without a detour; guests continue unchanged.
+    The user selects an action for which authentication is useful but not mandatory. Chrome uses **Checkout** as an example. Returning customers can authenticate in the current flow, while guests continue without authentication.
   </Tab>
 </Tabs>
 
@@ -57,10 +59,10 @@ Recordings by Google, from [Immediate UI mode for logins](https://developer.chro
 <Steps>
     <Step title="Your app requests an immediate login">
         - On a user gesture (for example a "Sign in" click), the app calls `navigator.credentials.get()` with `uiMode: 'immediate'`.
-        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) decides whether attempting immediate mode is worthwhile for this visitor, so the call is made where it is likely to resolve rather than on every page load.
+        - A readiness layer may choose where to expose this enhancement, but prior credential-likelihood prediction is optional and can create false negatives. The required gates are feature detection, a meaningful gesture and a complete fallback path.
     </Step>
     <Step title="Chrome checks for locally available credentials">
-        - Chrome looks only at credentials it can present without further user action: passkeys held by a passkey provider such as Google Password Manager, Windows Hello or iCloud Keychain, and — when you pass `password: true` — passwords saved in Google Password Manager.
+        - Chrome looks only at credentials it can present without further user action: passkeys held by a passkey provider such as Google Password Manager, Windows Hello or iCloud Keychain, and: when you pass `password: true`: passwords saved in Google Password Manager.
         - Cross-device (QR) and security key options are not offered in this mode.
     </Step>
     <Step title="Credential found: the account chooser opens immediately">
@@ -98,10 +100,10 @@ async function tryImmediateSignIn() {
 }
 ```
 
-Feature-detect with `PublicKeyCredential.getClientCapabilities()` and check the `immediateGet` key. `uiMode` sits alongside `publicKey` on the request options, not inside it, and accepts `"active"` (the default), `"immediate"` or `"passive"`.
+Feature-detect with `PublicKeyCredential.getClientCapabilities()` and check the `immediateGet` key. Set `uiMode: "immediate"` alongside `publicKey`; when `uiMode` is omitted, the request follows its normal mediation behavior.
 
 <Warning>
-    **`NotAllowedError` is deliberately ambiguous.** Chrome returns the same error whether no credential exists, the user dismissed the chooser, the session is incognito, or you sent a non-empty `allowCredentials`. This prevents sites from probing which users hold credentials, and it means you cannot branch on the reason — always fall back to your normal login form. Branch on `error.name` only; the `message` string is not part of the contract.
+    **`NotAllowedError` is deliberately ambiguous.** Chrome returns the same error whether no credential exists, the user dismissed the chooser, the session is incognito, or you sent a non-empty `allowCredentials`. This prevents sites from probing which users hold credentials, and it means you cannot branch on the reason: always fall back to your normal login form. Branch on `error.name` only; the `message` string is not part of the contract.
 </Warning>
 
 ### Constraints to design around
@@ -127,6 +129,8 @@ The `signal` parameter cannot be used to cancel the immediate login dialog once 
 <Note>
     **Migrating from the origin trial:** during the Chrome 139–141 origin trial this feature was requested with `mediation: 'immediate'`. A specification change in November 2025 moved it to the `uiMode` field, and `mediation: 'immediate'` no longer activates it. Replace it with `uiMode: 'immediate'` in the same position. See the [origin trial announcement](https://developer.chrome.com/blog/webauthn-immediate-mediation-ot) for the original shape.
 </Note>
+
+<W16AcceptanceCriteria />
 
 {/* TODO: replace the "See the flow" tabs above with our own ToolingFrame tabs once Figma exports exist, matching sibling pages:
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";

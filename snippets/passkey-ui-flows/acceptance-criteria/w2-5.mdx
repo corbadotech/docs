@@ -1,0 +1,30 @@
+## Acceptance criteria
+
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Conditional | Mid |
+
+<Note>
+    A web authentication exception is not proof that a passkey was deleted or
+    is permanently broken. This flow creates an additional usable credential;
+    the relying party does not silently revoke older server records or infer
+    provider-side replacement from a successful client ceremony.
+</Note>
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W2.5-AC01** | Core | A cancelled or failed passkey attempt can indicate that the expected passkey is not available on the current client, for example after a device or credential-provider change. Offer creation only after the user successfully signs in with fallback and the current client is ready to create a passkey. | Cancel or fail a passkey attempt on a client without the expected passkey, then complete fallback and confirm that creation is offered. Repeat with unsuccessful fallback and with a client that cannot create a passkey; the offer does not appear. |
+| **W2.5-AC02** | Core | The prompt describes the outcome as adding a passkey for future sign-in on the current environment, not repairing or replacing an existing credential. | Review the rendered recovery prompt. It describes an additional credential and makes no repair or replacement claim. |
+| **W2.5-AC03** | Core | Successful creation does not silently revoke an older server credential; any server-side invalidation remains a separately authorized, risk-based action. | Create an additional passkey while an older credential remains usable elsewhere. Confirm both server records remain bound until a separate invalidation action succeeds. |
+| **W2.5-AC04** | Core | After verified creation, recovery eligibility is recomputed from current state without marking an older credential repaired, replaced, or revoked. | Complete creation and repeat the recovery decision. Confirm routing uses current state and makes no unsupported claim about an older credential. |
+| **W2.5-AC05** | Core | The additional passkey is stored for the authenticated account and can complete a later passkey sign-in to that same account. | Complete the recovery creation flow, sign out and use the additional passkey to sign in again. The assertion resolves to the same account. |
+
+### References
+
+- **Relevant criteria:** **W2.5-AC01–AC02 and W2.5-AC04–AC05**: [How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers recovery eligibility after fallback, additional-passkey messaging, successful creation and state-aware re-evaluation.
+- **Relevant criteria:** **W2.5-AC01–AC02**: [Ultimate WebAuthn errors in production guide](https://www.corbado.com/blog/webauthn-errors) covers requiring context beyond ambiguous browser exceptions and avoiding unsupported repair or replacement claims.
+- **Relevant criteria:** **W2.5-AC01**: [Passkey fallback and recovery](https://www.corbado.com/blog/passkey-fallback-recovery) covers triggering recovery-oriented creation only after policy-valid fallback and evidence of an access problem.
+- **Relevant criteria:** **W2.5-AC02–AC05**: [Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) covers adding rather than replacing passkeys, preserving multiple credentials and later use of the added credential.
+- **Relevant criteria:** **W2.5-AC03**: [NIST SP 800-63B: Authenticator event management](https://pages.nist.gov/800-63-4/sp800-63b/events/) covers permitting multiple authenticators and requiring separately authorized, risk-based invalidation.

@@ -1,0 +1,24 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | Mid |
+
+The expected impact depends on the trigger. A completed reauthorization or security-related transaction shows clear user intent. A passive dashboard banner does not provide the same context and should not be benchmarked as equivalent.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N2.5-AC01** | Core | Show this nudge only after a named user action, such as reauthorization or a security-related task, completes successfully. An arbitrary button click, page view or permanent banner is not the same trigger. | Exercise every configured trigger plus nearby failed, cancelled and unrelated actions. Only the named, successfully completed actions show the nudge. |
+| **N2.5-AC02** | Core | The nudge explains how creating a passkey improves a future sign-in. | Review every message variant. Each explains the future sign-in benefit before the user accepts. |
+| **N2.5-AC03** | Core | Bind registration to the account authenticated when the ceremony starts and reject the response if that account changes before completion. After successful verification, store the credential for that account and confirm that it can complete a later sign-in. | Start creation, then switch accounts, sign out or supersede the session before returning the response. No changed or stale account context registers a credential. Complete a valid creation, sign out and confirm that the new passkey signs in to the same account. |
+| **N2.5-AC04** | Core | Provide accept and skip controls and start the platform registration ceremony only after the user chooses accept. | Exercise accept, skip, dismiss and back actions. Accept starts one ceremony; every other action leaves the completed task usable without opening a system credential sheet. |
+
+### References
+
+- **Relevant criteria:** **N2.5-AC01–AC02 and N2.5-AC04:** [Native apps: Passkeys vs. local biometrics](https://www.corbado.com/blog/passkeys-local-biometrics) distinguishes high-intent post-transaction prompting from post-unlock and passive-banner strategies.
+- **Relevant criteria:** **N2.5-AC01 and N2.5-AC04:** [How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers trigger-aware creation and explicit post-action nudges.
+- **Relevant criteria:** **N2.5-AC02 and N2.5-AC04:** [Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) identifies completed reauthorization and account-related moments as appropriate creation opportunities.
+- **Relevant criteria:** **N2.5-AC03–AC04:** [Create a passkey on Android](https://developer.android.com/identity/passkeys/create-passkeys) defines user-mediated creation and account-bound request data.
+- **Relevant criterion:** **N2.5-AC03:** [Web Authentication: An API for accessing Public Key Credentials: Level 3](https://www.w3.org/TR/webauthn-3/) defines account and relying-party binding.

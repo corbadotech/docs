@@ -1,0 +1,35 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Enhancement | Mid |
+
+<Note>
+    Conditional Create is a progressive automatic upgrade, not a complete
+    enrollment strategy. Its whole-audience reach is limited by client and
+    credential-provider support, recent use of a saved password, and user
+    settings. It runs only after all authentication required by the relying
+    party's sign-in policy has completed; a second factor is not universally
+    required.
+</Note>
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W2.1-AC01** | Core | The implementation checks WebAuthn support and confirms `getClientCapabilities().conditionalCreate` before requesting a conditional registration. Browser version or user-agent matching is not the sole capability signal. | Test a supporting client, a client without `getClientCapabilities()`, and a client that does not report `conditionalCreate`. Only the supporting client may start the request, and all three complete sign-in normally. |
+| **W2.1-AC02** | Core | Conditional Create is requested immediately after a successful password sign-in for the same authenticated account and only after the relying party's configured sign-in requirements have completed. | Test saved-password autofill, manual password entry, unsuccessful sign-in, federated or link-based sign-in, and accounts with and without policy-required MFA. Only an eligible recent saved-password use can result in automatic creation, and no path bypasses configured verification. |
+| **W2.1-AC03** | Core | Any outstanding WebAuthn operation is aborted before at most one `navigator.credentials.create()` request with `mediation: "conditional"` is started for the completed sign-in. | Begin Conditional UI authentication, finish the password route, and inspect WebAuthn calls. Confirm the earlier request is aborted and no duplicate conditional registration request is issued. |
+| **W2.1-AC04** | Core | Registration options are generated for the authenticated account and include a fresh server challenge, the expected RP ID, a stable non-PII user handle, appropriate credential parameters, and known credential IDs in `excludeCredentials`. | Generate options twice for each of two authenticated accounts and inspect them before client use. Challenges differ, account and user-handle values match the active session, and every server-known account credential appears in `excludeCredentials`. |
+| **W2.1-AC05** | Core | A conditional registration accepted without user presence or user verification where the platform permits it does not weaken verification rules for later authentication ceremonies. | Complete the conditional registration cases, then perform an assertion that requires user verification. The later assertion must still enforce that requirement. |
+| **W2.1-AC06** | Core | The stored credential can authenticate the same account later. | Complete an automatic upgrade and use the credential on a later sign-in to the same account. |
+| **W2.1-AC07** | Quality | Expected no-op errors such as `NotAllowedError`, `InvalidStateError`, and `AbortError` produce no application error and do not interrupt the signed-in journey. | Force each expected exception. Confirm the user reaches the signed-in destination without false success, a blocking error or a prompt loop. |
+| **W2.1-AC08** | Quality | If the client creates a credential but server registration fails, the implementation records the mismatch for credential-state reconciliation. | Reject the response after client creation. Confirm the mismatch remains diagnosable and retryable. |
+
+### References
+
+- **Relevant criteria:** **W2.1-AC02 and W2.1-AC07–AC08:** [Conditional Create for passkeys](https://www.corbado.com/blog/conditional-create-passkeys) covers provider eligibility, expected silent results and client/server reconciliation.
+- **Relevant criteria:** **W2.1-AC01–AC03 and W2.1-AC05–AC08:** [Help users adopt passkeys more seamlessly](https://developer.chrome.com/docs/identity/webauthn-conditional-create) covers capability detection, immediate post-password timing, aborting an outstanding conditional request, conditional UP and UV semantics, graceful exceptions and server-registration failure.
+- **Relevant criteria:** **W2.1-AC02 and W2.1-AC05–AC08:** [Streamline sign-in with passkey upgrades and credential managers](https://developer.apple.com/videos/play/wwdc2024/10125/) covers account matching, provider-controlled eligibility, progressive-enhancement behavior, non-interrupting failure and reconciliation after server failure.
+- **Relevant criteria:** **W2.1-AC01 and W2.1-AC03–AC06:** [Web Authentication: Level 3](https://www.w3.org/TR/webauthn-3/) covers Conditional Create capability and mediation semantics, request cancellation, registration options, conditional UP and UV handling, and later authentication with the stored credential.
+- **Relevant criteria:** **W2.1-AC04, W2.1-AC06 and W2.1-AC08:** [Server-side passkey registration](https://developers.google.com/identity/passkeys/developer-guides/server-registration) covers account-bound options, duplicate prevention, future authentication data, and rejected registration handling.

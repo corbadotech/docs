@@ -1,0 +1,32 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Supporting capability | Low |
+
+Low expected adoption impact does not mean low reliability importance. Signalling does not itself create or promote passkeys, but it reduces stale credential choices and repeated post-verification failures across login and management flows.
+
+The Signal API is intentionally privacy-preserving and opportunistic. Acceptance can verify the relying party's trigger, payload and error handling, but must never require confirmation that a credential provider updated, hid or removed a passkey.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| `W3.2-AC01` | Core | Each signal method is capability-detected and used as progressive enhancement; lack of support does not break login, profile updates or passkey management. | Run every trigger path with the relevant method present and absent; the main operation succeeds in both cases. |
+| `W3.2-AC02` | Core | `signalUnknownCredential` is invoked only after the server conclusively rejects an assertion because its credential ID is unknown. | Test an unknown credential, invalid signature, expired challenge, network error and user cancellation; only the confirmed unknown-credential case emits the signal. |
+| `W3.2-AC03` | Core | Confirmed server-side deletion or revocation triggers authenticated full-list reconciliation on a supporting client. | Revoke a credential in an authenticated session and inspect the client call; one full-list reconciliation is invoked after the server update. |
+| `W3.2-AC04` | Core | The full-list assembly path prevents partial or accidentally empty snapshots; an empty list is sent only when server state confirms that the user has no accepted credentials. | Simulate partial data, pagination failure, timeout and a legitimate zero-credential account; only the confirmed zero-credential state emits an empty list. |
+| `W3.2-AC05` | Core | Completion, rejection or absence of a signal never gates successful authentication, server revocation or profile updates. | Resolve, reject, omit and delay each signal; the main operation reaches the same final state in every case. |
+| `W3.2-AC06` | Core | A documented authenticated refresh schedule invokes full-list reconciliation at its selected convergence points. | Run the selected trigger, such as successful sign-in, across two due intervals and one interval where it is not due; calls follow the documented schedule. |
+| `W3.2-AC07` | Core | Every signal carries the expected RP ID, and every user handle or credential ID field is valid Base64URL for the binary value stored by the server. | Capture each signal, decode every encoded field and compare it with the server record; use a wrong RP ID and malformed encoding as negative controls. |
+| `W3.2-AC08` | Core | A resolved signal confirms only that its options were well formed. It does not prove that a provider updated, hid or removed a credential. | Resolve each method in a test fixture without changing provider state. No security record or user-facing message should claim that the provider acted. |
+| `W3.2-AC09` | Core | An unauthenticated unknown-credential signal contains only the attempted credential ID and RP ID, without a user handle or accepted-credential list. | Capture the signal after a confirmed unknown-credential rejection; its payload contains exactly the method's required fields. |
+| `W3.2-AC10` | Core | Every full-list reconciliation carries the correct opaque WebAuthn user handle and complete server credential set for that account. | Compare captured payloads with server records for zero, one and several credentials; the decoded handle and credential set match exactly. |
+| `W3.2-AC11` | Quality | An confirmed username or display-name change triggers `signalCurrentUserDetails` with the current account details on a supporting client. | Change each field independently and together; the resulting signal contains the current server values for that account. |
+| `W3.2-AC12` | Quality | Updating passkey display metadata through signalling does not create or replace a server credential record. | Change account display details and compare credential records before and after the signal; credential IDs and binding records are unchanged. |
+
+### References
+
+-   **Relevant criteria:** **W3.2-AC01–AC12**: [Web Authentication Level 3: Signal Credential Changes to the Authenticator](https://www.w3.org/TR/webauthn-3/#sctn-signal-methods) defines method inputs, privacy semantics, complete-list safety, opportunistic behavior and the meaning of a resolved promise.
+-   **Relevant criteria:** **W3.2-AC01–AC09 and W3.2-AC11–AC12**: [Chrome for Developers: Keep passkeys consistent with credentials on your server](https://developer.chrome.com/docs/identity/webauthn-signal-api) supports capability checks, lifecycle triggers, payload construction, metadata updates and warnings against incomplete lists.
+-   **Relevant criteria:** **W3.2-AC02–AC12**: [Corbado: WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) supports stale-credential and metadata use cases, authenticator availability, non-blocking integration and privacy-preserving provider uncertainty.

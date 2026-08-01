@@ -1,0 +1,22 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | High |
+
+Identifier-first has a High expected adoption impact only when automatic passkey prompts are selective and the fallback remains predictable.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W1.3-AC01** | Core | After explicit identifier submission, the implementation starts a passkey route only when account, credential and client evidence predicts that route is usable. | Run a matrix covering a known local credential, a remote-only credential, no credential, an unsupported client and an unknown account; confirm the selected route matches the available evidence. |
+| **W1.3-AC02** | Core | The authentication request does not exclude any active account credential that the current client could reach. | Inspect request options for accounts with multiple active credentials and providers; confirm every active, reachable credential descriptor is present. |
+| **W1.3-AC03** | Core | Explicitly choose whether identifier-first login prioritizes account-enumeration protection or more helpful account-specific guidance. Enumeration-protected flows keep application-controlled text, status, response shape, timing and routing aligned across active, disabled, unknown and passkey-enabled identifiers. Guidance-focused flows may intentionally reveal selected differences, but must protect the lookup against automated probing with bot protection, rate limits or an equivalent control. | Record the chosen approach and test every account state. For enumeration protection, confirm that no application-controlled difference reveals the state. For guidance-focused login, confirm that only the intended differences appear and that repeated automated lookups activate the configured abuse protection. |
+| **W1.3-AC04** | Quality | Include stored transport hints for each account-scoped credential descriptor when those hints are available. | Register credentials with different recorded transports and inspect the generated request options. Each descriptor should retain its stored transport values. |
+
+### References
+
+- **Relevant criteria:** **W1.3-AC02 and W1.3-AC04:** [W3C Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/) recommends including all account credentials and available transports for an identified user.
+- **Relevant criteria:** **W1.3-AC03:** [W3C Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/) documents username-enumeration and credential-ID privacy risks and distinguishes mitigable lookup responses from residual credential-routing signals.
+- **Relevant criteria:** **W1.3-AC01 and W1.3-AC03:** [Corbado: How to get high passkey adoption in login flows](https://www.corbado.com/blog/passkey-login-best-practices) supports selective identifier-first routing and limiting repeated account probing. Its adoption figures provide context, not acceptance thresholds.

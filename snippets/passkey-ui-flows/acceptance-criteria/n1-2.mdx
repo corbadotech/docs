@@ -1,0 +1,22 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Enhancement | Mid |
+
+**Platform-dependent:** Assess this enhancement only where the operating system, credential service and app UI technology support field-linked credential suggestions. Current Android guidance documents this experience for Android 15+ and `View` objects; implementations using other UI technologies should be assessed against the current platform capability rather than assumed to qualify.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N1.2-AC01** | Core | On a supported surface, focusing the configured sign-in field allows the operating system to offer a matching passkey through its credential suggestions. | On iOS, focus an appropriately annotated field with an assisted authorization request active. On supported Android targets, focus a field linked to the credential request. Confirm that an available passkey can be selected from the OS-provided suggestion UI. |
+| **N1.2-AC02** | Core | The assisted request is ready before the user can interact with the field, so the first focus does not miss credential suggestions because initialization is late. | Delay the challenge and request setup, then try to use the field as soon as the screen opens. Repeat from several cold starts and confirm that the request is ready before the field can be used. |
+| **N1.2-AC03** | Core | A pending assisted request cannot alter authentication state after its login screen is no longer current. | Start another authentication route, submit the identifier, navigate away and complete fallback login while the assisted request is pending. Confirm that a late response cannot change the resulting account or session. |
+| **N1.2-AC04** | Core | The app does not render or infer its own list of credentials stored on the device. | Compare first-party UI before and after field focus. Confirm that credential identities are presented only by the operating-system credential service. |
+| **N1.2-AC05** | Core | An unsupported environment or a field with no matching credential does not display an empty passkey error owned by the app. | Exercise every unsupported target in scope and a supported target without a matching passkey. Confirm that the app remains on its ordinary sign-in surface without a passkey failure message. |
+
+### References
+
+- **Relevant criteria:** **N1.2-AC01–AC02 and N1.2-AC04–AC05:** [Apple: Supporting passkeys](https://developer.apple.com/documentation/authenticationservices/supporting-passkeys) and [Android: Integrate Credential Manager with autofill](https://developer.android.com/identity/autofill/credential-manager-autofill) cover field-linked suggestions, provider-controlled presentation and Android's current `View` applicability boundary.
+- **Relevant criteria:** **N1.2-AC02–AC03:** [Apple: AutoFill-assisted authorization requests](https://developer.apple.com/documentation/authenticationservices/authorizationcontroller/performautofillassistedrequest%28_%3A%29) and [Android: `PendingGetCredentialRequest`](https://developer.android.com/reference/androidx/credentials/PendingGetCredentialRequest) cover assisted-request lifecycle and Android's success-only pending callback.

@@ -227,7 +227,9 @@
                     {
                         "group": "Overview",
                         "pages": [
-                            "passkey-ui-flows/overview"
+                            "passkey-ui-flows/overview",
+                            "passkey-ui-flows/benchmarking",
+                            "passkey-ui-flows/readiness-and-targeting"
                         ]
                     },
                     {
@@ -248,11 +250,13 @@
                                 "group": "Passkey Creation",
                                 "pages": [
                                     "passkey-ui-flows/web/passkey-creation/automatic-upgrade",
+                                    "passkey-ui-flows/web/sign-up",
                                     "passkey-ui-flows/web/passkey-creation/non-mfa",
                                     "passkey-ui-flows/web/passkey-creation/mfa",
                                     "passkey-ui-flows/web/passkey-creation/after-hybrid",
                                     "passkey-ui-flows/web/passkey-creation/after-error",
-                                    "passkey-ui-flows/web/passkey-creation/on-2nd-device"
+                                    "passkey-ui-flows/web/passkey-creation/on-2nd-device",
+                                    "passkey-ui-flows/web/passkey-creation/cancellation"
                                 ]
                             },
                             {

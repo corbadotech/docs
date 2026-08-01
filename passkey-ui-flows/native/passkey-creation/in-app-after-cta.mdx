@@ -1,21 +1,20 @@
 ---
-title: "Passkey Creation: In-App After CTA"
-sidebarTitle: "In-App After CTA"
-description: "This flow shows the In-App Nudge appearing after user actions or CTAs. This approach avoids double biometric prompts and allows flexible, context-aware passkey adoption."
+title: "Passkey Creation: In-App After Key Action"
+sidebarTitle: "In-App After Key Action"
+description: "In-app passkey prompt after a named, completed user action, with timing that avoids consecutive prompts."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import N25AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n2-5.mdx";
 
-## In-App Nudge: After CTA or User Action
+## In-App Nudge After a Key Action
 
-Use an In-App Nudge triggered by CTAs or user actions to prompt users to add a passkey at convenient moments. This approach avoids the double biometric prompt issue (unlock + passkey creation) and allows for intelligent, context-aware passkey adoption.
+Use an in-app nudge after a named, completed action to offer passkey creation at a stable, low-disruption moment. Separating it from app unlock avoids immediately stacking prompts, although the selected action may itself have required verification.
 
-<Info>
-    **When to Use In-App Nudges:** In-App Nudges are particularly valuable for apps where users stay logged in for extended periods (e.g., banking, insurance, social apps). Since these apps don't have frequent login events, the passkey append opportunity happens within the session rather than at login time. Users may authenticate with [local biometrics](https://www.corbado.com/blog/passkeys-local-biometrics) to unlock the app, then see the In-App Nudge to create a passkey for improved future authentication security.
-</Info>
+Use this nudge when users stay signed in for long periods and rarely see the login flow.
 
 <Tip>
-    **Avoiding Double Biometric Prompts:** Unlike the "After Unlock" approach, triggering the In-App Nudge after CTAs or user actions prevents two consecutive biometric prompts (unlock biometric + passkey creation biometric). This creates a smoother, less disruptive user experience while still driving passkey adoption. You can trigger on any CTA, in-app messaging, or post-transaction moment.
+    **Choose a meaningful trigger:** Prefer a completed reauthorization, security-related task or transaction whose result is already visible. Do not treat arbitrary CTA clicks, page views, passive banners or unresolved transactions as equivalent key-action triggers.
 </Tip>
 
 <Tabs>
@@ -33,38 +32,29 @@ Use an In-App Nudge triggered by CTAs or user actions to prompt users to add a p
   </Tab>
 </Tabs>
 
-<Info>
-    **Flow Diagram Note:** The dashed arrows in the flow diagram indicate alternative paths for passkey append - the In-App Nudge can appear at different points based on user actions.
-</Info>
-
 <Steps>
     <Step title="App unlock via local biometric">
         - User unlocks the app using local biometrics (e.g., Touch ID, Face ID).
         - User is authenticated within the app session.
     </Step>
     <Step title="User interacts with app (CTAs, actions)">
-        - User navigates the app, clicks CTAs, completes transactions, or performs other actions.
-        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) monitors in the background, analyzing if the user would benefit from passkey creation.
+        - User completes one of the documented actions configured as a qualifying trigger.
     </Step>
-    <Step title="In-App Nudge appears at optimal moment">
-        - At a low-friction moment (after CTA click, post-transaction, during in-app messaging), the In-App Nudge appears.
-        - **Smart display logic:** [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) ensures the nudge only shows if:
-          - User doesn't already have a passkey on this ecosystem/OS
-          - Device is passkey-ready (has screen lock/PIN configured)
-          - Context is appropriate for successful passkey creation
-        - This avoids the double biometric prompt issue and prevents unnecessary interruptions.
+    <Step title="In-App Nudge appears after the selected action">
+        - After the named action completes successfully, the app may show the nudge.
+        - Readiness and nudge frequency follow the shared targeting policy.
     </Step>
     <Step title="User engages with nudge">
         - User sees concise messaging about passkey benefits (faster, more secure logins).
         - User can accept to create passkey or skip to continue using the app.
     </Step>
     <Step title="Passkey creation (if accepted)">
-        - If user accepts, OS-native biometric modal appears for passkey creation.
-        - User authenticates via biometrics and successfully creates a passkey.
+        - If the user accepts, the system passkey-creation sheet appears.
+        - The user authorizes creation with a platform-supported device-unlock method.
     </Step>
     <Step title="Continue to app dashboard">
         - User proceeds to app dashboard with or without creating a passkey.
-        - If skipped, nudge may appear again at another optimal moment (determined by [Passkey Intelligence](/corbado-connect/features/passkey-intelligence)).
+        - If skipped, the nudge may appear again after another eligible action, subject to the configured cooldown and frequency policy.
     </Step>
 
 </Steps>
@@ -73,3 +63,5 @@ Use an In-App Nudge triggered by CTAs or user actions to prompt users to add a p
     Keep the nudge short, avoid blocking flows, and offer a clear skip so users
     remain in control.
 </Tip>
+
+<N25AcceptanceCriteria />

@@ -1,0 +1,29 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Supporting capability | Low |
+
+Native signalling does not create or promote passkeys. It reduces stale credential choices after server credential state changes. A signal request is best effort and never proves that a credential provider changed anything.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| `N3.2-AC01` | Core | Native signal APIs are checked at runtime and used as an enhancement, so an unsupported OS or library version does not break login, profile updates or passkey management. | Run these operations with the relevant API available and unavailable. Each operation reaches the same result without a crash or unsupported call. |
+| `N3.2-AC02` | Core | Send an unknown-credential signal only when the presented credential ID is conclusively absent from server records. A credential known to the server but revoked uses full-list reconciliation. Account restrictions, invalid signatures, expired challenges, cancellation and network failures do not trigger the unknown-credential signal. | Test an absent credential ID, known revoked credential, restricted account, invalid signature, expired challenge, network error and cancellation. Only the absent ID emits the unknown-credential signal; revocation uses full-list reconciliation. |
+| `N3.2-AC03` | Core | Successful credential creation or revocation and the documented authenticated refresh point schedule full-list reconciliation using the latest server state. Equivalent pending work is coalesced, while failed or unauthenticated paths do not schedule it. | Complete successful and failed creation, revocation and the configured refresh path. Confirm that successful authenticated triggers retain one latest reconciliation and other paths add no work. |
+| `N3.2-AC04` | Core | The full-list assembly path prevents partial or accidentally empty snapshots. An empty accepted list is sent only when server state confirms that the authenticated user has no accepted credentials. | Simulate partial data, pagination failure, timeout, stale cache and a legitimate zero-credential account; only the confirmed zero-credential state emits an empty list. |
+| `N3.2-AC05` | Core | Android signal calls stay within ten calls in any 120-second window. A rate-limited request is either dropped or retried no earlier than `retryMillis` using current server state. | Generate more than ten eligible triggers in 120 seconds and force `SignalCredentialRateLimitExceededException`. Confirm the limit, then test dropping and delayed retry; no retry is early or replays stale data. |
+| `N3.2-AC06` | Core | Use the supported native signal interface: `ASCredentialDataManager` on Apple 26.2 or later, the legacy `ASCredentialUpdater` only on 26.0–26.1, and `CredentialManager.signalCredentialState()` with a compatible AndroidX Credentials version on Android. | Run the supported Apple and Android matrix and inspect the selected adapter and request type. Each platform uses its current supported interface. |
+| `N3.2-AC07` | Core | Every native signal carries the RP ID configured for the credential. | Capture all signal types for each configured RP and compare the RP ID with the credential record. No origin, host alias or unrelated RP ID is substituted. |
+| `N3.2-AC08` | Core | An accepted signal request is never treated as proof that a credential provider updated, hid, removed or restored a credential. | Make the platform accept a request while the test provider takes no action. No product message or server state claims a provider-side result. |
+| `N3.2-AC09` | Core | WebAuthn user handles and credential IDs use the exact current server values in the platform-required representation; a product account ID is not substituted for the WebAuthn user handle. | Compare captured Apple `Data` arguments and Android JSON/Base64URL values with the server's user-handle and credential records for zero, one and several credentials. |
+| `N3.2-AC10` | Quality | After a confirmed account-name change, the metadata signal contains the current fields supported by that platform and does not create, replace or revoke a credential. | Change name and display-name fields independently, inspect Apple and Android requests and compare credential inventory before and after. The supported current values are sent and the credential set is unchanged. |
+
+### References
+
+- **Relevant criteria:** `N3.2-AC02`–`N3.2-AC04`, `N3.2-AC07`–`N3.2-AC10`: [Web Authentication Level 3: Signal Credential Changes to the Authenticator](https://www.w3.org/TR/webauthn-3/#sctn-signal-methods) defines trigger-specific inputs, complete-list safety, metadata semantics and best-effort provider behavior.
+- **Relevant criteria:** `N3.2-AC01`–`N3.2-AC07`, `N3.2-AC09`: [Android Developers: Keep credentials consistent with credential providers](https://developer.android.com/identity/credential-manager/signal-api-rp) defines native availability, request types, payloads, the ten-call rolling limit and testing; [SignalCredentialRateLimitExceededException](https://developer.android.com/reference/androidx/credentials/exceptions/publickeycredential/SignalCredentialRateLimitExceededException) defines `retryMillis`.
+- **Relevant criteria:** `N3.2-AC01`, `N3.2-AC03`, `N3.2-AC06`–`N3.2-AC10`: [Apple Developer: ASCredentialDataManager](https://developer.apple.com/documentation/authenticationservices/ascredentialdatamanager) defines the current interface, supported reports and result semantics; [ASCredentialUpdater](https://developer.apple.com/documentation/authenticationservices/ascredentialupdater) documents the deprecated 26.0–26.1 interface.
+- **Relevant criteria:** `N3.2-AC03`–`N3.2-AC04`, `N3.2-AC08`: [Corbado: WebAuthn Signal API](https://www.corbado.com/blog/webauthn-signal-api) provides implementation experience for reconciliation timing, complete-list safety and provider uncertainty.

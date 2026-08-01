@@ -1,0 +1,26 @@
+## Acceptance criteria
+
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | High |
+
+<Note>
+    “Non-MFA” describes the account's existing sign-in policy. It does not make
+    an email, SMS, or other additional verification step universally required.
+    If the relying party's binding policy requires step-up verification, that
+    verification must succeed before the new credential is accepted.
+</Note>
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W2.2-AC01** | Core | The creation offer is eligible only after successful conventional sign-in on a supported client when the account has no registered passkey. | Test an eligible account, an account with an existing passkey, an unauthenticated request, and an unsupported client. Only the eligible account receives the offer. |
+| **W2.2-AC02** | Core | After an eligible sign-in, show a manual creation nudge that explains how a passkey improves the next sign-in. The creation ceremony opens after the user clicks Continue. | Complete an eligible sign-in. Confirm that the manual nudge explains the future sign-in benefit and that one creation ceremony opens only after Continue is clicked. |
+| **W2.2-AC03** | Core | The created passkey is stored for the authenticated account and can complete a later passkey sign-in to that same account. | Complete creation, sign out and use the new passkey to sign in again. The assertion resolves to the same account. |
+| **W2.2-AC04** | Quality | On suitable clients, open one passkey-creation ceremony automatically after the eligible sign-in. If it is cancelled or fails, show the manual creation nudge without an application error and wait for the user to click Continue before retrying. | Confirm that one ceremony opens automatically on a suitable client. Cancel or fail it, then confirm that the manual nudge appears without an error and no ceremony reopens until Continue is clicked. |
+
+### References
+
+- **Relevant criteria:** **W2.2-AC01–AC04**: [How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers first-passkey eligibility, manual and automatic post-sign-in creation, and successful enrollment.
+- **Relevant criteria:** **W2.2-AC01–AC03**: [Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) covers offering passkey creation after sign-in, explaining its future sign-in benefit and using the created passkey later.

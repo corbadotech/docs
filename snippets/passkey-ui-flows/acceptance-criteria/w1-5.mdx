@@ -1,0 +1,25 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Baseline | Mid |
+
+This baseline covers cancellation and failures around WebAuthn. It does not repeat ordinary identifier or password validation.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W1.5-AC01** | Core | In automatic identifier-first login, cancelling the first passkey ceremony is not shown as an error. Show a calm explanation with an explicit retry action, and do not reopen the ceremony until the user chooses it. After the second consecutive cancellation, stop starting passkey login automatically and move directly to the configured fallback. A successful login resets the cancellation count. | Cancel the automatic ceremony once. Confirm that no error appears and that the ceremony stays closed until retry is selected. Cancel the retried ceremony and confirm that fallback opens without another automatic prompt. Complete a login and confirm that the next cancellation is treated as the first again. |
+| **W1.5-AC02** | Core | When the user explicitly starts login with a passkey button, cancellation returns to the unchanged login page without an error or forced fallback. The passkey button and other login methods remain available. | Start the ceremony from the explicit button and cancel it on the first and repeated attempts. No error or automatic redirect appears, and every login option remains usable. |
+| **W1.5-AC03** | Core | If the account or passkey lookup fails because of a timeout, network problem or server error, do not treat the result as “no account” or “no passkey” and do not start a passkey ceremony from incomplete data. Show a temporary service error with retry and the available fallback. | Fail each lookup dependency before route selection. Confirm that no account or credential conclusion is shown and no passkey request starts. Retry performs a fresh lookup, while fallback does not reuse the incomplete result as account or passkey truth. |
+| **W1.5-AC04** | Core | When the server no longer accepts the selected credential, explain that this passkey can no longer sign in and offer “Try another passkey” plus fallback. If the credential ID is conclusively unknown, call `signalUnknownCredential` on supporting browsers. After verified fallback, the user can create a replacement passkey. | Attempt login with a credential deleted through settings and with an unknown credential ID. Confirm the message and both next actions. Only the conclusively unknown ID emits the signal, and verified fallback can reach passkey replacement. |
+| **W1.5-AC05** | Core | A valid passkey assertion does not bypass the current account status. Closed, deleted, disabled, inactive, locked or restricted accounts do not receive a session and follow the configured account-status or recovery route. | Submit a valid assertion for every account state. Only an account currently allowed to sign in receives a session. |
+| **W1.5-AC06** | Quality | Use a specific error only when the application knows the cause. Invalid request options, RP ID or origin configuration and server verification failures can have separate internal states. An ambiguous browser rejection must not be described as a missing passkey, failed biometric or another guessed cause. | Trigger each application-controlled failure and an ambiguous browser rejection. Confirm that known problems remain distinguishable and the ambiguous result uses neutral cancellation or unavailable handling. |
+
+### References
+
+- **Relevant criteria:** **W1.5-AC03–AC06:** [W3C Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/) defines request exceptions, server-side assertion verification and `signalUnknownCredential`.
+- **Relevant criteria:** **W1.5-AC01–AC03:** [Corbado: Passkey fallback and recovery](https://www.corbado.com/blog/passkey-fallback-recovery) distinguishes automatic identifier-first login from an explicit passkey button and supports different handling for the first and second abort.
+- **Relevant criteria:** **W1.5-AC03–AC04 and W1.5-AC06:** [Corbado: Passkey troubleshooting](https://www.corbado.com/blog/passkey-troubleshooting-solutions) supports separating routing failures, ambiguous platform results and stale-credential replacement.
+- **Relevant criteria:** **W1.5-AC04:** [Chrome for Developers: Keep passkeys consistent with credentials on your server](https://developer.chrome.com/docs/identity/webauthn-signal-api) documents the confirmed unknown-credential trigger for `signalUnknownCredential`.

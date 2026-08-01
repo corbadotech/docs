@@ -1,20 +1,21 @@
 ---
 title: "Passkey Creation: Automatic Password to Passkey Upgrade (conditional create)"
 sidebarTitle: "Automatic Upgrade"
-description: "This flow explains the automatic passkey creation feature that browsers provide when the user used autofill to log in with a password from a password manager."
+description: "Conditional passkey creation after browser sign-in with a password supplied by the user's credential manager."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W21AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-1.mdx";
 
 <Info>
-    **Support (August 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It only triggers when the password was filled by the user's credential manager, and only when no passkey exists yet for the account.
+    **Support (August 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It requires a recent password-manager fill; the active credential provider decides whether its internal conditions are met, while the relying party supplies known credential IDs to prevent avoidable duplicates.
 </Info>
 
 ## Automatic Passkey Creation after Login (Conditional Create)
 
 Users logging in via a browser follow a standard login flow enriched by automatic passkey creation via Conditional Create after successfully using a password manager to autofill their password.
 
-**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** works in the background to enable this feature, ensuring automatic passkey creation only happens when conditions are optimal for success.
+**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** is one implementation of the eligibility logic. Automatic creation is attempted only when the required conditions are met.
 
 <Tabs>
   <Tab title="macOS">
@@ -42,28 +43,29 @@ Users logging in via a browser follow a standard login flow enriched by automati
 </Tab>
 </Tabs>
 <Info>
-    NOTE: The blue background indicates product-native steps (e.g., verification
-    code). Passkey creation is seamlessly embedded in your
-    product journey.
+    The blue background indicates product-specific steps, such as a verification
+    code. Passkey creation occurs within the same application flow.
 </Info>
 
 <Steps>
   <Step title="Login with password autofill">
     - User logs in with their password, which is then autofilled by e.g. Apple Passwords / Google Password Manager. 
   </Step>
-  <Step title="Biometric confirmation for password auto-fill">
-    - User confirms their identity with a biometric method (like Face ID or Touch ID)
+  <Step title="Credential manager authorizes password autofill where required">
+    - The active credential manager may require a supported device-unlock method before filling the saved password; the exact modality and whether a prompt appears are platform-dependent.
   </Step>
-  <Step title="Provide second factor">
-    - User is asked to authenticate with a second factor (e.g. SMS OTP).
+  <Step title="Complete configured sign-in verification">
+    - The user completes any additional verification required by the relying party's sign-in policy. This step is omitted when no additional factor is required.
   </Step>
   <Step title="Automatic passkey creation">
-    - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) determines conditions are optimal for automatic passkey creation.
-    - The passkey is created in the background via conditional create (`navigator.credentials.create({ mediation: 'conditional' })`), given that the user has successfully authenticated with the second factor and no passkey exists yet.
-    - Passkey is successfully created and the user is notified by the browser or operating system.
+    - After the configured sign-in has completed, the application promptly requests Conditional Create (`navigator.credentials.create({ mediation: 'conditional' })`). The credential provider decides whether the request is eligible and can silently decline it.
+    - If the provider returns a credential and the server verifies and stores it, creation succeeds and provider or operating-system feedback may appear.
+    - If the provider silently declines or returns no credential, sign-in continues without a success state; the normal explicit enrollment route remains available.
   </Step>
   <Step title="Redirection to app dashboard">
     - User is redirected to the app dashboard.
   </Step>
 
 </Steps>
+
+<W21AcceptanceCriteria />

@@ -1,0 +1,19 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Conditional | Mid |
+
+Cross-device authentication extends passkey coverage, but its prerequisites and higher interaction cost make it a conditional route rather than a universal default.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W1.4-AC01** | Core | When registration returns transport hints for a credential, store them and include the same set in its account-scoped `allowCredentials` descriptor. In particular, retaining `hybrid` lets the browser recognize that the credential may be reached through a phone or QR route. Do not remove or replace recorded transports with guessed values. | Register credentials that report `internal`, `hybrid`, `usb` or other transports. Compare the stored values with each authentication request and confirm that every descriptor retains the same set. On a supporting client, a descriptor containing `hybrid` can offer the phone or QR route. |
+| **W1.4-AC02** | Quality | When the entered account and current client make cross-device authentication very likely, prepare the user before starting WebAuthn. For example, on Windows, an account whose recorded credentials only indicate `hybrid` mobile routes can be asked whether they want to sign in with their phone. Show the QR route only after the user confirms, where the browser allows this flow to be delayed. | Submit an account whose recorded transports strongly indicate a phone route and another account with a likely local credential. Only the first receives the phone preparation step. No WebAuthn prompt or QR appears before confirmation, and declining leaves another login route available. |
+
+### References
+
+- **Relevant criteria:** **W1.4-AC01:** [W3C Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/) defines the `hybrid` transport and recommends retaining known transports in credential descriptors.
+- **Relevant criteria:** **W1.4-AC01–AC02:** [Corbado: WebAuthn passkey QR codes and Bluetooth](https://www.corbado.com/blog/webauthn-passkey-qr-code) supports transport-aware cross-device routing and preparing users for the phone route. Its benchmark ranges are not acceptance thresholds.

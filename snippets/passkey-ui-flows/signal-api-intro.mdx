@@ -1,5 +1,3 @@
-Your server and the user's credential manager hold two separate lists of passkeys, and nothing keeps them aligned automatically. When they drift, the user pays for it: a passkey your server no longer accepts is still offered in the account chooser, the user selects it, authenticates with Face ID or a fingerprint, and *then* the login fails.
+Your server and the user's credential manager hold separate passkey records, and they are not synchronized automatically. If they differ, the account chooser may offer a passkey that the server no longer accepts. The user can complete device authorization before the login fails. The stale entry may also remain available on later attempts until the credential manager updates it.
 
-That is the worst failure shape in passkey UX, because everything felt successful right up to the moment it did not. The entry also persists, so the same failure repeats on every attempt until the user digs into their credential manager settings.
-
-Signalling closes that gap. It is not a UI flow, but it decides whether several of the flows in this section succeed, and it belongs in every production integration.
+Where the platform and credential provider support it, signalling can reduce that gap. It is a progressive, best-effort lifecycle capability rather than a UI flow or authoritative source of truth; unsupported integrations must continue to work without it.

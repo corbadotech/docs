@@ -1,0 +1,26 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Enhancement | Mid |
+
+Automatic upgrade removes the explicit enrollment step for eligible users. Password autofill, platform and credential-provider requirements limit where it applies. It complements rather than replaces explicit creation paths.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N2.6-AC01** | Core | Issue no conditional registration request until the account's complete sign-in policy, including required MFA, has succeeded. | Test password-only progress, failed or expired second-factor, completed MFA and lower-assurance recovery. Only the completed policy-compliant sign-in can proceed to registration. |
+| **N2.6-AC02** | Core | Mark the registration request with the platform's conditional or automatic-registration mode. | Inspect the native request for every supported target. A request without the conditional mode fails this criterion even if a provider happens to create a credential without visible UI. |
+| **N2.6-AC03** | Core | Generate creation options for the account that completed sign-in; do not reuse an earlier account context merely because the provider still recognizes it. | Switch from one authenticated account to another while the provider retains both, then inspect the conditional creation options. The account and opaque user-handle context matches only the account that completed the current sign-in. |
+| **N2.6-AC04** | Core | Send server-known credential IDs through every duplicate-prevention input exposed by the target platform. | Inspect conditional requests for an account with known credentials on every supported target. Each available exclusion input contains the expected credential IDs. |
+| **N2.6-AC05** | Core | Send one conditional request promptly after complete sign-in and let the platform and credential provider decide whether the recent password-autofill context qualifies. Expected ineligibility or no-create results remain silent, and another automatic attempt waits for a later qualifying sign-in. A separate manual creation nudge may still be shown. | Compare matching autofill, manual entry and mismatched stored-account sign-in. Return an expected no-create result and keep using the current session. No user-facing error or automatic retry appears, and a later qualifying sign-in can issue one new request. |
+| **N2.6-AC06** | Core | Reject the registration response if logout, account switching or a superseding login makes its transaction context stale. | Delay the response while performing each context change. No stale response changes any account's credential list. |
+
+### References
+
+- **Relevant criteria:** **N2.6-AC03–AC04 and N2.6-AC06:** [Web Authentication: An API for accessing Public Key Credentials: Level 3](https://www.w3.org/TR/webauthn-3/) defines account and relying-party binding, duplicate-prevention inputs and current ceremony context.
+- **Relevant criteria:** **N2.6-AC01:** [NIST SP 800-63B authenticator binding](https://pages.nist.gov/800-63-4/sp800-63b/events/#binding-an-additional-authenticator) supports requiring the configured server-session assurance before adding an authenticator. WebAuthn itself does not generally require prior authentication.
+- **Relevant criteria:** **N2.6-AC02 and N2.6-AC05–AC06:** [Streamline sign-in with passkey upgrades and credential managers](https://developer.apple.com/videos/play/wwdc2024/10125/) describes matching autofill context, conditional native requests, silent no-op behavior, later retry and the relationship to explicit enrollment on Apple platforms.
+- **Relevant criteria:** **N2.6-AC02–AC06:** [Create a passkey on Android](https://developer.android.com/identity/passkeys/create-passkeys) defines conditional native creation, request data, duplicate controls, response handling, provider notifications and failures on Android.
+- **Relevant criteria:** **N2.6-AC02 and N2.6-AC05–AC06:** [Help users adopt passkeys more seamlessly](https://developer.chrome.com/docs/identity/webauthn-conditional-create) documents conditional-create timing, silent behavior, verification caveats and retry behavior; it is implementation guidance aligned with the WebAuthn specification.

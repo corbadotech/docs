@@ -1,30 +1,27 @@
 ---
 title: "Passkey Creation: After Passkey Login Error"
 sidebarTitle: "After Error"
-description: "This flow details how a user appends a new passkey after they faced an error when logging in with an existing passkey (autohealing)."
+description: "Passkey creation after a failed passkey attempt and policy-compliant fallback."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import N23AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n2-3.mdx";
 
-## Passkey Creation after Login Error (Autohealing)
+## Passkey Creation after Login Error
 
-When users experience errors during passkey login, the system intelligently falls back to traditional authentication and then offers to create a new passkey to replace the broken one. This **autohealing** mechanism ensures users can quickly recover access.
+After a passkey attempt fails, an approved fallback can restore access and create an opportunity to add another usable passkey. The failed attempt does not prove the older credential is broken on every device or provider.
 
 ### Common Scenarios Leading to Passkey Login Errors
 
 Passkey login errors can occur in several situations:
 
 - **Locally deleted passkeys**: The user has deleted their passkey from their device or password manager
-- **Different cloud account**: The user is logged into a similar device they've used before, but it's now connected to a different iCloud account (or different Google account on Android)
+- **Different cloud account**: The user is using a familiar device that is now connected to a different iCloud account or, on Android, a different Google account
 - **Logged-out password manager**: The user has signed out of their password manager that stored the passkey
 
-### How Passkey Intelligence Enables Auto-Healing
+### How Readiness Logic Supports Recovery
 
-**[Passkey Intelligence](/corbado-connect/features/passkey-intelligence)** monitors the authentication flow and detects when passkey login fails repeatedly. After the user successfully authenticates via traditional methods, it automatically suggests creating a new passkey to heal the broken authentication state. This smart system helps identify underlying account or device synchronization issues while ensuring users can quickly recover access.
-
-<Tip>
-    This autohealing mechanism is part of a broader [passkey fallback and recovery strategy](https://www.corbado.com/blog/passkey-fallback-recovery). Learn more about designing resilient authentication systems that handle passkey errors gracefully while maintaining security.
-</Tip>
+A cancellation or failure can indicate that the expected passkey is unavailable on this client, for example after a device or credential-provider change. It does not prove that the passkey is broken everywhere.
 
 <Tabs>
 <Tab title="iOS">
@@ -44,45 +41,33 @@ Passkey login errors can occur in several situations:
   </Tab>
 </Tabs>
 
-<Info>
-    **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
-</Info>
 <Steps>
     <Step title="User enters identifier">
         - User enters their identifier (email/username) on the login page.
         - System now knows which user account is attempting to log in.
     </Step>
-    <Step title="Passkey Intelligence detects existing passkey">
-        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) analyzes the user's passkey availability.
-        - It detects the user has a passkey registered and automatically initiates passkey login.
+    <Step title="System routes an account with registered passkeys">
+        - Server state shows one or more registered passkeys and the routing layer estimates that a passkey attempt is appropriate.
     </Step>
     <Step title="Passkey login errors occur">
-        - User encounters one or more passkey login errors.
-        - Common causes: deleted passkey, different cloud account, logged-out password manager.
-        - System recognizes repeated login failures.
+        - The user cancels or the passkey attempt fails.
+        - Common causes include a deleted passkey, device change, different cloud account or logged-out password manager.
     </Step>
-    <Step title="Fallback to traditional login method">
-        - After multiple failed passkey login attempts, system falls back to traditional login method (username + password).
-        - User successfully logs in using their password.
+    <Step title="Complete approved fallback or recovery">
+        - After the declared passkey retry policy is exhausted, the user completes the relying party's approved fallback or recovery for the same account, including every factor required by account policy.
     </Step>
-    <Step title="Autohealing: Passkey append initiates">
-        - [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) detects the broken passkey situation and triggers autohealing.
-        - User is offered an option to create a new passkey to replace the broken one.
+    <Step title="Additional passkey creation is offered">
+        - After policy-compliant fallback, the user can add another usable passkey for future sign-ins.
+        - Older server credentials remain accepted unless separately revoked. Provider-side storage may retain or replace a local passkey and must not be guessed.
     </Step>
-    <Step title="OS-native biometric modal appears">
-        - User continues to set up a new passkey using fingerprint, face, or PIN for secure sign-in.
+    <Step title="System passkey-creation sheet appears">
+        - The platform asks the user to authorize creation with a supported device-unlock method.
     </Step>
-    <Step title="Passkey creation successful (healing complete)">
-        - User successfully creates a new passkey, replacing the broken one.
-        - The account is now healed with a working passkey.
-    </Step>
-     <Step title="App PIN setup">
-        - After successful passkey creation, the user is signed in and is asked
-        to set up PIN.
-    </Step>
-    <Step title="Enable local biometric for app login">
-        - User is allowed to enable/disable local biometric app login (provided
-        as product feature).
+    <Step title="Additional passkey creation succeeds">
+        - The relying party verifies and adds the new credential without claiming the older credential was repaired or removed.
+        - The additional passkey can complete a later sign-in to the same account from this client.
     </Step>
 
 </Steps>
+
+<N23AcceptanceCriteria />

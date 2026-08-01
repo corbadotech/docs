@@ -1,32 +1,29 @@
 ---
 title: "Passkey Login: Conditional UI"
 sidebarTitle: "Conditional UI"
-description: "Usernameless login flow where the OS automatically presents available passkeys, determining user identity only after selection."
+description: "Usernameless login flow in which the operating system offers eligible passkeys and the relying party resolves the account after selection."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import N12AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n1-2.mdx";
 
 ## Conditional UI Flow (Usernameless Login)
 
-The Conditional UI flow is triggered by the OS as soon as the app requests it, without the user entering their username first. This is a **usernameless login flow**. On iOS, passkeys appear on the keyboard's suggestion bar. The system presents the available passkeys for the app, and determines the user's identity after they select and authenticate with their passkey.
+The Conditional UI flow starts without the user entering their username first. This is a **usernameless login flow**. The platform may offer an eligible subset of credentials selected by the operating system and active providers, for example through iOS QuickType or Android inline or drop-down suggestions. The account is resolved from the selected credential and verified assertion.
 
 <Note>
-    **Platform support (August 2026):** iOS and iPadOS 16+ via `performAutoFillAssistedRequests()` (not available to native macOS apps), and Android 15+ via `PendingGetCredentialRequest` in `androidx.credentials` 1.5.0+, which surfaces credentials in keyboard inline and drop-down suggestions. The Android implementation is currently `View`-based only, so Compose UIs are not yet covered — the screens below show the iOS experience.
+    **Platform support (August 2026):** iOS and iPadOS 16+ via `performAutoFillAssistedRequests()` (not available to native macOS apps), and Android 15+ via `PendingGetCredentialRequest` in `androidx.credentials` 1.5.0+, which surfaces credentials in keyboard inline and drop-down suggestions. The Android implementation is currently `View`-based only, so Compose UIs are not yet covered: the screens below show the iOS experience.
 </Note>
 
 <Info>
-    **Key Technical Detail:** The system doesn't know which user is logging in until AFTER they select their passkey. This usernameless approach enables the seamless experience where all available passkeys are shown upfront.
+    **Account resolution:** The app does not know which user is signing in until the user selects a passkey. The operating system and active credential providers decide which eligible credentials appear in the suggestion surface.
 </Info>
 
-<Tabs>
-    <Tab title="iOS">
-        <ToolingFrame
-            imageURL="/images/authentication-flow/native-app/autosuggested-passkeys-ios-native.webp"
-            caption="Native: iOS Conditional UI flow"
-            imageName="autosuggested-passkeys-ios-native.webp"
-        />
-    </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/native-app/autosuggested-passkeys-ios-native.webp"
+    caption="Native: iOS Conditional UI flow"
+    imageName="autosuggested-passkeys-ios-native.webp"
+/>
 
 <Info>
     **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
@@ -34,16 +31,16 @@ The Conditional UI flow is triggered by the OS as soon as the app requests it, w
 
 <Steps>
     <Step title="Conditional UI automatically triggered">
-        - When the user taps on the email field, the OS presents Conditional UI, displaying the passkeys available for the app on the keyboard's suggestion bar.
-        - Note: This is usernameless - the system doesn't yet know which user is trying to log in.
+        - When the user taps the email field, the platform may offer eligible credentials through its suggestion surface.
+        - This is usernameless. The app does not yet know which account is signing in.
     </Step>
      <Step title="Authenticate using the selected passkey">
         - The user taps their passkey from the available options on the keyboard, which identifies them to the system.
         - Upon selection, the system now knows which user account is attempting to authenticate.
     </Step>
-     <Step title="Device verifies user">
-        - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
-        - After successful verification, the system completes the login for the identified user account.
+     <Step title="Authorize credential and verify assertion">
+        - The platform returns an assertion after authorization with a supported device-unlock method.
+        - The app sends the assertion to the relying party, and the user is signed in only after server verification succeeds.
     </Step>
      <Step title="App PIN setup">
         - After successful passkey authentication, the user is signed in and is asked
@@ -57,5 +54,7 @@ The Conditional UI flow is triggered by the OS as soon as the app requests it, w
 </Steps>
 
 <Warning>
-    **Conditional UI is only as accurate as your credential list.** It offers whatever the credential manager holds, including passkeys your server has already deleted or no longer accepts. The user picks one, authenticates successfully, and only then does the login fail. Keep the two lists aligned with the [WebAuthn Signal API](/passkey-ui-flows/native/signal-api).
+    **The server still decides whether login succeeds.** An active provider may surface an eligible credential the server no longer accepts, so device authorization does not guarantee login. Supported [WebAuthn Signal API](/passkey-ui-flows/native/signal-api) reconciliation can reduce this mismatch but cannot prove what a provider stores or changes.
 </Warning>
+
+<N12AcceptanceCriteria />

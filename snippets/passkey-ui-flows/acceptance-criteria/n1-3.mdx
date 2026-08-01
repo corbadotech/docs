@@ -1,0 +1,22 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | High |
+
+The strategy applies where the product collects an identifier before authentication. The automatic route checks for an immediately available account passkey. Cross-device and security-key login are optional explicit routes.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N1.3-AC01** | Core | After identifier submission, the app automatically starts an account-scoped request that prefers immediately available credentials. For a known account, `allowCredentials` contains every active passkey accepted for that account. | Test an account with multiple active passkeys. Confirm that the server returns every accepted credential in `allowCredentials` and that the request starts without a separate passkey action. |
+| **N1.3-AC02** | Core | If no immediately available credential is returned, the automatic request ends without starting a QR-code or security-key journey and the user can continue with fallback. | Test with no credential available from the current device or provider, including an account whose only passkey requires another device or security key. Confirm that the automatic request does not open either route and that fallback remains available. |
+| **N1.3-AC03** | Core | Explicitly choose whether identifier-first login prioritizes account-enumeration protection or more helpful account-specific guidance. Enumeration-protected flows keep app-controlled text, status, response shape, timing and routing aligned across active, disabled, unknown and passkey-enabled identifiers. Guidance-focused flows may reveal selected differences, but protect repeated lookup with bot protection, rate limits or an equivalent control. | Record the chosen approach and test every account state. For enumeration protection, confirm that app-controlled behavior does not reveal the state. For guidance-focused login, confirm that only the intended differences appear and repeated automated lookups activate the configured protection. |
+| **N1.3-AC04** | Quality | If the product supports cross-device or security-key login, an explicit **Use another device or security key** action starts a new account-scoped request without `preferImmediatelyAvailableCredentials`. The request retains the stored transport hints so the operating system can offer the supported route. | Test with an account whose matching credential is available only through hybrid transport and with one available through a supported security key. Confirm that the automatic request ends first, the explicit action starts one new request, and the operating system offers the applicable route on each supported platform. |
+
+### References
+
+- **Relevant criteria:** **N1.3-AC01–AC02:** [Apple: Prefer immediately available credentials](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller/requestoptions/preferimmediatelyavailablecredentials), [Android: `GetCredentialRequest`](https://developer.android.com/reference/androidx/credentials/GetCredentialRequest) and [Corbado: Passkey Fallback & Recovery](https://www.corbado.com/blog/passkey-fallback-recovery) cover immediate-credential requests and direct fallback.
+- **Relevant criterion:** **N1.3-AC03:** [Web Authentication Level 3 privacy considerations](https://www.w3.org/TR/webauthn-3/#sctn-privacy-considerations) supports minimizing account and credential-state disclosure.
+- **Relevant criterion:** **N1.3-AC04:** [Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialdescriptor-transports) defines credential transport hints used by the client when selecting an authenticator route.

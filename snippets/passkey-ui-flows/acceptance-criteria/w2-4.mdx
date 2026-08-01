@@ -1,0 +1,23 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Conditional | Mid |
+
+This flow turns a completed cross-device sign-in into future passkey coverage on the requesting environment. Its impact is high for these users, but they are only part of the total signed-in population.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **W2.4-AC01** | Core | The flow is used only in a fresh session after successful authentication through a route that deliberately offered cross-device authentication. Account passkey count, a desktop user agent, supported transports or request hints are not enough by themselves. Do not claim that hybrid transport was used unless the client or provider reports it. | Compare the dedicated cross-device route with local passkey sign-in, security-key sign-in, conventional fallback and an older authenticated session. Only the fresh dedicated route is eligible. If transport is not reported, describe hybrid use as likely rather than proven. |
+| **W2.4-AC02** | Core | After cross-device authentication, the creation request targets a platform authenticator on the current client, using the `client-device` hint and `authenticatorAttachment: "platform"` where supported. The created passkey can complete the next sign-in from that environment without another QR scan. | Inspect the creation options and confirm that the current platform is targeted instead of another QR or security-key route. Complete creation, sign out and confirm that the next sign-in from the same environment succeeds without the phone. |
+| **W2.4-AC03** | Quality | The offer is shown only when the current environment is ready to create a passkey. The registration options include all known account credentials in `excludeCredentials`. If the credential provider reports that a matching credential already exists, the signed-in journey continues without an error or another creation prompt. | Test a passkey-ready and an unsupported environment. Inspect `excludeCredentials`, then repeat the flow with a matching credential already available to the provider. Confirm that no duplicate is stored and the existing-credential outcome continues without an error or prompt loop. |
+
+### References
+
+- **Relevant criteria:** **W2.4-AC01–AC03:** [How to get high passkey adoption in creation flows](https://www.corbado.com/blog/passkey-creation-best-practices) covers post-cross-device creation eligibility, readiness and duplicate handling.
+- **Relevant criteria:** **W2.4-AC01–AC02:** [WebAuthn passkey QR codes and Bluetooth](https://www.corbado.com/blog/webauthn-passkey-qr-code) covers cross-device route context and the goal of avoiding repeated cross-device use.
+- **Relevant criteria:** **W2.4-AC02–AC03:** [Create a passkey for passwordless logins](https://web.dev/articles/passkey-registration) covers later use, client-device targeting and `excludeCredentials`.
+- **Relevant criteria:** **W2.4-AC02–AC03:** [Synced Passkey Deployment: Emerging Practices](https://fidoalliance.org/wp-content/uploads/2024/05/Synced-Passkey-Deployment_-Emerging-Practices-for-Consumer-Use-Cases_2024-May-31.pdf) covers registering for the current platform and authenticator selection.
+- **Relevant criteria:** **W2.4-AC01–AC02:** [Web Authentication: Level 3](https://www.w3.org/TR/webauthn-3/) covers the limits of transport and attachment signals, later authentication, client-device hints and authenticator selection.

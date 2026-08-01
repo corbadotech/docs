@@ -1,0 +1,32 @@
+---
+title: "Passkey Creation: Cancellation"
+sidebarTitle: "Creation Cancellation"
+description: "Retry and continuation behavior when a user cancels passkey creation."
+---
+
+import W28AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-8.mdx";
+
+## Cancellation During Passkey Creation
+
+The baseline is a manual post-login nudge that explains why creating a passkey helps. Automatically opening the creation ceremony can improve adoption, but cancellation must return the user to a calm manual choice.
+
+<Steps>
+    <Step title="Manual creation nudge is available">
+        - After an eligible login, the nudge explains how a passkey improves the next sign-in.
+        - The user can click Continue to start creation or continue without a passkey.
+    </Step>
+    <Step title="Creation starts">
+        - In the core flow, the ceremony opens after the user clicks Continue.
+        - A quality implementation can open one ceremony automatically before showing the manual nudge.
+    </Step>
+    <Step title="The user cancels the ceremony">
+        - The application shows the manual nudge without an error, so the user can read the explanation before deciding again.
+        - The ceremony remains closed until the user clicks Continue.
+    </Step>
+    <Step title="The user retries or continues">
+        - Clicking Continue starts one new creation ceremony.
+        - After the configured attempt limit, the application stops offering creation and continues without a passkey or an error.
+    </Step>
+</Steps>
+
+<W28AcceptanceCriteria />

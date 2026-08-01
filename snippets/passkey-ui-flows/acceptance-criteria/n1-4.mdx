@@ -1,0 +1,23 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Baseline | Mid |
+
+This baseline covers cancellation, unavailable credentials and server-side login failures across native passkey routes.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N1.4-AC01** | Core | When the app starts passkey login automatically, the first cancellation returns to the login screen without an error and offers an explicit retry. Do not reopen the ceremony until the user chooses retry. After the second consecutive cancellation, stop automatic passkey prompts and show the configured fallback. A successful login resets the cancellation count. | Cancel the first automatic ceremony and confirm that retry is available without another prompt opening. Cancel the retried ceremony and confirm that fallback appears. Complete a login and confirm that the next cancellation is treated as the first. |
+| **N1.4-AC02** | Core | When the user starts login from the normal passkey button, outside the retry offered after an automatic attempt, cancellation returns to the unchanged login screen without an error or forced fallback. | Start a passkey ceremony from the normal passkey button and cancel it repeatedly. The passkey button and other login methods remain available, and no automatic redirect occurs. |
+| **N1.4-AC03** | Core | A lookup timeout, network problem or server error is not treated as proof that the account or passkey does not exist. Do not start a passkey ceremony from incomplete lookup data; offer a fresh retry and the available fallback. | Fail each lookup dependency before route selection. Confirm that no account or credential conclusion is shown, no passkey request starts, and retry performs a fresh lookup. |
+| **N1.4-AC04** | Core | When the server no longer accepts the selected credential, explain that this passkey can no longer sign in and offer another passkey plus fallback. Send an unknown-credential signal only when the credential ID is conclusively absent from server records. A credential known to the server but revoked through account settings uses full-list reconciliation instead. | Attempt login with a credential revoked through settings and with a credential ID absent from server records. Confirm the message and both next actions. Only the absent ID emits the unknown-credential signal; revocation uses full-list reconciliation. |
+| **N1.4-AC05** | Core | A valid passkey assertion does not bypass the current account status. Closed, deleted, disabled, inactive, locked or restricted accounts do not receive a session and follow the configured account-status or recovery route. | Submit a valid assertion for every account state. Only an account currently allowed to sign in receives a session. |
+
+### References
+
+- **Relevant criteria:** **N1.4-AC01–AC03:** [Apple: Authorization error codes](https://developer.apple.com/documentation/authenticationservices/asauthorizationerror-swift.struct/code), [Android: Credential retrieval exceptions](https://developer.android.com/reference/androidx/credentials/exceptions/GetCredentialException) and [Android: `PendingGetCredentialRequest`](https://developer.android.com/reference/androidx/credentials/PendingGetCredentialRequest) cover native cancellation, request failures and assisted-request results.
+- **Relevant criteria:** **N1.4-AC01–AC04:** [Corbado: Passkey fallback and recovery](https://www.corbado.com/blog/passkey-fallback-recovery) covers cancellation, retry, fallback and stale credentials.
+- **Relevant criterion:** **N1.4-AC04:** [Android Developers: Keep credentials consistent with credential providers](https://developer.android.com/identity/credential-manager/signal-api-rp) covers the unknown-credential signal after server rejection.

@@ -1,52 +1,24 @@
 ---
 title: "Passkey Creation: After Login of MFA Account (post-login nudge)"
 sidebarTitle: "After Login: MFA Account"
-description: "This flow explains how users append a passkey to a MFA account."
+description: "Web flow for offering passkey creation after the user completes the account's MFA sign-in policy."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W23AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-3.mdx";
 
 ## Passkey Creation for MFA User Accounts
 
 MFA users logging in via desktop and mobile browsers follow a standard login flow where they are offered the option to append a passkey.
 
-<Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/mfa-append-macos.webp"
-        caption="macOS passkey append, MFA accounts"
-        imageName="mfa-append-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/mfa-append-windows.webp"
-        caption="Windows passkey append, MFA accounts"
-        imageName="mfa-append-windows.webp"
-    />
-</Tab>
-
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/mfa-append-ios.webp"
-        caption="iOS passkey append, MFA accounts"
-        imageName="mfa-append-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/mfa-append-android.webp"
-        caption="Android passkey append, MFA accounts"
-        imageName="mfa-append-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/mfa-append-macos.webp"
+    caption="Representative web passkey creation flow for an MFA account shown on macOS"
+    imageName="mfa-append-macos.webp"
+/>
 <Info>
-    NOTE: The blue background indicates product-native steps (e.g., verification
-    code). Passkey creation is seamlessly embedded in your
-    product journey.
+    The blue background indicates product-specific steps, such as a verification
+    code. Passkey creation occurs within the same application flow.
 </Info>
 
 <Steps>
@@ -56,14 +28,15 @@ MFA users logging in via desktop and mobile browsers follow a standard login flo
     <Step title="Fallback to traditional login method">
         - If no passkey exists for the account, the system falls back to the traditional login method (username and password).
     </Step>
-    <Step title="System prompts for user verification">
-        - After successful password authentication, the user is prompted to verify their account via a code sent through email or SMS.
+    <Step title="Complete configured additional-factor challenge">
+        - After the first sign-in step, the user completes every additional factor required by the account's active policy. The benchmark does not prescribe email, SMS, an authenticator app, push, a security key or another specific factor.
     </Step>
     <Step title="Passkey append process initiates">
-        - Once the system verifies user identity, the user is offered an option to create a passkey for future logins.
+        - Once MFA succeeds, the application shows a manual creation nudge that explains the future sign-in benefit.
+        - A quality implementation can first open one creation ceremony automatically. If the user cancels it, the manual nudge appears without an error and waits for the user to click Continue before trying again.
     </Step>
-    <Step title="OS-native biometric modal appears">
-        - User chooses and continues to set up a passkey using fingerprint, face, or PIN for secure sign-in.
+    <Step title="System passkey-creation sheet appears">
+        - User authorizes creation with a platform-supported device-unlock method.
     </Step>
     <Step title="Passkey creation successful">
         - User successfully creates a passkey and it is now linked with the user account for the respective web-app.
@@ -73,3 +46,5 @@ MFA users logging in via desktop and mobile browsers follow a standard login flo
     </Step>
 
 </Steps>
+
+<W23AcceptanceCriteria />

@@ -1,0 +1,21 @@
+## Acceptance criteria
+
+
+| Benchmark as | Expected adoption impact |
+| --- | --- |
+| Strategy | Mid |
+
+This strategy reaches users who stay signed in and therefore rarely complete a full login. It can, however, add a second device-verification interaction directly after local app unlock.
+
+
+| ID | Level | Acceptance criterion | How to verify |
+| --- | --- | --- | --- |
+| **N2.4-AC01** | Core | Evaluate the flow only after local app unlock has completed and the authenticated session is stable. | Exercise successful, cancelled and failed unlocks plus rapid background and foreground transitions. The nudge becomes eligible only after successful unlock in a stable foreground state. |
+| **N2.4-AC02** | Core | Start the platform registration ceremony only after the user accepts a dismissible in-app nudge. | Exercise accept, dismiss and back actions. Acceptance starts one ceremony; every dismissal path leaves the unlocked app usable without opening a system credential sheet. |
+| **N2.4-AC03** | Core | Bind registration to the account authenticated when the ceremony starts and reject the response if that account changes before completion. After successful verification, store the credential for that account and confirm that it can complete a later sign-in. | Start creation, then switch accounts, sign out or supersede the session before returning the response. No changed or stale account context registers a credential. Complete a valid creation, sign out and confirm that the new passkey signs in to the same account. |
+
+### References
+
+- **Relevant criterion:** **N2.4-AC01:** [Native apps: Passkeys vs. local biometrics](https://www.corbado.com/blog/passkeys-local-biometrics) distinguishes local app unlock from remote authentication and covers post-unlock prompting.
+- **Relevant criterion:** **N2.4-AC02:** [Passkeys user journeys](https://developers.google.com/identity/passkeys/ux/user-journeys) supports an explicit, dismissible user decision before passkey creation.
+- **Relevant criterion:** **N2.4-AC03:** [Web Authentication: An API for accessing Public Key Credentials: Level 3](https://www.w3.org/TR/webauthn-3/) defines account and relying-party binding.

@@ -1,106 +1,53 @@
 ---
 title: "Passkey Management"
-description: "This flow describes how users can manage their passkeys within the account settings section. Passkey management allows users to register, delete, and troubleshoot passkeys."
+description: "Web account settings for listing, adding and revoking server-registered passkeys."
 ---
 
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
+import W31AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w3-1.mdx";
 
 ## Create, Manage or Delete Passkeys via Passkey List Component
 
-Passkey management lets users view and remove the passkeys saved on their devices. It ensures users stay in control of which passkeys exist for an account and gives them the option to revoke a passkey if a device is lost or no longer in use.
+Passkey management lets users view and revoke passkeys registered to their account. The server-side list shows which credentials the relying party accepts. Provider-side copies may remain until the credential provider acts on best-effort reconciliation.
 
 ### General Passkey Management
 
-<Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/general-passkey-management-macos.webp"
-        caption="macOS passkey management flow"
-        imageName="general-passkey-management-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/general-passkey-management-windows.webp"
-        caption="Windows passkey management flow"
-        imageName="general-passkey-management-windows.webp"
-    />
-</Tab>
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/general-passkey-management-ios.webp"
-        caption="iOS passkey management flow"
-        imageName="general-passkey-management-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/general-passkey-management-android.webp"
-        caption="Android passkey management flow"
-        imageName="general-passkey-management-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/general-passkey-management-macos.webp"
+    caption="Representative web passkey management flow shown on macOS"
+    imageName="general-passkey-management-macos.webp"
+/>
 
 <Steps>
     <Step title="General Passkey Settings in Profile Section">
         - Users can see all the passkeys created for the current account here.
-        - Users can initiate passkey registration for new devices.
-        - Users can delete or update existing credentials.
+        - Each entry shows the authenticator or passkey-provider name resolved from the AAGUID stored during registration. If no trusted mapping exists, the entry uses a neutral name instead of guessing.
+        - Users can initiate passkey registration in the current browser through its active credential provider.
+        - Users can revoke an existing credential and, where supported, edit an RP-side friendly label. The cryptographic credential itself is not updated.
     </Step>
     <Step title="When no Passkey is created for the User Account">
         - When the user has no passkey created, the passkey list is shown empty.
     </Step>
     <Step title="Passkey Delete Modal">
-        - User can simply delete existing passkeys from the list shown by
-        clicking on the "X" icon on the top right corner of any passkey listed.
+        - Provide a clearly named revoke or remove action associated with the selected passkey.
         - This action is not reversible, so the user is again asked for
         confirmation on deletion of passkey. 
-        - This permanently deletes the credential's public key from your server, which revokes it for future authentication. Also send a [Signal API](/passkey-ui-flows/web/signal-api) request so the credential manager can hide or remove its stale client-side copy.
+        - Revoke the credential in server state so every later assertion from it is rejected. Then send best-effort [Signal API](/passkey-ui-flows/web/signal-api) reconciliation so the credential manager can hide or remove its stale client-side copy.
         - User has the possibility to create a new one.
     </Step>
 </Steps>
 
 <Warning>
-    **Server deletion completes the security revocation, but not the UX cleanup.** The stale passkey may keep appearing in [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) and the account chooser until the credential manager acts on a signal. The user then selects a passkey they just deleted, authenticates successfully, and the login fails — which makes this settings screen look broken. Call `signalAllAcceptedCredentials` from the delete action, but treat signalling as best-effort because providers may hide, remove or ignore the credential. See the [WebAuthn Signal API](/passkey-ui-flows/web/signal-api).
+    **Server revocation completes the security action, but not the credential-manager cleanup.** The stale passkey may keep appearing in [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) and the account chooser until the credential manager acts on a signal. The user can select the stale passkey and complete device authorization, but the server rejects the assertion and login fails. This can make the settings screen appear broken. Call `signalAllAcceptedCredentials` from the revoke action, but treat signalling as best-effort because providers may hide, remove or ignore the credential. See the [WebAuthn Signal API](/passkey-ui-flows/web/signal-api).
 </Warning>
 
 ### Passkey List Error States
 
-<Tabs>
-  <Tab title="macOS">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/desktop/passkey-list-errors-macos.webp"
-        caption="macOS passkey list error states"
-        imageName="passkey-list-errors-macos.webp"
-    />
-  </Tab>
-
-<Tab title="Windows">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/desktop/passkey-list-errors-windows.webp"
-        caption="Windows passkey list error states"
-        imageName="passkey-list-errors-windows.webp"
-    />
-</Tab>
-<Tab title="iOS">
-    <ToolingFrame
-        imageURL="/images/authentication-flow/web-app/mobile/passkey-list-errors-ios.webp"
-        caption="iOS passkey list error states"
-        imageName="passkey-list-errors-ios.webp"
-    />
-</Tab>
-
-  <Tab title="Android">
-    <ToolingFrame 
-        imageURL="/images/authentication-flow/web-app/mobile/passkey-list-errors-android.webp"
-        caption="Android passkey list error states"
-        imageName="passkey-list-errors-android.webp"
-    />
-  </Tab>
-</Tabs>
+<ToolingFrame
+    imageURL="/images/authentication-flow/web-app/desktop/passkey-list-errors-macos.webp"
+    caption="Representative web passkey list error states shown on macOS"
+    imageName="passkey-list-errors-macos.webp"
+/>
 
 <Steps>
     <Step title="Passkey List Loading Error">
@@ -123,7 +70,8 @@ Passkey management lets users view and remove the passkeys saved on their device
         informative error.
     </Step>
     <Step title="No Passkey Support">
-        - Device or browser does not support passkeys, blocking registration or
-        management.
+        - When the client cannot create a passkey, omit or disable only the add action with an accurate explanation. Keep the server-side list and revoke actions available.
     </Step>
 </Steps>
+
+<W31AcceptanceCriteria />
