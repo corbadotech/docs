@@ -28,19 +28,31 @@ Immediate mode and Conditional UI are easy to confuse because both can present a
 
 ### See the flow
 
-Platform screenshots for this page are in production. Until they land, Chrome's own recordings show the two ways to trigger immediate mode:
+Platform screenshots for this page are in production. Until they land, these recordings show the two ways to trigger immediate mode:
 
-<CardGroup cols={2}>
-<Card title="Sign-in button" icon="right-to-bracket" href="https://developer.chrome.com/static/docs/identity/immediate-ui-mode/video/immediate-mediation-explicit-flow.mp4">
+<Tabs>
+  <Tab title="Sign-in button">
+    <Frame caption="The user clicks Sign in and the account chooser opens immediately">
+      <video autoPlay loop muted playsInline controls className="w-full">
+        <source src="/images/authentication-flow/web-app/video/immediate-mode-explicit-flow.mp4" type="video/mp4" />
+      </video>
+    </Frame>
+
     The user clicks a dedicated **Sign in** button and the account chooser opens straight away. When no credential is available nothing is shown, and your normal form stays exactly where it was.
-</Card>
+  </Tab>
 
-<Card title="Contextual action" icon="cart-shopping" href="https://developer.chrome.com/static/docs/identity/immediate-ui-mode/video/immediate-mediation-implicit-flow.mp4">
+  <Tab title="Contextual action">
+    <Frame caption="A returning customer signs in from Checkout without leaving the flow">
+      <video autoPlay loop muted playsInline controls className="w-full">
+        <source src="/images/authentication-flow/web-app/video/immediate-mode-implicit-flow.mp4" type="video/mp4" />
+      </video>
+    </Frame>
+
     The user clicks something that simply benefits from being signed in — Chrome's example is **Checkout**. Returning customers authenticate without a detour; guests continue unchanged.
-</Card>
-</CardGroup>
+  </Tab>
+</Tabs>
 
-Both recordings are published by Google in [Immediate UI mode for logins](https://developer.chrome.com/docs/identity/immediate-ui-mode) (Chrome for Developers, May 2026).
+Recordings by Google, from [Immediate UI mode for logins](https://developer.chrome.com/docs/identity/immediate-ui-mode) (Chrome for Developers, May 2026), used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 <Steps>
     <Step title="Your app requests an immediate login">
@@ -116,7 +128,7 @@ The `signal` parameter cannot be used to cancel the immediate login dialog once 
     **Migrating from the origin trial:** during the Chrome 139–141 origin trial this feature was requested with `mediation: 'immediate'`. A specification change in November 2025 moved it to the `uiMode` field, and `mediation: 'immediate'` no longer activates it. Replace it with `uiMode: 'immediate'` in the same position. See the [origin trial announcement](https://developer.chrome.com/blog/webauthn-immediate-mediation-ot) for the original shape.
 </Note>
 
-{/* TODO: replace the "See the flow" CardGroup above with our own ToolingFrame tabs once Figma exports exist, matching sibling pages:
+{/* TODO: replace the "See the flow" tabs above with our own ToolingFrame tabs once Figma exports exist, matching sibling pages:
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 
 <Tabs>
