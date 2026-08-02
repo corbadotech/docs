@@ -1,9 +1,9 @@
 ---
 title: "Benchmarking Passkey Implementations"
-description: "A practical framework for comparing passkey implementations and adoption potential."
+description: "Acceptance criteria and a practical framework for comparing passkey implementations, provider coverage and adoption potential."
 ---
 
-This benchmark turns the [flow catalogue](/passkey-ui-flows/overview#flow-catalogue) into product-neutral requirements. Each flow includes acceptance criteria that can be used for implementation reviews, tickets and provider comparisons.
+This benchmark tries to turn the [flow catalogue](/passkey-ui-flows/overview#flow-catalogue) into product-neutral requirements. Each flow includes acceptance criteria that can be used for implementation reviews, tickets and provider comparisons.
 
 ## Decide what you are reviewing
 
@@ -95,8 +95,6 @@ Rate each included website or app separately. If an implementation uses a differ
 
 If an area does not reach Basic or was not reviewed, the overall result is **Incomplete**. Otherwise, give each area the highest level it fully meets.
 
-Rate web and native separately, then use the lowest result across the included applications. Always show the individual results and state what was not included. For example: **Incomplete overall; web iOS: High; native: Not reviewed**.
-
 Then determine adoption potential without averaging the pillars:
 
 | Adoption potential | Rule |
@@ -105,6 +103,8 @@ Then determine adoption potential without averaging the pillars:
 | **Low** | Enrollment or Usage remains Basic, so passkey creation or repeat-login discovery is limited. |
 | **Mid** | Enrollment and Usage are at least Managed, and Readiness and Availability are at least Basic. |
 | **High** | Enrollment and Usage are Optimized, and Readiness and Availability are at least Managed. |
+
+Determine adoption potential for web and native separately, then use the lowest result across the included applications, ordered Incomplete < Low < Mid < High. An application that was not reviewed counts as Incomplete. Always show the individual results and state what was not included. For example: **Incomplete overall; web: High; native: Incomplete (not reviewed)**.
 
 This rates adoption **potential**, not actual adoption. A live deployment should also report enrollment, passkey login share, success, fallback and error rates for a stated user group and time period.
 

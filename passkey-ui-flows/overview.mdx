@@ -1,6 +1,6 @@
 ---
 title: "Passkey UI Best Practices"
-description: "Visual reference patterns and acceptance criteria for passkey login, creation and management across web and native platforms."
+description: "Passkey UI best practices, flow diagrams and acceptance criteria for login, creation and management across web and native apps."
 ---
 
 ## Overview
@@ -25,7 +25,7 @@ The documentation uses UI examples and decision trees to explain each scenario a
 
 Every flow in this section carries a stable ID. Use these IDs when scoping an implementation, comparing platforms or assessing an existing identity provider.
 
-The prefix identifies the platform and phase: `W` for web and `N` for native, `1` for login, `2` for passkey creation and `3` for management. `E` covers the decision engine, which is not platform-specific. New flows are appended to the end of their group, so existing IDs never shift.
+The prefix identifies the platform and phase: `W` for web and `N` for native, `1` for login, `2` for passkey creation and `3` for management. `E` covers Passkey Intelligence, which is not platform-specific. New flows are appended to the end of their group, so existing IDs never shift.
 
 Use the [benchmarking method](/passkey-ui-flows/benchmarking) to record criterion-level results and determine adoption potential. **Expected adoption impact** estimates the effect on the full authentication funnel. `Low` does not mean unimportant, and the labels must not be added together as a score.
 
@@ -87,13 +87,13 @@ Use the [benchmarking method](/passkey-ui-flows/benchmarking) to record criterio
 | **N3.1** | [Passkey management](/passkey-ui-flows/native/passkey-management) | iOS, Android | Users need to list, add and revoke their own passkeys | Baseline | Low |
 | **N3.2** | [WebAuthn Signal API](/passkey-ui-flows/native/signal-api) | Android 15+; Apple 26.0+ with legacy `ASCredentialUpdater` on 26.0–26.1 and current `ASCredentialDataManager` on 26.2+ | Keeping the credential manager in sync with what your server accepts | Supporting capability | Low |
 
-### Decision engine
+### Passkey Intelligence
 
-These are not UI flows. They decide *whether* one of the flows above should run. The benchmark checks the selected routes and does not require a proprietary engine.
+This is not a separate UI flow. It helps decide *whether* one of the flows above should run. The benchmark checks the resulting behavior and does not require a proprietary engine.
 
 | ID | Capability | What it decides | Benchmark as | Expected adoption impact |
 | --- | --- | --- | --- | --- |
-| **E1** | [Readiness and targeting](/passkey-ui-flows/readiness-and-targeting) | Whether to attempt, offer, defer or fall back from a passkey flow in the current context | Supporting capability | High |
+| **E1** | [Passkey Intelligence](/passkey-ui-flows/passkey-intelligence) | Whether to attempt, offer, defer or fall back from a passkey flow in the current context | Supporting capability | High |
 
 ## UI Flow Categories
 

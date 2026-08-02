@@ -11,7 +11,7 @@ import N13AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteri
 
 This is an **identifier-first flow** where users enter their identifier (email, phone, or username) first. The app then automatically checks for an immediately available passkey accepted for that account. If none is available, the user continues with fallback.
 
-The app cannot check which passkeys are available from the current device or credential provider before starting the request. A server record proves that the account has a passkey, but not that the passkey is available here.
+The app cannot enumerate which passkeys the current device or credential provider holds. A server record proves that the account has a passkey, but not that the passkey is available here.
 
 <Info>
     **Reference implementation:** [Corbado Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is one way to identify passkey-enabled accounts and apply this flow. The benchmark checks the resulting login behavior, not the product.

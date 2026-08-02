@@ -62,7 +62,7 @@ Recordings by Google, from [Immediate UI mode for logins](https://developer.chro
         - A readiness layer may choose where to expose this enhancement, but prior credential-likelihood prediction is optional and can create false negatives. The required gates are feature detection, a meaningful gesture and a complete fallback path.
     </Step>
     <Step title="Chrome checks for locally available credentials">
-        - Chrome looks only at credentials it can present without further user action: passkeys held by a passkey provider such as Google Password Manager, Windows Hello or iCloud Keychain, and: when you pass `password: true`: passwords saved in Google Password Manager.
+        - Chrome looks only at credentials it can present without further user action: passkeys held by a passkey provider such as Google Password Manager, Windows Hello or iCloud Keychain, and, when you pass `password: true`, passwords saved in Google Password Manager.
         - Cross-device (QR) and security key options are not offered in this mode.
     </Step>
     <Step title="Credential found: the account chooser opens immediately">

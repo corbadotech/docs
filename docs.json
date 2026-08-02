@@ -229,7 +229,7 @@
                         "pages": [
                             "passkey-ui-flows/overview",
                             "passkey-ui-flows/benchmarking",
-                            "passkey-ui-flows/readiness-and-targeting"
+                            "passkey-ui-flows/passkey-intelligence"
                         ]
                     },
                     {

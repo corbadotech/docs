@@ -1,0 +1,71 @@
+---
+title: "Passkey Intelligence"
+description: "How Passkey Intelligence uses client, credential and journey signals to target passkey login, creation, cross-device authentication and fallback."
+---
+
+import E1AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/e1.mdx";
+
+The name **Passkey Intelligence** is taken from Corbado Connect. In this benchmark, it is used more broadly for the capability that decides whether to start a ceremony automatically, show a passkey action, wait or continue with fallback. The benchmark checks the resulting behavior, not a particular product or architecture.
+
+## Measurement
+
+Passkey Intelligence starts with detailed journey and environment data. It should be possible to follow a user from the targeting decision through the passkey or fallback result and, after creation, to later passkey use.
+
+| Area | Record |
+| --- | --- |
+| **Decision** | Selected action and flow, reason, account group, nudge count and active cooldown |
+| **Journey** | Eligibility check, offer shown, user action, ceremony start, success, cancellation, error, fallback start and fallback success |
+| **Credential** | Creation, later use, credential ID, AAGUID or provider label, authenticator attachment, stored transports and backup state where returned |
+| **Environment** | Web or native, browser or app version, operating system and version, device class and model where available, User-Agent or Client Hints, capability results and first-party environment history |
+
+Some environment values are unavailable or reduced on certain clients. Keep those values unknown instead of inventing precision.
+
+## Decision actions
+
+| Action | Meaning |
+| --- | --- |
+| **Attempt** | Start a passkey ceremony automatically. |
+| **Offer** | Show a passkey action that the user can choose. |
+| **Defer** | Do not show an optional passkey prompt in the current context. |
+| **Fallback** | Continue with another login or recovery method. |
+
+## Creation targeting
+
+Before showing a broad post-login creation nudge, check that the current client can likely create a passkey that is usable from this environment without another device or security key. On the web, platform-authenticator availability and client capabilities are useful inputs, but they do not guarantee that a credential provider will accept the request.
+
+Cross-device or security-key creation can still be offered explicitly where the product supports it. It should not be treated as equivalent to a client-device creation route when estimating broad nudge acceptance.
+
+Passkey Intelligence should also recognize the situations covered by the more specific creation flows:
+
+| Situation | Target flow |
+| --- | --- |
+| A suitable client completes a normal non-passkey login | [Web W2.2](/passkey-ui-flows/web/passkey-creation/non-mfa), [Web W2.3](/passkey-ui-flows/web/passkey-creation/mfa), [Native N2.1](/passkey-ui-flows/native/passkey-creation/non-mfa) or [Native N2.2](/passkey-ui-flows/native/passkey-creation/mfa) |
+| A desktop login succeeds through a route intended for cross-device authentication | [Web W2.4](/passkey-ui-flows/web/passkey-creation/after-hybrid) |
+| An account with existing passkeys signs in from another environment | [Web W2.6](/passkey-ui-flows/web/passkey-creation/on-2nd-device) |
+| A passkey attempt fails or is cancelled before successful fallback | [Web W2.5](/passkey-ui-flows/web/passkey-creation/after-error) or [Native N2.3](/passkey-ui-flows/native/passkey-creation/after-error) |
+
+Creation nudges use one account-level history across post-login, signup and in-app entry points that target the same enrollment goal. Cancellation and explicit skip can have different cooldowns. Multiple nudges across separate eligible sessions are the default until the goal succeeds, while daily, monthly or yearly limits apply across every entry point.
+
+## Login targeting
+
+For identifier-first login, an account must have at least one accepted passkey before Passkey Intelligence selects an account-specific passkey route. That server record does not prove that the passkey is available from the current client.
+
+| Availability estimate | Action |
+| --- | --- |
+| A usable passkey is likely available from the current client | **Attempt** the selected passkey login automatically. |
+| The account has a passkey, but current availability is uncertain | **Offer** an explicit passkey action. |
+| The account has no passkey or the intended route is unlikely to work | Continue with **fallback** without opening a passkey ceremony expected to fail. |
+
+When availability is uncertain, an explicit passkey route can remain available through **Offer**. When the intended route is unlikely to work, start fallback login immediately.
+
+## Cross-device and security-key routes
+
+When a cross-device route is likely, prepare the user before opening the system experience. Explain that a phone and QR code will be used. Name a device or provider only when account-specific history supports that wording and the information is still applicable.
+
+Transport and attachment data have different roles. During authentication, use the account's credential descriptors, stored `transports` and supported request `hints` to guide client-device, `hybrid` or `security-key` routes. `authenticatorAttachment` is not an authentication request selector. During creation, `authenticatorSelection.authenticatorAttachment` can prefer `platform` or `cross-platform`, or it can be left unset so the client can choose. An unset value is not a third authenticator type.
+
+<E1AcceptanceCriteria />
+
+## Reference implementation
+
+[Corbado Connect Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is the implementation from which the name is taken. Other implementations can satisfy the same acceptance criteria without using its internal signals or architecture.
