@@ -1,21 +1,21 @@
 ---
 title: "WebAuthn Signal API"
 sidebarTitle: "Signal API"
-description: "Native apps can ask credential managers to align passkeys stored on a device with the credentials the server accepts. Without it, deleted or unknown passkeys can keep appearing in the OS account chooser and fail after device authorization."
+description: "Native apps can ask credential managers to align passkeys stored on a device with the credentials the server accepts. Without it, deleted or unknown passkeys can keep appearing in the OS account chooser and fail after local device authentication."
 ---
 
 import SignalApiIntro from "/snippets/passkey-ui-flows/signal-api-intro.mdx";
 import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
 import N32AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n3-2.mdx";
 
-## Keeping the Authenticator and Your Server in Sync
+## Keeping the Authenticator and your Server in Sync
 
 <SignalApiIntro />
 
 In a native app the stale credential surfaces through [Conditional UI](/passkey-ui-flows/native/passkey-login/conditional-ui) and the [app-start overlay](/passkey-ui-flows/native/passkey-login/overlay), both of which offer whatever the credential manager holds regardless of what your server still accepts.
 
 <Info>
-    **Support (August 2026):** Android 15+ via `androidx.credentials` **1.6.0** (stable since 8 April 2026). Apple platforms support signalling from **26.0**: use legacy `ASCredentialUpdater` on 26.0–26.1 and current `ASCredentialDataManager` on iOS, iPadOS, macOS and visionOS 26.2+. For the browser equivalent see the [web Signal API](/passkey-ui-flows/web/signal-api).
+    **Support (August 2026):** Android 15+ via `androidx.credentials` **1.6.0** (stable since 8 April 2026). Apple platforms support signalling from **26.0**: use legacy `ASCredentialUpdater` on 26.0–26.1 and current `ASCredentialDataManager` on iOS, iPadOS, macOS and visionOS 26.2+. For the browser equivalent see the [Web Signal API](/passkey-ui-flows/web/signal-api).
 </Info>
 
 <Warning>

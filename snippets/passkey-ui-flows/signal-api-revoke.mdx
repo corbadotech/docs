@@ -2,7 +2,7 @@
     **Never send a partial or accidentally empty credential list.** The reconcile signal may hide or remove every passkey it does not find in the accepted list. An empty list is valid only when the authoritative server state confirms that the authenticated user has no accepted credentials, for example after deleting their final passkey. Treat the code that assembles this list as high-risk, and test it against accounts with zero, one and several credentials.
 </Warning>
 
-### Why Server-Side Revocation Still Needs Client Cleanup
+### Why server-side Revocation still needs Client Cleanup
 
 Revoking the credential in authoritative server state makes it unusable immediately: every later assertion from it must be rejected. The server may retain an inactive record for audit. What revocation cannot do is remove the stale entry from the user's locally installed credential manager, because **your backend has no direct channel to the user's password manager**.
 

@@ -11,7 +11,7 @@ import N23AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteri
 
 After a passkey attempt fails, an approved fallback can restore access and create an opportunity to add another usable passkey. The failed attempt does not prove the older credential is broken on every device or provider.
 
-### Common Scenarios Leading to Passkey Login Errors
+### leading to Passkey Login Errors
 
 Passkey login errors can occur in several situations:
 
@@ -19,7 +19,7 @@ Passkey login errors can occur in several situations:
 - **Different cloud account**: The user is using a familiar device that is now connected to a different iCloud account or, on Android, a different Google account
 - **Logged-out password manager**: The user has signed out of their password manager that stored the passkey
 
-### How Readiness Logic Supports Recovery
+### How Readiness Logic supports Recovery
 
 A cancellation or failure can indicate that the expected passkey is unavailable on this client, for example after a device or credential-provider change. It does not prove that the passkey is broken everywhere.
 

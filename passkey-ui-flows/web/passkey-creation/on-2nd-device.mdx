@@ -7,9 +7,9 @@ description: "Passkey creation after fallback when the account's existing passke
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 import W26AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-6.mdx";
 
-## Passkey Creation on Device Without Access to Existing Passkeys
+## Passkey Creation on Device without Access to existing Passkeys
 
-This flow applies when server state shows existing passkeys, the user completes an approved fallback, and available history indicates that those passkeys could not have been created on the current device. They may still be available through a syncing provider, so the offer remains optional.
+This flow applies when server state shows existing passkeys, the user completes an approved fallback and available history indicates that those passkeys could not have been created on the current device. They may still be available through a syncing provider, so the offer remains optional.
 
 <ToolingFrame
     imageURL="/images/authentication-flow/web-app/desktop/append-on-second-device-macos.webp"

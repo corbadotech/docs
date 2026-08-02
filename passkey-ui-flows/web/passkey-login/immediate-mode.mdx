@@ -1,16 +1,21 @@
 ---
 title: "Passkey Login: Immediate Mode"
 sidebarTitle: "Immediate Mode"
-description: "Immediate mode can show the passkey account chooser immediately after a sign-in-relevant user gesture and stays silent when no credential is available."
+description: "Immediate mode can show the passkey account chooser menu immediately after a sign-in-relevant user gesture and stays silent when no passkey is available."
 ---
 
 import W16AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w1-6.mdx";
 
 ## Immediate Mode Login
 
-After a relevant user gesture, immediate mode asks the browser whether it can offer an immediately available credential for this site. If it can, the account chooser opens before the user types an identifier. Otherwise, the request rejects silently and the normal login flow continues.
+After a sign-in-relevant user gesture, immediate mode asks the browser whether it can offer an immediately available credential for this site. If it can, the account chooser menu opens before the user types an identifier. Otherwise, the request rejects silently and the normal login flow continues.
 
-That silence is the point. Every other login surface has to guess whether a passkey attempt will succeed; immediate mode lets the browser answer, at the cost of being unable to tell you why it said no.
+That silence is the point. Every other login surface has to guess whether a passkey attempt will succeed. Immediate mode lets the browser answer, at the cost of being unable to tell you why it said no.
+
+A sign-in-relevant user gesture is a deliberate click or tap that shows the user wants to authenticate (not page load and not an unrelated interaction). Chrome requires this gesture before the call, which prevents silent probing. Typical examples:
+
+- Clicking a Sign in button on the login page
+- Starting Checkout (or a similar action) where signing in is useful but optional for guests
 
 <Info>
     **Support (August 2026):** Chrome only; feature-detect the `immediateGet` capability rather than relying on a version number. Chrome 148 release notes listed the capability and Chrome 149 announced the broad launch. The API is not yet part of the WebAuthn specification, so treat it as a progressive enhancement on top of a login flow that already works without it.

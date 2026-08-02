@@ -11,6 +11,10 @@ import W11AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteri
 
 Users logging in via desktop and mobile browsers follow a standard login flow enriched by the One-Tap passkey experience, leading to higher login rates on trusted devices.
 
+<Note>
+One-Tap is different from the common "Sign in with passkey" button that simply starts the authentication ceremony without checking whether a passkey is available. Those naive buttons often fail and frustrate users. One-Tap uses [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) to show the button only when a passkey is likely available making it a smart, passwordless, and usernameless login path.
+</Note>
+
 <Info>
 **Feature documentation:** For implementation and configuration details, see the [Corbado Connect One-Tap Login documentation](/corbado-connect/features/one-tap-login).
 </Info>
@@ -27,7 +31,7 @@ Users logging in via desktop and mobile browsers follow a standard login flow en
         - The button displays an account hint, for example "Log in as alice@example.com", so the user can identify the intended account.
     </Step>
     <Step title="System passkey sheet appears">
-        - The browser or operating system presents the applicable passkey authentication surface.
+        - The browser or operating system directly presents the applicable passkey authentication surface. There's no further selection or click required.
         - User verifies their identity using their screen lock (e.g., fingerprint, PIN, or face recognition).
         - User verification happens locally on the device; only a signed assertion is sent to your server, and no shared secret ever leaves the device.
     </Step>

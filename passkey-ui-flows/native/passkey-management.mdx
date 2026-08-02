@@ -6,7 +6,7 @@ description: "Native account settings for listing, adding and revoking server-re
 import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 import N31AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/n3-1.mdx";
 
-## Create, Manage or Delete Passkeys via Passkey List Component
+## Create, manage or delete Passkeys via Passkey List Component
 
 Passkey management lets users view and revoke passkeys registered to their account. The server-side list shows which credentials the relying party accepts. Provider-side copies may remain until the credential provider acts on best-effort reconciliation.
 
@@ -78,18 +78,18 @@ Passkey management lets users view and revoke passkeys registered to their accou
         - The list of passkeys fails to load (e.g., due to network or system
         error).
     </Step>
-    <Step title="User Aborts Passkey Creation">
+    <Step title="User aborts Passkey Creation">
         - User cancels creation during system prompts or internal dialogs. No
         new passkey is added in the list.
     </Step>
-    <Step title="Passkey Creation Failed Due to API Errors">
+    <Step title="Passkey Creation failed due to API Errors">
         - User experiences errors from backend/API during passkey creation. The
         error is communicated clearly.
     </Step>
-    <Step title="Passkey Deletion Fails">
+    <Step title="Passkey Deletion fails">
         - Deletion of the passkey returns an error due to system or API failure.
     </Step>
-    <Step title="Passkey Already Exists">
+    <Step title="Passkey already exists">
         - Attempting to register a passkey that is already present prompts an
         informative error.
     </Step>

@@ -14,7 +14,7 @@ This approach uses the browser or client platform's **hybrid transport** functio
 A readiness layer can estimate that cross-device authentication is plausible from server-known credential history, recorded transports and current client capabilities. It cannot inspect the phone's credential store or guarantee that a usable passkey is present.
 
 <Warning>
-    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. Passkeys are phishing-resistant because the credential is bound to your origin; the Bluetooth exchange adds anti-relay protection on top, requiring the authenticating phone to be physically near the device being signed in to.
+    **Security Requirements:** Both devices must have **internet connectivity** and **Bluetooth enabled** for cross-device authentication to work. Passkeys are phishing-resistant because the credential is bound to your origin. The Bluetooth exchange adds anti-relay protection on top, requiring the authenticating phone to be physically near the device being signed in to.
 </Warning>
 
 <Tabs>
@@ -42,7 +42,7 @@ A readiness layer can estimate that cross-device authentication is plausible fro
     </Step>
     <Step title="System estimates that cross-device authentication is viable">
         - The routing layer combines account metadata and client capabilities to decide whether to offer a cross-device route.
-        - This is a confidence-based decision; the operating system performs credential discovery and the relying party does not claim to know what is stored on the phone.
+        - This is a confidence-based decision. The operating system performs credential discovery and the relying party does not claim to know what is stored on the phone.
     </Step>
     <Step title="Client platform displays the QR route">
         - The browser, operating system or client platform displays a screen preparing the user for cross-device authentication.

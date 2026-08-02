@@ -1,5 +1,7 @@
 .DS_Store
-package-lock.js
+node_modules/
+package-lock.json
+package.json
 .idea
 local-context
 cursor.code-workspace

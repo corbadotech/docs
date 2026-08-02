@@ -1,14 +1,14 @@
 ---
 title: "WebAuthn Signal API"
 sidebarTitle: "Signal API"
-description: "The Signal API lets a website ask credential managers to align stored passkeys with the credentials its server accepts. Without it, deleted or unknown passkeys can keep appearing in the account chooser and fail after device authorization."
+description: "The Signal API lets a website ask credential managers to align stored passkeys with the credentials its server accepts. Without it, deleted or unknown passkeys can keep appearing in the account chooser menu and fail after local device authentication."
 ---
 
 import SignalApiIntro from "/snippets/passkey-ui-flows/signal-api-intro.mdx";
 import SignalApiRevoke from "/snippets/passkey-ui-flows/signal-api-revoke.mdx";
 import W32AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w3-2.mdx";
 
-## Keeping the Authenticator and Your Server in Sync
+## Keeping the Authenticator and your Server in Sync
 
 <SignalApiIntro />
 
@@ -28,7 +28,7 @@ On the web the stale credential surfaces through [Conditional UI](/passkey-ui-fl
 
 <Steps>
     <Step title="On a failed login: signal the unknown credential">
-        - When an assertion arrives for a credential your server does not recognise, call `signalUnknownCredential({ rpId, credentialId })`.
+        - When an assertion arrives for a credential your server does not recognize, call `signalUnknownCredential({ rpId, credentialId })`.
         - This carries no user identifier and no credential list, so it is safe to call when the user is **not** authenticated.
         - Google Password Manager hides rather than deletes the passkey, so it can be restored if the signal was sent in error.
     </Step>

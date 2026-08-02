@@ -8,7 +8,7 @@ import { ToolingFrame } from "/snippets/authentication-flow/tooling-frame.mdx";
 import W21AcceptanceCriteria from "/snippets/passkey-ui-flows/acceptance-criteria/w2-1.mdx";
 
 <Info>
-    **Support (August 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it, and third-party password manager coverage is still uneven. It requires a recent password-manager fill; the active credential provider decides whether its internal conditions are met, while the relying party supplies known credential IDs to prevent avoidable duplicates.
+    **Support (August 2026):** Chrome 136+ on desktop and Chrome 142+ on Android with Google Password Manager, Safari 18+ / macOS 15+ and all browsers on iOS 18+ with Apple Passwords. Firefox does not support it and third-party password manager coverage is still uneven. It requires a recent password-manager fill. The active credential provider decides whether its internal conditions are met, while the relying party supplies known credential IDs to prevent avoidable duplicates.
 </Info>
 
 ## Automatic Passkey Creation after Login (Conditional Create)
@@ -52,7 +52,7 @@ Users logging in via a browser follow a standard login flow enriched by automati
     - User logs in with their password, which is then autofilled by e.g. Apple Passwords / Google Password Manager. 
   </Step>
   <Step title="Credential manager authorizes password autofill where required">
-    - The active credential manager may require a supported device-unlock method before filling the saved password; the exact modality and whether a prompt appears are platform-dependent.
+    - The active credential manager may require a supported device-unlock method before filling the saved password. The exact modality and whether a prompt appears are platform-dependent.
   </Step>
   <Step title="Complete configured sign-in verification">
     - The user completes any additional verification required by the relying party's sign-in policy. This step is omitted when no additional factor is required.
