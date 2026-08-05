@@ -228,6 +228,7 @@
                         "group": "Overview",
                         "pages": [
                             "passkey-ui-flows/overview",
+                            "passkey-ui-flows/flow-catalogue",
                             "passkey-ui-flows/benchmarking",
                             "passkey-ui-flows/passkey-intelligence"
                         ]

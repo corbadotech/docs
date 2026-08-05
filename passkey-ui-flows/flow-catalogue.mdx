@@ -1,0 +1,156 @@
+---
+title: "Passkey UI Flow Catalogue"
+sidebarTitle: "2. Flow catalogue"
+description: "All 28 passkey UI flows for web and native apps, grouped by login, creation and management, with availability, user reach and acceptance criteria."
+---
+
+import { PasskeyLifecycleMap } from "/snippets/passkey-ui-flows/lifecycle-map.mdx";
+import MetadataLegend from "/snippets/passkey-ui-flows/metadata-legend.mdx";
+
+All 28 flows, grouped by the three phases of the passkey lifecycle. This is a reference, not something you are meant to read top to bottom. Use the [Benchmark as](#benchmark-as-how-strictly-a-flow-is-judged) class to see which flows are expected of every implementation and which apply only in their documented scenario.
+
+<PasskeyLifecycleMap />
+
+**User reach** estimates how much of the user base a flow touches. It is an estimate for planning, never a score to add up. Each flow's platform requirements and benchmark class are in the [availability matrix](#availability-matrix) at the bottom of this page.
+
+<MetadataLegend />
+
+## How the flows are numbered
+
+Every flow carries a stable ID. Use it when scoping an implementation, comparing platforms or filing tickets.
+
+| Part | Values | Example |
+| --- | --- | --- |
+| Platform | `W` web, `N` native, `E` platform-independent | **W**2.3 |
+| Phase | `1` login, `2` creation, `3` management | W**2**.3 |
+| Flow | Appended in order, so existing IDs never shift | W2.**3** |
+
+Individual acceptance criteria extend the ID, for example `W1.1-AC03`. The phase digit follows the ID scheme, not the order you build in: creation is `2` but comes first in the lifecycle.
+
+## 1. Passkey login
+
+Getting a returning user in with a passkey they already have.
+
+### Login on the web
+
+| ID | Flow | When it applies | Reach |
+| --- | --- | --- | --- |
+| **W1.1** | [One-Tap](/passkey-ui-flows/web/passkey-login/one-tap) | A returning user should see a single, explicit passkey button | High |
+| **W1.2** | [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) | You want usernameless login offered inside the identifier field | High |
+| **W1.3** | [Identifier-first](/passkey-ui-flows/web/passkey-login/identifier-first) | You already run an identifier-first login form | High |
+| **W1.4** | [Cross-device via QR](/passkey-ui-flows/web/passkey-login/cross-device-qr) | The user's passkey lives on their phone | Mid |
+| **W1.5** | [Login error states](/passkey-ui-flows/web/passkey-login/error-states) | You are designing failure handling and fallback | Mid |
+| **W1.6** | [Immediate mode](/passkey-ui-flows/web/passkey-login/immediate-mode) | A client has an immediately available credential and should offer a faster login | Mid |
+
+### Login in native apps
+
+| ID | Flow | When it applies | Reach |
+| --- | --- | --- | --- |
+| **N1.1** | [App-start overlay](/passkey-ui-flows/native/passkey-login/overlay) | The app should offer a passkey before the user types anything | High |
+| **N1.2** | [Conditional UI](/passkey-ui-flows/native/passkey-login/conditional-ui) | You want passkeys suggested from the keyboard | Mid |
+| **N1.3** | [Identifier-first](/passkey-ui-flows/native/passkey-login/identifier-first) | The app collects an identifier before authenticating | High |
+| **N1.4** | [Login error states](/passkey-ui-flows/native/passkey-login/error-states) | You need recoverable, platform-aware failure handling | Mid |
+
+## 2. Passkey creation
+
+Getting a passkey onto the user's device in the first place. This is where adoption is won or lost.
+
+### Creation on the web
+
+| ID | Flow | When it applies | Reach |
+| --- | --- | --- | --- |
+| **W2.1** | [Automatic upgrade (conditional create)](/passkey-ui-flows/web/passkey-creation/automatic-upgrade) | A password was just filled by the user's credential manager | Mid |
+| **W2.2** | [After login, non-MFA (post-login nudge)](/passkey-ui-flows/web/passkey-creation/non-mfa) | A single-factor account should be offered a passkey after login | High |
+| **W2.3** | [After login, MFA (post-login nudge)](/passkey-ui-flows/web/passkey-creation/mfa) | An MFA account should be offered a passkey after verification | High |
+| **W2.4** | [After hybrid login](/passkey-ui-flows/web/passkey-creation/after-hybrid) | The user just signed in by scanning a QR code | Mid |
+| **W2.5** | [After passkey error](/passkey-ui-flows/web/passkey-creation/after-error) | A passkey attempt failed and verified fallback creates another usable credential | Mid |
+| **W2.6** | [On 2nd device](/passkey-ui-flows/web/passkey-creation/on-2nd-device) | The account's passkeys were created before this device was first seen | Mid |
+| **W2.7** | [During sign-up](/passkey-ui-flows/web/sign-up) | A new account should create a passkey during registration | Mid |
+| **W2.8** | [Creation cancellation](/passkey-ui-flows/web/passkey-creation/cancellation) | An explicit creation offer can be skipped or its system ceremony cancelled | Mid |
+
+### Creation in native apps
+
+| ID | Flow | When it applies | Reach |
+| --- | --- | --- | --- |
+| **N2.1** | [After login, non-MFA (post-login nudge)](/passkey-ui-flows/native/passkey-creation/non-mfa) | A single-factor account should be offered a passkey after login | High |
+| **N2.2** | [After login, MFA (post-login nudge)](/passkey-ui-flows/native/passkey-creation/mfa) | An MFA account should be offered a passkey after verification | High |
+| **N2.3** | [After passkey error](/passkey-ui-flows/native/passkey-creation/after-error) | A failed passkey attempt is followed by verified fallback and another usable credential | Mid |
+| **N2.4** | [In-app nudge after unlock](/passkey-ui-flows/native/passkey-creation/in-app-after-unlock) | Long-lived sessions make post-login enrollment rare | Mid |
+| **N2.5** | [In-app nudge on key action](/passkey-ui-flows/native/passkey-creation/in-app-after-cta) | A relevant completed action provides a less disruptive time for enrollment | Mid |
+| **N2.6** | [Automatic upgrade (conditional create)](/passkey-ui-flows/native/passkey-creation/automatic-upgrade) | A password was just filled by the user's credential manager in your app | Mid |
+
+## 3. Passkey management
+
+Letting users and your server keep the set of credentials correct over time.
+
+### Management on the web
+
+| ID | Flow | When it applies | Reach |
+| --- | --- | --- | --- |
+| **W3.1** | [Passkey management](/passkey-ui-flows/web/passkey-management) | Users need to list, add and revoke their own passkeys | Low |
+| **W3.2** | [WebAuthn Signal API](/passkey-ui-flows/web/signal-api) | Keeping the credential manager in sync with what your server accepts | Low |
+
+### Management in native apps
+
+| ID | Flow | When it applies | Reach |
+| --- | --- | --- | --- |
+| **N3.1** | [Passkey management](/passkey-ui-flows/native/passkey-management) | Users need to list, add and revoke their own passkeys | Low |
+| **N3.2** | [WebAuthn Signal API](/passkey-ui-flows/native/signal-api) | Keeping the credential manager in sync with what your server accepts | Low |
+
+## Passkey Intelligence
+
+Not a UI flow. It decides *whether* one of the flows above should run. The benchmark checks the resulting behavior and does not require a proprietary engine.
+
+| ID | Capability | What it decides | Reach |
+| --- | --- | --- | --- |
+| **E1** | [Passkey Intelligence](/passkey-ui-flows/passkey-intelligence) | Whether to attempt, offer, defer or fall back from a passkey flow in the current context | High |
+
+## Availability matrix
+
+<Accordion title="Platform requirements and benchmark class for every flow">
+
+| ID | Availability | Benchmark as | Exact requirements |
+| --- | --- | --- | --- |
+| **W1.1** | Universal | Strategy | All modern browsers |
+| **W1.2** | Universal | Enhancement | All modern browsers |
+| **W1.3** | Universal | Strategy | All modern browsers |
+| **W1.4** | Desktop only | Conditional | Desktop; needs Bluetooth and internet |
+| **W1.5** | Universal | Baseline | All |
+| **W1.6** | Limited | Enhancement | Chrome only; feature-detect `immediateGet` |
+| **W2.1** | Limited | Enhancement | Chrome 136+ desktop / 142+ Android; Safari 18+ macOS / iOS 18+ |
+| **W2.2** | Universal | Strategy | All modern browsers |
+| **W2.3** | Universal | Strategy | All modern browsers |
+| **W2.4** | Desktop only | Conditional | Desktop |
+| **W2.5** | Universal | Conditional | All modern browsers |
+| **W2.6** | Universal | Conditional | All modern browsers |
+| **W2.7** | Universal | Strategy | All modern browsers |
+| **W2.8** | Universal | Baseline | All modern browsers |
+| **W3.1** | Universal | Baseline | All modern browsers |
+| **W3.2** | Limited | Supporting capability | Chrome/Edge 132+ desktop; Chrome 144+ Android; Safari 26+ |
+| **N1.1** | Universal | Strategy | iOS 16+, Android 9+ with a supporting Credential Manager/provider |
+| **N1.2** | Limited | Enhancement | iOS 16+, Android 15+ |
+| **N1.3** | Universal | Strategy | iOS 16+, Android 9+ with a supporting Credential Manager/provider |
+| **N1.4** | Universal | Baseline | iOS 16+, Android 9+ for passkey paths |
+| **N2.1** | Universal | Strategy | iOS 16+, Android 9+ |
+| **N2.2** | Universal | Strategy | iOS 16+, Android 9+ |
+| **N2.3** | Universal | Conditional | iOS 16+, Android 9+ |
+| **N2.4** | Universal | Strategy | iOS 16+, Android 9+ |
+| **N2.5** | Universal | Strategy | iOS 16+, Android 9+ |
+| **N2.6** | Limited | Enhancement | iOS 18+; Android 9+ with `androidx.credentials` 1.6.0 and a supporting provider |
+| **N3.1** | Universal | Baseline | iOS, Android |
+| **N3.2** | Limited | Supporting capability | Android 15+; Apple 26.0+ with legacy `ASCredentialUpdater` on 26.0–26.1 and current `ASCredentialDataManager` on 26.2+ |
+| **E1** | Universal | Supporting capability | Platform-independent |
+
+</Accordion>
+
+## Using this catalogue
+
+**For implementation reviews:** Declare the target platforms and account policies first, then assess only the applicable strategies and conditional flows with the [benchmarking method](/passkey-ui-flows/benchmarking). Do not use a raw percentage of checked rows.
+
+**For Corbado Connect users:** Map the configured product capabilities to the same acceptance criteria and attach implementation or production evidence. Product availability alone is not evidence that a deployed flow passes.
+
+**For custom implementations:** Use the criteria as outcome requirements. They deliberately avoid prescribing a specific SDK, identity provider or internal architecture.
+
+<Tip>
+    Want the full Figma board with all flows for your design team? Email <a href="mailto:contact@corbado.com">contact@corbado.com</a> to request access.
+</Tip>

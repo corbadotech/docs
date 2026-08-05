@@ -1,0 +1,114 @@
+export const BenchmarkRatingLadder = () => {
+    const rungs = [
+        { x: 8, step: "1", title: ["Scope"], values: ["What you", "reviewed"], mono: false, dashed: true },
+        { x: 126, step: "2", title: ["Criterion"], values: ["Pass", "Fail", "N/A", "Not reviewed"] },
+        { x: 244, step: "3", title: ["Flow"], values: ["Full", "Core met", "Not met", "N/A"] },
+        { x: 362, step: "4", title: ["Pillar"], values: ["Basic", "Managed", "Optimized"] },
+        { x: 480, step: "5", title: ["Adoption", "potential"], values: ["Low", "Mid", "High", "Incomplete"] },
+    ];
+
+    return (
+        <svg
+            viewBox="0 0 594 170"
+            role="img"
+            aria-label="Benchmark method: define scope, then criterion results roll up to a flow rating, then to a pillar level, then to overall adoption potential"
+            style={{ width: "100%", maxWidth: "594px", height: "auto", margin: "0 auto", display: "block", color: "inherit" }}
+        >
+            <title>How the benchmark ratings roll up</title>
+
+            <defs>
+                <marker id="pkLadderArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.45" />
+                </marker>
+            </defs>
+
+            {rungs.map((r, i) => (
+                <g key={r.step}>
+                    <rect
+                        x={r.x} y="12" width="104" height="144" rx="11"
+                        fill="currentColor" fillOpacity="0.045"
+                        stroke="currentColor" strokeOpacity="0.22"
+                        strokeDasharray={r.dashed ? "6 4" : undefined}
+                    />
+                    <text x={r.x + 12} y="34" fontSize="10" fontWeight="700" className="pk-accent-text" letterSpacing="0.08em">
+                        {"STEP " + r.step}
+                    </text>
+                    {r.title.map((t, k) => (
+                        <text key={t} x={r.x + 12} y={54 + k * 16} fontSize="13.5" fontWeight="600" fill="currentColor">
+                            {t}
+                        </text>
+                    ))}
+                    {r.values.map((v, j) => (
+                        <text
+                            key={v}
+                            x={r.x + 12}
+                            y={82 + (r.title.length - 1) * 16 + j * 14}
+                            fontSize="10.5"
+                            fontFamily={r.mono === false ? undefined : "ui-monospace, SFMono-Regular, Menlo, monospace"}
+                            fill="currentColor"
+                            fillOpacity="0.6"
+                        >
+                            {v}
+                        </text>
+                    ))}
+                    {i < rungs.length - 1 && (
+                        <line
+                            x1={r.x + 108} y1="84" x2={r.x + 122} y2="84"
+                            stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.5"
+                            markerEnd="url(#pkLadderArrow)"
+                        />
+                    )}
+                </g>
+            ))}
+        </svg>
+    );
+};
+
+export const AdoptionPillars = () => {
+    const pillars = [
+        { x: 8, name: "Readiness", q: "Can it work here?" },
+        { x: 158, name: "Enrollment", q: "Do users get one?" },
+        { x: 308, name: "Availability", q: "Can they reach it?" },
+        { x: 458, name: "Usage", q: "Do they use it?" },
+    ];
+
+    return (
+        <svg
+            viewBox="0 0 594 88"
+            role="img"
+            aria-label="The four adoption pillars in order: readiness, enrollment, availability, usage"
+            style={{ width: "100%", maxWidth: "594px", height: "auto", margin: "0 auto", display: "block", color: "inherit" }}
+        >
+            <title>The four adoption pillars</title>
+
+            <defs>
+                <marker id="pkPillarArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.45" />
+                </marker>
+            </defs>
+
+            {pillars.map((p, i) => (
+                <g key={p.name}>
+                    <rect
+                        x={p.x} y="12" width="128" height="64" rx="11"
+                        fill="currentColor" fillOpacity="0.045"
+                        stroke="currentColor" strokeOpacity="0.22"
+                    />
+                    <text x={p.x + 14} y="40" fontSize="13.5" fontWeight="600" fill="currentColor">
+                        {p.name}
+                    </text>
+                    <text x={p.x + 14} y="60" fontSize="10.5" fill="currentColor" fillOpacity="0.65">
+                        {p.q}
+                    </text>
+                    {i < pillars.length - 1 && (
+                        <line
+                            x1={p.x + 132} y1="44" x2={p.x + 154} y2="44"
+                            stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.5"
+                            markerEnd="url(#pkPillarArrow)"
+                        />
+                    )}
+                </g>
+            ))}
+        </svg>
+    );
+};
