@@ -1,0 +1,98 @@
+export const PasskeyLifecycleMap = () => {
+    const phases = [
+        {
+            x: 8,
+            num: "2",
+            title: "Create",
+            desc: "Enroll a passkey",
+            ids: "W2.1–W2.8 · N2.1–N2.6",
+            href: "/passkey-ui-flows/flow-catalogue#2-passkey-creation",
+        },
+        {
+            x: 212,
+            num: "1",
+            title: "Log in",
+            desc: "Sign in with it",
+            ids: "W1.1–W1.6 · N1.1–N1.4",
+            href: "/passkey-ui-flows/flow-catalogue#1-passkey-login",
+        },
+        {
+            x: 416,
+            num: "3",
+            title: "Manage",
+            desc: "List, add, revoke",
+            ids: "W3.1–W3.2 · N3.1–N3.2",
+            href: "/passkey-ui-flows/flow-catalogue#3-passkey-management",
+        },
+    ];
+
+    return (
+        <svg
+            viewBox="0 0 596 262"
+            role="img"
+            aria-label="Passkey flow lifecycle: create, log in and manage, with Passkey Intelligence deciding whether each flow runs"
+            style={{ width: "100%", maxWidth: "596px", height: "auto", margin: "0 auto", display: "block", color: "inherit" }}
+        >
+            <title>Passkey UI flow lifecycle</title>
+
+            <defs>
+                <marker id="pkArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.45" />
+                </marker>
+            </defs>
+
+            {phases.map((p) => (
+                <a href={p.href} key={p.num} className="pk-node">
+                    <rect
+                        x={p.x} y="24" width="172" height="112" rx="11"
+                        fill="currentColor" fillOpacity="0.045"
+                        stroke="currentColor" strokeOpacity="0.22"
+                    />
+                    <circle cx={p.x + 26} cy="54" r="14" className="pk-accent" />
+                    <text x={p.x + 26} y="59" textAnchor="middle" fontSize="14" fontWeight="700" fill="#ffffff">
+                        {p.num}
+                    </text>
+                    <text x={p.x + 48} y="60" fontSize="17" fontWeight="600" fill="currentColor">
+                        {p.title}
+                    </text>
+                    <text x={p.x + 16} y="90" fontSize="12.5" fill="currentColor" fillOpacity="0.72">
+                        {p.desc}
+                    </text>
+                    <text x={p.x + 16} y="115" fontSize="11" fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace" fill="currentColor" fillOpacity="0.5">
+                        {p.ids}
+                    </text>
+                </a>
+            ))}
+
+            <line x1="184" y1="80" x2="208" y2="80" stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.5" markerEnd="url(#pkArrow)" />
+            <line x1="388" y1="80" x2="412" y2="80" stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.5" markerEnd="url(#pkArrow)" />
+
+            <path
+                d="M 298 136 L 298 164 L 100 164 L 100 142"
+                fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5"
+                strokeDasharray="4 4" markerEnd="url(#pkArrow)"
+            />
+            <text x="199" y="183" textAnchor="middle" fontSize="11.5" fill="currentColor" fillOpacity="0.6">
+                re-offer after an error or on a 2nd device
+            </text>
+
+            <a href="/passkey-ui-flows/passkey-intelligence" className="pk-node">
+                <rect
+                    x="8" y="196" width="580" height="52" rx="11"
+                    fill="currentColor" fillOpacity="0.045"
+                    stroke="currentColor" strokeOpacity="0.22" strokeDasharray="6 4"
+                />
+                <circle cx="40" cy="222" r="14" className="pk-accent" />
+                <text x="40" y="226" textAnchor="middle" fontSize="11" fontWeight="700" fill="#ffffff">
+                    E1
+                </text>
+                <text x="64" y="218" fontSize="14" fontWeight="600" fill="currentColor">
+                    Passkey Intelligence
+                </text>
+                <text x="64" y="237" fontSize="11.5" fill="currentColor" fillOpacity="0.7">
+                    Decides whether a flow runs automatically, is offered, deferred or falls back
+                </text>
+            </a>
+        </svg>
+    );
+};

@@ -1,131 +1,47 @@
 ---
 title: "Passkey UI Best Practices"
-description: "Passkey UI best practices, flow diagrams and acceptance criteria for login, creation and management across web and native apps."
+sidebarTitle: "1. Start here"
+description: "A map of the passkey UI flows for web and native apps, the flow catalogue and how to benchmark an implementation against it."
 ---
 
-## Overview
+import { PasskeyLifecycleMap } from "/snippets/passkey-ui-flows/lifecycle-map.mdx";
 
-These UI flow diagrams combine standards and platform guidance with production experience from [Corbado Connect](/corbado-connect/overview/welcome). They provide reference patterns for benchmarking. They do not require the use of Corbado or the implementation of every flow.
+Every passkey flow in this section belongs to one of three moments in a user's life with a passkey. Start with the map, then go as deep as you need.
+
+<PasskeyLifecycleMap />
+
+## What this section is
+
+A catalogue of **28 passkey UI flows** for web and native apps, plus Passkey Intelligence, which decides when they run. Each carries product-neutral acceptance criteria and a method for scoring an implementation against them.
+
+It combines the specifications and platform guidance with production experience from [Corbado Connect](/corbado-connect/overview/welcome). It does **not** require you to use Corbado or to implement every flow.
 
 <Info>
-    **Evidence and implementation:** Each flow has product-neutral acceptance criteria based on specifications, official platform documentation and clearly scoped implementation experience. Corbado Connect is one reference implementation for many of these patterns.
+    **Evidence and implementation:** Each flow's acceptance criteria are based on specifications, official platform documentation and clearly scoped implementation experience. Corbado Connect is one reference implementation for many of these patterns, not the standard being tested.
 </Info>
 
-## What you'll learn
+## Pick your path
 
--   **Login, creation and management flows:** Review the main web and native passkey flows
--   **Decision points:** Review the relevant screens, error states and fallback cases
--   **Platform differences:** Compare passkey behavior on iOS, Android, macOS and Windows
--   **Operational edge cases:** Understand error handling, cross-device use and recovery
--   **Acceptance criteria:** Review implementation requirements and their supporting sources
-
-The documentation uses UI examples and decision trees to explain each scenario and support implementation reviews.
-
-## Flow catalogue
-
-Every flow in this section carries a stable ID. Use these IDs when scoping an implementation, comparing platforms or assessing an existing identity provider.
-
-The prefix identifies the platform and phase: `W` for web and `N` for native, `1` for login, `2` for passkey creation and `3` for management. `E` covers Passkey Intelligence, which is not platform-specific. New flows are appended to the end of their group, so existing IDs never shift.
-
-Use the [benchmarking method](/passkey-ui-flows/benchmarking) to record criterion-level results and determine adoption potential. **Expected adoption impact** estimates the effect on the full authentication funnel. `Low` does not mean unimportant, and the labels must not be added together as a score.
-
-### Web · Login
-
-| ID | Flow | Availability | Use when | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- | --- |
-| **W1.1** | [One-Tap](/passkey-ui-flows/web/passkey-login/one-tap) | All modern browsers | A returning user should see a single, explicit passkey button | Strategy | High |
-| **W1.2** | [Conditional UI](/passkey-ui-flows/web/passkey-login/conditional-ui) | All modern browsers | You want usernameless login offered inside the identifier field | Enhancement | High |
-| **W1.3** | [Identifier-first](/passkey-ui-flows/web/passkey-login/identifier-first) | All modern browsers | You already run an identifier-first login form | Strategy | High |
-| **W1.4** | [Cross-device via QR](/passkey-ui-flows/web/passkey-login/cross-device-qr) | Desktop; needs Bluetooth and internet | The user's passkey lives on their phone | Conditional | Mid |
-| **W1.5** | [Login error states](/passkey-ui-flows/web/passkey-login/error-states) | All | You are designing failure handling and fallback | Baseline | Mid |
-| **W1.6** | [Immediate mode](/passkey-ui-flows/web/passkey-login/immediate-mode) | Chrome only; feature-detect `immediateGet` | A client has an immediately available credential and should offer a faster login | Enhancement | Mid |
-
-### Web · Passkey creation
-
-| ID | Flow | Availability | Use when | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- | --- |
-| **W2.1** | [Automatic upgrade (conditional create)](/passkey-ui-flows/web/passkey-creation/automatic-upgrade) | Chrome 136+ desktop / 142+ Android; Safari 18+ macOS / iOS 18+ | A password was just filled by the user's credential manager | Enhancement | Mid |
-| **W2.2** | [After login, non-MFA (post-login nudge)](/passkey-ui-flows/web/passkey-creation/non-mfa) | All modern browsers | A single-factor account should be offered a passkey after login | Strategy | High |
-| **W2.3** | [After login, MFA (post-login nudge)](/passkey-ui-flows/web/passkey-creation/mfa) | All modern browsers | An MFA account should be offered a passkey after verification | Strategy | High |
-| **W2.4** | [After hybrid login](/passkey-ui-flows/web/passkey-creation/after-hybrid) | Desktop | The user just signed in by scanning a QR code | Conditional | Mid |
-| **W2.5** | [After passkey error (add a usable passkey)](/passkey-ui-flows/web/passkey-creation/after-error) | All modern browsers | A passkey attempt failed and verified fallback creates another usable credential | Conditional | Mid |
-| **W2.6** | [On 2nd device](/passkey-ui-flows/web/passkey-creation/on-2nd-device) | All modern browsers | The account's passkeys were created before this device was first seen | Conditional | Mid |
-| **W2.7** | [During sign-up](/passkey-ui-flows/web/sign-up) | All modern browsers | A new account should create a passkey during registration | Strategy | Mid |
-| **W2.8** | [Creation cancellation](/passkey-ui-flows/web/passkey-creation/cancellation) | All modern browsers | An explicit creation offer can be skipped or its system ceremony cancelled | Baseline | Mid |
-
-### Web · Management
-
-| ID | Flow | Availability | Use when | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- | --- |
-| **W3.1** | [Passkey management](/passkey-ui-flows/web/passkey-management) | All modern browsers | Users need to list, add and revoke their own passkeys | Baseline | Low |
-| **W3.2** | [WebAuthn Signal API](/passkey-ui-flows/web/signal-api) | Chrome/Edge 132+ desktop; Chrome 144+ Android; Safari 26+ | Keeping the credential manager in sync with what your server accepts | Supporting capability | Low |
-
-### Native · Login
-
-| ID | Flow | Availability | Use when | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- | --- |
-| **N1.1** | [App-start overlay](/passkey-ui-flows/native/passkey-login/overlay) | iOS 16+, Android 9+ with a supporting Credential Manager/provider | The app should offer a passkey before the user types anything | Strategy | High |
-| **N1.2** | [Conditional UI](/passkey-ui-flows/native/passkey-login/conditional-ui) | iOS 16+, Android 15+ | You want passkeys suggested from the keyboard | Enhancement | Mid |
-| **N1.3** | [Identifier-first](/passkey-ui-flows/native/passkey-login/identifier-first) | iOS 16+, Android 9+ with a supporting Credential Manager/provider | The app collects an identifier before authenticating | Strategy | High |
-| **N1.4** | [Login error states](/passkey-ui-flows/native/passkey-login/error-states) | iOS 16+, Android 9+ for passkey paths | You need recoverable, platform-aware failure handling | Baseline | Mid |
-
-### Native · Passkey creation
-
-| ID | Flow | Availability | Use when | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- | --- |
-| **N2.1** | [After login, non-MFA (post-login nudge)](/passkey-ui-flows/native/passkey-creation/non-mfa) | iOS 16+, Android 9+ | A single-factor account should be offered a passkey after login | Strategy | High |
-| **N2.2** | [After login, MFA (post-login nudge)](/passkey-ui-flows/native/passkey-creation/mfa) | iOS 16+, Android 9+ | An MFA account should be offered a passkey after verification | Strategy | High |
-| **N2.3** | [After passkey error (add a usable passkey)](/passkey-ui-flows/native/passkey-creation/after-error) | iOS 16+, Android 9+ | A failed passkey attempt is followed by verified fallback and another usable credential | Conditional | Mid |
-| **N2.4** | [In-app nudge after unlock](/passkey-ui-flows/native/passkey-creation/in-app-after-unlock) | iOS 16+, Android 9+ | Long-lived sessions make post-login enrollment rare | Strategy | Mid |
-| **N2.5** | [In-app nudge on key action](/passkey-ui-flows/native/passkey-creation/in-app-after-cta) | iOS 16+, Android 9+ | A relevant completed action provides a less disruptive time for enrollment | Strategy | Mid |
-| **N2.6** | [Automatic upgrade (conditional create)](/passkey-ui-flows/native/passkey-creation/automatic-upgrade) | iOS 18+; Android 9+ with `androidx.credentials` 1.6.0 and a supporting provider | A password was just filled by the user's credential manager in your app | Enhancement | Mid |
-
-### Native · Management
-
-| ID | Flow | Availability | Use when | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- | --- |
-| **N3.1** | [Passkey management](/passkey-ui-flows/native/passkey-management) | iOS, Android | Users need to list, add and revoke their own passkeys | Baseline | Low |
-| **N3.2** | [WebAuthn Signal API](/passkey-ui-flows/native/signal-api) | Android 15+; Apple 26.0+ with legacy `ASCredentialUpdater` on 26.0–26.1 and current `ASCredentialDataManager` on 26.2+ | Keeping the credential manager in sync with what your server accepts | Supporting capability | Low |
-
-### Passkey Intelligence
-
-This is not a separate UI flow. It helps decide *whether* one of the flows above should run. The benchmark checks the resulting behavior and does not require a proprietary engine.
-
-| ID | Capability | What it decides | Benchmark as | Expected adoption impact |
-| --- | --- | --- | --- | --- |
-| **E1** | [Passkey Intelligence](/passkey-ui-flows/passkey-intelligence) | Whether to attempt, offer, defer or fall back from a passkey flow in the current context | Supporting capability | High |
-
-## UI Flow Categories
-
-<CardGroup cols={2}>
-<Card title="Web UI Flows" icon="globe" href="/passkey-ui-flows/web/passkey-login/one-tap">
-    Web patterns for login methods, passkey creation, error handling and passkey management.
+<CardGroup cols={3}>
+<Card title="Design a flow" icon="pen-ruler" href="/passkey-ui-flows/flow-catalogue">
+    Browse the catalogue, pick the flows that fit your product and use the screens and decision trees on each flow page.
 </Card>
 
-<Card title="Native App UI Flows" icon="mobile" href="/passkey-ui-flows/native/passkey-login/overlay">
-    Native app patterns for platform-specific authentication, local biometric protection and passkey prompts in long-lived sessions.
+<Card title="Review or compare" icon="clipboard-check" href="/passkey-ui-flows/benchmarking">
+    Grade what you have shipped, or score two identity providers under identical conditions, and get an adoption-potential rating.
+</Card>
+
+<Card title="Decide when flows run" icon="brain" href="/passkey-ui-flows/passkey-intelligence">
+    Work out when to attempt a passkey automatically, when to offer one, when to wait and when to fall back.
 </Card>
 </CardGroup>
 
 <Note>
-    In this documentation, MFA is not mandatory by default. This means
-    single-factor accounts (e.g., accounts secured only with a password) are
-    supported. However, MFA can be enforced if required by the application or
-    compliance. When MFA is optional, the passkey append option allows users who
-    initially registered without MFA to later add additional factors for
-    stronger security.
+    In this documentation, MFA is not mandatory by default. Single-factor accounts (e.g. accounts secured only with a password) are supported, but MFA can be enforced where the application or compliance requires it. When MFA is optional, the passkey append option lets users who initially registered without MFA add additional factors later.
 </Note>
 
-## Using These Flows
-
-**For implementation reviews:** Declare the target platforms and account policies first, then assess only applicable strategies and conditional flows with the [benchmarking method](/passkey-ui-flows/benchmarking). Do not use a raw percentage of checked rows.
-
-**For Corbado Connect users:** Map the configured product capabilities to the same acceptance criteria and attach implementation or production evidence. Product availability alone is not evidence that a deployed flow passes.
-
-**For custom implementations:** Use the criteria as outcome requirements. They deliberately avoid prescribing a specific SDK, identity provider or internal architecture.
-
 <Tip>
-    Want access to the full Figma board with all flows for your design team? Email <a href="mailto:contact@corbado.com">contact@corbado.com</a> to request access.
+    Want the full Figma board with all flows for your design team? Email <a href="mailto:contact@corbado.com">contact@corbado.com</a> to request access.
 </Tip>
 
 import CognitoDemo from "/snippets/corbado-connect/cognito-demo.mdx";

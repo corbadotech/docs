@@ -1,3 +1,29 @@
 html {
   scroll-behavior: smooth !important;
 }
+
+/* Passkey UI flow diagrams (lifecycle map, rating ladder, adoption pillars) */
+.pk-accent {
+  fill: #184aff;
+}
+
+.dark .pk-accent {
+  fill: #629eff;
+}
+
+.pk-accent-text {
+  fill: #184aff;
+}
+
+.dark .pk-accent-text {
+  fill: #629eff;
+}
+
+.pk-node {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.pk-node:hover {
+  opacity: 0.72;
+}
