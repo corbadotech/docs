@@ -35,6 +35,7 @@ You can define rules based on a variety of factors to precisely target user segm
 -   **IP Address**: You can restrict access to a certain IP range, which is useful for internal testing.
 -   **Operating System**: You can target users on specific operating systems and versions, like showing a component only to iOS users.
 -   **Browser**: Similarly, you can target specific browsers, like Chrome, and even specific versions.
+-   **App Identifier**: For native apps, `ClientInfo.TechnicalName` contains the app's package/bundle identifier (e.g. `com.example.banking`), letting you target or exclude a specific app. On web, the same field carries the browser name.
 -   **Random Percentage**: You can roll out a feature to a random subset of your users, for example, enabling it for just 1% of them initially.
 
 ## 4. Example Scenario
