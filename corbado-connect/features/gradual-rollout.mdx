@@ -16,9 +16,17 @@ This is managed through a set of rules that determine whether a user should be p
 
 ## 2. How does it work?
 
-Whenever one of the [Corbado Web UI Components](/corbado-connect/web-ui-components/overview) is about to be displayed to a user, it checks with Corbado's backend to see if the user is eligible based on the configured rules. Based on the response, the component will either render or stay hidden.
+Whenever one of the [Corbado Web UI Components](/corbado-connect/web-ui-components/overview) is about to be displayed to a user, it calls Corbado's backend, which evaluates the configured rules against the current request. The response contains a single decision — `loginAllowed`, `appendAllowed` or `manageAllowed` — and based on it, the component either renders or silently stays hidden. An excluded request is not an error: the user simply continues with your existing authentication flow.
 
-These rules can be managed in the Corbado developer panel.
+The gradual rollout ruleset is one of several gates a request passes before passkey functionality is offered:
+
+<Frame caption="Every passkey request passes four server-side gates; any gate silently diverts the user to your existing authentication.">
+  <img src="/images/corbado-connect/gradual-rollout-gating-pipeline.png" alt="Corbado Connect passkey gating pipeline: kill switch and gradual-rollout ruleset are evaluated at init time, identifier allowlist and Passkey Intelligence at start time. Each gate can divert the request to the existing authentication flow." />
+</Frame>
+
+This page covers gate 2, the gradual rollout ruleset — the part you configure to control the pace of your rollout. The kill switch and identifier allowlist are managed in the [Corbado developer panel](/corbado-connect/management-console/gradual-rollout), while [Passkey Intelligence](/corbado-connect/features/passkey-intelligence) is operated by Corbado and ensures a passkey ceremony is only started when it is likely to succeed.
+
+All gates are evaluated server-side, so rule changes do not require any deployment or app release on your side.
 
 ## 3. Configuration Options
 
@@ -27,6 +35,7 @@ You can define rules based on a variety of factors to precisely target user segm
 -   **IP Address**: You can restrict access to a certain IP range, which is useful for internal testing.
 -   **Operating System**: You can target users on specific operating systems and versions, like showing a component only to iOS users.
 -   **Browser**: Similarly, you can target specific browsers, like Chrome, and even specific versions.
+-   **App Identifier**: For native apps, `ClientInfo.TechnicalName` contains the app's package/bundle identifier (e.g. `com.example.banking`), letting you target or exclude a specific app. On web, the same field carries the browser name.
 -   **Random Percentage**: You can roll out a feature to a random subset of your users, for example, enabling it for just 1% of them initially.
 
 ## 4. Example Scenario

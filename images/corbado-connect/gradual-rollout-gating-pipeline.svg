@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 896" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1a2333"/>
+    </marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7d8797"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="896" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="24" y="42" font-size="21" font-weight="700" fill="#1a2333">Corbado Connect — Passkey Gating Pipeline</text>
+  <text x="24" y="64" font-size="12.5" fill="#5c6675">How a request qualifies for passkey functionality</text>
+
+  <!-- Phase 1 panel -->
+  <rect x="24" y="84" width="608" height="396" rx="6" fill="#f4f6f9" stroke="#c9d1dc"/>
+  <text x="44" y="112" font-size="11.5" font-weight="700" letter-spacing="1.2" fill="#5c6675">PHASE 1 · INIT</text>
+  <text x="612" y="112" font-size="10.5" fill="#5c6675" text-anchor="end" font-family="Menlo, monospace">loginInit · appendInit · manageInit</text>
+  <text x="44" y="128" font-size="10.5" fill="#8b95a5">on page load, before any passkey UI is shown</text>
+
+  <!-- 1 Kill switch -->
+  <rect x="84" y="140" width="380" height="64" rx="4" fill="#ffffff" stroke="#c9d1dc"/>
+  <rect x="100" y="154" width="22" height="22" rx="3" fill="#1a2333"/>
+  <text x="111" y="170" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+  <text x="134" y="166" font-size="14" font-weight="600" fill="#1a2333">Kill switch</text>
+  <text x="134" y="186" font-size="11.5" fill="#5c6675">Emergency stop per surface: login · append · manage</text>
+
+  <line x1="274" y1="204" x2="274" y2="238" stroke="#1a2333" stroke-width="1.4" marker-end="url(#arr)"/>
+  <text x="284" y="226" font-size="11" fill="#5c6675">inactive</text>
+
+  <!-- 2 Ruleset -->
+  <rect x="84" y="238" width="380" height="126" rx="4" fill="#ffffff" stroke="#c9d1dc"/>
+  <rect x="100" y="252" width="22" height="22" rx="3" fill="#1a2333"/>
+  <text x="111" y="268" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+  <text x="134" y="264" font-size="14" font-weight="600" fill="#1a2333">Gradual-rollout ruleset</text>
+  <text x="134" y="284" font-size="11.5" fill="#5c6675">Project-defined rules evaluated per request:</text>
+  <text x="134" y="302" font-size="11.5" fill="#5c6675">OS &amp; version · browser · IP range · web / native</text>
+  <text x="134" y="320" font-size="11.5" fill="#5c6675">bot &amp; webdriver detection · invitation token</text>
+  <text x="134" y="338" font-size="11.5" fill="#5c6675">percentage sampling · sticky flags from prior visits</text>
+
+  <line x1="274" y1="364" x2="274" y2="396" stroke="#1a2333" stroke-width="1.4" marker-end="url(#arr)"/>
+  <text x="284" y="384" font-size="11" fill="#5c6675">allow</text>
+
+  <!-- Result strip -->
+  <rect x="84" y="396" width="380" height="56" rx="4" fill="#e8eefb" stroke="#1d4ed8"/>
+  <text x="104" y="419" font-size="11.5" font-weight="600" fill="#1d4ed8" font-family="Menlo, monospace">loginAllowed / appendAllowed / manageAllowed = true</text>
+  <text x="104" y="438" font-size="11.5" fill="#1d4ed8">→ passkey UI component renders</text>
+
+  <line x1="274" y1="452" x2="274" y2="528" stroke="#1a2333" stroke-width="1.4" marker-end="url(#arr)"/>
+  <text x="284" y="496" font-size="11" fill="#5c6675">user acts — identifier now known</text>
+
+  <!-- Phase 2 panel -->
+  <rect x="24" y="512" width="608" height="362" rx="6" fill="#f4f6f9" stroke="#c9d1dc"/>
+  <text x="44" y="540" font-size="11.5" font-weight="700" letter-spacing="1.2" fill="#5c6675">PHASE 2 · START</text>
+  <text x="612" y="540" font-size="10.5" fill="#5c6675" text-anchor="end" font-family="Menlo, monospace">loginStart · appendStart</text>
+  <text x="44" y="556" font-size="10.5" fill="#8b95a5">when the user submits an identifier or clicks the passkey component</text>
+
+  <!-- 3 Allowlist -->
+  <rect x="84" y="566" width="380" height="78" rx="4" fill="#ffffff" stroke="#c9d1dc"/>
+  <rect x="100" y="580" width="22" height="22" rx="3" fill="#1a2333"/>
+  <text x="111" y="596" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+  <text x="134" y="592" font-size="14" font-weight="600" fill="#1a2333">Identifier allowlist <tspan font-weight="400" fill="#8b95a5">(optional)</tspan></text>
+  <text x="134" y="612" font-size="11.5" fill="#5c6675">If enabled, only allowlisted email addresses or</text>
+  <text x="134" y="630" font-size="11.5" fill="#5c6675">usernames proceed to a passkey ceremony</text>
+
+  <line x1="274" y1="644" x2="274" y2="676" stroke="#1a2333" stroke-width="1.4" marker-end="url(#arr)"/>
+  <text x="284" y="664" font-size="11" fill="#5c6675">allowlisted, or check disabled</text>
+
+  <!-- 4 Passkey Intelligence -->
+  <rect x="84" y="676" width="380" height="94" rx="4" fill="#ffffff" stroke="#c9d1dc"/>
+  <rect x="100" y="690" width="22" height="22" rx="3" fill="#1a2333"/>
+  <text x="111" y="706" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">4</text>
+  <text x="134" y="702" font-size="14" font-weight="600" fill="#1a2333">Passkey Intelligence</text>
+  <text x="134" y="722" font-size="11.5" fill="#5c6675">Device &amp; environment capabilities, existing passkeys</text>
+  <text x="134" y="740" font-size="11.5" fill="#5c6675">and past ceremony outcomes — a ceremony only</text>
+  <text x="134" y="758" font-size="11.5" fill="#5c6675">starts when it is likely to succeed</text>
+
+  <line x1="274" y1="770" x2="274" y2="802" stroke="#1a2333" stroke-width="1.4" marker-end="url(#arr)"/>
+  <text x="284" y="790" font-size="11" fill="#5c6675">likely to succeed</text>
+
+  <!-- Ceremony -->
+  <rect x="84" y="802" width="380" height="58" rx="4" fill="#1d4ed8"/>
+  <text x="274" y="827" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">WebAuthn ceremony</text>
+  <text x="274" y="846" font-size="11.5" fill="#ffffff" opacity="0.85" text-anchor="middle">passkey login · passkey creation</text>
+
+  <!-- Fallback rail -->
+  <rect x="692" y="140" width="244" height="720" rx="6" fill="#ffffff" stroke="#9aa4b2"/>
+  <text x="814" y="174" font-size="13.5" font-weight="600" fill="#1a2333" text-anchor="middle">Fallback</text>
+  <text x="814" y="194" font-size="11.5" fill="#5c6675" text-anchor="middle">existing authentication flow</text>
+  <text x="814" y="212" font-size="11.5" fill="#5c6675" text-anchor="middle">(password, OTP, …)</text>
+  <line x1="712" y1="228" x2="916" y2="228" stroke="#e1e6ec"/>
+  <text x="814" y="800" font-size="10.5" fill="#8b95a5" text-anchor="middle">Exclusion is always silent —</text>
+  <text x="814" y="816" font-size="10.5" fill="#8b95a5" text-anchor="middle">the component hides or falls back;</text>
+  <text x="814" y="832" font-size="10.5" fill="#8b95a5" text-anchor="middle">users never see an error</text>
+
+  <!-- Exit arrows -->
+  <line x1="464" y1="172" x2="688" y2="172" stroke="#7d8797" stroke-width="1.2" marker-end="url(#arrg)"/>
+  <text x="576" y="163" font-size="10.5" fill="#7d8797" text-anchor="middle">switch active → allowed = false</text>
+
+  <line x1="464" y1="301" x2="688" y2="301" stroke="#7d8797" stroke-width="1.2" marker-end="url(#arrg)"/>
+  <text x="576" y="292" font-size="10.5" fill="#7d8797" text-anchor="middle">block / not sampled → allowed = false</text>
+
+  <line x1="464" y1="605" x2="688" y2="605" stroke="#7d8797" stroke-width="1.2" marker-end="url(#arrg)"/>
+  <text x="576" y="596" font-size="10.5" fill="#7d8797" text-anchor="middle">not on list → fallback</text>
+
+  <line x1="464" y1="723" x2="688" y2="723" stroke="#7d8797" stroke-width="1.2" marker-end="url(#arrg)"/>
+  <text x="576" y="714" font-size="10.5" fill="#7d8797" text-anchor="middle">unlikely to succeed → fallback</text>
+
+</svg>
