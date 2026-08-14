@@ -19,11 +19,23 @@ The Conditional UI flow starts without the user entering their username first. T
     **Account resolution:** The app does not know which user is signing in until the user selects a passkey. The operating system and active credential providers decide which eligible credentials appear in the suggestion surface.
 </Info>
 
-<ToolingFrame
-    imageURL="/images/authentication-flow/native-app/autosuggested-passkeys-ios-native.webp"
-    caption="Native: iOS Conditional UI flow"
-    imageName="autosuggested-passkeys-ios-native.webp"
-/>
+<Tabs>
+<Tab title="iOS">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/autosuggested-passkeys-ios-native.webp"
+        caption="Native: iOS Conditional UI flow"
+        imageName="autosuggested-passkeys-ios-native.webp"
+    />
+</Tab>
+
+  <Tab title="Android">
+    <ToolingFrame 
+        imageURL="/images/authentication-flow/native-app/autosuggested-passkeys-android-native.webp"
+        caption="Native: Android Conditional UI flow"
+        imageName="autosuggested-passkeys-android-native.webp"
+    />
+  </Tab>
+</Tabs>
 
 <Info>
     **Product-Native Steps:** The blue background indicates optional product-native steps (e.g., verification code, setup PIN, enabling biometrics). **PIN and local biometrics are optional features** for protecting app access within sessions after passkey authentication completes. Learn more about [how passkeys and local biometrics work together](https://www.corbado.com/blog/passkeys-local-biometrics) to provide both secure remote authentication (passkeys) and convenient app protection (local biometrics).
