@@ -1,0 +1,94 @@
+---
+title: "Corbado DevTools Chrome Extension"
+description: "Inspect the live Corbado Observe event stream, session ID and user references directly in Chrome DevTools while you develop."
+sidebarTitle: "Corbado DevTools"
+---
+
+**Corbado DevTools** is a Chrome extension that adds a **Corbado** panel to Chrome DevTools. It shows exactly what **Corbado Observe** sends from the browser while you use your application — which makes it the fastest way to verify an integration or debug a journey that does not look right.
+
+It works with both [Autocapture](/corbado-observe/get-started/autocapture) and [precision tracking](/corbado-observe/get-started/precision-tracking), because it inspects the outgoing event traffic rather than your code.
+
+<Note>
+  The extension is a **development tool**. It reads what your own browser sends on the page you have open. It is not required in production and collects nothing itself.
+</Note>
+
+## 1. What it shows
+
+The panel has two tabs.
+
+### 1.1 Observe Data
+
+The current tracking context of the page:
+
+| Item | Detail |
+| --- | --- |
+| **Current session ID** | The session identifier used to correlate the events of one journey, with copy, refresh and reset actions |
+| **User IDs seen** | Every user reference observed so far in this session, with first and last timestamps — useful for confirming that [user mapping](/corbado-observe/tracking/user) fires at the right moment |
+
+Resetting the session is handy for starting a clean journey without clearing all browser state.
+
+### 1.2 Observe Events
+
+A live, filterable stream of everything Observe sends:
+
+- **Events** — the modeled authentication events, with their key fields inline, for example `flow_started flowName=login touchpoint=account_login` or `subflow_step_finished subflowType=password-login stepName=post-response`
+- **Lows** — the low-level interaction signals that accompany them, such as `focus`, `blur` and `input` with timings
+- **Requests** — which network request each event was delivered in, so you can see batching behavior
+
+Controls include a free-text filter across name, type and data, chips to show only events or only lows, a recording toggle, and a clear action. Running counts of events, lows and requests are shown above the list.
+
+## 2. Requirements
+
+| Requirement | Detail |
+| --- | --- |
+| Browser | Google Chrome 102 or later |
+| DevTools | Must stay **open** while the page makes requests — the panel only captures network activity while DevTools is attached |
+| Page | Any page running the Corbado Observe SDK; the panel listens for Observe event requests on any host |
+
+## 3. Install
+
+<Steps>
+  <Step title="Get the extension">
+    Request the extension package from [support@corbado.com](mailto:support@corbado.com) and unpack it into a folder.
+  </Step>
+  <Step title="Open the extensions page">
+    Go to `chrome://extensions` in Chrome.
+  </Step>
+  <Step title="Enable developer mode">
+    Toggle **Developer mode** on, in the top right.
+  </Step>
+  <Step title="Load the extension">
+    Click **Load unpacked** and select the folder.
+  </Step>
+  <Step title="Open the panel">
+    Open DevTools on your application (`⌘⌥I` on macOS, `F12` on Windows and Linux) and switch to the **Corbado** tab.
+  </Step>
+</Steps>
+
+## 4. Typical workflow
+
+<Steps>
+  <Step title="Open the panel and start recording">
+    Recording is on by default. Click **Clear** so you start from an empty stream.
+  </Step>
+  <Step title="Walk one journey">
+    Complete a single login or sign-up from start to finish without navigating away.
+  </Step>
+  <Step title="Read the sequence">
+    Confirm the journey starts with a flow event, contains the subflow steps you expect, and ends with a finish event. Gaps and duplicates are obvious in the stream.
+  </Step>
+  <Step title="Repeat with a failure">
+    Cancel a passkey dialog and confirm the cancellation is captured. Silent failures produce no backend request at all, so this is the case worth checking explicitly.
+  </Step>
+</Steps>
+
+## 5. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
+    The full verification checklist, including debug mode and the console.
+  </Card>
+  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
+    What the event names and fields in the stream mean.
+  </Card>
+</CardGroup>

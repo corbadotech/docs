@@ -21,9 +21,9 @@ sidebarTitle: "Welcome"
 
 Whether you use passkeys, passwords, email OTP, social login, or a combination, **Corbado Observe** gives you a unified view of how users move through your authentication experience.
 
-<Tip>
-  Using an AI coding agent? See [Use with AI agents](/corbado-observe/overview/use-with-ai-agents) to let it instrument the integration for you.
-</Tip>
+<Info>
+  **Observe or Connect?** Use **Corbado Observe** to measure and debug the authentication you already have — it never touches your authentication path. Use [Corbado Connect](/corbado-connect/overview/welcome) if you still need to *add* passkeys to an existing identity provider. See [How Observe works](/corbado-observe/overview/how-it-works) for the full comparison.
+</Info>
 
 ## 2. Why use Corbado Observe?
 
@@ -31,6 +31,8 @@ Most teams have limited visibility into what happens between "user lands on logi
 
 - **Measure conversion end-to-end**\
   Track every step of login, sign-up, and recovery flows so you can pinpoint where users drop off.
+- **See what your backend cannot**\
+  A user who never gets past the passkey dialog produces no backend event at all. Observe captures the client-side reality: system dialogs, credential managers, silent cancellations and device-specific failures.
 - **Compare authentication methods**\
   Understand how passkeys, passwords, email OTP, and social login perform side by side.
 - **Segment by channel and context**\
@@ -42,15 +44,38 @@ Most teams have limited visibility into what happens between "user lands on logi
 
 ## 3. How it works
 
-You integrate a lightweight JavaScript SDK into your application and send events at key moments in your authentication flow. **Corbado Observe** processes these events and maps them to a structured data model.
+You integrate a lightweight JavaScript SDK into your frontend. It observes the authentication journey in the browser, sends structured events to Corbado, and Corbado maps them onto a data model of flows, subflows and decisions that the [management console](https://app.corbado.com) turns into funnels, error analysis and per-user journeys.
 
-## 4. Next steps
+Observe runs **client-side only**. There is no backend integration, no identity provider configuration, and Observe is never in the authentication path — it cannot grant, deny or delay a login.
+
+[How Observe works](/corbado-observe/overview/how-it-works) covers the architecture, what Observe deliberately does not do, and how it differs from the analytics and monitoring tools you already run.
+
+## 4. Two ways to send data
+
+| Path | Summary |
+| --- | --- |
+| **[Autocapture](/corbado-observe/get-started/autocapture)** *(recommended)* | Deploy one script. Corbado maps your authentication journey from signals your frontend already emits — no event tagging, nothing for your team to maintain. |
+| **[Precision tracking](/corbado-observe/get-started/precision-tracking)** | Instrument explicit events where you need guaranteed semantics — business-specific decisions, unusual flows, exact spec types. |
+
+Most teams run Autocapture as the foundation and add precision events only where a step needs full resolution. Both feed the same data model. See [Integration paths](/corbado-observe/overview/integration-paths) to choose.
+
+<Tip>
+  Using an AI coding agent? See [Use with AI agents](/corbado-observe/get-started/use-with-ai-agents) to let it instrument the integration for you.
+</Tip>
+
+## 5. Next steps
 
 <CardGroup cols={2}>
-  <Card title="Getting started" icon="rocket" href="/corbado-observe/overview/getting-started">
-    Install the SDK, initialize the tracker, and send your first event in under 10 minutes.
+  <Card title="How Observe works" icon="diagram-project" href="/corbado-observe/overview/how-it-works">
+    Architecture, what Observe is not, and how it compares to your existing tooling.
   </Card>
-  <Card title="Tracking overview" icon="diagram-project" href="/corbado-observe/tracking/overview">
-    Explore the data model and learn how flows, subflows, decisions, and events fit together.
+  <Card title="Compatibility & constraints" icon="list-check" href="/corbado-observe/overview/constraints">
+    Platform support, browser floor, data handling and known limitations.
+  </Card>
+  <Card title="Get started with Autocapture" icon="rocket" href="/corbado-observe/get-started/autocapture">
+    The recommended integration path — one script, no event tagging.
+  </Card>
+  <Card title="Tracking reference" icon="code" href="/corbado-observe/tracking/overview">
+    The full data model: flows, subflows, decisions, users and tags.
   </Card>
 </CardGroup>

@@ -1,13 +1,17 @@
 ---
-title: "Getting Started with Corbado Observe"
-description: "Install Corbado Observe with npm or CDN, initialize the tracker, and send your first authentication event."
-sidebarTitle: "Getting started"
+title: "Get Started with Precision Tracking"
+description: "Instrument your authentication flows with explicit Corbado Observe events: install the SDK with npm or CDN, initialize the tracker, and send your first event."
+sidebarTitle: "Precision tracking"
 ---
 
-**Corbado Observe** helps you measure authentication and passkey flows in your application by instrumenting your application with events. This guide shows how to install the SDK, initialize it, and send your first event.
+**Precision tracking** means instrumenting your frontend with explicit **Corbado Observe** events, so you get exactly the granularity you define. This guide shows how to install the SDK, initialize it, and send your first event.
+
+<Info>
+  Most teams run [Autocapture](/corbado-observe/get-started/autocapture) as their foundation and add precision events only where a step needs guaranteed semantics — a business-specific decision, an unusual flow, or an explicit spec type. Both paths write into the same data model. See [Integration paths](/corbado-observe/overview/integration-paths) to decide.
+</Info>
 
 <Tip>
-  Prefer an AI coding agent? See [Use with AI agents](/corbado-observe/overview/use-with-ai-agents) to install the Corbado Observe skill and let your agent instrument the integration for you.
+  Prefer an AI coding agent? See [Use with AI agents](/corbado-observe/get-started/use-with-ai-agents) to install the Corbado Observe skill and let your agent instrument the integration for you.
 </Tip>
 
 ## 1. Prerequisites
@@ -107,7 +111,7 @@ When your login UI is rendered and visible, send `flowStarted`:
 
 ## 5. Debugging
 
-Use debug mode during integration to verify that events are sent with the expected payload.
+Use debug mode during integration to verify that events are sent with the expected payload. For the full set of verification tools, see [Verify your integration](/corbado-observe/get-started/verify).
 
 Set `debug: true` in your `init()` call while developing:
 
@@ -129,6 +133,15 @@ With debug mode enabled, **Corbado Observe** logs tracked events to the browser 
   Keep `debug` enabled in local and staging environments. Set `debug: false` in production to reduce console noise.
 </Tip>
 
+The [Corbado DevTools extension](/corbado-observe/tools/devtools-extension) shows the same events as a filterable live stream in Chrome DevTools, which is usually faster than reading console output.
+
 ## 6. Next steps
 
-- Learn the data model and event structure in [Tracking overview](/corbado-observe/tracking/overview).
+<CardGroup cols={2}>
+  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
+    The full data model: flows, decisions, subflows, users and tags.
+  </Card>
+  <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
+    Confirm events arrive with the expected payload before you ship.
+  </Card>
+</CardGroup>

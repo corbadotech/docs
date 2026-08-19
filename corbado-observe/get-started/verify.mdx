@@ -1,0 +1,82 @@
+---
+title: "Verify Your Corbado Observe Integration"
+description: "Confirm that Corbado Observe events arrive with the expected payload using debug mode, the Corbado DevTools extension, and the management console."
+sidebarTitle: "Verify your integration"
+---
+
+Before you consider an integration finished, confirm that events actually arrive and carry the payload you expect. There are three tools, in increasing order of convenience.
+
+## 1. Debug mode
+
+Set `debug: true` in your `init()` call while developing. **Corbado Observe** then logs every tracked event to the browser console:
+
+```typescript
+init({
+  projectId: "<ProjectID>",
+  apiBaseUrl: "<APIBaseURL>",
+  debug: true,
+});
+```
+
+Use it to confirm that:
+
+- Event names are correct (for example `flowStarted`)
+- Required fields such as `flowName` and `touchpoint` are present
+- Events fire at the correct moment in your UI flow
+
+<Tip>
+  Keep `debug` enabled in local and staging environments and set `debug: false` in production to reduce console noise.
+</Tip>
+
+## 2. Corbado DevTools extension
+
+The [Corbado DevTools Chrome extension](/corbado-observe/tools/devtools-extension) adds a **Corbado** panel to Chrome DevTools showing the live event stream as you walk through a login — filterable, searchable, and with the current session ID and the user IDs seen so far.
+
+This is the fastest way to verify an integration, because you see exactly what leaves the browser rather than what your code intended to send. It works for both [Autocapture](/corbado-observe/get-started/autocapture) and [precision tracking](/corbado-observe/get-started/precision-tracking).
+
+## 3. The management console
+
+Once events are flowing, the console is the confirmation that they were accepted and modeled correctly:
+
+| Where | What to check |
+| --- | --- |
+| [Integration debugging](https://app.corbado.com) | Whether events are arriving for your project and whether any are malformed |
+| Events view | The raw event stream as received by Corbado |
+| User search | Reconstruct the journey of a specific user reference end to end |
+
+## 4. Verification walkthrough
+
+<Steps>
+  <Step title="Walk each journey">
+    Complete a login, a sign-up, a recovery and an enrollment — whichever exist in your product. Include at least one deliberate failure, for example cancelling a passkey dialog.
+  </Step>
+  <Step title="Confirm the events">
+    With debug mode or the DevTools extension open, check that each journey produces a start event, the expected steps, and a finish event.
+  </Step>
+  <Step title="Check a full journey in the console">
+    Find one of your own test journeys via user search and confirm that the flow, subflows and decisions look the way you expect.
+  </Step>
+  <Step title="Check the failure case">
+    Confirm that the cancelled ceremony appears as an incomplete journey rather than disappearing entirely. Silent failures are the main thing Observe exists to surface.
+  </Step>
+</Steps>
+
+## 5. Common issues
+
+| Symptom | Likely cause |
+| --- | --- |
+| No events at all | Script not loaded, wrong `Project ID` or `API Base URL`, or a Content Security Policy blocking the script or the API endpoint |
+| Events arrive but no WebAuthn detail | A password manager with locked WebAuthn accessors, or the SDK is not running in the frame that performs the ceremony — see [Constraints](/corbado-observe/overview/constraints) |
+| Journeys break in the middle | The SDK initializes too late, or a full page reload is not preserving session continuity |
+| Journeys from different environments mixed | Production and staging are sharing a project — use [separate projects per environment](/corbado-observe/overview/constraints) |
+
+## 6. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Corbado DevTools" icon="chrome" href="/corbado-observe/tools/devtools-extension">
+    The Chrome extension for live event inspection during development.
+  </Card>
+  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
+    The data model behind flows, subflows and decisions.
+  </Card>
+</CardGroup>

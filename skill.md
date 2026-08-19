@@ -101,7 +101,7 @@ getCorbadoObserveTracker()?.flowStarted({ flowName: "login", touchpoint: "accoun
 Optional `init` options: `defaultTags` (key-value strings added to every event),
 `applicationId` (channel like `"web"`/`"ios"` when one project tracks multiple channels).
 For plain HTML sites without npm, a CDN snippet exists — see
-https://docs.corbado.com/corbado-observe/overview/getting-started (with the CDN, call
+https://docs.corbado.com/corbado-observe/get-started/precision-tracking (with the CDN, call
 `Corbado.get().flowStarted(...)` per event; never store the instance).
 
 ## Data model — what to instrument

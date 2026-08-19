@@ -1,0 +1,85 @@
+---
+title: "Autocapture vs. Precision Tracking"
+description: "Corbado Observe offers two ways to capture authentication data: Autocapture, the recommended default, and precision tracking for flows that need explicit semantics."
+sidebarTitle: "Integration paths"
+---
+
+There are two ways to get authentication data into **Corbado Observe**. They are not competing options — most teams run **Autocapture** as the foundation and add **precision tracking** only where they need extra resolution. Both feed the same data model, the same dashboards and the same debugging views.
+
+## 1. Autocapture
+
+<Info>
+  **Recommended for most teams.** Autocapture is the default integration path.
+</Info>
+
+With Autocapture you deploy a single script and Corbado maps your authentication journey from signals your frontend already emits. There is no event tagging, no change to your login flows, and no instrumentation to maintain as your login evolves.
+
+### 1.1 What Autocapture actually does
+
+Autocapture is not magic and not a black box. Concretely, it does five things in the browser:
+
+| Mechanism | What it means in practice |
+| --- | --- |
+| **It inspects the DOM tree** | Autocapture locates the elements your authentication runs through — identifier and password fields, OTP inputs, submit and method-selection buttons — including across shadow-DOM boundaries. Field semantics such as `autocomplete="new-password"` are used to tell, for example, a "set new password" field apart from a login field. |
+| **It listens to DOM events** | `focus`, `blur`, `input`, `click` and `submit` on those elements produce the low-level interaction signals that show *how* a user moved through a screen — including hesitation, retries and abandoned fields. |
+| **It observes the WebAuthn API** | The full lifecycle of `navigator.credentials.get()` and `create()`, from invocation to settlement, including **silent cancellations** that produce no error and no backend request — the failures nothing else can see. |
+| **It observes your authentication network calls** | The start and outcome of requests to the endpoints Corbado is configured to watch, with a request ID correlating both sides. All other traffic is ignored. |
+| **It follows in-app navigation** | Same-document (SPA) route changes, so a journey stays intact across a client-side router. |
+
+Those raw signals are then mapped onto your actual flows — which request means "identifier accepted", which button means "user chose password over passkey" — so they arrive in Observe as a modeled journey rather than as a stream of clicks.
+
+Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture), an open, dependency-free capture library designed to run inside a page it does not own and to fail closed when a browser surface cannot be instrumented safely.
+
+<Note>
+  Autocapture pairs the capture library with a mapping for **your** authentication flows, which Corbado builds and keeps current as your login changes. Autocapture is therefore set up together with Corbado during onboarding rather than fully self-serve. [Talk to us](mailto:support@corbado.com) to get started.
+</Note>
+
+## 2. Precision tracking
+
+Precision tracking means instrumenting your frontend with explicit **Corbado Observe** events: you call the SDK at the semantically correct points in your flows, and you get exactly the granularity you define.
+
+You reach for precision tracking when you need something Autocapture cannot infer:
+
+- A **business-specific decision** — for example which of your own login options a user picked on a custom screen
+- A **non-standard or unusual flow** that does not resemble a common authentication pattern
+- **Explicit semantics** you want guaranteed rather than inferred — a named flow, touchpoint, spec type or actor
+- Custom **tags** and **user references** attached at a precise moment in the journey
+
+See [Precision tracking: getting started](/corbado-observe/get-started/precision-tracking) to instrument your first event, and the [tracking reference](/corbado-observe/tracking/overview) for the full data model.
+
+## 3. Why both exist
+
+Autocapture is deliberately conservative about what it claims to know. It reports protocol-level facts — a ceremony started, a request settled, a route changed — and does **not** infer product concepts such as:
+
+- whether a passkey ceremony was an enrollment or a login *intent*
+- the conditional-UI spec type behind a ceremony
+- whether an identifier was already known to your system
+- whether the **user** or the **system** initiated a step
+
+Those facts live in your application's own state, so a capture layer cannot honestly derive them. Precision tracking is how you supply them when they matter to your analysis.
+
+## 4. Choosing between them
+
+| | **Autocapture** | **Precision tracking** |
+| --- | --- | --- |
+| Integration effort | One script | Tracking calls at each authentication step |
+| Time to first insight | Same day | Depends on your instrumentation scope |
+| Semantics | Inferred from observed signals | Explicit — you define flow, touchpoint, spec type and decisions |
+| Maintenance | Corbado keeps the mapping current | Your team maintains events as flows change |
+| Coverage | Broad, across every flow the script sees | Exactly the flows you instrument |
+| Best for | Baseline coverage and getting to data fast | Custom decisions, unusual flows, guaranteed semantics |
+
+<Tip>
+  Start with Autocapture. Add precision events only where a specific step needs full resolution — the two combine cleanly in the same project.
+</Tip>
+
+## 5. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Compatibility & constraints" icon="list-check" href="/corbado-observe/overview/constraints">
+    Platform support, browser floor, data handling and known limitations.
+  </Card>
+  <Card title="Precision tracking" icon="code" href="/corbado-observe/get-started/precision-tracking">
+    Install the SDK and send your first explicit event.
+  </Card>
+</CardGroup>
