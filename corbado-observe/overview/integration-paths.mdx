@@ -73,8 +73,8 @@ Both write into the same project, the same session and the same data model, so t
 | | **Autocapture** | **Custom events** |
 | --- | --- | --- |
 | Platforms | Web | Web, iOS, Android |
-| Integration effort | One script | Tracking calls at each authentication step |
-| Time to first insight | Same day | Depends on your instrumentation scope |
+| Integration effort | **One line of code.** Corbado prepares the script for your flows. | **1 to 3 days** for a typical login flow, plus your own testing |
+| Time to first insight | Same day | As soon as your first instrumented flow ships |
 | Semantics | Derived from observed signals | Explicit: you define flow, touchpoint, spec type and decisions |
 | Maintenance | Corbado keeps the mapping current | Your team maintains events as flows change |
 | Coverage | Every flow the script sees | Exactly the flows you instrument |
@@ -84,6 +84,10 @@ Both write into the same project, the same session and the same data model, so t
 - **Web:** start with Autocapture, then add custom events for the gaps in section 3.
 - **iOS and Android:** custom events, using the native SDKs.
 - **Both web and native apps:** Autocapture on web **and** custom events in the apps. Do not drop Autocapture just because your apps need instrumenting. One project holds all three channels, and [applications](/corbado-observe/tracking/applications) keep them comparable.
+
+<Tip>
+  **Want to try one flow first?** [Tell us which flow](mailto:support@corbado.com) and we prepare an Autocapture script for it. You add one line, walk the flow and see the data. That is the fastest way to judge whether Observe fits before committing to a full integration.
+</Tip>
 
 ## 6. Next steps
 
