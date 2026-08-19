@@ -4,7 +4,7 @@ description: "Track concrete authentication methods with subflows."
 sidebarTitle: "Subflows"
 ---
 
-Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows) and are **auto-discovered** by **Corbado Observe** based on the events you send. They represent a specific authentication method, for example passkey login, password enrollment, or email OTP verification.
+Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows) and are **auto-discovered** by **Corbado Observe** based on the events you send. They represent a specific authentication method, for example passkey login, password enrollment or email OTP verification.
 
 <Frame>
   <iframe
@@ -18,7 +18,7 @@ Subflows are the concrete building blocks inside a [flow](/corbado-observe/track
 </Frame>
 
 <Info>
-  Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Getting started](/corbado-observe/overview/getting-started). This page explains the subflow concept and documents all available subflow types.
+  Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Custom events](/corbado-observe/get-started/custom-events). This page explains the subflow concept and documents all available subflow types.
 </Info>
 
 On SDK level, every subflow type has a dedicated class that helps with tracking. Each class defines the default steps you typically want to track for that subflow. If you need to track additional steps beyond the defaults, you can do so by using the generic step events with a custom `stepName`.
@@ -64,12 +64,12 @@ A successful passkey login subflow where assertion options are pre-fetched in th
 | --- | --- | --- | --- |
 | 1 | `subflow_step_started` | `get-options` | SDK requests assertion options from your server in the background. |
 | 2 | `subflow_step_finished` | `get-options` | Server returns assertion options. UI can now show a "Sign in with passkey" button. |
-| 3 | `subflow_step_started` | `ceremony` | User clicks the button — the browser WebAuthn ceremony begins. This step marks the interaction. |
+| 3 | `subflow_step_started` | `ceremony` | User clicks the button and the browser WebAuthn ceremony begins. This step marks the interaction. |
 | 4 | `subflow_step_finished` | `ceremony` | User completes the ceremony. |
 | 5 | `subflow_step_started` | `post-response` | SDK sends the assertion response to your server for verification. |
 | 6 | `subflow_step_finished` | `post-response` | Server confirms the login. |
 
-The `get-options` steps run in the background without any user involvement — only the started `ceremony` step counts as the interaction. If the user never clicks the button, the ceremony never starts and there was no interaction with this subflow.
+The `get-options` steps run in the background without any user involvement. Only the started `ceremony` step counts as the interaction. If the user never clicks the button, the ceremony never starts and there was no interaction with this subflow.
 
 If any step fails, a `subflow_step_error` replaces the corresponding `subflow_step_finished`.
 
@@ -106,7 +106,7 @@ Because passkey Conditional UI (CUI) is always bound to the same input field as 
 The operation is bound to the identifier input field. This enables the SDK to **automatically detect** user interaction: when the user starts typing, the provide-identifier trigger fires; when the user interacts with the browser's CUI autofill prompt, the CUI trigger and ceremony start fire automatically. The SDK also auto-detects CUI cancellation.
 
 <Note>
-  You do not need to send `subflow_trigger` events for this subflow — interaction is handled automatically. Explicit triggers for provide-identifier are deprecated and will be removed in a future SDK version.
+  You do not need to send `subflow_trigger` events for this subflow, because interaction is handled automatically. Explicit triggers for provide-identifier are deprecated and will be removed in a future SDK version.
 </Note>
 
 <Tabs>
@@ -167,7 +167,7 @@ The operation is bound to the identifier input field. This enables the SDK to **
 
 **SDK class:** `passkeyLoginFullOperation()`
 
-Tracks passkey-based sign-in attempts where the WebAuthn ceremony is started explicitly — by the relying party or via immediate mediation (not via Conditional UI — see [Provide identifier](#1-provide-identifier) for CUI).
+Tracks passkey-based sign-in attempts where the WebAuthn ceremony is started explicitly, by the relying party or via immediate mediation. This is not Conditional UI: see [Provide identifier](#1-provide-identifier) for CUI.
 
 #### Steps
 
@@ -187,14 +187,14 @@ Tracks passkey-based sign-in attempts where the WebAuthn ceremony is started exp
 | `passkey-immediate` | Immediate-mediation login (`navigator.credentials.get({ mediation: "immediate" })`): the browser offers a passkey prompt right when the login page loads, before the user enters an identifier and before Conditional UI. |
 
 <Note>
-  You do not need to send `subflow_trigger` events for this subflow — the started `ceremony` step marks the interaction. Explicit triggers for passkey-login are deprecated and will be removed in a future SDK version.
+  You do not need to send `subflow_trigger` events for this subflow, because the started `ceremony` step marks the interaction. Explicit triggers for passkey-login are deprecated and will be removed in a future SDK version.
 </Note>
 
 #### Code example
 
 <Tabs>
   <Tab title="Immediate mediation (pre-identifier)">
-    The browser offers a passkey prompt immediately when the login page loads — before the user has entered an identifier and before Conditional UI starts. **No trigger is sent**: there is no user click and the prompt is owned by the browser, so the started `ceremony` step marks the interaction.
+    The browser offers a passkey prompt immediately when the login page loads, before the user has entered an identifier and before Conditional UI starts. **No trigger is sent**: there is no user click and the prompt is owned by the browser, so the started `ceremony` step marks the interaction.
 
     ```typescript
     import { getTracker } from "@corbado/observe";
@@ -218,7 +218,7 @@ Tracks passkey-based sign-in attempts where the WebAuthn ceremony is started exp
         passkeyOp.ceremony.error(e);
 
         // Continue with the regular login: redirect the user to your login
-        // component, or — if you are already on the login page — start
+        // component, or, if you are already on the login page, start
         // Conditional UI on the identifier field (see Provide identifier).
         return;
       }
@@ -293,7 +293,7 @@ Tracks passkey registration and setup after authentication (e.g., during a post-
 
 | `explicitSpecType` | Description |
 | --- | --- |
-| `conditional-auto-manual` | System first attempts conditional (auto-register) enrollment, then falls back to a regular prompt if it fails, and finally allows the user to trigger it manually. |
+| `conditional-auto-manual` | System first attempts conditional (auto-register) enrollment, then falls back to a regular prompt if it fails, then allows the user to trigger it manually. |
 | `auto-manual` | System auto-triggers the enrollment prompt, with a manual fallback. |
 | `manual` | User explicitly triggers enrollment (e.g., clicks "Create passkey"). |
 
@@ -328,7 +328,7 @@ Tracks passkey registration and setup after authentication (e.g., during a post-
       } catch (e) {
         enrollOp.ceremony.error(e);
         if (isConditional) {
-          // Conditional prompt dismissed — fall back to auto
+          // Conditional prompt dismissed, fall back to auto
           await handleEnrollment(userId, false, true);
         }
         return;
@@ -436,7 +436,7 @@ Tracks passkey registration and setup after authentication (e.g., during a post-
 Tracks password-based login attempts. The operation is bound to the password input field via `autoTrackConfig`, so the SDK **automatically detects** the interaction when the user starts typing.
 
 <Note>
-  You do not need to send `subflow_trigger` events for this subflow — interaction is handled automatically. Explicit triggers for password-login are deprecated and will be removed in a future SDK version.
+  You do not need to send `subflow_trigger` events for this subflow, because interaction is handled automatically. Explicit triggers for password-login are deprecated and will be removed in a future SDK version.
 </Note>
 
 #### Steps
@@ -464,7 +464,7 @@ In addition to passing raw errors, the password login subflow supports typed err
 
 #### Code example
 
-The operation is bound to the password input field. When the user starts typing, the SDK detects the interaction automatically — your code only tracks the server-side verification step.
+The operation is bound to the password input field. When the user starts typing, the SDK detects the interaction automatically. Your code only tracks the server-side verification step.
 
 <Tabs>
   <Tab title="Identifier + password (pre-identifier)">
@@ -608,7 +608,7 @@ Tracks authentication flows where users sign in or verify their identity through
 
 #### Cross-environment transactions
 
-Email links often continue in a different browser tab, browser profile, device, or app than the one where the link was requested. For example, a user can start password recovery on desktop but open the email link on mobile.
+Email links often continue in a different browser tab, browser profile, device or app than the one where the link was requested. For example, a user can start password recovery on desktop but open the email link on mobile.
 
 Use `crossEnvironmentTransactionID` to connect the `send` step with the later `post-response` step. The value can be chosen as needed: you can generate a new ID for the email-link transaction or reuse an existing transaction ID from your system. The only requirement is that the same value is available when sending the email and when verifying the link after it has been clicked.
 

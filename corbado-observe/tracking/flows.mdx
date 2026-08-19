@@ -20,7 +20,7 @@ Flows represent an end-to-end user journey in **Corbado Observe**, for example l
 Each flow is built from smaller units:
 
 - [**Decisions**](/corbado-observe/tracking/decisions) (for example method selection or route choice)
-- [**Subflows**](/corbado-observe/tracking/subflows) (for example passkey login, password login, or email OTP)
+- [**Subflows**](/corbado-observe/tracking/subflows) (for example passkey login, password login or email OTP)
 - **Nested flows** (for example a recovery flow like a password reset that completes a surrounding login flow)
 
 Nested flows are flows that happen inside another flow. They are useful when a user journey temporarily enters another complete journey, such as a password reset that completes a surrounding login flow. Nested flows are described in more detail in the examples below.
@@ -41,12 +41,12 @@ Use one of these predefined flow names when you send flow events:
     <tr>
       <td><code>login</code></td>
       <td><code>completed</code> or <code>incomplete</code>.</td>
-      <td>Existing user authentication journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows (<code>provide-identifier</code>, <code>passkey-login</code>, <code>social-login</code>, <code>password-login</code>, <code>email-link</code>, <code>email-otp</code>, <code>sms-otp</code>, etc.), and potentially nested flows (<code>enrollment</code>, <code>recovery</code>).</td>
+      <td>Existing user authentication journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows (<code>provide-identifier</code>, <code>passkey-login</code>, <code>social-login</code>, <code>password-login</code>, <code>email-link</code>, <code>email-otp</code>, <code>sms-otp</code>, etc.) and potentially nested flows (<code>enrollment</code>, <code>recovery</code>).</td>
     </tr>
     <tr>
       <td><code>signup</code></td>
       <td><code>completed</code> or <code>incomplete</code>.</td>
-      <td>New user registration journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows similar to login but often with different <code>explicitSpecType</code> values, and potentially nested flows (<code>enrollment</code>).</td>
+      <td>New user registration journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows similar to login but often with different <code>explicitSpecType</code> values and potentially nested flows (<code>enrollment</code>).</td>
     </tr>
     <tr>
       <td><code>recovery</code></td>
@@ -55,8 +55,8 @@ Use one of these predefined flow names when you send flow events:
     </tr>
     <tr>
       <td><code>enrollment</code></td>
-      <td><code>completed</code>, <code>skipped</code>, <code>invisible</code>, or <code>incomplete</code>.</td>
-      <td>Authenticator enrollment journey, for example passkey setup after a successful login. Typically, we observe auth method decisions and subflows such as <code>passkey-enrollment</code>, <code>email-link</code>, or <code>sms-otp</code>.</td>
+      <td><code>completed</code>, <code>skipped</code>, <code>invisible</code> or <code>incomplete</code>.</td>
+      <td>Authenticator enrollment journey, for example passkey setup after a successful login. Typically, we observe auth method decisions and subflows such as <code>passkey-enrollment</code>, <code>email-link</code> or <code>sms-otp</code>.</td>
     </tr>
   </tbody>
 </table>
@@ -77,9 +77,9 @@ These **Corbado Observe SDK** events define and update the state of a flow:
 
 ### 2.1 `flowStarted()`
 
-Emit `flowStarted()` when a new flow has started, for example when the user enters a login, sign-up, recovery, or enrollment journey.
+Emit `flowStarted()` when a new flow has started, for example when the user enters a login, sign-up, recovery or enrollment journey.
 
-Use `flowName`, `flowNames`, and `defaultFlowName` to indicate which flow name has been started:
+Use `flowName`, `flowNames` and `defaultFlowName` to indicate which flow name has been started:
 
 - Use `flowName` if the flow name is known from the start. For example, if your application has separate login and sign-up pages, use `login` on the login page and `signup` on the sign-up page.
 - Use `flowNames` if multiple flow names are possible at the beginning of the journey. This is common when login and sign-up are merged into one identifier-first journey: the user enters an identifier first, and your system later decides whether this is a login or a sign-up. In this case, list all possible flow names, usually `login` and `signup`.
@@ -103,7 +103,7 @@ It is fine if `flowDecided()` is emitted multiple times during a journey. Corbad
 
 Emit `flowFinished()` when a flow reaches its explicit end state.
 
-For login, this is usually the moment the user is authenticated. For sign-up, it is the moment the account has been created and the user is authenticated. For recovery, it is the moment the user has regained access. For enrollment, it is the moment the authenticator setup has completed, has been skipped, or is known to be invisible.
+For login, this is usually the moment the user is authenticated. For sign-up, it is the moment the account has been created and the user is authenticated. For recovery, it is the moment the user has regained access. For enrollment, it is the moment the authenticator setup has completed, has been skipped or is known to be invisible.
 
 If available, include `userId` or `identifier` so Corbado Observe can link the completed flow to a user reference. For flows that end without a normal completion, use `explicitOutcome`, for example `skipped` or `invisible` during enrollment.
 
@@ -127,7 +127,7 @@ This can be tricky to decide in real integrations. The examples below show the r
 
 ## 3. Examples
 
-In a real application, flow tracking is usually spread across pages, components, server actions, and callback routes. The examples below keep the relevant snippets together to show the complete event sequence for each journey.
+In a real application, flow tracking is usually spread across pages, components, server actions and callback routes. The examples below keep the relevant snippets together to show the complete event sequence for each journey.
 
 ### 3.1 Recovery with automatic login
 
@@ -135,7 +135,7 @@ A login flow is started, but the user cannot complete the login directly and has
 
 Track this as a recovery flow nested inside the surrounding login flow. Because the login flow was already started before the recovery flow began, finish both flows explicitly: first `flowFinished()` for `recovery`, then `flowFinished()` for `login`.
 
-Because the email link can be opened in a different browser, device, or session, pass a stable `crossEnvironmentTransactionID` from the email-send step to the reset-link verification step.
+Because the email link can be opened in a different browser, device or session, pass a stable `crossEnvironmentTransactionID` from the email-send step to the reset-link verification step.
 
 ```typescript
 import { getTracker, OperationFullProvideIdentifierWithCUI } from "@corbado/observe";
@@ -276,7 +276,7 @@ A login flow is started, but the user cannot complete the login directly and has
 
 Track this similar to the previous example: recovery is nested inside the surrounding login flow. The difference is that the login flow continues after the nested recovery flow and includes additional subflows, such as `password-login`, before the login flow is finished.
 
-Because the email link can be opened in a different browser, device, or session, pass a stable `crossEnvironmentTransactionID` from the email-send step to the reset-link verification step.
+Because the email link can be opened in a different browser, device or session, pass a stable `crossEnvironmentTransactionID` from the email-send step to the reset-link verification step.
 
 ```typescript
 import {

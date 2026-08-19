@@ -1,0 +1,67 @@
+---
+title: "Use Corbado Observe with AI coding agents"
+description: "Point your AI coding agent at the Corbado Observe agent skill, or install it with npx skills add, to instrument authentication flows for you."
+sidebarTitle: "Use with AI agents"
+---
+
+Corbado Observe ships an **agent skill** following the open [agentskills.io](https://agentskills.io) standard. It teaches your AI coding agent how to instrument Corbado Observe in your frontend: which events to fire, where to fire them and how to verify the result.
+
+The skill uses the `SKILL.md` format read by most AI coding tools, including **Cursor**, **Claude Code**, **Codex**, **GitHub Copilot**, **Windsurf** and **Gemini CLI**, plus around 70 more compatible agents.
+
+## 1. Use it in a prompt
+
+The fastest way, no install required:
+
+```text
+Integrate Corbado Observe into my frontend using https://docs.corbado.com/skill.md
+```
+
+## 2. Install it
+
+To make the skill permanently available to your agent:
+
+```bash
+npx skills add https://docs.corbado.com
+```
+
+<Warning>
+  The `https://` scheme is required. The bare domain form (`npx skills add docs.corbado.com`) is not accepted by the Skills CLI.
+</Warning>
+
+The command detects your installed agents and writes the skill into each one's namespaced skills folder, for example `.cursor/skills/` or `.claude/skills/`. It never edits or overwrites your existing `AGENTS.md` or `CLAUDE.md`.
+
+<Info>
+  Manually installed skills do not auto-update. Run `npx skills update -y` to pull the latest version.
+</Info>
+
+Once installed, ask your agent in natural language, for example "Add Corbado Observe tracking to my login and signup flows" or "Instrument my passkey login with Corbado Observe events".
+
+## 3. What the agent does
+
+The skill guides the agent through a safe, telemetry-only integration:
+
+<Steps>
+  <Step title="Discovers the auth surface">
+    Finds your login, signup, recovery and enrollment entry points and the methods each offers.
+  </Step>
+  <Step title="Proposes a plan">
+    Shows you a short map of the touchpoints it will instrument and asks for confirmation before writing code.
+  </Step>
+  <Step title="Instruments">
+    Adds flows, decisions and subflows with the correct events and payloads, using guarded tracking calls that cannot break your app's behavior.
+  </Step>
+  <Step title="Verifies">
+    Walks each journey with debug mode on and confirms events fire as expected. See [Verify your integration](/corbado-observe/get-started/verify).
+  </Step>
+</Steps>
+
+## 4. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Custom events" icon="code" href="/corbado-observe/get-started/custom-events">
+    Install the SDK and send your first event manually.
+  </Card>
+  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
+    The full data model the skill instruments against.
+  </Card>
+</CardGroup>

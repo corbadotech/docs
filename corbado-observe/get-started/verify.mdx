@@ -1,0 +1,52 @@
+---
+title: "Verify Your Corbado Observe Integration"
+description: "Confirm that Corbado Observe events arrive with the expected payload using debug mode, the Corbado DevTools extension and the management console."
+sidebarTitle: "Verify your integration"
+---
+
+Before you consider an integration finished, confirm that events actually arrive and carry the payload you expect.
+
+## 1. The three tools
+
+| Tool | Use it for |
+| --- | --- |
+| **Debug mode** | Set `debug: true` at initialization and Observe logs every tracked event to the console. Fastest check that a call site fires at all. |
+| **[Corbado DevTools extension](/corbado-observe/tools/devtools-extension)** | A filterable live stream of what actually leaves the browser, plus the current session ID and user references. Works for both Autocapture and custom events. |
+| **[Management console](https://app.corbado.com)** | Confirms events were accepted and modeled correctly. Use the events view for the raw stream and user search to reconstruct one journey end to end. |
+
+## 2. Walkthrough
+
+<Steps>
+  <Step title="Walk each journey">
+    Complete a login, a sign-up, a recovery and an enrollment, whichever exist in your product.
+  </Step>
+  <Step title="Confirm the events">
+    With debug mode or the DevTools extension open, check that each journey produces a start event, the expected steps and a finish event.
+  </Step>
+  <Step title="Check one journey in the console">
+    Find a test journey via user search and confirm the flow, subflows and decisions look the way you expect.
+  </Step>
+  <Step title="Check a failure">
+    Cancel a passkey dialog and confirm it appears as an incomplete journey rather than disappearing. Silent failures produce no backend request at all, so this is the case worth checking explicitly.
+  </Step>
+</Steps>
+
+## 3. Common issues
+
+| Symptom | Likely cause |
+| --- | --- |
+| No events at all | Script not loaded, wrong `Project ID` or `API Base URL` or a Content Security Policy blocking the script or the API endpoint |
+| Events arrive but no WebAuthn detail | A password manager with locked WebAuthn accessors, or the SDK is not running in the frame that performs the ceremony. See [Constraints](/corbado-observe/overview/constraints#5-autocapture-limitations) |
+| Journeys break in the middle | The SDK initializes too late, or a full page reload is not preserving session continuity |
+| Journeys from different environments mixed | Production and staging share a project. Use [separate projects per environment](/corbado-observe/overview/constraints#8-projects-environments-and-hosting) |
+
+## 4. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Corbado DevTools" icon="chrome" href="/corbado-observe/tools/devtools-extension">
+    Live event inspection during development.
+  </Card>
+  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
+    What the event names and fields mean.
+  </Card>
+</CardGroup>

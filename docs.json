@@ -28,12 +28,29 @@
                         "group": "Overview",
                         "pages": [
                             "corbado-observe/overview/welcome",
-                            "corbado-observe/overview/getting-started",
-                            "corbado-observe/overview/use-with-ai-agents"
+                            "corbado-observe/overview/how-it-works",
+                            "corbado-observe/overview/integration-paths",
+                            "corbado-observe/overview/constraints"
                         ]
                     },
                     {
-                        "group": "Tracking",
+                        "group": "Get started",
+                        "pages": [
+                            "corbado-observe/get-started/autocapture",
+                            "corbado-observe/get-started/custom-events",
+                            "corbado-observe/get-started/use-with-ai-agents",
+                            "corbado-observe/get-started/verify"
+                        ]
+                    },
+                    {
+                        "group": "Developer tools",
+                        "pages": [
+                            "corbado-observe/tools/devtools-extension",
+                            "corbado-observe/tools/cli"
+                        ]
+                    },
+                    {
+                        "group": "Custom events reference",
                         "pages": [
                             "corbado-observe/tracking/overview",
                             "corbado-observe/tracking/applications",
@@ -529,6 +546,14 @@
         {
             "source": "/corbado-complete/:slug*",
             "destination": "/corbado-connect/overview/welcome"
+        },
+        {
+            "source": "/corbado-observe/overview/getting-started",
+            "destination": "/corbado-observe/get-started/custom-events"
+        },
+        {
+            "source": "/corbado-observe/overview/use-with-ai-agents",
+            "destination": "/corbado-observe/get-started/use-with-ai-agents"
         }
     ]
 }
