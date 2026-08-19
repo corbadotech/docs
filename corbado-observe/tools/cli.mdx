@@ -5,29 +5,25 @@ sidebarTitle: "CLI (beta)"
 ---
 
 <Warning>
-  **Closed beta — not publicly available.** The Corbado Observe CLI is under active development and is currently shared with selected customers only. Commands, output shapes and installation may change without notice. [Request access](mailto:support@corbado.com) if you would like to try it.
+  **Closed beta, not publicly available.** The Corbado Observe CLI is under active development and shared with selected customers only. Commands, output shapes and installation may change without notice. [Request access](mailto:support@corbado.com) to try it.
 </Warning>
 
-The **Corbado Observe CLI** gives you scripted access to your Observe data from the terminal, without going through the management console. It is designed to be driven both by humans and by AI coding agents.
+The **Corbado Observe CLI** gives you scripted access to your Observe data from the terminal, without going through the management console. It is designed to be driven by humans and by AI coding agents alike.
 
 ## 1. What it is for
 
 | Use case | Why the CLI |
 | --- | --- |
-| **Analysis with an AI agent** | Point an agent at your own Observe data so it can investigate a drop in login success rate, or explain what a specific error cluster has in common |
+| **Analysis with an AI agent** | Point an agent at your own Observe data so it can investigate a drop in login success rate or explain what an error cluster has in common |
 | **Scripted exports** | Pull daily tables and time series into your own warehouse or notebooks |
 | **Ad-hoc investigation** | Query catalogs and searches directly while debugging an incident |
 | **Repeatable checks** | Wire an Observe query into CI or a scheduled job |
 
 ## 2. Design
 
-The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline, and full schema introspection so an AI agent can drive it from `--help` alone.
+The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline and full schema introspection so an agent can drive it from `--help` alone.
 
-Projects are paired locally, with non-secret project metadata stored in a config file and the API key held in the operating system's secret store rather than in plain text.
-
-<Note>
-  API keys for Observe are managed in the [management console](https://app.corbado.com) under **Observe → Settings → API keys**.
-</Note>
+Projects are paired locally. Non-secret project metadata is stored in a config file and the API key is held in the operating system's secret store rather than in plain text. API keys are managed in the console under **Observe → Settings → API keys**.
 
 ## 3. Availability
 
@@ -37,13 +33,13 @@ Projects are paired locally, with non-secret project metadata stored in a config
 | Stability | Commands and output may change between versions |
 | Support | Best effort during the beta |
 
-Once the CLI reaches general availability, install instructions and a full command reference will be published here.
+Install instructions and a full command reference will be published here once the CLI reaches general availability.
 
-## 4. In the meantime
+## 4. Available today
 
 <CardGroup cols={2}>
   <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
-    The Corbado Observe Agent Skill, which is publicly available today.
+    The Corbado Observe agent skill, publicly available.
   </Card>
   <Card title="Corbado DevTools" icon="chrome" href="/corbado-observe/tools/devtools-extension">
     Inspect the live event stream during development.

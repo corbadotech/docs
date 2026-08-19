@@ -19,7 +19,7 @@ Decisions capture explicit choice points in an authentication journey.
 
 Use decisions to track:
 
-- **User choices**, for example selecting between passkey login, password login, or social login
+- **User choices**, for example selecting between passkey login, password login or social login
 - **System choices**, for example policy or backend logic selecting an auth path automatically
 
 Unlike [subflows](/corbado-observe/tracking/subflows), decisions are **not auto-discovered**. You define them by sending decision events from your integration.
@@ -93,7 +93,7 @@ After identifier lookup, the user sees available login methods. Each time the av
 <Tabs>
   <Tab title="NPM">
     <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Precision tracking](/corbado-observe/get-started/precision-tracking).
+      **Corbado Observe SDK** installation and setup are explained in [Custom events](/corbado-observe/get-started/custom-events).
     </Info>
 
     ```typescript
@@ -121,7 +121,7 @@ After identifier lookup, the user sees available login methods. Each time the av
 
   <Tab title="CDN">
     <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Precision tracking](/corbado-observe/get-started/precision-tracking).
+      **Corbado Observe SDK** installation and setup are explained in [Custom events](/corbado-observe/get-started/custom-events).
     </Info>
 
     ```html
@@ -194,7 +194,7 @@ getTracker().authDecisionFinished({
 - Re-send decision events if users revisit the same choice point
 
 <Tip>
-  Keep `decisionName` values short, stable, and implementation-agnostic. Avoid naming that changes with experiments or UI wording.
+  Keep `decisionName` values short, stable and implementation-agnostic. Avoid naming that changes with experiments or UI wording.
 </Tip>
 
 ## 6. Next steps

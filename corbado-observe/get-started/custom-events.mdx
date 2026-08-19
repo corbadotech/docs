@@ -1,0 +1,140 @@
+---
+title: "Get Started with Custom Events"
+description: "Instrument your authentication flows with explicit Corbado Observe events on web, iOS and Android."
+sidebarTitle: "Custom events"
+---
+
+**Custom events** are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define.
+
+<Info>
+  On web, most teams run [Autocapture](/corbado-observe/get-started/autocapture) as the foundation and add custom events only where a step needs guaranteed semantics. On iOS and Android, custom events are the integration. See [Integration paths](/corbado-observe/overview/integration-paths).
+</Info>
+
+<Tip>
+  Prefer an AI coding agent? See [Use with AI agents](/corbado-observe/get-started/use-with-ai-agents) and let it instrument the integration for you.
+</Tip>
+
+## 1. Prerequisites
+
+- An active project in the [Corbado management console](https://app.corbado.com)
+- Your `Project ID` and `API Base URL` from [settings](https://app.corbado.com/observe/settings/general)
+
+## 2. Install the SDK
+
+<Tabs>
+  <Tab title="Web (npm)">
+    ```bash
+    npm install @corbado/observe
+    ```
+  </Tab>
+  <Tab title="Web (CDN)">
+    Place the snippet right before your closing `</head>` tag. It loads the SDK and initializes it in one block.
+
+    <Warning>
+      Enter your `ProjectID` and `APIBaseURL` as provided in the [management console](https://app.corbado.com/observe/settings/general).
+    </Warning>
+
+    <Accordion title="Show the CDN snippet">
+      ```html
+        <script>
+        (function(b,r){r.Corbado=r.Corbado||{};var v="https://cdn.cloud.corbado.io/observe/sdk-latest.min.js",s,c,p,u,i,a;r.Corbado.__SV||(r.Corbado.__SV=1,r.Corbado.IQ=[],r.Corbado.MQ=[],r.Corbado.OQ=[],r.Corbado.init=function(f,n){r.Corbado.IQ.push([f,n||"default"])},r.Corbado.get=function(f){var n=f||"default",l={};s="loginVisible provideIdentifierSubmitted provideIdentifierFinished provideIdentifierError loginReset passwordLoginSubmitted passwordLoginFinished passwordLoginError socialLoginError socialLoginFinish loginFinish signupVisible signupFinish loginMethodsDecisionOffered authDecisionVisible authDecisionFinished securityEnrollmentStarted securityEnrollmentFinished accountRecoveryStarted accountRecoveryFinished emailLinkFinished emailLinkError emailOTPSubmitted emailOTPFinished emailOTPError emailOTPResent setPasswordSubmitted setPasswordFinished setPasswordError resetSession".split(" "),c="provideIdentifierStartable provideIdentifierStarted passwordLoginStartable passwordLoginStarted passkeyLoginStart socialLoginStart passkeyEnrollmentStartable emailLinkStartable emailLinkSubmitted emailOTPStartable emailOTPStarted setPasswordStartable setPasswordStarted".split(" "),p="identifierStarted identifierSubmitted identifierFinished identifierError conditionalUIStartable conditionalUISubmitted conditionalUIFinished conditionalUIClientError conditionalUIServerErrorConditionalUICredentialDeleted conditionalUIServerErrorUnknown startable started submitted finished error forgotPasswordClicked clientError serverErrorUnknown skipped resent".split(" ");function h(t,o,e){typeof r.Corbado.__dispatchMethod=="function"?r.Corbado.__dispatchMethod(n,t,o,e):r.Corbado.MQ.push([n,t,o,e])}function C(t,o,e){typeof r.Corbado.__dispatchOp=="function"?r.Corbado.__dispatchOp(t,o,e):r.Corbado.OQ.push([t,o,e])}function g(t){var o={},e,d;for(e=0;e<p.length;e++)d=p[e],o[d]=(function(y){return function(){C(t,y,Array.prototype.slice.call(arguments,0))}})(d);return o}for(a=0;a<s.length;a++)(function(t){l[t]=function(){h(t,Array.prototype.slice.call(arguments,0))}})(s[a]);for(a=0;a<c.length;a++)(function(t){l[t]=function(){var o=String(Date.now())+"-"+Math.random().toString(36).slice(2);return h(t,Array.prototype.slice.call(arguments,0),o),g(o)}})(c[a]);return l},i=b.createElement("script"),i.type="text/javascript",i.async=!0,i.crossOrigin="anonymous",i.src=v,u=b.getElementsByTagName("script")[0],u.parentNode.insertBefore(i,u))})(document,window);
+        Corbado.init({projectId: "<ProjectID>", apiBaseUrl: "<APIBaseURL>"});
+        </script>
+      ```
+    </Accordion>
+  </Tab>
+  <Tab title="iOS (Swift)">
+    Corbado Observe ships a native Swift SDK that sends into the same data model as the web SDK.
+
+    <Note>
+      [Contact us](mailto:support@corbado.com) for the package coordinates and the iOS integration guide.
+    </Note>
+  </Tab>
+  <Tab title="Android (Kotlin)">
+    Corbado Observe ships a native Kotlin SDK, published to Maven Central as `com.corbado:observe` (minSdk 23), that sends into the same data model as the web SDK.
+
+    <Note>
+      [Contact us](mailto:support@corbado.com) for the Android integration guide.
+    </Note>
+  </Tab>
+</Tabs>
+
+## 3. Initialize the tracker
+
+Initialize as early as possible in your app startup.
+
+<Tabs>
+  <Tab title="Web (npm)">
+    ```typescript
+    import { init } from "@corbado/observe";
+
+    init({
+      projectId: "<ProjectID>",
+      apiBaseUrl: "<APIBaseURL>",
+    });
+    ```
+  </Tab>
+  <Tab title="Web (CDN)">
+    Initialization is already included in the snippet above.
+  </Tab>
+</Tabs>
+
+## 4. Track your first event
+
+When your login UI is rendered and visible, send `flowStarted`:
+
+<Tabs>
+  <Tab title="Web (npm)">
+    ```typescript
+    import { getTracker } from "@corbado/observe";
+
+    getTracker().flowStarted({
+      flowName: "login",
+      touchpoint: "account",
+    });
+    ```
+  </Tab>
+  <Tab title="Web (CDN)">
+    ```html
+    <script>
+      Corbado.get().flowStarted({
+        flowName: "login",
+        touchpoint: "account",
+      });
+    </script>
+    ```
+
+    <Warning>
+      Call `Corbado.get()` for each event instead of storing the instance in a variable. This keeps SDK loading asynchronous without losing events.
+    </Warning>
+  </Tab>
+</Tabs>
+
+<Tip>
+  Use `touchpoint` consistently, for example `account`, `checkout` or `modal`, so you can compare funnel metrics across entry points.
+</Tip>
+
+## 5. Verify
+
+Set `debug: true` in your `init()` call while developing and Observe logs every tracked event to the console:
+
+```typescript
+init({
+  projectId: "<ProjectID>",
+  apiBaseUrl: "<APIBaseURL>",
+  debug: true,
+});
+```
+
+Set `debug: false` in production. For the full verification workflow, including the [Corbado DevTools extension](/corbado-observe/tools/devtools-extension), see [Verify your integration](/corbado-observe/get-started/verify).
+
+## 6. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
+    Flows, decisions, subflows, users and tags.
+  </Card>
+  <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
+    Confirm events arrive before you ship.
+  </Card>
+</CardGroup>

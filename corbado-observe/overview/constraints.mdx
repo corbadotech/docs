@@ -1,134 +1,115 @@
 ---
 title: "Compatibility and Constraints"
-description: "What Corbado Observe requires, which platforms and browsers it supports, what data it collects, and the known limitations of Autocapture."
+description: "What Corbado Observe requires, which platforms and browsers it supports, what data it collects and the known limitations of Autocapture."
 sidebarTitle: "Compatibility & constraints"
 ---
 
-This page answers the question every engineering team asks first: **will this work with our stack, and what does it actually do to our application?**
+This page answers the question every engineering team asks first: **will this work with our stack, and what does it do to our application?**
 
 ## 1. What Observe requires
 
-Very little, by design:
-
 | Requirement | Detail |
 | --- | --- |
-| A JavaScript frontend | Observe runs in the browser. Any framework, any router, any rendering strategy. |
+| A web frontend or a native app | See the platform table below. |
 | A Corbado project | Provides your `Project ID` and `API Base URL`. |
 | Outbound network access | The SDK sends batched events to the Corbado API. |
 
-There is **no backend integration**, no server-side SDK, no IdP configuration and no change to your authentication logic. Observe works the same whether you run a commercial IdP, an open-source WebAuthn library, a custom implementation or an on-chain one.
-
-## 2. What Observe never does
+There is **no backend integration**, no server-side SDK, no IdP configuration and no change to your authentication logic. Observe works the same whether you run a commercial IdP, an open-source WebAuthn library, a custom implementation or an on-chain one. See [what Observe is not](/corbado-observe/overview/how-it-works#3-what-observe-is-not).
 
 <Warning>
-  Observe is telemetry only. It is not in the authentication path and cannot grant, deny, delay or alter a login.
+  Observe is telemetry only. It is not in the authentication path and cannot grant, deny, delay or alter a login. An SDK failure, a blocked request or a missing configuration costs you telemetry, never an authentication.
 </Warning>
 
-- **Never blocks your login.** The SDK loads asynchronously and all tracking calls are guarded. An SDK failure, a blocked request or a missing configuration costs you telemetry — never an authentication.
-- **Never changes flow behavior.** Instrumentation adds tracking calls at semantically correct points. It does not reorder, gate or modify authentication logic.
-- **Never captures what users type.** No passwords, no form input contents, no session tokens. See [Data handling](#5-data-handling) below.
+## 2. Platform support
 
-## 3. Platform support
-
-| Platform | Status | Notes |
-| --- | --- | --- |
-| Web apps (SSR, SPA, MPA) | Supported | Same-document (SPA) route changes are observed, so a journey stays intact across a client-side router. |
-| JavaScript-based frameworks (React, Vue, Svelte, Angular, Next.js, Nuxt, …) | Supported | No framework-specific integration required. |
-| Web views inside native apps | Supported | The authentication surface must be web; the SDK runs in the web view. |
-| Cross-origin iframes | Supported, with a requirement | The SDK must run in the frame where the WebAuthn ceremony happens. See [Iframes and RP IDs](#4-iframes-and-rp-ids). |
-| Native iOS and Android apps | Contact us | Native app coverage is available through a dedicated engagement rather than a public SDK today. [Get in touch](mailto:support@corbado.com) if this is your primary surface. |
+| Platform | Autocapture | Custom events | Notes |
+| --- | --- | --- | --- |
+| Web apps (SSR, SPA, MPA) | Yes | Yes | Same-document route changes are observed, so a journey survives a client-side router. |
+| Web frameworks (React, Vue, Svelte, Angular, Next.js, Nuxt) | Yes | Yes | No framework-specific integration required. |
+| Web views inside native apps | Yes | Yes | The SDK runs in the web view. |
+| Cross-origin iframes | Yes | Yes | The SDK must run in the frame that performs the ceremony. See [Iframes and RP IDs](#3-iframes-and-rp-ids). |
+| iOS (Swift) | No | Yes | Native SDK. Autocapture is a browser technique and has no native equivalent. |
+| Android (Kotlin) | No | Yes | Native SDK, `com.corbado:observe`, minSdk 23. |
 
 <Note>
-  **JavaScript-based mobile frameworks** (for example React Native with Expo, or Ionic) authenticate through a web surface and are covered by the web integration wherever the login runs in a web context. Where a framework routes passkeys through a native platform API instead, the same "contact us" answer as for native apps applies.
+  **JavaScript-based mobile frameworks** such as React Native with Expo, Ionic or Capacitor authenticate through a web surface and are covered by the web integration wherever the login runs in a web context. Where a framework routes passkeys through a native platform API instead, use the native SDK for that platform.
 </Note>
 
-## 4. Iframes and RP IDs
+Native SDKs send into the same [data model](/corbado-observe/tracking/overview) as the web SDK, so web and app journeys are comparable in the same project. Keep them apart with [applications](/corbado-observe/tracking/applications).
 
-If your authentication runs inside an iframe — a common pattern for embedded login, embedded wallets and "sign in with" experiences — two things matter:
+## 3. Iframes and RP IDs
+
+If your authentication runs inside an iframe, which is common for embedded login and embedded wallets, two things matter:
 
 - **The SDK must run in the frame that performs the ceremony.** `navigator.credentials` calls are observed in the document that makes them, not in the parent.
-- **The iframe must be permitted to perform WebAuthn.** A cross-origin iframe needs the `publickey-credentials-get` and `publickey-credentials-create` permissions policy for passkeys to work at all. This is a requirement of your own passkey implementation, not of Observe — but it is the first thing to check when ceremonies appear to be missing.
+- **The iframe must be permitted to perform WebAuthn.** A cross-origin iframe needs the `publickey-credentials-get` and `publickey-credentials-create` permissions policy for passkeys to work at all. That is a requirement of your own implementation, not of Observe, but it is the first thing to check when ceremonies appear to be missing.
 
-See the Corbado Connect guide on [relying party IDs](/corbado-connect/helpful-guides/rpid-configuration/overview) for background on RP ID scoping.
+See the guide on [relying party IDs](/corbado-connect/helpful-guides/rpid-configuration/overview) for background on RP ID scoping.
 
-## 5. Data handling
+## 4. Data handling
 
-Observe is built for minimal data exposure.
-
-**Never collected:**
-
-- Passwords or any other typed input
-- Form field contents
-- Session tokens or credentials for your own system
+**Never collected:** passwords or any other typed input, form field contents, session tokens or credentials for your own system.
 
 **Collected:**
 
 | Data | Purpose |
 | --- | --- |
-| Authentication journey events | Flows, steps, decisions, errors — the funnel itself |
+| Authentication journey events | Flows, steps, decisions and errors: the funnel itself |
 | Device and client capability signals | Browser, operating system, device model where available, WebAuthn capability flags such as platform-authenticator availability |
 | WebAuthn ceremony data | Ceremony lifecycle, mediation, authenticator and credential metadata (AAGUID, transports, backup state, discoverability) |
-| A user reference, if you provide one | Links journeys to your own user entity — see [Users](/corbado-observe/tracking/user) |
-| Tags you define | Your own dimensions such as country, channel or experiment variant — see [Tags](/corbado-observe/tracking/tags) |
+| A user reference, if you provide one | Links journeys to your own user entity. See [Users](/corbado-observe/tracking/user) |
+| Tags you define | Your own dimensions such as country, channel or experiment variant. See [Tags](/corbado-observe/tracking/tags) |
 
 <Warning>
-  WebAuthn responses are inherently identifying: they contain credential IDs, user handles, challenges, signatures and authenticator data. Observe collects the fields it needs to produce authenticator and credential insight. If you must not send user handles or credential IDs to a processor, raise this before integration so the collection profile can be scoped accordingly.
+  WebAuthn responses are inherently identifying: they contain credential IDs, user handles, challenges, signatures and authenticator data. Observe collects the fields it needs for authenticator and credential insight. If you must not send user handles or credential IDs to a processor, raise this before integration so the collection profile can be scoped accordingly.
 </Warning>
 
-**You control identity.** The user reference is a value you pass. If you pass a pseudonymous or hashed identifier, Observe never sees a real user ID.
+**You control identity.** The user reference is a value you pass. Pass a pseudonymous or hashed identifier and Observe never sees a real user ID.
 
-## 6. Autocapture: what it hooks and where it stops
+## 5. Autocapture limitations
 
-Autocapture observes the browser surfaces that authentication runs through:
-
-- The **DOM tree**, to locate the fields and buttons your authentication uses, including across shadow-DOM boundaries
-- **DOM events** (`focus`, `blur`, `input`, `click`, `submit`) on those elements, for the low-level interaction signals
-- `navigator.credentials.get()` and `create()` for **WebAuthn ceremonies**
-- `fetch` and `XMLHttpRequest`, limited to URLs that the configured match rule selects — all other traffic is ignored
-- **Same-document navigation** for SPA route changes
-
-Known limitations:
+Autocapture observes the browser surfaces listed under [what Autocapture actually does](/corbado-observe/overview/integration-paths#1-1-what-autocapture-actually-does). Where it stops:
 
 | Limitation | Effect |
 | --- | --- |
-| **Password managers that lock WebAuthn accessors** | Some extensions replace `navigator.credentials` with non-writable accessors. 1Password is a tested example. Autocapture then reports its WebAuthn capture as unavailable and rolls back cleanly: **passkey operations continue to work normally**, but those ceremonies produce no WebAuthn telemetry. |
-| **Another integration overwriting the same surface** | If a third-party script replaces a patched method without forwarding through it, capture is displaced for that surface. The application call still succeeds; the telemetry is lost. |
-| **Concepts Autocapture will not infer** | Enrollment intent, conditional-UI spec types, known-identifier state and user-vs-system actor are deliberately not guessed. Use [precision tracking](/corbado-observe/overview/integration-paths) where you need them. |
+| **Password managers that lock WebAuthn accessors** | Some extensions replace `navigator.credentials` with non-writable accessors. 1Password is a tested example. Autocapture then reports WebAuthn capture as unavailable and rolls back cleanly: **passkey operations keep working**, but those ceremonies produce no WebAuthn telemetry. |
+| **Another integration overwriting the same surface** | If a third-party script replaces a patched method without forwarding through it, capture is displaced for that surface. The application call still succeeds, the telemetry is lost. |
+| **Concepts Autocapture will not infer** | Enrollment intent, conditional-UI spec types, known-identifier state and user-vs-system actor are deliberately not guessed. Use [custom events](/corbado-observe/get-started/custom-events) where you need them. |
 
-## 7. Browser support
+## 6. Browser and OS support
 
-The SDK targets **ES2019** and assumes ES2019-era runtime primitives. The current test suite covers current **Chromium**, **Firefox** and **WebKit**, including password-manager simulation and virtual WebAuthn in Chromium.
+| SDK | Floor |
+| --- | --- |
+| Web | Targets ES2019. Tested on current Chromium, Firefox and WebKit, including password-manager simulation and virtual WebAuthn in Chromium. |
+| Android | minSdk 23. |
+| iOS | Contact us for the current minimum deployment target. |
 
 <Note>
-  If you need a documented support floor for older Android WebViews, legacy Edge or specific enterprise browser versions, ask us — the tested matrix is expanding and we would rather give you a precise answer than a marketing one.
+  If you need a documented floor for older Android WebViews, legacy Edge or specific enterprise browser versions, ask us. The tested matrix is expanding and we would rather give you a precise answer than a marketing one.
 </Note>
 
-## 8. Storage and consent
+## 7. Storage and consent
 
-The SDK stores a session identifier client-side to correlate the events of one journey. You choose the mechanism at initialization:
+The web SDK stores a session identifier client-side to correlate the events of one journey. You choose the mechanism at initialization:
 
 | Option | Behavior |
 | --- | --- |
-| `storage: "local"` | Uses browser storage on the current origin. |
-| `storage: "cookie"` | Uses a cookie, with an optional `cookieDomain` for correlation across subdomains. |
+| `storage: "local"` | Browser storage on the current origin. |
+| `storage: "cookie"` | A cookie, with an optional `cookieDomain` for correlation across subdomains. |
 
-Observe stores no marketing or advertising identifiers and does no cross-site tracking. Whether your consent management platform needs to gate the SDK depends on your own legal assessment — if it does, initialize Observe after consent and the journeys before that point are simply not recorded.
+Observe stores no advertising identifiers and does no cross-site tracking. Whether your consent management platform needs to gate the SDK is your own legal assessment. If it does, initialize Observe after consent and journeys before that point are simply not recorded.
 
-## 9. Projects and environments
+## 8. Projects, environments and hosting
 
-Keep **environments in separate projects** — production, staging and development should not share a project, because mixed data makes funnels meaningless.
+Keep **environments in separate projects**. Production, staging and development should not share a project, because mixed data makes funnels meaningless. Use [applications](/corbado-observe/tracking/applications) to separate channels of the same product and [tags](/corbado-observe/tracking/tags) for further dimensions.
 
-Use [applications](/corbado-observe/tracking/applications) to separate *channels* of the same product (web, native app), and [tags](/corbado-observe/tracking/tags) for further dimensions such as country or experiment variant.
+Observe runs on Corbado's public cloud by default. Dedicated instances in a specific region are available for enterprise deployments, which matters if you have data residency requirements. [Contact us](mailto:support@corbado.com) to discuss options.
 
-## 10. Hosting
-
-Observe runs on Corbado's public cloud by default. Dedicated instances in a specific region are available for enterprise deployments — relevant if you have data residency requirements. [Contact us](mailto:support@corbado.com) to discuss options.
-
-## 11. Next steps
+## 9. Next steps
 
 <CardGroup cols={2}>
   <Card title="Integration paths" icon="route" href="/corbado-observe/overview/integration-paths">
-    Decide between Autocapture and precision tracking.
+    Autocapture vs. custom events.
   </Card>
   <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
     Confirm events are arriving before you ship.

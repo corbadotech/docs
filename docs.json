@@ -37,7 +37,7 @@
                         "group": "Get started",
                         "pages": [
                             "corbado-observe/get-started/autocapture",
-                            "corbado-observe/get-started/precision-tracking",
+                            "corbado-observe/get-started/custom-events",
                             "corbado-observe/get-started/use-with-ai-agents",
                             "corbado-observe/get-started/verify"
                         ]
@@ -50,7 +50,7 @@
                         ]
                     },
                     {
-                        "group": "Precision tracking reference",
+                        "group": "Custom events reference",
                         "pages": [
                             "corbado-observe/tracking/overview",
                             "corbado-observe/tracking/applications",
@@ -549,7 +549,7 @@
         },
         {
             "source": "/corbado-observe/overview/getting-started",
-            "destination": "/corbado-observe/get-started/precision-tracking"
+            "destination": "/corbado-observe/get-started/custom-events"
         },
         {
             "source": "/corbado-observe/overview/use-with-ai-agents",

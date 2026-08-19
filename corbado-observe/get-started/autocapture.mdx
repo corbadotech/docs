@@ -1,96 +1,79 @@
 ---
 title: "Get Started with Autocapture"
-description: "Deploy Corbado Observe Autocapture: one script in your frontend, no event tagging, and a login journey that maps itself."
+description: "Deploy Corbado Observe Autocapture: one script in your web frontend, no event tagging and a login journey that maps itself."
 sidebarTitle: "Autocapture"
 ---
 
-**Autocapture** is the recommended way to run **Corbado Observe**. You deploy one script into your frontend and Corbado maps your authentication journey from signals your application already emits — no event tagging, no changes to your login flows, and no instrumentation for your team to maintain.
+**Autocapture** is the recommended way to run **Corbado Observe** on web. You deploy one script and Corbado maps your authentication journey from signals your application already emits. No event tagging, no changes to your login flows and nothing for your team to maintain.
 
-<Tip>
-  Not sure whether Autocapture or precision tracking is right for a given flow? See [Integration paths](/corbado-observe/overview/integration-paths).
-</Tip>
+<Info>
+  Autocapture is web only. On iOS and Android, use [custom events](/corbado-observe/get-started/custom-events) with the native SDKs.
+</Info>
 
 ## 1. Prerequisites
 
-- An active Corbado project in the [Corbado management console](https://app.corbado.com)
+- An active project in the [Corbado management console](https://app.corbado.com)
 - Your `Project ID` and `API Base URL` from [settings](https://app.corbado.com/observe/settings/general)
 - Your authentication origins registered under [origins](https://app.corbado.com/observe/settings/origins)
 
 ## 2. How the setup works
 
-Autocapture combines two things:
-
-1. **The capture layer** — [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture), which observes WebAuthn ceremonies, selected network exchanges and in-app navigation.
-2. **A mapping for your flows** — the rules that turn those raw signals into your login, sign-up, recovery and enrollment journeys in the Observe data model.
-
-Corbado builds and maintains the mapping for your authentication flows and keeps it current as your login evolves. That is what removes the instrumentation work from your team — and it is why Autocapture is set up together with us rather than fully self-serve today.
+Autocapture combines the capture library [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture) with a mapping for your flows. Corbado builds and maintains that mapping and keeps it current as your login evolves, which is what removes the instrumentation work from your team. It is therefore set up together with us rather than fully self-serve.
 
 <Steps>
   <Step title="Share your authentication surface">
     Tell us which login, sign-up, recovery and enrollment entry points exist and which methods each offers. A walkthrough of the live flows is usually enough.
   </Step>
   <Step title="We build the mapping">
-    Corbado produces the capture configuration for your flows and validates it against real journeys.
+    Corbado produces the capture configuration and validates it against real journeys.
   </Step>
   <Step title="You deploy one script">
-    A single tag in your frontend, loaded asynchronously. See below.
+    A single tag in your frontend, loaded asynchronously.
   </Step>
   <Step title="Data appears">
-    Journeys start showing up in the console within minutes. Verify with the [integration checks](/corbado-observe/get-started/verify).
+    Journeys show up in the console within minutes. Confirm with the [integration checks](/corbado-observe/get-started/verify).
   </Step>
 </Steps>
 
 <Note>
-  [Get in touch](mailto:support@corbado.com) to start an Autocapture setup. If you would rather instrument your flows yourself right now, [precision tracking](/corbado-observe/get-started/precision-tracking) is available self-serve.
+  [Get in touch](mailto:support@corbado.com) to start an Autocapture setup. If you would rather instrument your flows yourself right now, [custom events](/corbado-observe/get-started/custom-events) are available self-serve.
 </Note>
 
 ## 3. Deploy the script
 
-Place the script as early as possible — ideally right before your closing `</head>` tag — so that no part of the journey is missed.
+Place the script as early as possible, ideally right before your closing `</head>` tag, so no part of the journey is missed.
 
 ```html
 <script src="https://cdn.cloud.corbado.io/observe/sdk-latest.min.js" async crossorigin="anonymous"></script>
 ```
 
 <Warning>
-  Your `Project ID` and `API Base URL` are configured with the script as provided in the [management console](https://app.corbado.com/observe/settings/general). Use the exact snippet issued for your project rather than copying this example verbatim.
+  Use the exact snippet issued for your project rather than copying this example verbatim. It carries your `Project ID` and `API Base URL` as shown in the [management console](https://app.corbado.com/observe/settings/general).
 </Warning>
-
-Characteristics of the deployed script:
 
 | Property | Value |
 | --- | --- |
 | Load behavior | Asynchronous, non-blocking |
 | Size | Approximately 40 KB gzipped |
-| Failure mode | Fails closed — telemetry is lost, authentication is never affected |
+| Failure mode | Fails closed: telemetry is lost, authentication is never affected |
 | Backend changes | None |
 
 ## 4. Content Security Policy
 
-If you run a Content Security Policy, allow the Corbado script origin and the API endpoint your project uses:
+If you run a CSP, allow the Corbado script origin and your API endpoint. Both values are shown in your project settings.
 
 ```
 script-src  https://cdn.cloud.corbado.io;
 connect-src <your-api-base-url>;
 ```
 
-Both values are shown in your project settings.
-
-## 5. Verify
-
-Before you consider the integration done, confirm that events actually arrive. See [Verify your integration](/corbado-observe/get-started/verify) — the [Corbado DevTools extension](/corbado-observe/tools/devtools-extension) shows the live event stream while you walk through a login.
-
-## 6. Add precision where you need it
-
-Autocapture gives you broad coverage. Where a specific step needs guaranteed semantics — a business-specific decision, an unusual flow, an explicit spec type — add [precision tracking](/corbado-observe/get-started/precision-tracking) events on top. Both paths write into the same data model and appear in the same funnels.
-
-## 7. Next steps
+## 5. Next steps
 
 <CardGroup cols={2}>
   <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
-    Confirm events are arriving with the expected payload.
+    Confirm events arrive with the expected payload.
   </Card>
-  <Card title="Compatibility & constraints" icon="list-check" href="/corbado-observe/overview/constraints">
-    Platform support, data handling and known limitations.
+  <Card title="Add custom events" icon="code" href="/corbado-observe/get-started/custom-events">
+    Where a step needs guaranteed semantics.
   </Card>
 </CardGroup>
