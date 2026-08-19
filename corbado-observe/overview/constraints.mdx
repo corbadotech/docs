@@ -35,7 +35,7 @@ There is **no backend integration**, no server-side SDK, no IdP configuration an
   **JavaScript-based mobile frameworks** such as React Native with Expo, Ionic or Capacitor authenticate through a web surface and are covered by the web integration wherever the login runs in a web context. Where a framework routes passkeys through a native platform API instead, use the native SDK for that platform.
 </Note>
 
-Native SDKs send into the same [data model](/corbado-observe/tracking/overview) as the web SDK, so web and app journeys are comparable in the same project. Keep them apart with [applications](/corbado-observe/tracking/applications).
+Native SDKs send into the same [data model](/corbado-observe/tracking/overview) as the web SDK, so web and app journeys are comparable in the same project. Keep them apart with [applications](/corbado-observe/tracking/applications). App authentication behaves differently enough from web that the metrics worth tracking differ too: see [Native app authentication analytics](https://www.corbado.com/blog/native-app-authentication-analytics).
 
 ## 3. Iframes and RP IDs
 
@@ -74,7 +74,7 @@ Autocapture observes the browser surfaces listed under [what Autocapture actuall
 | --- | --- |
 | **Password managers that lock WebAuthn accessors** | Some extensions replace `navigator.credentials` with non-writable accessors. 1Password is a tested example. Autocapture then reports WebAuthn capture as unavailable and rolls back cleanly: **passkey operations keep working**, but those ceremonies produce no WebAuthn telemetry. |
 | **Another integration overwriting the same surface** | If a third-party script replaces a patched method without forwarding through it, capture is displaced for that surface. The application call still succeeds, the telemetry is lost. |
-| **Concepts Autocapture will not infer** | Enrollment intent, conditional-UI spec types, known-identifier state and user-vs-system actor are deliberately not guessed. Use [custom events](/corbado-observe/get-started/custom-events) where you need them. |
+| **Facts that never reach the browser** | Anything that exists only in your native app or your backend cannot be observed. Add it with [custom events](/corbado-observe/overview/integration-paths#3-where-autocapture-stops). |
 
 ## 6. Browser and OS support
 

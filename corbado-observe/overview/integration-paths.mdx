@@ -38,42 +38,54 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
 
 Custom events are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define, and this is the only path available on native platforms.
 
-Reach for custom events when you need something Autocapture cannot infer:
-
-- A **business-specific decision**, for example which of your own login options a user picked
-- A **non-standard flow** that does not resemble a common authentication pattern
-- **Explicit semantics** you want guaranteed rather than inferred: a named flow, touchpoint, spec type or actor
-- Custom **tags** and **user references** attached at a precise moment
+Section 3 explains exactly when you need them.
 
 See [Custom events](/corbado-observe/get-started/custom-events) to send your first one, and the [tracking reference](/corbado-observe/tracking/overview) for the full data model.
 
-## 3. Why both exist
+## 3. Where Autocapture stops
 
-Autocapture is deliberately conservative about what it claims to know. It reports observable facts such as a ceremony starting, a request settling or a route changing. It does **not** infer product concepts:
+The boundary is not "simple flows vs. complex flows". It is **observability in the client**.
 
-- whether a passkey ceremony was an enrollment or a login *intent*
-- the conditional-UI spec type behind a ceremony
-- whether an identifier was already known to your system
-- whether the **user** or the **system** initiated a step
+Autocapture can work with anything that is visible in the browser or reported back to it: rendered UI states, user interactions, WebAuthn ceremonies, navigation and the shape of requests and responses. From those signals Corbado's mapping derives the product meaning, including which method a user chose, whether an identifier was already known, whether a ceremony was a login or an enrollment and whether the user or the system started a step.
 
-Those facts live in your application's own state, so a capture layer cannot honestly derive them. Custom events are how you supply them.
+Custom events are for facts that never reach the browser, or that you want pinned rather than derived:
 
-## 4. Choosing between them
+| Case | Example |
+| --- | --- |
+| **The fact exists only outside the browser** | A QR-code login where the scan happens in your mobile app. The moment of the scan and a scan error live in the app or your backend, so the browser never sees them. |
+| **The fact exists only in your backend** | A risk decision, a fraud score or a segment that influences the journey but is never rendered. |
+| **Business context Observe cannot know** | Your own [tags](/corbado-observe/tracking/tags), [user references](/corbado-observe/tracking/user) and conversions outside authentication. |
+| **You want the semantics guaranteed** | Where a frontend refactor must not be able to silently change how a step is classified. |
+| **Native apps** | iOS and Android have no DOM and no WebAuthn browser API to observe. |
+
+<Note>
+  Where a custom event needs to join a journey that started in the browser, it is correlated using an ID you already have, such as a challenge or transaction ID, otherwise the Observe session ID.
+</Note>
+
+## 4. Combining both on web
+
+Running Autocapture and custom events together on web is a supported setup, sometimes called a **hybrid** integration. Autocapture provides the baseline journey and you add events only for the gaps that matter, including enrichment from your backend.
+
+Both write into the same project, the same session and the same data model, so the added events appear inside the same journey rather than beside it. Because the exact wiring depends on how your Autocapture bundle is delivered, set this up together with us rather than adding a second SDK instance to the page.
+
+## 5. Choosing between them
 
 | | **Autocapture** | **Custom events** |
 | --- | --- | --- |
 | Platforms | Web | Web, iOS, Android |
 | Integration effort | One script | Tracking calls at each authentication step |
 | Time to first insight | Same day | Depends on your instrumentation scope |
-| Semantics | Inferred from observed signals | Explicit: you define flow, touchpoint, spec type and decisions |
+| Semantics | Derived from observed signals | Explicit: you define flow, touchpoint, spec type and decisions |
 | Maintenance | Corbado keeps the mapping current | Your team maintains events as flows change |
 | Coverage | Every flow the script sees | Exactly the flows you instrument |
 
-<Tip>
-  On web, start with Autocapture and add custom events only where a step needs full resolution. On iOS and Android, custom events are the integration.
-</Tip>
+**What we recommend:**
 
-## 5. Next steps
+- **Web:** start with Autocapture, then add custom events for the gaps in section 3.
+- **iOS and Android:** custom events, using the native SDKs.
+- **Both web and native apps:** Autocapture on web **and** custom events in the apps. Do not drop Autocapture just because your apps need instrumenting. One project holds all three channels, and [applications](/corbado-observe/tracking/applications) keep them comparable.
+
+## 6. Next steps
 
 <CardGroup cols={2}>
   <Card title="Get started with Autocapture" icon="rocket" href="/corbado-observe/get-started/autocapture">

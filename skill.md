@@ -2,27 +2,27 @@
 name: corbado-observe
 description: Integrate Corbado Observe into a frontend application to measure
   authentication flows (login, signup, recovery, enrollment) with events like
-  flow_started, flow_finished, decisions, and subflow steps. Use when adding
-  Corbado Observe, authentication analytics, or passkey/login funnel tracking
+  flow_started, flow_finished, decisions and subflow steps. Use when adding
+  Corbado Observe, authentication analytics or passkey/login funnel tracking
   to a web app.
 ---
 
 # Corbado Observe integration
 
 Corbado Observe is fire-and-forget telemetry for authentication journeys. You instrument the
-customer's frontend with structured events; Corbado turns them into funnels, flows, and
+customer's frontend with structured events; Corbado turns them into funnels, flows and
 drop-off analytics.
 
 **Guardrails (read before touching code):**
 
 - Instrumentation must NEVER change or break existing app behavior. It is pure telemetry:
   add tracking calls at semantically correct points with minimal diffs; never reorder,
-  gate, or alter auth logic to make tracking easier.
+  gate or alter auth logic to make tracking easier.
 - Every tracking call goes through the guarded accessor and optional chaining (see Setup),
   so a missing SDK or config can never throw.
-- Do NOT read, print, or commit secrets or `.env` files. Ask the user for `projectId` /
+- Do NOT read, print or commit secrets or `.env` files. Ask the user for `projectId` /
   `apiBaseUrl` if they are not already wired into the app's config.
-- Do NOT invent event names, methods, spec types, or payload fields. Use only what is in
+- Do NOT invent event names, methods, spec types or payload fields. Use only what is in
   the event catalog and helper tables below.
 
 ## Working method (do this first)
@@ -127,7 +127,7 @@ For each auth touchpoint identified in the plan:
 ## 1. Event catalog
 
 Every SDK method emits exactly one event (1:1 mapping). The wire event name is what
-appears in debug logs, network payloads, and the Corbado backend.
+appears in debug logs, network payloads and the Corbado backend.
 
 | Event | SDK method | When to send | Key payload fields |
 | --- | --- | --- | --- |
@@ -299,7 +299,7 @@ attempt (a retry is a new sequence of step events).
 
 Input-bound helpers (`provideIdentifierOperationFull`, password helpers with
 `autoTrackConfig`) attach listeners to the input element: construct them when the input
-mounts, keep the instance in a ref, and call `op.destroy()` on unmount. In React:
+mounts, keep the instance in a ref and call `op.destroy()` on unmount. In React:
 
 ```typescript
 const passwordOpRef = useRef<PasswordLoginOperationFull | null>(null);
@@ -347,7 +347,7 @@ is known: `op.postResponse.errorTyped({ code: "invalid_password" })` (login code
 
 ## Critical rules
 
-- Never change, reorder, or gate auth logic for tracking. Telemetry is additive only.
+- Never change, reorder or gate auth logic for tracking. Telemetry is additive only.
 - Always go through the guarded accessor with `?.`; never store the tracker/operation in a
   long-lived variable that could be used without the guard.
 - Fire `flow_started` (`flowStarted()`) once per journey entry, NOT on every re-render.
@@ -358,4 +358,4 @@ is known: `op.postResponse.errorTyped({ code: "invalid_password" })` (login code
 - Always set `explicitSpecType` on the first step of a subflow.
 - Send `auth_method_decision_finished` only when NO subflow follows (skip/dismiss); when a
   subflow follows, it resolves the decision automatically (section 3).
-- Do not read/print `.env` or secrets; do not invent event names, methods, or spec types.
+- Do not read/print `.env` or secrets; do not invent event names, methods or spec types.

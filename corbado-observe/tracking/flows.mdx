@@ -41,12 +41,12 @@ Use one of these predefined flow names when you send flow events:
     <tr>
       <td><code>login</code></td>
       <td><code>completed</code> or <code>incomplete</code>.</td>
-      <td>Existing user authentication journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows (<code>provide-identifier</code>, <code>passkey-login</code>, <code>social-login</code>, <code>password-login</code>, <code>email-link</code>, <code>email-otp</code>, <code>sms-otp</code>, etc.), and potentially nested flows (<code>enrollment</code>, <code>recovery</code>).</td>
+      <td>Existing user authentication journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows (<code>provide-identifier</code>, <code>passkey-login</code>, <code>social-login</code>, <code>password-login</code>, <code>email-link</code>, <code>email-otp</code>, <code>sms-otp</code>, etc.) and potentially nested flows (<code>enrollment</code>, <code>recovery</code>).</td>
     </tr>
     <tr>
       <td><code>signup</code></td>
       <td><code>completed</code> or <code>incomplete</code>.</td>
-      <td>New user registration journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows similar to login but often with different <code>explicitSpecType</code> values, and potentially nested flows (<code>enrollment</code>).</td>
+      <td>New user registration journey. Typically, we observe auth method decisions (<code>pre-identifier</code>, <code>post-identifier</code>), subflows similar to login but often with different <code>explicitSpecType</code> values and potentially nested flows (<code>enrollment</code>).</td>
     </tr>
     <tr>
       <td><code>recovery</code></td>
@@ -55,8 +55,8 @@ Use one of these predefined flow names when you send flow events:
     </tr>
     <tr>
       <td><code>enrollment</code></td>
-      <td><code>completed</code>, <code>skipped</code>, <code>invisible</code>, or <code>incomplete</code>.</td>
-      <td>Authenticator enrollment journey, for example passkey setup after a successful login. Typically, we observe auth method decisions and subflows such as <code>passkey-enrollment</code>, <code>email-link</code>, or <code>sms-otp</code>.</td>
+      <td><code>completed</code>, <code>skipped</code>, <code>invisible</code> or <code>incomplete</code>.</td>
+      <td>Authenticator enrollment journey, for example passkey setup after a successful login. Typically, we observe auth method decisions and subflows such as <code>passkey-enrollment</code>, <code>email-link</code> or <code>sms-otp</code>.</td>
     </tr>
   </tbody>
 </table>

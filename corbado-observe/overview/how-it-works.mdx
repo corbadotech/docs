@@ -12,7 +12,7 @@ With passwords, authentication happened on your backend: you compared a hash and
 
 With passkeys, authentication moves to the client. Whether a login succeeds now depends on the operating system, the browser, the credential manager, whether Face ID appears and whether a device ships a WebAuthn bug. None of that reaches your backend. A user who never gets past the passkey dialog produces **no backend event at all**. They simply disappear.
 
-That gap is what **Corbado Observe** measures.
+That gap is what **Corbado Observe** measures. For the wider argument, see [Why you need authentication observability for CIAM](https://www.corbado.com/blog/authentication-observability).
 
 ## 2. How data flows through Observe
 
@@ -39,7 +39,7 @@ flowchart TD
     Events are batched and sent asynchronously to Corbado. Delivery never blocks your UI and never sits in the authentication path.
   </Step>
   <Step title="Classify">
-    Raw events are mapped onto the [data model](/corbado-observe/tracking/overview): **flows** (login, sign-up, recovery), **subflows** (passkey login, password enrollment, email OTP), **decisions**, **users** and **tags**. This is closer to process mining than to a flat event log, which is what makes it possible to reconstruct a journey including loops, retries and method switches.
+    Raw events are mapped onto the [data model](/corbado-observe/tracking/overview): **flows** (login, sign-up, recovery), **subflows** (passkey login, password enrollment, email OTP), **decisions**, **users** and **tags**. This is closer to [process mining](https://www.corbado.com/blog/authentication-process-mining) than to a flat event log, which is what makes it possible to reconstruct a journey including loops, retries and method switches.
   </Step>
   <Step title="Pre-calculate">
     Classified data is rolled into time series bucketed hourly, daily, monthly and total. Dashboards read a prepared series instead of scanning raw events, which is what keeps them fast on large projects. Cadence is automatic and can be tuned under **Observe → Settings → Pre-calculation**.
@@ -72,7 +72,7 @@ flowchart TD
 | Touches authentication | No | Yes |
 | Backend integration | None | Yes |
 
-See [Corbado Connect](/corbado-connect/overview/welcome) if you are still adding passkeys.
+See [Corbado Connect](/corbado-connect/overview/welcome) if you want to add passkeys to your existing identity provider.
 
 ## 5. How Observe differs from your existing tooling
 
@@ -82,7 +82,7 @@ See [Corbado Connect](/corbado-connect/overview/welcome) if you are still adding
 | Error and APM tooling (Sentry, Datadog, Splunk) | Exceptions, traces, backend performance | Passkey failures often throw no exception at all. A silent cancellation is a normal `NotAllowedError` or nothing, and reconstructing a journey from error events is manual work. |
 | Your own backend logs | Successful and failed authentication attempts | Everything before the request reaches you, which is where most passkey friction lives |
 
-Observe complements these rather than replacing them. It is deliberately narrow: the client side of authentication, modeled properly.
+Observe complements these rather than replacing them. It is deliberately narrow: the client side of authentication, modeled properly. For a category-by-category comparison, see [Which tool reports the real authentication success rate?](https://www.corbado.com/blog/authentication-success-rate-analytics-vendors)
 
 ## 6. Next steps
 
