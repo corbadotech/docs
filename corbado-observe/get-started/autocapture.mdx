@@ -1,0 +1,85 @@
+---
+title: "Get Started with Autocapture"
+description: "Deploy Corbado Observe Autocapture: one script in your web frontend, no event tagging and a login journey that maps itself."
+sidebarTitle: "Autocapture"
+---
+
+**Autocapture** is the recommended way to run **Corbado Observe** on web. Corbado prepares the script for your flows, so your side of the integration is **one line of code**. No event tagging, no changes to your login flows and nothing for your team to maintain.
+
+<Info>
+  Autocapture is web only. On iOS and Android, use [custom events](/corbado-observe/get-started/custom-events) with the native SDKs.
+</Info>
+
+## 1. Prerequisites
+
+- An active project in the [Corbado management console](https://app.corbado.com)
+- Your `Project ID` and `API Base URL` from [settings](https://app.corbado.com/observe/settings/general)
+- Your authentication origins registered under [origins](https://app.corbado.com/observe/settings/origins)
+
+## 2. How the setup works
+
+Autocapture combines the capture library [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture) with a mapping for your flows. Corbado builds and maintains that mapping and keeps it current as your login evolves, which is what removes the instrumentation work from your team. It is therefore set up together with us rather than fully self-serve.
+
+<Steps>
+  <Step title="Share your authentication surface">
+    Tell us which login, sign-up, recovery and enrollment entry points exist and which methods each offers. A walkthrough of the live flows is usually enough.
+  </Step>
+  <Step title="We build the mapping">
+    Corbado produces the capture configuration and validates it against real journeys.
+  </Step>
+  <Step title="You deploy one script">
+    A single tag in your frontend, loaded asynchronously.
+  </Step>
+  <Step title="Data appears">
+    Journeys show up in the console within minutes. Confirm with the [integration checks](/corbado-observe/get-started/verify).
+  </Step>
+</Steps>
+
+Your effort is step 3: adding one line. Steps 1, 2 and 4 are ours.
+
+<Tip>
+  **Start with a single flow.** If you want to evaluate Observe before committing to a full integration, [tell us which flow to cover](mailto:support@corbado.com), for example passkey login on your login page. We prepare an Autocapture script for exactly that flow, you add one line and walk it, then you see real data from your own application.
+</Tip>
+
+<Note>
+  If you would rather instrument your flows yourself right now, [custom events](/corbado-observe/get-started/custom-events) are available self-serve and take 1 to 3 days for a typical login flow.
+</Note>
+
+## 3. Deploy the script
+
+Place the script as early as possible, ideally right before your closing `</head>` tag, so no part of the journey is missed.
+
+```html
+<script src="https://cdn.cloud.corbado.io/observe/sdk-latest.min.js" async crossorigin="anonymous"></script>
+```
+
+<Warning>
+  Use the exact snippet issued for your project rather than copying this example verbatim. It carries your `Project ID` and `API Base URL` as shown in the [management console](https://app.corbado.com/observe/settings/general).
+</Warning>
+
+| Property | Value |
+| --- | --- |
+| Load behavior | Asynchronous, non-blocking |
+| Size | Approximately 40 KB gzipped |
+| Failure mode | Fails closed: telemetry is lost, authentication is never affected |
+| Backend changes | None |
+
+## 4. Content Security Policy
+
+If you run a CSP, allow the Corbado script origin and your API endpoint. Both values are shown in your project settings.
+
+```
+script-src  https://cdn.cloud.corbado.io;
+connect-src <your-api-base-url>;
+```
+
+## 5. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
+    Confirm events arrive with the expected payload.
+  </Card>
+  <Card title="Combine with custom events" icon="code" href="/corbado-observe/overview/integration-paths#4-combining-both-on-web">
+    Add events for facts that never reach the browser.
+  </Card>
+</CardGroup>
