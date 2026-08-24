@@ -21,21 +21,21 @@ sidebarTitle: "Autocapture"
 Autocapture combines the capture library [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture) with a mapping for your flows. Corbado builds and maintains that mapping and keeps it current as your login evolves, which is what removes the instrumentation work from your team. It is therefore set up together with us rather than fully self-serve.
 
 <Steps>
-  <Step title="Share your authentication surface">
+  <Step title="You — share your authentication surface" icon="user">
     Tell us which login, sign-up, recovery and enrollment entry points exist and which methods each offers. A walkthrough of the live flows is usually enough.
   </Step>
-  <Step title="We build the mapping">
+  <Step title="Corbado — we build the mapping" icon="building">
     Corbado produces the capture configuration and validates it against real journeys.
   </Step>
-  <Step title="You deploy one script">
-    A single tag in your frontend, loaded asynchronously.
+  <Step title="You — deploy one script" icon="user">
+    A single tag in your frontend.
   </Step>
-  <Step title="Data appears">
+  <Step title="Corbado — data appears" icon="building">
     Journeys show up in the console within minutes. Confirm with the [integration checks](/corbado-observe/get-started/verify).
   </Step>
 </Steps>
 
-Your effort is step 3: adding one line. Steps 1, 2 and 4 are ours.
+Your only real effort is step 3: adding one line. The walkthrough in step 1 takes minutes, and steps 2 and 4 are entirely ours.
 
 <Tip>
   **Start with a single flow.** If you want to evaluate Observe before committing to a full integration, [tell us which flow to cover](mailto:support@corbado.com), for example passkey login on your login page. We prepare an Autocapture script for exactly that flow, you add one line and walk it, then you see real data from your own application.
@@ -50,16 +50,21 @@ Your effort is step 3: adding one line. Steps 1, 2 and 4 are ours.
 Place the script as early as possible, ideally right before your closing `</head>` tag, so no part of the journey is missed.
 
 ```html
-<script src="https://cdn.cloud.corbado.io/observe/sdk-latest.min.js" async crossorigin="anonymous"></script>
+<script src="https://cdn.cloud.corbado.io/observe/autocapture-latest.min.js" crossorigin="anonymous"></script>
 ```
 
+The Autocapture script is served from Corbado's CDN. Because Corbado hosts both the script and your mapping, updates to your flows reach production without a deployment on your side.
+
+<Info>
+  If you need more control over updates and changes, the Autocapture mapping script can also be hosted on your own platform or CDN. You then decide when a new version goes live, at the cost of pulling in mapping updates yourself. [Talk to us](mailto:support@corbado.com) to set this up.
+</Info>
+
 <Warning>
-  Use the exact snippet issued for your project rather than copying this example verbatim. It carries your `Project ID` and `API Base URL` as shown in the [management console](https://app.corbado.com/observe/settings/general).
+  Use the exact snippet issued for your project rather than copying this illustrative example verbatim. It carries your `Project ID` and `API Base URL` as shown in the [management console](https://app.corbado.com/observe/settings/general).
 </Warning>
 
 | Property | Value |
 | --- | --- |
-| Load behavior | Asynchronous, non-blocking |
 | Size | Approximately 40 KB gzipped |
 | Failure mode | Fails closed: telemetry is lost, authentication is never affected |
 | Backend changes | None |
