@@ -1,18 +1,22 @@
 ---
-title: "Corbado DevTools Chrome Extension"
-description: "Inspect the live Corbado Observe event stream, session ID and user references directly in Chrome DevTools while you develop."
-sidebarTitle: "Corbado DevTools"
+title: "Corbado Observe Debugger"
+description: "Inspect the live Corbado Observe event stream, session ID and user references with the Corbado Observe Debugger extension for Chrome DevTools."
+sidebarTitle: "Observe Debugger"
 ---
 
-**Corbado DevTools** adds a **Corbado** panel to Chrome DevTools showing exactly what **Corbado Observe** sends from the browser while you use your application. It is the fastest way to verify an integration, because it inspects the outgoing event traffic rather than your code, so it works for both [Autocapture](/corbado-observe/get-started/autocapture) and [custom events](/corbado-observe/get-started/custom-events).
+[**Corbado Observe Debugger**](https://chromewebstore.google.com/detail/corbado-observe-debugger/jgdklbfboneaminmclgacnhocbecibhl) is a Chrome DevTools extension: it adds a **Corbado** panel to Chrome DevTools showing exactly what **Corbado Observe** sends from the browser while you use your application. It is the fastest way to verify an integration, because it inspects the outgoing event traffic rather than your code, so it works for both [Autocapture](/corbado-observe/get-started/autocapture) and [custom events](/corbado-observe/get-started/custom-events).
 
 <Note>
-  This is a development tool. It reads what your own browser sends on the page you have open, is not required in production and collects nothing itself.
+  This is a diagnostic tool, not part of your integration: it reads what your own browser sends on the page you have open and collects nothing itself. Nothing needs to be deployed for it, and because it inspects outgoing traffic, it works just as well on your production site as in development. It also runs independently of [`debug: true`](/corbado-observe/get-started/verify#1-the-three-tools), so you can use both in parallel.
 </Note>
 
 ## 1. What it shows
 
 **Observe Data** gives you the tracking context of the page: the current **session ID** used to correlate one journey, with copy, refresh and reset actions and every **user reference** seen so far with first and last timestamps. Resetting the session starts a clean journey without clearing all browser state.
+
+<Warning>
+  The session ID shown here is **Corbado Observe's tracking session ID**, used to correlate the events of one journey. It is not your application's own session, and resetting it has no effect on your users' authentication state.
+</Warning>
 
 **Observe Events** is a live, filterable stream:
 
@@ -30,16 +34,13 @@ Controls include a free-text filter across name, type and data, chips to show on
 | --- | --- |
 | Browser | Google Chrome 102 or later |
 | DevTools | Must stay **open** while the page makes requests. The panel only captures network activity while DevTools is attached. |
-| Page | Any page running the Observe SDK. The panel listens for Observe event requests on any host. |
+| Page | Any page sending Corbado Observe events, whether through Autocapture or the SDK. The panel listens for Observe event requests on any host. |
 
 ## 3. Install
 
 <Steps>
   <Step title="Get the extension">
-    Request the extension package from [support@corbado.com](mailto:support@corbado.com) and unpack it into a folder.
-  </Step>
-  <Step title="Load it in Chrome">
-    Go to `chrome://extensions`, toggle **Developer mode** on in the top right, click **Load unpacked** and select the folder.
+    Install [Corbado Observe Debugger](https://chromewebstore.google.com/detail/corbado-observe-debugger/jgdklbfboneaminmclgacnhocbecibhl) from the Chrome Web Store.
   </Step>
   <Step title="Open the panel">
     Open DevTools on your application, with Command-Option-I on macOS or F12 on Windows and Linux, then switch to the **Corbado** tab.

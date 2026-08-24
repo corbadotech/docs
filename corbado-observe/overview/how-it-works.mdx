@@ -42,7 +42,7 @@ flowchart TD
     Raw events are mapped onto the [data model](/corbado-observe/tracking/overview): **flows** (login, sign-up, recovery), **subflows** (passkey login, password enrollment, email OTP), **decisions**, **users** and **tags**. This is closer to [process mining](https://www.corbado.com/blog/authentication-process-mining) than to a flat event log, which is what makes it possible to reconstruct a journey including loops, retries and method switches.
   </Step>
   <Step title="Pre-calculate">
-    Classified data is rolled into time series bucketed hourly, daily, monthly and total. Dashboards read a prepared series instead of scanning raw events, which is what keeps them fast on large projects. Cadence is automatic and can be tuned under **Observe → Settings → Pre-calculation**.
+    Classified data is rolled into time series bucketed hourly, daily, monthly and total. Dashboards read a prepared series instead of scanning raw events, which is what keeps them fast on large projects. Cadence is automatic and can be tuned under [**Observe → Settings → Pre-calculation**](https://app.corbado.com/observe/settings/pre-calculation).
   </Step>
   <Step title="Analyze and debug">
     The [management console](https://app.corbado.com) reads pre-calculated series for funnels, friction and error analysis and device breakdowns. It reads classified events directly for user search and single-journey reconstruction.
@@ -57,7 +57,7 @@ flowchart TD
 | Sit in the authentication path | Observe never grants, denies or delays a login. It only watches. |
 | Require a backend integration | Nothing to install on your servers, no API for Observe to call into. |
 | Modify your authentication logic | Instrumentation is pure telemetry. It cannot change behavior. |
-| Depend on a specific IdP or stack | Commercial IdP, open-source library, custom implementation or on-chain: it makes no difference. |
+| Depend on a specific IdP or stack | Commercial IdP, open-source library or custom in-house implementation: it makes no difference. |
 
 <Note>
   Because Observe is never in the authentication path, an SDK failure costs you telemetry, never a login.

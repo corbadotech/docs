@@ -14,7 +14,7 @@ This page answers the question every engineering team asks first: **will this wo
 | A Corbado project | Provides your `Project ID` and `API Base URL`. |
 | Outbound network access | The SDK sends batched events to the Corbado API. |
 
-There is **no backend integration**, no server-side SDK, no IdP configuration and no change to your authentication logic. Observe works the same whether you run a commercial IdP, an open-source WebAuthn library, a custom implementation or an on-chain one. See [what Observe is not](/corbado-observe/overview/how-it-works#3-what-observe-is-not).
+There is **no backend integration**, no server-side SDK, no IdP configuration and no change to your authentication logic. Observe works the same whether you run a commercial IdP, an open-source WebAuthn library or a custom in-house implementation. See [what Observe is not](/corbado-observe/overview/how-it-works#3-what-observe-is-not).
 
 <Warning>
   Observe is telemetry only. It is not in the authentication path and cannot grant, deny, delay or alter a login. An SDK failure, a blocked request or a missing configuration costs you telemetry, never an authentication.
@@ -47,6 +47,8 @@ If your authentication runs inside an iframe, which is common for embedded login
 See the guide on [relying party IDs](/corbado-connect/helpful-guides/rpid-configuration/overview) for background on RP ID scoping.
 
 ## 4. Data handling
+
+Observe does not need PII to do its job. It collects no names, email addresses, phone numbers or other directly identifying attributes; the only identity-linked value is the user reference you choose to pass, and that can be pseudonymous.
 
 **Never collected:** passwords or any other typed input, form field contents, session tokens or credentials for your own system.
 
@@ -82,10 +84,10 @@ Autocapture observes the browser surfaces listed under [what Autocapture actuall
 | --- | --- |
 | Web | Targets ES2019. Tested on current Chromium, Firefox and WebKit, including password-manager simulation and virtual WebAuthn in Chromium. |
 | Android | minSdk 23. |
-| iOS | Contact us for the current minimum deployment target. |
+| iOS | [Contact us](mailto:support@corbado.com) for the current minimum deployment target. |
 
 <Note>
-  If you need a documented floor for older Android WebViews, legacy Edge or specific enterprise browser versions, ask us. The tested matrix is expanding and we would rather give you a precise answer than a marketing one.
+  If you need a documented floor for older Android WebViews, legacy Edge or specific enterprise browser versions, [ask us](mailto:support@corbado.com). The tested matrix is expanding and we would rather give you a precise answer than a marketing one.
 </Note>
 
 ## 7. Storage and consent

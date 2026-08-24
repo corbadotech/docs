@@ -1,6 +1,6 @@
 ---
 title: "Verify Your Corbado Observe Integration"
-description: "Confirm that Corbado Observe events arrive with the expected payload using debug mode, the Corbado DevTools extension and the management console."
+description: "Confirm that Corbado Observe events arrive with the expected payload using debug mode, the Corbado Observe Debugger extension and the management console."
 sidebarTitle: "Verify your integration"
 ---
 
@@ -11,8 +11,8 @@ Before you consider an integration finished, confirm that events actually arrive
 | Tool | Use it for |
 | --- | --- |
 | **Debug mode** | Set `debug: true` at initialization and Observe logs every tracked event to the console. Fastest check that a call site fires at all. |
-| **[Corbado DevTools extension](/corbado-observe/tools/devtools-extension)** | A filterable live stream of what actually leaves the browser, plus the current session ID and user references. Works for both Autocapture and custom events. |
-| **[Management console](https://app.corbado.com)** | Confirms events were accepted and modeled correctly. Use the events view for the raw stream and user search to reconstruct one journey end to end. |
+| **[Corbado Observe Debugger](/corbado-observe/tools/devtools-extension)** | A Chrome DevTools extension with a filterable live stream of what actually leaves the browser, plus the current session ID and user references. Works for both Autocapture and custom events. |
+| **[Management console](https://app.corbado.com/observe/debugging/integration)** | Confirms events were accepted and modeled correctly. Use the events view for the raw stream and user search to reconstruct one journey end to end. |
 
 ## 2. Walkthrough
 
@@ -21,7 +21,7 @@ Before you consider an integration finished, confirm that events actually arrive
     Complete a login, a sign-up, a recovery and an enrollment, whichever exist in your product.
   </Step>
   <Step title="Confirm the events">
-    With debug mode or the DevTools extension open, check that each journey produces a start event, the expected steps and a finish event.
+    With debug mode or the Observe Debugger extension open, check that each journey produces a start event, the expected steps and a finish event.
   </Step>
   <Step title="Check one journey in the console">
     Find a test journey via user search and confirm the flow, subflows and decisions look the way you expect.
@@ -43,8 +43,8 @@ Before you consider an integration finished, confirm that events actually arrive
 ## 4. Next steps
 
 <CardGroup cols={2}>
-  <Card title="Corbado DevTools" icon="chrome" href="/corbado-observe/tools/devtools-extension">
-    Live event inspection during development.
+  <Card title="Corbado Observe Debugger" icon="chrome" href="/corbado-observe/tools/devtools-extension">
+    Live event inspection in Chrome DevTools.
   </Card>
   <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
     What the event names and fields mean.
