@@ -1,9 +1,9 @@
 ---
 name: corbado-observe
 description: Integrate Corbado Observe into a frontend application to measure
-  authentication flows like login, signup, recovery or enrollment. Use when adding
-  Corbado Observe, authentication analytics or passkey/login funnel tracking
-  to an app.
+    authentication flows like login, signup, recovery or enrollment. Use when adding
+    Corbado Observe, authentication analytics or passkey/login funnel tracking
+    to an app.
 ---
 
 # Corbado Observe integration
@@ -29,22 +29,27 @@ output is what carries the value. The classifier itself is not visible from the
 integration so this skill encodes its core rules. Reason about every emission through
 those rules, from the classifier's perspective, instead of judging how the raw series looks.
 
-The classifier merges aggressively, so the client needs no defensive deduplication:
+The classifier merges where a repeat is unambiguous, and reads it as a restart where it is
+not. Know which is which before emitting:
 
-- A repeated `flow_started` for an already-open flow merges into it (latest `touchpoint`
-  wins, tags accumulate).
+- A repeated `flow_started` for the _innermost_ open flow merges into it (latest
+  `touchpoint` wins, tags accumulate).
+- A repeated `flow_started` for an _outer_ flow while a nested flow is open is a restart:
+  the classifier re-targets the outer flow and closes everything nested under it as
+  incomplete. This is intended for real restarts (a reload mid-enrollment) and cannot be
+  told apart from an accidental re-announce.
 - Consecutive `subflow_started` of the same subflow type fold into one attempt (a
   different, known spec type starts a new attempt).
-- Decisions behave differently on purpose: every rendered decision surfaces as its own
-  occurrence. A later re-emission — same or changed options — closes the open occurrence
-  as incomplete and starts a new one; a revisited checkpoint is signal, not noise.
+- Decisions: every presented decision surfaces as its own occurrence. A later re-emission —
+  same or changed options — closes the open occurrence as incomplete and starts a new one;
+  a revisited checkpoint is signal, not noise.
 
-So for flows and subflows, re-emitting on re-render is safe by design; for decisions,
-emit per *semantic* render and dedup identical consecutive offers by value, so framework
-re-renders don't mint phantom occurrences. Prefer correctness by invariant (proven
-execution order, one declared entry point per flow) over correctness by state: every state
-variable in the integration should justify itself, and most defensive guards agents write
-for tracking turn out to be unnecessary once you trust the merge rules above.
+So flow-level events are emitted from one declared place per flow and never repeated
+casually: the opener fires at the flow's own entry screens only, never from a nested
+page "to make sure the parent is open". Subflow starts may repeat.
+Decisions are emitted per _presentation_ (see Decisions). Prefer correctness by invariant
+(proven execution order, one declared entry point per flow) over correctness by state:
+every state variable in the integration should justify itself.
 
 ## Modeling method
 
@@ -65,7 +70,12 @@ Decisions — usually fewer names than screens), then find the simplest way to d
 selectable option set per screen. Option sets are a local problem, but look for one
 mechanism that yields options globally if the app offers it (e.g. a server response that
 already lists the rendered choices, or determining actual visibility via tagged elements
-in the DOM).
+in the DOM). A screen can lead into the _same_ subflow through several controls (two
+buttons that run the same ceremony, a primary tile plus an "other methods" list, a
+prefilled versus typed identifier). That is one option and one subflow, since only one
+option string can resolve; the difference is expressed through an explicit spec type where
+the taxonomy has one, and otherwise modeled simplified: carry what differed as a tag
+(typically on `flow_finished`) or accept the loss and document it.
 
 **3. Subflows.** Fill in one auth method attempt at a time. What matters is creating the
 operation helper at the right moment (when the method appears or starts); then map the
@@ -78,19 +88,19 @@ integration against real journeys.
 
 ## Event catalog
 
-| Event | SDK call | Sent when |
-| --- | --- | --- |
-| `flow_started` | `flowStarted()` | journey entry (one declared opener per flow) |
-| `flow_decided` | `flowDecided()` | ambiguous entry resolves to one flow |
-| `flow_finished` | `flowFinished()` | success, or explicit skip via `explicitOutcome` |
-| `flow_auto_finished` | `flowAutoFinished()` | nested flow's terminal completes the parent |
-| `flow_reset` | `flowReset()` | rarely — explicit restart |
-| `auth_method_decision_started` | `authMethodsDecisionStarted()` | checkpoint rendered / options change |
-| `auth_method_decision_finished` | `authMethodsDecisionFinished()` | navigational choice made (never for method choices) |
-| `subflow_started` | helper construction (or `op.subflowStart({})`) | auth method appears or starts |
-| `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()` | around the step's app logic |
-| `flow_enriched` | `setCrossEnvironmentTransactionId()` | cross-environment handoff |
-| `conversion` | `conversion()` | business conversion outside auth |
+| Event                                 | SDK call                                       | Sent when                                           |
+| ------------------------------------- | ---------------------------------------------- | --------------------------------------------------- |
+| `flow_started`                        | `flowStarted()`                                | journey entry (one declared opener per flow)        |
+| `flow_decided`                        | `flowDecided()`                                | ambiguous entry resolves to one flow                |
+| `flow_finished`                       | `flowFinished()`                               | success, or explicit skip via `explicitOutcome`     |
+| `flow_auto_finished`                  | `flowAutoFinished()`                           | nested flow's terminal completes the parent         |
+| `flow_reset`                          | `flowReset()`                                  | rarely — explicit restart                           |
+| `auth_method_decision_started`        | `authMethodsDecisionStarted()`                 | checkpoint rendered / options change                |
+| `auth_method_decision_finished`       | `authMethodsDecisionFinished()`                | navigational choice made (never for method choices) |
+| `subflow_started`                     | helper construction (or `op.subflowStart({})`) | auth method appears or starts                       |
+| `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()`       | around the step's app logic                         |
+| `flow_enriched`                       | `setCrossEnvironmentTransactionId()`           | cross-environment handoff                           |
+| `conversion`                          | `conversion()`                                 | business conversion outside auth                    |
 
 ## Flows
 
@@ -101,12 +111,17 @@ freeform name (e.g. account renewal, reauthentication, transaction signing).
 skipped. Do not model non-completion on the client: incompleteness is classified from the
 absence of a `flow_finished`. Skipping is the one exception because it is semantically
 different from abandoning (e.g. "continue as guest", or entering signup abandons an open
-recovery): send `flowFinished({ flowName, explicitOutcome: "skipped" })`.
+recovery): send `flowFinished({ flowName, explicitOutcome: "skipped" })`. A skip can also
+carry the user reference whenever identity is already known.
 
 ```typescript
 tracker?.flowStarted({ flowName: "login", touchpoint: "account" });
 // ... success:
-tracker?.flowFinished({ flowName: "login", userId: "usr_123", identifier: "max@example.com" });
+tracker?.flowFinished({
+    flowName: "login",
+    userId: "usr_123",
+    identifier: "max@example.com"
+});
 ```
 
 When entry is ambiguous (combined login/signup form), start with
@@ -118,15 +133,15 @@ itself establishes the session (signup, recovery inside the login journey) nests
 `login`; when the nested flow's own terminal fires, complete the parent with
 `flowAutoFinished({ flowName: "login", finishedByFlowName: "signup", userId })`. A flow
 that runs after the session already exists (typically enrollment prompted post-login) is
-*chained*: a sibling flow started after the login finished, never nested.
+_chained_: a sibling flow started after the login finished, never nested.
 
 Events always attribute to the innermost open flow. So when the user leaves a nested flow
 without finishing it, close it explicitly (`explicitOutcome: "skipped"` is the usual fit —
 e.g. entering signup skips an open recovery): it records the right outcome (skipped, not
 abandoned) and keeps the parent's subsequent events out of the nested flow. This is the
-one place where non-completion needs client help. Related edge: re-emitting the *outer*
-flow's `flow_started` while a nested flow is open truncates back to the outer flow and
-closes the nested one.
+one place where non-completion needs client help. The reverse also holds: never re-emit
+the _outer_ flow's `flow_started` while a nested flow is open — the classifier reads it as
+a restart and closes the nested flow as incomplete (see System context).
 
 **Resets.** `flowReset()` exists but is rarely needed: whether a user restarted is
 inferable later from revisited decisions and subflows. Don't emit it just to be tidy.
@@ -135,7 +150,8 @@ inferable later from revisited decisions and subflows. Don't emit it just to be 
 class) ride `flow_started`; values only known on success ride `flow_finished`.
 Tags are `Record<string, string>` passed as the second argument; last value per key wins
 across a flow's events. Never put identity into tags — `userId`/`identifier` belong in
-the user reference.
+the user reference. Do not re-fire the opener from reactive config (store hydration,
+feature flags) just to refresh its tags; late-known values go on `flow_finished`.
 
 ## Decisions
 
@@ -145,7 +161,7 @@ Use `authMethodsDecisionStarted` / `authMethodsDecisionFinished` for **all** dec
 
 - **Method options** — the user chooses to attempt an auth method: start typing a
   password, click the passkey button. These use the predefined option strings (below) and
-  are *never* finished explicitly: the subflow that follows resolves the decision in
+  are _never_ finished explicitly: the subflow that follows resolves the decision in
   classification.
 - **Navigational/routing options** — the user wants a different option set: switch
   verification method, change identifier, back, create account, enter recovery. Freeform
@@ -159,14 +175,19 @@ part of the model, not an edge case. Name them for reuse across decisions
 ```typescript
 // screen renders
 tracker?.authMethodsDecisionStarted({
-  decisionName: "post-identifier",
-  options: ["password-login-known-identifier", "passkey-login-known-identifier", "switch-to-otp", "back"],
+    decisionName: "post-identifier",
+    options: [
+        "password-login-known-identifier",
+        "passkey-login-known-identifier",
+        "switch-to-otp",
+        "back"
+    ]
 });
 // user picks a method → no finished; the password/passkey subflow resolves it.
 // user picks navigation → finish explicitly:
 tracker?.authMethodsDecisionFinished({
-  decisionName: "post-identifier",
-  explicitDecisionValue: "switch-to-otp",
+    decisionName: "post-identifier",
+    explicitDecisionValue: "switch-to-otp"
 });
 ```
 
@@ -186,90 +207,153 @@ Options ride `started`; an explicit `finished` needs only the decision name and 
 chosen value (which should be one of the declared options). Keep the options array's
 order stable across renders where possible.
 
-Re-send `started` whenever the checkpoint is re-presented or its options change — each
-rendered decision becomes its own occurrence and the superseded one closes as incomplete,
-which is exactly what a revisited checkpoint should look like. Only dedup identical
-consecutive offers caused by framework re-renders (compare by value). An option whose
-subflow auto-starts on the screen still belongs in the option
-set — if a subflow can start on a screen, its method option is part of that screen's
-options. Unresolved decisions classify as incomplete.
+A decision occurrence is a _presentation to the user_, not a render. Re-send `started`
+whenever the checkpoint is re-presented or its options change — each presentation becomes
+its own occurrence and the superseded one closes as incomplete, which is exactly what a
+revisited checkpoint should look like. An identical offer with no user action or
+navigation in between is the same presentation and must not be re-emitted (framework
+re-renders, route remounts, hydration); a click-driven decision is always a new
+presentation. Engaging a method resolves the decision regardless of how the attempt ends,
+so a failed attempt on an unchanged screen is a retry inside the same occurrence, not a
+reason to re-emit `started`. When the option set depends on an async capability check
+(conditional mediation, platform authenticator availability), emit `started` synchronously
+on render with `explicitTimestamp` set to the render time, and re-emit with the final
+options and the _same_ timestamp once the check resolves: an identical timestamp replaces
+the open occurrence's options in place instead of opening a new one. Capture the render
+time once and reuse it. An option whose subflow auto-starts on the screen still belongs in
+the option set — if a subflow can start on a screen, its method option is part of that
+screen's options. Unresolved decisions classify as incomplete.
 
 **Option strings that subflows resolve.** The decision only resolves if the exact string
 is present in `options`:
 
-| Subflow (spec) | Option string |
-| --- | --- |
-| password-login (`password-known-identifier`) | `password-login-known-identifier` |
-| password-login (`password-with-identifier`) | `password-login-with-identifier` |
-| passkey-login (`passkey-known-identifier[-auto]`, `passkey-cui`, no spec) | `passkey-login-known-identifier` |
-| passkey-login (`passkey-no-identifier[-auto]`) | `passkey-login-no-identifier` |
-| passkey-login (`passkey-immediate`) | resolves no option (runs pre-decision) |
-| password-login, CUI steps fired (`cui.*`) | `passkey-login-cui` |
-| passkey-enrollment | `passkey-enrollment` |
-| password-enrollment | `password-set` / `password-reset`, fallback `password-enrollment` |
-| email-otp | `email-otp-login` / `email-otp-enrollment`, fallback `email-otp` |
-| sms-otp | `sms-otp-login` / `sms-otp-enrollment`, fallback `sms-otp` |
-| provide-identifier | `identifier-email` (also when its CUI part completes) |
-| provide-data | `provide-data` |
-| social-login | `social-google` / `social-apple` / `social-facebook` / `social-other` |
-| app-confirmation | `qr-code` (dedicated QR screen) or `app-confirmation` |
-| totp (low-level) | `totp` / `totp-enrollment` |
+| Subflow (spec)                                                            | Option string                                                                                                                              |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| password-login (`password-known-identifier`)                              | `password-login-known-identifier`                                                                                                          |
+| password-login (`password-with-identifier`)                               | `password-login-with-identifier`                                                                                                           |
+| passkey-login (`passkey-known-identifier[-auto]`, `passkey-cui`, no spec) | `passkey-login-known-identifier`                                                                                                           |
+| passkey-login (`passkey-no-identifier[-auto]`)                            | `passkey-login-no-identifier`                                                                                                              |
+| passkey-login (`passkey-immediate`)                                       | resolves no option (runs pre-decision)                                                                                                     |
+| password-login, CUI steps fired (`cui.*`)                                 | `passkey-login-cui` (password-login helper only)                                                                                           |
+| passkey-enrollment                                                        | `passkey-enrollment`                                                                                                                       |
+| password-enrollment                                                       | `password-set` / `password-reset`, fallback `password-enrollment`                                                                          |
+| email-otp                                                                 | `email-otp-login` / `email-otp-enrollment`, fallback `email-otp`                                                                           |
+| sms-otp                                                                   | `sms-otp-login` / `sms-otp-enrollment`, fallback `sms-otp`                                                                                 |
+| provide-identifier                                                        | `identifier-email` (also when its CUI part completes; a CUI ceremony torn down by the identifier submit is neutral — no error, no abandon) |
+| provide-data                                                              | `provide-data`                                                                                                                             |
+| social-login                                                              | `social-google` / `social-apple` / `social-facebook` / `social-other`                                                                      |
+| app-confirmation                                                          | `qr-code` (dedicated QR screen) or `app-confirmation`                                                                                      |
+| totp (low-level)                                                          | `totp` / `totp-enrollment`                                                                                                                 |
 
 ("fallback" = the subflow first tries the spec-typed string, then the generic one — put
 whichever your option set naturally distinguishes.)
 
 ## Subflows
 
-A subflow is one auth method attempt. Create the operation helper **when the method
-appears on screen or starts** (a rendered password field, a shown OTP input, a passkey
-process kicking off) — creation emits `subflow_started`. Repeated starts of the same
-subflow with nothing in between are merged; don't guard against them.
+A subflow is one auth method attempt; creating the operation helper emits
+`subflow_started`. When to create it depends on how the method is engaged:
+
+- **Input-bound methods** (password, OTP, identifier, provide-data) start when the input
+  renders — the field itself is the attempt surface, and the helper captures interaction
+  on it.
+- **Action-bound methods** (passkey button, social button, app confirmation) start on the
+  action, not when the button becomes visible. A visible option is not an attempt; a helper
+  created for a button nobody pressed classifies as an attempt with no follow-up, i.e. an
+  error.
+
+A helper starts its attempt exactly once: construction auto-starts by default, so never add
+a manual `subflowStart()` on top of it. Repeated starts of the same subflow with nothing in
+between are merged; don't guard against them. Do not emit `subflow_trigger`; it is
+deprecated for the helpers used here and carries no classification value.
+
+Instrumentation is additive by default: it observes the app's existing lifecycle and does
+not add cancellation, timers, navigation rules or request signals of its own. Where a clean
+attempt boundary genuinely needs a small restructuring (a single choke point for a
+ceremony, a teardown hook), make it deliberately and call it out in the mapping notes.
 
 ```typescript
-const op = tracker?.passkeyLoginFullOperation({ explicitSpecType: "passkey-known-identifier" });
+const op = tracker?.passkeyLoginFullOperation({
+    explicitSpecType: "passkey-known-identifier"
+});
 try {
-  op?.getOptions.start({});
-  const options = await fetchAssertionOptions(email);
-  op?.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+    op?.getOptions.start({});
+    const options = await fetchAssertionOptions(email);
+    op?.getOptions.finished({ assertionOptions: JSON.stringify(options) });
 } catch (e) {
-  op?.getOptions.error(e);
-  return;
+    op?.getOptions.error(e);
+    return;
 }
 try {
-  op?.ceremony.start({});
-  const response = await startWebAuthnAuthentication(options);
-  op?.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+    op?.ceremony.start({});
+    const response = await startWebAuthnAuthentication(options);
+    op?.ceremony.finished({ assertionResponse: JSON.stringify(response) });
 } catch (e) {
-  op?.ceremony.error(e); // also the user cancelling the prompt
-  return;
+    op?.ceremony.error(e); // also the user cancelling the prompt
+    return;
 }
 try {
-  op?.postResponse.start({});
-  const result = await verifyOnServer(response);
-  op?.postResponse.finished({}, { userReference: { userId: result.userId } });
+    op?.postResponse.start({});
+    const result = await verifyOnServer(response);
+    op?.postResponse.finished({}, { userReference: { userId: result.userId } });
 } catch (e) {
-  op?.postResponse.error(e);
+    op?.postResponse.error(e);
 }
 ```
 
-Every helper takes a config with `autoStart?: boolean` (default `true`; disable only when
-you must create the helper before the method is actually offered, then call
-`op.subflowStart({})` yourself) and `explicitSpecType`.
+The passkey steps carry the WebAuthn payloads as JSON strings: for login,
+`getOptions.finished` takes `assertionOptions` and `ceremony.finished` takes
+`assertionResponse`; for enrollment the same steps take `attestationOptions` and
+`attestationResponse`, and the enrollment `ceremony.start` additionally requires
+`mediation` (`"conditional" | "optional" | "required"`).
 
-| Helper (on tracker) | Subflow | Steps | Spec types |
-| --- | --- | --- | --- |
-| `provideIdentifierOperationFull(cfg?)` | provide-identifier (+ passkey CUI) | `provideIdentifier.clientValidation` / `.postResponse`; `cui.getOptions` / `.ceremony` / `.postResponse` | `email`, `phone`; CUI: `passkey-cui` |
-| `passkeyLoginFullOperation(cfg?)` | passkey-login | `getOptions`, `ceremony`, `postResponse` | `passkey-known-identifier[-auto]`, `passkey-no-identifier[-auto]`, `passkey-cui`, `passkey-immediate` |
-| `passkeyEnrollmentFullOperation(cfg?)` | passkey-enrollment | `getOptions`, `ceremony`, `postResponse` | `conditional-auto-manual`, `auto-manual`, `manual` |
-| `passwordLoginFullOperation(cfg?)` | password-login | `clientValidation`, `postResponse`; `cui.getOptions` / `.ceremony` / `.postResponse` | `password-known-identifier`, `password-with-identifier`; CUI: `passkey-cui` |
-| `passwordEnrollmentFullOperation(cfg?)` | password-enrollment | `clientValidation`, `postResponse` | `password-set`, `password-reset` |
-| `emailOtpOperationFull(cfg?)` | email-otp | `send`, `postResponse`, `resend` | `email-otp-login`, `email-otp-enrollment` |
-| `smsOtpOperationFull(cfg?)` | sms-otp | `postResponse`, `resend` | `sms-otp-login`, `sms-otp-enrollment` |
-| `emailLinkOperationFull(cfg?)` | email-link | `send`, `postResponse`, `resend` | `email-link-login`, `email-link-enrollment` |
-| `socialLoginOperationFull(cfg?)` | social-login | `getRedirectUrl`, `exchangeCode` | `pre-identifier`, `post-identifier` |
-| `provideDataOperationFull(cfg?)` | provide-data | `clientValidation`, `postResponse` | `signup`, `login`, `recovery`, `enrollment` |
-| `appConfirmationOperationFull(cfg?)` | app-confirmation | `ceremony`, `retry`, `postResponse` | `qr-code` |
-| `captchaOperationFull(cfg?)` | captcha | `ceremony`, `postResponse` | `visible`, `invisible` |
+**Identifier-field Conditional UI** is not a passkey-login attempt. It belongs to the
+provide-identifier helper's `cui` steps, resolves the same `identifier-email` option, and
+runs alongside the manual identifier path:
+
+```typescript
+const op = tracker?.provideIdentifierOperationFull({
+    inputHtmlField: emailInput,
+    explicitSpecType: "email"
+});
+// conditional request, started when the identifier surface renders:
+op?.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
+const options = await fetchConditionalOptions();
+op?.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+op?.cui.ceremony.start({});
+try {
+    const response = await startConditionalWebAuthn(options); // pending until picked or torn down
+    op?.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+    op?.cui.postResponse.start({});
+    const result = await verifyOnServer(response);
+    op?.cui.postResponse.finished(
+        {},
+        { userReference: { userId: result.userId } }
+    );
+} catch (e) {
+    // torn down because the user submitted the identifier or left: not an error
+    if (!displacedByUser) op?.cui.ceremony.error(e);
+}
+// manual path, on submit:
+op?.provideIdentifier.postResponse.start({});
+```
+
+**Read the installed package before applying a recipe.** Helper signatures can move between
+releases.
+
+| Helper (on tracker)                     | Subflow                            | Steps                                                                                                    | Spec types                                                                                            |
+| --------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `provideIdentifierOperationFull(cfg?)`  | provide-identifier (+ passkey CUI) | `provideIdentifier.clientValidation` / `.postResponse`; `cui.getOptions` / `.ceremony` / `.postResponse` | `email`, `phone`; CUI: `passkey-cui`                                                                  |
+| `passkeyLoginFullOperation(cfg?)`       | passkey-login                      | `getOptions`, `ceremony`, `postResponse`                                                                 | `passkey-known-identifier[-auto]`, `passkey-no-identifier[-auto]`, `passkey-cui`, `passkey-immediate` |
+| `passkeyEnrollmentFullOperation(cfg?)`  | passkey-enrollment                 | `getOptions`, `ceremony`, `postResponse`                                                                 | `conditional-auto-manual`, `auto-manual`, `manual`                                                    |
+| `passwordLoginFullOperation(cfg?)`      | password-login                     | `clientValidation`, `postResponse`; `cui.getOptions` / `.ceremony` / `.postResponse`                     | `password-known-identifier`, `password-with-identifier`; CUI: `passkey-cui`                           |
+| `passwordEnrollmentFullOperation(cfg?)` | password-enrollment                | `clientValidation`, `postResponse`                                                                       | `password-set`, `password-reset`                                                                      |
+| `emailOtpOperationFull(cfg?)`           | email-otp                          | `send`, `postResponse`, `resend`                                                                         | `email-otp-login`, `email-otp-enrollment`                                                             |
+| `smsOtpOperationFull(cfg?)`             | sms-otp                            | `postResponse`, `resend`                                                                                 | `sms-otp-login`, `sms-otp-enrollment`                                                                 |
+| `emailLinkOperationFull(cfg?)`          | email-link                         | `send`, `postResponse`, `resend`                                                                         | `email-link-login`, `email-link-enrollment`                                                           |
+| `socialLoginOperationFull(cfg?)`        | social-login                       | `getRedirectUrl`, `exchangeCode`                                                                         | `pre-identifier`, `post-identifier`                                                                   |
+| `provideDataOperationFull(cfg?)`        | provide-data                       | `clientValidation`, `postResponse`                                                                       | `signup`, `login`, `recovery`, `enrollment`                                                           |
+| `appConfirmationOperationFull(cfg?)`    | app-confirmation                   | `ceremony`, `retry`, `postResponse`                                                                      | `qr-code`                                                                                             |
+| `captchaOperationFull(cfg?)`            | captcha                            | `ceremony`, `postResponse`                                                                               | `visible`, `invisible`                                                                                |
 
 For a subflow with no helper (e.g. TOTP), use the low-level tracker methods
 (`trackSubflowStarted`, `trackSubflowStepStarted/Finished/Error`) with the same shape.
@@ -293,7 +377,7 @@ events. See Step errors below for what to put into them.
 
 **Spec types.** Supply `explicitSpecType` on the constructor whenever known. For
 passkey-login, passkey-enrollment, password-enrollment, provide-data, email-link and
-social-login a spec must eventually arrive on *some* event of the attempt — the
+social-login a spec must eventually arrive on _some_ event of the attempt — the
 classifier drops an attempt without one. The types don't enforce this; it's the
 integration's job to make sure one of these attempts never runs spec-less end to end. The others tolerate
 absence with a documented default (email/sms-otp assume the login variant, password-login
@@ -320,7 +404,7 @@ signup form).
 
 Error tracking is an optional investment tier — classification never depends on it. An
 attempt that just stops already classifies as incomplete; an explicit step error is a
-*different* outcome (`<step>-error` vs `<step>-incomplete`), so errors add diagnostic
+_different_ outcome (`<step>-error` vs `<step>-incomplete`), so errors add diagnostic
 depth, not correctness. Map them to the depth the customer wants error analytics.
 
 What makes the investment pay: the backend groups every reported error by its exact
@@ -336,7 +420,7 @@ grouping. That yields four rules:
   failure because it has no curated code.
 - **The application's own errors deserve a deliberate shape.** Where the failure comes
   from the app's API or the transport/wire layer, decide explicitly what to send: a code
-  naming what the client *observed*, not an interpretation (`invalid_password`,
+  naming what the client _observed_, not an interpretation (`invalid_password`,
   `invalid_otp`, `transport_failed`, `http_error`, `process_terminated`), reused where
   the same observation recurs across steps and platforms, with the server's raw error
   label as the message. The shape is untyped, so get it exactly right: pass a plain
@@ -346,18 +430,22 @@ grouping. That yields four rules:
   password enrollment `requirements_not_fulfilled`; app-confirmation `declined` /
   `expired`; CUI ceremony `cancel_detected`).
 
-  ```typescript
-  op?.postResponse.start({});
-  const body = await submitPassword(password);
-  if (body.rejected) {
-    // app's API refused the password — no exception in hand, name the observation:
-    op?.postResponse.error({ code: "invalid_password", message: body.errorLabel });
-    // ...or, where the helper types the code, compile-time checked:
-    op?.postResponse.errorTyped({ code: "invalid_password" });
-  }
-  // caught platform exception (e.g. a WebAuthn ceremony) — pass it raw, don't rewrap:
-  op?.ceremony.error(e);
-  ```
+    ```typescript
+    op?.postResponse.start({});
+    const body = await submitPassword(password);
+    if (body.rejected) {
+        // app's API refused the password — no exception in hand, name the observation:
+        op?.postResponse.error({
+            code: "invalid_password",
+            message: body.errorLabel
+        });
+        // ...or, where the helper types the code, compile-time checked:
+        op?.postResponse.errorTyped({ code: "invalid_password" });
+    }
+    // caught platform exception (e.g. a WebAuthn ceremony) — pass it raw, don't rewrap:
+    op?.ceremony.error(e);
+    ```
+
 - **Keep volatile tokens out of messages.** Request ids, timestamps and user data
   fragment the flavour grouping — it's per-occurrence tokens that hurt, not the number of
   distinct errors the app genuinely has.
@@ -376,7 +464,7 @@ Ordering requirements are causal, not temporal:
 
 1. `flow_started` before any event of that flow. A `flow_finished` or `flow_decided`
    without an open flow invalidates the session's classification — this is the unforgiving
-   one.
+   one. `flow_auto_finished` without an open parent is dropped silently, not fatal.
 2. When a screen renders: decision `started` before creating operation helpers (decision
    before `subflow_started`).
 3. Settle the previous screen before opening the next: a navigational choice's decision
@@ -404,9 +492,8 @@ npm install @corbado/observe
 ```
 
 `projectId` and `apiBaseUrl` come from the Corbado console (https://app.corbado.com →
-Observe → Settings). Wrap `init()`/`getTracker()` in one module that lazily initializes
-and returns `null` without config, and guard every call site with `?.` — tracking then
-can't throw and is disabled wherever Observe isn't configured:
+Observe → Settings). Wrap `init()`/`getTracker()` in one module that lazily initializes,
+and guard every call site with `?.` — tracking then can't throw:
 
 ```typescript
 import { getTracker, init, type CorbadoTracker } from "@corbado/observe";
@@ -414,14 +501,13 @@ import { getTracker, init, type CorbadoTracker } from "@corbado/observe";
 let initialized = false;
 
 export const observeTracker = (): CorbadoTracker | null => {
-  const projectId = process.env.CORBADO_OBSERVE_PROJECT_ID; // adapt to the app's config
-  const apiBaseUrl = process.env.CORBADO_OBSERVE_API_BASE_URL;
-  if (!projectId || !apiBaseUrl) return null;
-  if (!initialized) {
-    init({ projectId, apiBaseUrl, debug: false });
-    initialized = true;
-  }
-  return getTracker() ?? null;
+    const projectId = "pro-XXX"; // adapt to your project id
+    const apiBaseUrl = "https://api.cloud.corbado.io";
+    if (!initialized) {
+        init({ projectId, apiBaseUrl, debug: false });
+        initialized = true;
+    }
+    return getTracker() ?? null;
 };
 ```
 
@@ -431,9 +517,15 @@ like `"web"` when one project tracks several). Use `debug: true` while developin
 `userId` (stable internal id; a hash is fine) and `identifier` as soon as identity is
 known — at minimum on `flowFinished`, or per step via `{ userReference: {...} }`.
 
-**Verify** by walking every instrumented journey (success, failure, cancel, skip) with
-`debug: true`, checking the emitted series against the expectations below, and confirming
-flows appear in the console dashboards.
+## Validating the implementation
+
+Tracking cannot be proven from the app's own tests; the raw event series is what the
+classifier sees. After implementing, it can be useful to pick a small set of journeys
+with decent coverage and write down the event series each should produce, in the notation
+of the worked example below.
+Then have the developer run those journeys with `debug: true` and hand back the console
+output: the SDK logs every emitted event with its data. Read the series against the rules
+in this skill and fix what deviates before looking at dashboards.
 
 ## Worked example
 
