@@ -42,16 +42,16 @@ The skill guides the agent through a safe, telemetry-only integration:
 
 <Steps>
   <Step title="Discovers the auth surface">
-    Finds your login, signup, recovery and enrollment entry points and the methods each offers.
+    Finds your login, sign-up, recovery and enrollment entry points and the methods each offers.
   </Step>
-  <Step title="Proposes a plan">
-    Shows you a short map of the touchpoints it will instrument and asks for confirmation before writing code.
+  <Step title="Models the journeys">
+    Defines flow boundaries, assigns every screen to a decision and maps each method to a subflow, following the [modeling method](/corbado-observe/tracking/modeling). Where your app and the taxonomy do not match, it documents the lossy mapping instead of contorting the code.
   </Step>
   <Step title="Instruments">
     Adds flows, decisions and subflows with the correct events and payloads, using guarded tracking calls that cannot break your app's behavior.
   </Step>
-  <Step title="Verifies">
-    Walks each journey with debug mode on and confirms events fire as expected. See [Verify your integration](/corbado-observe/get-started/verify).
+  <Step title="Validates">
+    Writes down the event series a few representative journeys should produce, asks you to walk them with debug mode on and reads the console output against the rules. See [Verify your integration](/corbado-observe/get-started/verify).
   </Step>
 </Steps>
 
@@ -61,7 +61,7 @@ The skill guides the agent through a safe, telemetry-only integration:
   <Card title="Custom events" icon="code" href="/corbado-observe/get-started/custom-events">
     Install the SDK and send your first event manually.
   </Card>
-  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
-    The full data model the skill instruments against.
+  <Card title="Modeling" icon="sitemap" href="/corbado-observe/tracking/modeling">
+    The mapping method the skill applies.
   </Card>
 </CardGroup>

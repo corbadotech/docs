@@ -21,7 +21,7 @@ Use tags when you want to answer questions like:
 
 ## 2. Send tags from the SDK
 
-In the **Corbado Observe SDK**, most tracking methods accept tags as an optional second argument (`Record<string, string>`).
+In the **Corbado Observe SDK**, flow events and `conversion()` accept tags as an optional second argument (`Record<string, string>`). Flows are the carrier: configuration known at entry goes on `flowStarted()`, values only known on success go on `flowFinished()`. The last value per key wins across a flow's events.
 
 You can attach tags:
 

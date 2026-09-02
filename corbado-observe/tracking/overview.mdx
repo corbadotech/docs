@@ -1,20 +1,44 @@
 ---
 title: "Tracking Events with Corbado Observe"
-description: "Understand the Corbado Observe tracking data model and its core entities."
+description: "Understand the Corbado Observe tracking data model, its core entities and the events that feed it."
 sidebarTitle: "Overview"
 ---
 
 **Corbado Observe** helps you track authentication journeys across your product so you can understand user behavior, identify drop-offs and improve conversion. It does this by capturing structured events from your application and mapping them to a clear data model.
+
+This reference describes the `@corbado/observe` web SDK from version 0.12 onwards. The native SDKs send into the same data model.
 
 ## 1. Data model entities
 
 | Entity | Description |
 | --- | --- |
 | [Projects](https://app.corbado.com) | Projects are the top-level container in the data model. Each project stores its own tracking data and events, and projects are fully isolated from each other. |
-| [Applications](/corbado-observe/tracking/applications) | Applications represent the channels of your product (for example, web and native app). In most cases, you keep them in one project and model them as separate applications. Read our section on [Applications](/corbado-observe/tracking/applications) for more details. |
-| [Flows](/corbado-observe/tracking/flows) | Flows describe larger user journeys, such as sign-up, login or account recovery. A flow is composed of decisions and subflows. Read our section on [Flows](/corbado-observe/tracking/flows) for more details. |
-| [Decisions](/corbado-observe/tracking/decisions) | Decisions capture system and user choices, such as selecting a login method (password, email OTP or social login). In funnel analysis, decisions create explicit nodes and can be used as filters. Decisions are created by sending specific events. Read our section on [Decisions](/corbado-observe/tracking/decisions) for more details. |
-| [Subflows](/corbado-observe/tracking/subflows) | Subflows are smaller building blocks within a flow. They group related events into a logical unit, such as a passkey login or password enrollment. Read our section on [Subflows](/corbado-observe/tracking/subflows) for more details. |
-| Events | Events are the foundation of tracking in **Corbado Observe**. Generic event types (such as `subflow_trigger`, `subflow_step_started`, `subflow_step_finished` and `subflow_step_error`) are used together with a subflow type and step name to model subflows. Other event types model flows and decisions. |
-| [Users](/corbado-observe/tracking/user) | Users in **Corbado Observe** mirror your own user entities. User references are used to group multiple flows for one user and enable a per-user view on authentication behavior. Read our section on [Users](/corbado-observe/tracking/user) for more details. |
-| [Tags](/corbado-observe/tracking/tags) | Tags are key-value pairs that can be used to add additional metadata to events. Read our section on [Tags](/corbado-observe/tracking/tags) for more details. |
+| [Applications](/corbado-observe/tracking/applications) | Applications represent the channels of your product, for example web and native app. In most cases you keep them in one project and model them as separate applications. |
+| [Flows](/corbado-observe/tracking/flows) | Flows describe complete user journeys, such as sign-up, login or account recovery. A flow is composed of decisions and subflows and can contain nested flows. |
+| [Decisions](/corbado-observe/tracking/decisions) | Decisions are the checkpoints of a journey, where a user or your system picks an authentication method or a route. In funnel analysis they create explicit nodes and can be used as filters. |
+| [Subflows](/corbado-observe/tracking/subflows) | Subflows are one concrete authentication method attempt each, such as a passkey login or a password enrollment. They are auto-discovered from the step events you send. |
+| Events | Events are the transport. Flow and decision events model flows and decisions directly. Subflow events (`subflow_started`, `subflow_step_started`, `subflow_step_finished`, `subflow_step_error`) carry a subflow type and step name and are emitted by the SDK's operation helpers. |
+| [Users](/corbado-observe/tracking/user) | Users in **Corbado Observe** mirror your own user entities. User references group multiple flows for one user and enable a per-user view on authentication behavior. |
+| [Tags](/corbado-observe/tracking/tags) | Tags are key-value pairs that add segmentation dimensions to flows. |
+
+Flows and decisions are **not** auto-discovered: you send their events yourself. Subflows are derived from step events. A backend classifier turns the event stream into flows, decisions and attempts, and that classified output is what the dashboards read. See [Modeling](/corbado-observe/tracking/modeling) for how to map your journeys onto it.
+
+## 2. Event catalog
+
+Every SDK method emits exactly one event. The wire name is what appears in debug logs, in the [Observe Debugger](/corbado-observe/tools/devtools-extension) and in the console's events view.
+
+| Event | SDK call | Sent when |
+| --- | --- | --- |
+| `flow_started` | `flowStarted()` | Journey entry, from one declared opener per flow |
+| `flow_decided` | `flowDecided()` | An ambiguous entry resolves to one flow |
+| `flow_finished` | `flowFinished()` | Success, or an explicit skip via `explicitOutcome` |
+| `flow_auto_finished` | `flowAutoFinished()` | A nested flow's terminal completes the parent |
+| `flow_reset` | `flowReset()` | Rarely, an explicit restart |
+| `flow_enriched` | `setCrossEnvironmentTransactionId()` | A cross-environment handoff |
+| `conversion` | `conversion()` | A business conversion outside authentication |
+| `auth_method_decision_started` | `authMethodsDecisionStarted()` | A checkpoint is presented or its options change |
+| `auth_method_decision_finished` | `authMethodsDecisionFinished()` | A navigational choice is made |
+| `subflow_started` | Operation helper construction | An auth method appears or starts |
+| `subflow_step_started` / `subflow_step_finished` / `subflow_step_error` | `op.<step>.start()` / `.finished()` / `.error()` | Around the step's application logic |
+
+There is no subflow-finished event. Each attempt's outcome is derived from its steps.

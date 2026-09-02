@@ -1,10 +1,10 @@
 ---
 title: "Decisions with Corbado Observe"
-description: "Track explicit user and system choices with decisions in Corbado Observe."
+description: "Track the checkpoints of an authentication journey with decisions in Corbado Observe."
 sidebarTitle: "Decisions"
 ---
 
-Decisions capture explicit choice points in an authentication journey.
+Decisions capture the checkpoints of an authentication journey: the screens where a user or your system picks an authentication method or a route.
 
 <Frame>
   <iframe
@@ -17,187 +17,208 @@ Decisions capture explicit choice points in an authentication journey.
   />
 </Frame>
 
-Use decisions to track:
-
-- **User choices**, for example selecting between passkey login, password login or social login
-- **System choices**, for example policy or backend logic selecting an auth path automatically
-
 Unlike [subflows](/corbado-observe/tracking/subflows), decisions are **not auto-discovered**. You define them by sending decision events from your integration.
 
 ## 1. Why decisions matter
 
-Without decision events, complex authentication funnels can be hard to interpret because branch points are only implied by downstream events.
+Without decision events, branch points are only implied by downstream events and funnels are hard to interpret. With them you can:
 
-With decision tracking, you make branch points explicit, which helps you:
-
-- Understand where users hesitate or switch methods repeatedly
-- Analyze system-driven routing behavior (for example post-identifier routing)
+- See which methods were offered on a screen versus which one was taken
+- Understand where users hesitate, go back or switch methods repeatedly
+- Analyze system-driven routing, for example what the post-identifier screen offered
 - Filter and segment funnels by concrete choice outcomes
-- Measure prompt-style interactions such as "accept" vs "dismiss"
 
 ## 2. Decision model
 
 A decision in **Corbado Observe** has:
 
-- A stable `decisionName` (for example `login-method` or `passkey-enrollment`)
-- A list of offered `options` at the decision point
-- An optional chosen value (`explicitDecisionValue`) when the decision resolves
+- A stable `decisionName`
+- The list of `options` offered at the checkpoint
+- A chosen value (`explicitDecisionValue`) once the decision resolves
 
-Common properties:
+### 2.1 Decision names are checkpoints
 
-- The same decision can occur multiple times in one flow
-- Available options can change between attempts
-- Decision outcomes can be user-driven or system-driven
+A decision name is a semantic unit of the journey, usually a checkpoint that takes a successful auth method to pass and navigation to leave. Several screens map to one name: progressive disclosure, explanatory screens or switching between verification methods are still the same checkpoint. Typical names:
 
-## 3. Decision types
+| Name | Covers |
+| --- | --- |
+| `pre-identifier` | Everything before the identifier is submitted: the identifier field, social buttons, a discoverable passkey button. |
+| `post-identifier` | The methods shown after the identifier is known: password, passkey, OTP, "other methods". |
+| `2fa` | A second-factor checkpoint after a first method succeeded. |
+| `enrollment-user` | A post-login prompt offering to enroll a passkey, with a skip. |
 
-The SDK offers two decision event variants. Both follow the same started/finished lifecycle, but differ in how options are typed.
+Rules that make names aggregate well:
 
-### 3.1 Auth method decisions
+- Every screen belongs to a decision, even with a single option.
+- The same semantic screen always maps to the same name. A screen reused across checkpoints maps per surrounding context.
+- Keep names short, stable and independent of UI wording or experiments.
 
-Use `authMethodsDecisionStarted()` / `authMethodsDecisionFinished()` when the decision involves choosing an authentication method. This is the more convenient variant for auth method selection because options use predefined `AuthMethodType` values, which reduces tracking code and enables richer analytics out of the box.
+<Note>
+  `pre-identifier`, `post-identifier` and `enrollment-user` are recognized by the classifier and benefit from built-in repair patterns. Use them where they fit.
+</Note>
 
-| Event method | When to send | Required fields |
+### 2.2 Two kinds of options, one option set
+
+A screen's option set usually mixes both:
+
+| Kind | Examples | Lifecycle |
 | --- | --- | --- |
-| `authMethodsDecisionStarted()` | Auth method choices are shown or become available | `decisionName`, `options` |
-| `authMethodsDecisionFinished()` | A concrete auth method outcome is known | `decisionName`, `options` |
+| **Method options** | password, passkey, OTP, social login | Predefined option strings (see section 4). **Never finished explicitly.** The subflow that follows resolves the decision in classification, and a failed attempt resolves it just as well as a successful one. |
+| **Navigational options** | back, change identifier, switch to sign-up, other methods, forgot password, skip | Free-form names. Finish explicitly with `explicitDecisionValue` the moment the choice is made, typically followed by the next screen's decision `started`. |
 
-Available `AuthMethodType` values include: `passkey-login-known-identifier`, `passkey-login-no-identifier`, `passkey-login-cui`, `passkey-enrollment`, `password-login-known-identifier`, `password-login-with-identifier`, `password-enrollment`, `email-otp-login`, `email-otp-enrollment`, `email-link-login`, `email-link-enrollment`, `social-google`, `social-apple`, `social-facebook`, `social-other`, `identifier-email`, `reset-flow`. You can also pass custom strings alongside these predefined values.
+Realistic logins have many navigational options. They are the adaptive, per-application part of the model, not an edge case. Name them for reuse across decisions, for example `back`, `switch-to-signup` or `recovery`.
 
-### 3.2 Generic decisions
+A screen can lead into the same subflow through several controls, for example two buttons that run the same ceremony or a primary tile plus an "other methods" list. That is one option and one subflow, because only one option string can resolve it. Express the difference through a spec type where the taxonomy has one, otherwise carry it as a tag.
 
-Use `authDecisionStarted()` / `authDecisionFinished()` for decisions that are not about selecting an authentication method, for example prompt-style interactions like "accept" vs "dismiss" or binary choices like "keep me logged in".
+## 3. Decision events
 
-| Event method | When to send | Required fields |
-| --- | --- | --- |
-| `authDecisionStarted()` | A decision point becomes visible/active | `decisionName`, `options` |
-| `authDecisionFinished()` | A concrete decision outcome is known | `decisionName`, `options` |
+Use `authMethodsDecisionStarted()` and `authMethodsDecisionFinished()` for every checkpoint in an authentication journey. The `options` array takes the predefined method strings and any free-form navigational strings side by side.
 
-### 3.3 `explicitDecisionValue`
-
-Both decision types support an optional `explicitDecisionValue` field. Use it when you want to record which option was selected.
-
-Common patterns:
-
-- **On `finished` events**: Set `explicitDecisionValue` to record the user's final choice (for example `"password-login"` or `"skip"`).
-- **On `started` events**: Set `explicitDecisionValue` when the decision is re-offered after a user action and you want to capture what triggered the transition (for example `"switch-method"` when the user navigated back to a different set of options).
-
-If the decision resolves implicitly (for example the user proceeds with the only available option), you can omit `explicitDecisionValue`.
-
-## 4. Track decisions in your integration
-
-### 4.1 Example: post-identifier auth method selection
-
-After identifier lookup, the user sees available login methods. Each time the available options change (for example the user switches between method sets), a new decision event is sent.
-
-<Tabs>
-  <Tab title="NPM">
-    <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Custom events](/corbado-observe/get-started/custom-events).
-    </Info>
-
-    ```typescript
-    import { init, getTracker } from "@corbado/observe";
-
-    init({
-      projectId: "<ProjectID>",
-      apiBaseUrl: "<APIBaseURL>",
-    });
-
-    // User sees passkey + other method options after identifier check
-    getTracker().authMethodsDecisionStarted({
-      decisionName: "post-identifier",
-      options: ["passkey-login-known-identifier", "social-google", "reset-flow"],
-    });
-
-    // User clicks "show other methods", new options are presented
-    getTracker().authMethodsDecisionStarted({
-      decisionName: "post-identifier",
-      options: ["social-google", "password-login-known-identifier", "reset-flow"],
-      explicitDecisionValue: "switch-method",
-    });
-    ```
-  </Tab>
-
-  <Tab title="CDN">
-    <Info>
-      **Corbado Observe SDK** installation and setup are explained in [Custom events](/corbado-observe/get-started/custom-events).
-    </Info>
-
-    ```html
-    <script>
-      Corbado.init({
-        projectId: "<ProjectID>",
-        apiBaseUrl: "<APIBaseURL>",
-      });
-
-      Corbado.get().authMethodsDecisionStarted({
-        decisionName: "post-identifier",
-        options: ["passkey-login-known-identifier", "social-google", "reset-flow"],
-      });
-
-      Corbado.get().authMethodsDecisionStarted({
-        decisionName: "post-identifier",
-        options: ["social-google", "password-login-known-identifier", "reset-flow"],
-        explicitDecisionValue: "switch-method",
-      });
-    </script>
-    ```
-  </Tab>
-</Tabs>
-
-### 4.2 Example: passkey enrollment prompt
-
-After login, the user is prompted to enroll a passkey. This is a binary decision: enroll or skip.
+| Event | SDK method | Send when | Fields |
+| --- | --- | --- | --- |
+| `auth_method_decision_started` | `authMethodsDecisionStarted()` | The checkpoint is presented, or its options change | `decisionName`, `options`, optional `explicitTimestamp` |
+| `auth_method_decision_finished` | `authMethodsDecisionFinished()` | A navigational choice is made | `decisionName`, `explicitDecisionValue` |
 
 ```typescript
-// Enrollment prompt is shown
+import { getTracker } from "@corbado/observe";
+
+// The post-identifier screen renders.
+getTracker().authMethodsDecisionStarted({
+  decisionName: "post-identifier",
+  options: ["password-login-known-identifier", "passkey-login-known-identifier", "switch-to-otp", "back"],
+});
+
+// The user picks a method: no finished event. The password or passkey subflow resolves it.
+
+// The user picks navigation: finish explicitly.
+getTracker().authMethodsDecisionFinished({
+  decisionName: "post-identifier",
+  explicitDecisionValue: "switch-to-otp",
+});
+```
+
+<Note>
+  The chosen value must be one of the declared options, otherwise the decision is dropped. If you pass `options` on `finished`, pass exactly the array you declared on `started`. A different set is classified as a second occurrence.
+</Note>
+
+`authDecisionStarted()` and `authDecisionFinished()` are deprecated. Use `authMethodsDecisionStarted()` and `authMethodsDecisionFinished()` for every decision, including prompts that offer no auth method: their `options` accept free-form strings.
+
+### 3.1 A decision occurrence is a presentation
+
+Every presentation of a checkpoint to the user is its own decision occurrence. Re-send `started` whenever the checkpoint is re-presented or its options change. The superseded occurrence closes as incomplete, which is exactly what a revisited checkpoint should look like.
+
+Do not re-send `started` for:
+
+- **Framework re-renders, route remounts or hydration.** An identical offer with no user action in between is the same presentation.
+- **A failed attempt on an unchanged screen.** Engaging a method resolves the decision regardless of how the attempt ends. A retry is a retry inside the same occurrence.
+
+A click-driven decision, on the other hand, is always a new presentation.
+
+### 3.2 Options that depend on an async capability check
+
+When the option set depends on an asynchronous check, such as conditional mediation support or platform authenticator availability, emit `started` synchronously on render with `explicitTimestamp` set to the render time. Once the check resolves, re-emit with the final options and the **same** timestamp. An identical timestamp replaces the open occurrence's options in place instead of opening a new one.
+
+```typescript
+const presentedAt = Date.now();
+
+getTracker().authMethodsDecisionStarted(
+  { decisionName: "pre-identifier", options: ["identifier-email", "social-google"] },
+  {},
+  { explicitTimestamp: presentedAt },
+);
+
+const cuiAvailable = await PublicKeyCredential.isConditionalMediationAvailable?.();
+if (cuiAvailable) {
+  getTracker().authMethodsDecisionStarted(
+    { decisionName: "pre-identifier", options: ["identifier-email", "passkey-login-cui", "social-google"] },
+    {},
+    { explicitTimestamp: presentedAt },
+  );
+}
+```
+
+An option whose subflow auto-starts on the screen still belongs in the option set. If a subflow can start on a screen, its method option is part of that screen's options.
+
+## 4. Option strings that subflows resolve
+
+A method option only resolves if the exact string is present in `options`:
+
+| Subflow (spec type) | Option string |
+| --- | --- |
+| password-login (`password-known-identifier`) | `password-login-known-identifier` |
+| password-login (`password-with-identifier`) | `password-login-with-identifier` |
+| passkey-login (`passkey-known-identifier`, `passkey-known-identifier-auto`, `passkey-cui`, no spec) | `passkey-login-known-identifier` |
+| passkey-login (`passkey-no-identifier`, `passkey-no-identifier-auto`) | `passkey-login-no-identifier` |
+| passkey-login (`passkey-immediate`) | Resolves no option. It runs before any decision. |
+| password-login with its `cui` steps fired | `passkey-login-cui` |
+| passkey-enrollment | `passkey-enrollment` |
+| password-enrollment | `password-set` or `password-reset`, fallback `password-enrollment` |
+| email-otp | `email-otp-login` or `email-otp-enrollment`, fallback `email-otp` |
+| sms-otp | `sms-otp-login` or `sms-otp-enrollment`, fallback `sms-otp` |
+| email-link | `email-link-login` or `email-link-enrollment`, fallback `email-link` |
+| provide-identifier | `identifier-email`, also when its Conditional UI part completes. A CUI ceremony torn down by the identifier submit is neutral. |
+| provide-data | `provide-data` |
+| social-login | `social-google`, `social-apple`, `social-facebook` or `social-other` |
+| app-confirmation | `qr-code` on a dedicated QR screen, otherwise `app-confirmation` |
+| totp | `totp` or `totp-enrollment` |
+
+"Fallback" means the subflow first tries the spec-typed string, then the generic one. Put whichever your option set naturally distinguishes.
+
+## 5. Examples
+
+### 5.1 Post-login passkey enrollment prompt
+
+A binary checkpoint: enroll or skip. Enrolling leads into a subflow, skipping is navigational.
+
+```typescript
+// The prompt is shown.
 getTracker().authMethodsDecisionStarted({
   decisionName: "enrollment-user",
   options: ["passkey-enrollment", "skip"],
 });
 
-// User skips enrollment
+// Case A: the user clicks "Create passkey". No finished event; the
+// passkey-enrollment subflow resolves the decision.
+
+// Case B: the user clicks "Skip".
 getTracker().authMethodsDecisionFinished({
   decisionName: "enrollment-user",
-  options: ["passkey-enrollment", "skip"],
   explicitDecisionValue: "skip",
 });
+getTracker().flowFinished({ flowName: "enrollment", explicitOutcome: "skipped", userId });
 ```
 
-### 4.3 Example: generic decision (identifier prefilling)
+### 5.2 Progressive disclosure on the post-identifier screen
 
-A non-auth-method decision, for example whether the user accepts a pre-filled identifier.
+The screen first shows a passkey button with an "other methods" link. Clicking the link reveals password and OTP. Both screens are the same checkpoint. The link is a navigational choice that is finished explicitly, and the revealed screen is a new presentation.
 
 ```typescript
-// Pre-filled identifier is shown, user can accept or change it
-getTracker().authDecisionStarted({
-  decisionName: "prefilling-accepted",
-  options: ["accept", "deny"],
+// Initial presentation.
+getTracker().authMethodsDecisionStarted({
+  decisionName: "post-identifier",
+  options: ["passkey-login-known-identifier", "other-methods"],
 });
 
-// User proceeds with the pre-filled identifier
-getTracker().authDecisionFinished({
-  decisionName: "prefilling-accepted",
-  options: ["accept", "deny"],
-  explicitDecisionValue: "accept",
+// The user clicks "other methods".
+getTracker().authMethodsDecisionFinished({
+  decisionName: "post-identifier",
+  explicitDecisionValue: "other-methods",
+});
+getTracker().authMethodsDecisionStarted({
+  decisionName: "post-identifier",
+  options: ["password-login-known-identifier", "email-otp-login", "back"],
 });
 ```
 
-## 5. Recommended best practices
+## 6. Best practices
 
-- Use `authMethodsDecision*` for authentication method selection and `authDecision*` for everything else
-- Track every important branch point with one consistent `decisionName`
-- Send a `started` event whenever options are shown or change
-- Send a `finished` event as soon as the outcome is known
-- Include all currently offered options in both events for clear context
-- Re-send decision events if users revisit the same choice point
+- Assign every screen to a decision name, even single-option screens.
+- Send `started` on presentation and whenever options change, not on re-render.
+- Never finish a method choice by hand. Finish navigational choices immediately.
+- Keep the order of the `options` array stable across renders.
+- Keep `decisionName` values short, stable and independent of experiments or UI wording.
 
-<Tip>
-  Keep `decisionName` values short, stable and implementation-agnostic. Avoid naming that changes with experiments or UI wording.
-</Tip>
+## 7. Next steps
 
-## 6. Next steps
-
-- Continue with [Flows](/corbado-observe/tracking/flows) to model complete journeys.
 - Continue with [Subflows](/corbado-observe/tracking/subflows) to learn about subflow types and their steps.
+- Read [Modeling](/corbado-observe/tracking/modeling) for the full mapping method and a journey catalog.

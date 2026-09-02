@@ -27,12 +27,12 @@ Create separate applications when the user journey differs by channel, for examp
 
 ## 3. Send application context
 
-The **Corbado Observe SDK** supports `applicationId` in tracker initialization options (`TrackerOptions`). The SDK normalizes this value to lowercase before sending it.
+The **Corbado Observe SDK** supports `applicationId` in tracker initialization options (`TrackerOptions`). The SDK lowercases the value and stamps it as a tag on every flow start.
 
 You can pass application context in two ways:
 
 1. Set `applicationId` once during initialization.
-2. Pass `applicationId` as an event tag when you need dynamic channel assignment.
+2. Pass `applicationId` as a tag on `flowStarted()` when the channel is only known per flow.
 
 <Tabs>
   <Tab title="NPM">
@@ -57,7 +57,7 @@ You can pass application context in two ways:
     });
     ```
 
-    ### 3.2 Set `applicationId` per event
+    ### 3.2 Set `applicationId` per flow
 
     ```typescript
     import { init, getTracker } from "@corbado/observe";
@@ -101,7 +101,7 @@ You can pass application context in two ways:
     </script>
     ```
 
-    ### 3.2 Set `applicationId` per event
+    ### 3.2 Set `applicationId` per flow
 
     ```html
     <script>

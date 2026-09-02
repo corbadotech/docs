@@ -258,8 +258,8 @@ A subflow is one auth method attempt; creating the operation helper emits
   on it.
 - **Action-bound methods** (passkey button, social button, app confirmation) start on the
   action, not when the button becomes visible. A visible option is not an attempt; a helper
-  created for a button nobody pressed classifies as an attempt with no follow-up, i.e. an
-  error.
+  created for a button nobody pressed yields an attempt without interaction — not counted
+  for most types.
 
 A helper starts its attempt exactly once: construction auto-starts by default, so never add
 a manual `subflowStart()` on top of it. Repeated starts of the same subflow with nothing in
@@ -464,7 +464,8 @@ Ordering requirements are causal, not temporal:
 
 1. `flow_started` before any event of that flow. A `flow_finished` or `flow_decided`
    without an open flow invalidates the session's classification — this is the unforgiving
-   one. `flow_auto_finished` without an open parent is dropped silently, not fatal.
+   one. `flow_auto_finished` without an open flow of that name is not fatal, but it
+   reconstructs a closed flow of that name — send it only for a parent that was started.
 2. When a screen renders: decision `started` before creating operation helpers (decision
    before `subflow_started`).
 3. Settle the previous screen before opening the next: a navigational choice's decision

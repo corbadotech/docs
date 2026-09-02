@@ -1,10 +1,10 @@
 ---
 title: "Subflows with Corbado Observe"
-description: "Track concrete authentication methods with subflows."
+description: "Track concrete authentication method attempts with subflows and the SDK's operation helpers."
 sidebarTitle: "Subflows"
 ---
 
-Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows) and are **auto-discovered** by **Corbado Observe** based on the events you send. They represent a specific authentication method, for example passkey login, password enrollment or email OTP verification.
+Subflows are the concrete building blocks inside a [flow](/corbado-observe/tracking/flows). Each subflow is **one authentication method attempt**, for example a passkey login, a password enrollment or an email OTP verification. Subflows are **auto-discovered** by **Corbado Observe** from the step events you send.
 
 <Frame>
   <iframe
@@ -21,669 +21,351 @@ Subflows are the concrete building blocks inside a [flow](/corbado-observe/track
   Install and set up the **Corbado Observe SDK**, including your first tracked event, in [Custom events](/corbado-observe/get-started/custom-events). This page explains the subflow concept and documents all available subflow types.
 </Info>
 
-On SDK level, every subflow type has a dedicated class that helps with tracking. Each class defines the default steps you typically want to track for that subflow. If you need to track additional steps beyond the defaults, you can do so by using the generic step events with a custom `stepName`.
+## 1. How subflows work
 
-## How subflows work
+On SDK level, every subflow type has an **operation helper** on the tracker, for example `passkeyLoginFullOperation()`. The helper stamps the subflow type and step names for you, so your code only wraps the application logic of each step.
 
-A subflow groups related events for one authentication method. Every subflow has a **type** (e.g., `passkey-login` or `password-login`) and consists of a **trigger** and one or more **steps**.
+### 1.1 Start
 
-### Trigger
+Creating the helper emits `subflow_started`: the attempt begins. A helper starts its attempt exactly once. Construction auto-starts by default, so do not add a manual `subflowStart()` on top of it. Repeated starts of the same subflow type with nothing in between are merged. A different, known spec type starts a new attempt.
 
-The **trigger** (`subflow_trigger`) marks the moment of interaction with the subflow. Usually the actor is the user (e.g., clicking "Sign in with passkey"), but in some cases the system can be the actor too (e.g., during passkey enrollment with conditional mediation).
+When to create the helper depends on how the method is engaged:
 
-Note that steps can run **before** the interaction happens. For example, during passkey login the `get-options` step may complete in the background while the UI renders a "Sign in with passkey" button. The interaction happens only when the user clicks that button. If the user never clicks, there was no interaction with this subflow.
+| Method kind | Examples | Create the helper when |
+| --- | --- | --- |
+| **Input-bound** | password, OTP, identifier, provide-data | The input renders. The field is the attempt surface, and the helper captures interaction on it when you pass `inputHtmlField`. |
+| **Action-bound** | passkey button, social button, app confirmation | The action happens. A visible button is not an attempt. A helper created for a button nobody pressed classifies as an attempt with no follow-up, which is an error. |
 
-Corbado Observe uses the interaction moment to calculate **how long it takes the user to interact** with a subflow and to determine if a subflow **should be included in certain dashboards or not**.
+<Note>
+  Older SDK versions used a separate `subflow_trigger` event to mark the moment of interaction. It is deprecated and carries no classification value. Interaction is read from the first step and from the bound input field.
+</Note>
 
-**Not every subflow needs an explicit trigger event.** Check the documentation of each subflow type below: some detect the interaction on their own (e.g., provide-identifier from typing into the bound input field, passkey-login from the started `ceremony` step), while others still require you to send `subflow_trigger` (e.g., passkey enrollment). For subflow types with automatic detection, explicit triggers are deprecated.
+### 1.2 Steps
 
-Where an explicit trigger is required, it carries:
+Each step is one phase of the attempt, identified by its step name, and tracked with three events:
 
-| Field | Description |
+| Event | SDK call | Meaning |
+| --- | --- | --- |
+| `subflow_step_started` | `op.<step>.start(data)` | The step began. |
+| `subflow_step_finished` | `op.<step>.finished(data)` | The step completed successfully. |
+| `subflow_step_error` | `op.<step>.error(err)` or `op.<step>.errorTyped({ code })` | The step failed. |
+
+Every helper defines its steps (section 3). Custom steps beyond the predefined ones are available through `op.customStep("my-step")`.
+
+**Never finish a subflow.** There is no subflow-finished event. The classifier derives each attempt's outcome from its steps. The outcome-bearing step is `postResponse` for almost every subflow (`exchangeCode` for social login, `ceremony` for app confirmation). Track it always. Earlier steps are enrichment you may skip when the effort outweighs the value, with one exception: the WebAuthn `ceremony` steps of the passkey subflows. Track those whenever passkeys are in play, because ceremony start, finish and error power all passkey analytics and none of it is recoverable from `postResponse` alone. A completed ceremony without a `postResponse` still classifies as incomplete, because only the backend confirmation proves the method worked.
+
+On failure, call `.error()` on the step that failed and stop. A retry is simply a new sequence of step events.
+
+### 1.3 Spec types
+
+`explicitSpecType` distinguishes variants of one subflow type, for example a passkey login with a known identifier from one without. Supply it in the helper's config whenever it is known. If it only becomes known mid-attempt, send it on a later step's `start` data. The last spec type wins.
+
+| Requirement | Subflow types |
 | --- | --- |
-| `actor` | Who initiated the interaction: `user` (e.g., clicked a button) or `system` (e.g., auto-started passkey enrollment with conditional mediation). |
-| `explicitSpecType` | Optional. A variant label that distinguishes different flavors of the same subflow type (see the spec type tables for each subflow below). |
+| **Required.** The classifier drops an attempt without a spec type on any of its events. | passkey-login, passkey-enrollment, password-enrollment, provide-data, email-link, social-login |
+| **Defaulted** when absent. | email-otp and sms-otp assume the login variant, password-login assumes `password-known-identifier`, provide-identifier assumes `email`, app-confirmation assumes `qr-code`. |
 
-### Steps
+### 1.4 Errors
 
-Each step represents one phase of the subflow. A step is identified by its `stepName` (e.g., `get-options`, `ceremony`, `post-response`) and tracked with three generic events:
+Error tracking is an optional investment. Classification never depends on it: an attempt that just stops already classifies as incomplete, and an explicit step error is a different, more diagnostic outcome. The backend groups every reported error by its exact signature (subflow type, step, code, message, spec type) into error flavours that are then curated into named errors with impact analysis. That yields four rules:
 
-| Event | Description |
-| --- | --- |
-| `subflow_step_started` | The step began. |
-| `subflow_step_finished` | The step completed successfully. |
-| `subflow_step_error` | The step failed. |
+- **Platform errors go in raw.** For failures the browser or operating system produces, such as a WebAuthn exception, pass the caught exception to `.error(e)`. The platform's own vocabulary is bounded and groups well.
+- **Your own errors deserve a deliberate shape.** For failures from your API, pass a plain `{ code, message }` object: a code naming what the client observed (`invalid_password`, `invalid_otp`, `http_error`), reused wherever the same observation recurs, and the server's raw error label as the message. Where a helper predefines typed codes, prefer `errorTyped()` for the compile-time check.
+- **Keep volatile tokens out of messages.** Request IDs, timestamps and user data fragment the grouping.
+- **No fallback codes.** A response you cannot classify is neither success nor failure. Leave the step open and it classifies as incomplete.
 
-Every subflow type defines a set of predefined steps (documented in the sections below). You can also define **custom steps** by passing any `stepName` string to the generic step events.
+User cancellation is an error on the step that observed it: a dismissed passkey prompt is a `ceremony` error with the raw browser error. The exception is an auto-offered method torn down because the user proceeded with another, for example a Conditional UI request aborted by a password submit. That is not an error.
 
-### Example: passkey login
+```typescript
+op.postResponse.start({});
+const body = await submitPassword(password);
+if (body.rejected) {
+  op.postResponse.error({ code: "invalid_password", message: body.errorLabel });
+  // or, compile-time checked where the helper types the code:
+  op.postResponse.errorTyped({ code: "invalid_password" });
+}
+```
 
-A successful passkey login subflow where assertion options are pre-fetched in the background:
+### 1.5 Cleanup
+
+Input-bound helpers and the passkey helpers hold event listeners. Call `op.destroy()` when the surface unmounts.
+
+## 2. Example: passkey login
+
+A "Sign in with passkey" button after the identifier is known:
 
 | # | Event | Step | Description |
 | --- | --- | --- | --- |
-| 1 | `subflow_step_started` | `get-options` | SDK requests assertion options from your server in the background. |
-| 2 | `subflow_step_finished` | `get-options` | Server returns assertion options. UI can now show a "Sign in with passkey" button. |
-| 3 | `subflow_step_started` | `ceremony` | User clicks the button and the browser WebAuthn ceremony begins. This step marks the interaction. |
-| 4 | `subflow_step_finished` | `ceremony` | User completes the ceremony. |
-| 5 | `subflow_step_started` | `post-response` | SDK sends the assertion response to your server for verification. |
-| 6 | `subflow_step_finished` | `post-response` | Server confirms the login. |
-
-The `get-options` steps run in the background without any user involvement. Only the started `ceremony` step counts as the interaction. If the user never clicks the button, the ceremony never starts and there was no interaction with this subflow.
-
-If any step fails, a `subflow_step_error` replaces the corresponding `subflow_step_finished`.
-
----
-
-## Subflow types
-
-### 1. Provide identifier
-
-**SDK class:** `provideIdentifierOperationFull(inputHtmlField)`
-
-Tracks when users enter and submit their identifier (e.g., an email address).
-
-Because passkey Conditional UI (CUI) is always bound to the same input field as the identifier, **CUI passkey login events are tracked together with the provide-identifier subflow**. This means a single integration point covers both the identifier input and an optional CUI-initiated passkey login.
-
-#### Steps
-
-| Step | Subflow type | Description |
-| --- | --- | --- |
-| `post-response` | `provide-identifier` | Server-side identifier check (e.g., does user exist, which login methods are available). |
-| `get-options` | `passkey-login` | CUI requests assertion options from the server. |
-| `ceremony` | `passkey-login` | Browser CUI ceremony (auto-fill prompt). |
-| `post-response` | `passkey-login` | Server verifies the CUI assertion response. |
-
-#### Spec types
-
-| `explicitSpecType` | Subflow type | Description |
-| --- | --- | --- |
-| `email` | `provide-identifier` | User typed into the identifier field (auto-detected by the SDK). |
-| `passkey-cui` | `passkey-login` | User interacted with the Conditional UI auto-fill prompt (auto-detected by the SDK). |
-
-#### Code example
-
-The operation is bound to the identifier input field. This enables the SDK to **automatically detect** user interaction: when the user starts typing, the provide-identifier trigger fires; when the user interacts with the browser's CUI autofill prompt, the CUI trigger and ceremony start fire automatically. The SDK also auto-detects CUI cancellation.
-
-<Note>
-  You do not need to send `subflow_trigger` events for this subflow, because interaction is handled automatically. Explicit triggers for provide-identifier are deprecated and will be removed in a future SDK version.
-</Note>
-
-<Tabs>
-  <Tab title="Provide identifier + CUI">
-    ```typescript
-    import { getTracker } from "@corbado/observe";
-
-    const identifierInput = document.getElementById("email") as HTMLInputElement;
-    const op = getTracker().provideIdentifierOperationFull(identifierInput);
-
-    // --- CUI passkey login (runs in background on page load) ---
-
-    const startConditionalUI = async () => {
-      try {
-        op.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
-        const options = await fetchConditionalUIOptions();
-        op.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
-      } catch (e) {
-        op.cui.getOptions.error(e);
-        return;
-      }
-
-      try {
-        // cui.trigger() and cui.ceremony.start() are auto-detected by the SDK
-        const response = await startWebAuthnAuthentication(options, { useBrowserAutofill: true });
-        op.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
-
-        op.cui.postResponse.start({});
-        await verifyOnServer(response);
-        op.cui.postResponse.finished({});
-      } catch (e) {
-        op.cui.ceremony.error(e);
-      }
-    };
-
-    // --- Provide identifier (user submits the form) ---
-
-    const handleIdentifierSubmit = async (email: string) => {
-      op.provideIdentifier.postResponse.start({ explicitSpecType: "email" });
-
-      try {
-        await checkUserOnServer(email);
-        op.provideIdentifier.postResponse.finished({});
-      } catch (e) {
-        op.provideIdentifier.postResponse.error(e);
-      }
-    };
-
-    // Clean up when the component unmounts
-    op.destroy();
-    ```
-  </Tab>
-</Tabs>
-
----
-
-### 2. Passkey login
-
-**SDK class:** `passkeyLoginFullOperation()`
-
-Tracks passkey-based sign-in attempts where the WebAuthn ceremony is started explicitly, by the relying party or via immediate mediation. This is not Conditional UI: see [Provide identifier](#1-provide-identifier) for CUI.
-
-#### Steps
-
-| Step | Description |
-| --- | --- |
-| `get-options` | Request assertion options from the server. |
-| `ceremony` | Browser WebAuthn authentication ceremony. |
-| `post-response` | Server verifies the assertion response. |
-
-#### Spec types
-
-| `explicitSpecType` | Description |
-| --- | --- |
-| `passkey-known-identifier` | User's identifier is already known (e.g., post-identifier screen). The server can scope the allowed credentials to this user. |
-| `passkey-no-identifier` | No identifier is known. The server returns a broad set of allowed credentials. |
-| `passkey-cui` | Conditional UI initiated passkey login (typically tracked via the provide-identifier integration). |
-| `passkey-immediate` | Immediate-mediation login (`navigator.credentials.get({ mediation: "immediate" })`): the browser offers a passkey prompt right when the login page loads, before the user enters an identifier and before Conditional UI. |
-
-<Note>
-  You do not need to send `subflow_trigger` events for this subflow, because the started `ceremony` step marks the interaction. Explicit triggers for passkey-login are deprecated and will be removed in a future SDK version.
-</Note>
-
-#### Code example
-
-<Tabs>
-  <Tab title="Immediate mediation (pre-identifier)">
-    The browser offers a passkey prompt immediately when the login page loads, before the user has entered an identifier and before Conditional UI starts. **No trigger is sent**: there is no user click and the prompt is owned by the browser, so the started `ceremony` step marks the interaction.
-
-    ```typescript
-    import { getTracker } from "@corbado/observe";
-
-    const attemptImmediatePasskeyLogin = async () => {
-      const passkeyOp = getTracker().passkeyLoginFullOperation();
-
-      // Assertion options are typically embedded in the page or pre-fetched
-      // before any UI is shown, so no get-options step is tracked here.
-      const options = await fetchAssertionOptions();
-
-      let response;
-      try {
-        passkeyOp.ceremony.start({
-          explicitSpecType: "passkey-immediate",
-          assertionOptions: JSON.stringify(options),
-        });
-        response = await startWebAuthnAuthentication(options, { mediation: "immediate" });
-        passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
-      } catch (e) {
-        passkeyOp.ceremony.error(e);
-
-        // Continue with the regular login: redirect the user to your login
-        // component, or, if you are already on the login page, start
-        // Conditional UI on the identifier field (see Provide identifier).
-        return;
-      }
-
-      try {
-        passkeyOp.postResponse.start({});
-        await verifyOnServer(response);
-        passkeyOp.postResponse.finished({});
-      } catch (e) {
-        passkeyOp.postResponse.error(e);
-      }
-    };
-    ```
-  </Tab>
-
-  <Tab title="Button click (post-identifier)">
-    The user's identifier is already known. A "Sign in with passkey" button is shown, and the user clicks it to start.
-
-    ```typescript
-    import { getTracker } from "@corbado/observe";
-
-    const handlePasskeyLogin = async (email: string) => {
-      const passkeyOp = getTracker().passkeyLoginFullOperation();
-
-      try {
-        passkeyOp.getOptions.start({ explicitSpecType: "passkey-known-identifier" });
-        const options = await fetchAssertionOptions(email);
-        passkeyOp.getOptions.finished({ assertionOptions: JSON.stringify(options) });
-      } catch (e) {
-        passkeyOp.getOptions.error(e);
-        return;
-      }
-
-      try {
-        passkeyOp.ceremony.start({});
-        const response = await startWebAuthnAuthentication(options);
-        passkeyOp.ceremony.finished({ assertionResponse: JSON.stringify(response) });
-      } catch (e) {
-        passkeyOp.ceremony.error(e);
-        return;
-      }
-
-      try {
-        passkeyOp.postResponse.start({});
-        await verifyOnServer(response);
-        passkeyOp.postResponse.finished({});
-      } catch (e) {
-        passkeyOp.postResponse.error(e);
-      }
-    };
-    ```
-  </Tab>
-</Tabs>
-
----
-
-### 3. Passkey enrollment
-
-**SDK class:** `passkeyEnrollmentFullOperation()`
-
-Tracks passkey registration and setup after authentication (e.g., during a post-login enrollment prompt).
-
-#### Steps
-
-| Step | Description |
-| --- | --- |
-| `get-options` | Request attestation options from the server. |
-| `ceremony` | Browser WebAuthn registration ceremony. |
-| `post-response` | Server verifies the attestation response and stores the credential. |
-
-#### Spec types
-
-| `explicitSpecType` | Description |
-| --- | --- |
-| `conditional-auto-manual` | System first attempts conditional (auto-register) enrollment, then falls back to a regular prompt if it fails, then allows the user to trigger it manually. |
-| `auto-manual` | System auto-triggers the enrollment prompt, with a manual fallback. |
-| `manual` | User explicitly triggers enrollment (e.g., clicks "Create passkey"). |
-
-#### Code example
-
-<Tabs>
-  <Tab title="Conditional mediation + auto">
-    The system first attempts conditional mediation (auto-register) enrollment. If the user dismisses the conditional prompt, it falls back to a regular auto-triggered prompt.
-
-    ```typescript
-    import { getTracker } from "@corbado/observe";
-
-    const enrollOp = getTracker().passkeyEnrollmentFullOperation();
-
-    const handleEnrollment = async (userId: string, isConditional: boolean, isAuto: boolean) => {
-      const specType = isConditional ? "conditional-auto-manual" : "auto-manual";
-      enrollOp.trigger({ actor: isConditional || isAuto ? "system" : "user" });
-
-      try {
-        enrollOp.getOptions.start({ explicitSpecType: specType });
-        const options = await fetchAttestationOptions(userId);
-        enrollOp.getOptions.finished({ attestationOptions: JSON.stringify(options) });
-      } catch (e) {
-        enrollOp.getOptions.error(e);
-        return;
-      }
-
-      try {
-        enrollOp.ceremony.start({ mediation: isConditional ? "conditional" : "required" });
-        const response = await startWebAuthnRegistration(options, { useAutoRegister: isConditional });
-        enrollOp.ceremony.finished({ attestationResponse: JSON.stringify(response) });
-      } catch (e) {
-        enrollOp.ceremony.error(e);
-        if (isConditional) {
-          // Conditional prompt dismissed, fall back to auto
-          await handleEnrollment(userId, false, true);
-        }
-        return;
-      }
-
-      try {
-        enrollOp.postResponse.start({});
-        await verifyOnServer(response);
-        enrollOp.postResponse.finished({});
-      } catch (e) {
-        enrollOp.postResponse.error(e);
-      }
-    };
-
-    // Start with conditional enrollment
-    await handleEnrollment(userId, true, true);
-    ```
-  </Tab>
-
-  <Tab title="Auto">
-    The system auto-triggers the enrollment prompt without attempting conditional mediation first.
-
-    ```typescript
-    import { getTracker } from "@corbado/observe";
-
-    const handleEnrollment = async (userId: string, isAuto: boolean) => {
-      const enrollOp = getTracker().passkeyEnrollmentFullOperation();
-      enrollOp.trigger({ actor: isAuto ? "system" : "user" });
-
-      try {
-        enrollOp.getOptions.start({ explicitSpecType: "auto-manual" });
-        const options = await fetchAttestationOptions(userId);
-        enrollOp.getOptions.finished({ attestationOptions: JSON.stringify(options) });
-      } catch (e) {
-        enrollOp.getOptions.error(e);
-        return;
-      }
-
-      try {
-        enrollOp.ceremony.start({ mediation: "required" });
-        const response = await startWebAuthnRegistration(options);
-        enrollOp.ceremony.finished({ attestationResponse: JSON.stringify(response) });
-      } catch (e) {
-        enrollOp.ceremony.error(e);
-        return;
-      }
-
-      try {
-        enrollOp.postResponse.start({});
-        await verifyOnServer(response);
-        enrollOp.postResponse.finished({});
-      } catch (e) {
-        enrollOp.postResponse.error(e);
-      }
-    };
-    ```
-  </Tab>
-
-  <Tab title="Manual">
-    The user explicitly clicks a "Create passkey" button to start enrollment.
-
-    ```typescript
-    import { getTracker } from "@corbado/observe";
-
-    const handleManualEnrollment = async (userId: string) => {
-      const enrollOp = getTracker().passkeyEnrollmentFullOperation();
-      enrollOp.trigger({ actor: "user" });
-
-      try {
-        enrollOp.getOptions.start({ explicitSpecType: "manual" });
-        const options = await fetchAttestationOptions(userId);
-        enrollOp.getOptions.finished({ attestationOptions: JSON.stringify(options) });
-      } catch (e) {
-        enrollOp.getOptions.error(e);
-        return;
-      }
-
-      try {
-        enrollOp.ceremony.start({ mediation: "required" });
-        const response = await startWebAuthnRegistration(options);
-        enrollOp.ceremony.finished({ attestationResponse: JSON.stringify(response) });
-      } catch (e) {
-        enrollOp.ceremony.error(e);
-        return;
-      }
-
-      try {
-        enrollOp.postResponse.start({});
-        await verifyOnServer(response);
-        enrollOp.postResponse.finished({});
-      } catch (e) {
-        enrollOp.postResponse.error(e);
-      }
-    };
-    ```
-  </Tab>
-</Tabs>
-
----
-
-### 4. Password login
-
-**SDK class:** `passwordLoginFullOperation(autoTrackConfig?)`
-
-Tracks password-based login attempts. The operation is bound to the password input field via `autoTrackConfig`, so the SDK **automatically detects** the interaction when the user starts typing.
-
-<Note>
-  You do not need to send `subflow_trigger` events for this subflow, because interaction is handled automatically. Explicit triggers for password-login are deprecated and will be removed in a future SDK version.
-</Note>
-
-#### Steps
-
-| Step | Description |
-| --- | --- |
-| `post-response` | Server verifies the submitted password. |
-
-#### Spec types
-
-| `explicitSpecType` | Description |
-| --- | --- |
-| `password-known-identifier` | Identifier was already submitted in a previous step (e.g., post-identifier screen with a pre-filled email). |
-| `password-with-identifier` | Identifier and password are submitted together on the same screen. |
-
-#### Typed errors
-
-In addition to passing raw errors, the password login subflow supports typed error codes:
-
-| Code | Description |
-| --- | --- |
-| `invalid_password` | The submitted password is incorrect. |
-| `user_not_found` | No user exists for the given identifier. |
-| `account_locked` | The account has been locked. |
-
-#### Code example
-
-The operation is bound to the password input field. When the user starts typing, the SDK detects the interaction automatically. Your code only tracks the server-side verification step.
-
-<Tabs>
-  <Tab title="Identifier + password (pre-identifier)">
-    Identifier and password are entered together on the same screen (no separate identifier step before).
-
-    ```typescript
-    import { getTracker, PasswordLoginOperationFull } from "@corbado/observe";
-
-    let passwordOp: PasswordLoginOperationFull;
-
-    // Run when the login component mounts; returns the cleanup for unmount.
-    const handleOnLoad = () => {
-      const passwordInput = document.getElementById("password") as HTMLInputElement;
-      passwordOp = getTracker().passwordLoginFullOperation({
-        explicitSpecType: "password-with-identifier",
-        inputHtmlField: passwordInput,
-      });
-
-      return () => passwordOp.destroy();
-    };
-
-    const handleLoginSubmit = async (email: string, password: string) => {
-      passwordOp.postResponse.start({});
-
-      try {
-        await verifyCredentialsOnServer(email, password);
-        passwordOp.postResponse.finished({});
-      } catch (e) {
-        passwordOp.postResponse.error(e);
-      }
-    };
-    ```
-  </Tab>
-
-  <Tab title="Password login (post-identifier)">
-    The identifier was already submitted in a previous step; only the password is entered on this screen.
-    ```typescript
-    import { getTracker, PasswordLoginOperationFull } from "@corbado/observe";
-
-    let passwordOp: PasswordLoginOperationFull;
-
-    // Run when the login component mounts; returns the cleanup for unmount.
-    const handleOnLoad = () => {
-      const passwordInput = document.getElementById("password") as HTMLInputElement;
-      passwordOp = getTracker().passwordLoginFullOperation({
-        explicitSpecType: "password-known-identifier",
-        inputHtmlField: passwordInput,
-      });
-
-      return () => passwordOp.destroy();
-    };
-
-    const handlePasswordSubmit = async (email: string, password: string) => {
-      passwordOp.postResponse.start({});
-
-      try {
-        await verifyPasswordOnServer(email, password);
-        passwordOp.postResponse.finished({});
-      } catch (e) {
-        passwordOp.postResponse.error(e);
-      }
-    };
-    ```
-  </Tab>
-</Tabs>
-
----
-
-### 5. Password enrollment
-
-**SDK class:** `passwordEnrollmentFullOperation(autoTrackConfig?)`
-
-Tracks password creation or password reset during authentication journeys.
-
-The trigger is **auto-detected** by the SDK when the user starts typing into the password input field.
-
-#### Steps
-
-| Step | Description |
-| --- | --- |
-| `post-response` | Server processes the new or updated password. |
-
-#### Spec types
-
-| `explicitSpecType` | Description |
-| --- | --- |
-| `password-set` | User sets a password for the first time (e.g., during signup). |
-| `password-reset` | User resets an existing password (e.g., via a recovery flow). |
-
-#### Typed errors
-
-| Code | Description |
-| --- | --- |
-| `requirements_not_fulfilled` | The password does not meet the required complexity rules. |
-
----
-
-### 6. Email OTP
-
-**SDK class:** `emailOtpOperationFull()`
-
-Tracks one-time-password verification sent by email.
-
-#### Steps
-
-| Step | Description |
-| --- | --- |
-| `send` | Server sends the OTP email to the user. |
-| `post-response` | Server verifies the OTP code the user submitted. |
-| `resend` | User requests a new OTP code. |
-
-#### Spec types
-
-| `explicitSpecType` | Description |
-| --- | --- |
-| `email-otp-login` | OTP is used as a login method. |
-| `email-otp-enrollment` | OTP is used for enrollment or account activation. |
-
----
-
-### 7. Email link
-
-**SDK class:** `emailLinkOperationFull()`
-
-Tracks authentication flows where users sign in or verify their identity through a link sent by email.
-
-#### Steps
-
-| Step | Description |
-| --- | --- |
-| `send` | Server sends the email containing the magic link. |
-| `post-response` | Server verifies the token from the clicked link. |
-| `resend` | User requests a new email link. |
-
-#### Spec types
-
-| `explicitSpecType` | Description |
-| --- | --- |
-| `email-link-login` | Email link is used as a login or recovery method. |
-| `email-link-enrollment` | Email link is used for enrollment or account activation. |
-
-#### Cross-environment transactions
-
-Email links often continue in a different browser tab, browser profile, device or app than the one where the link was requested. For example, a user can start password recovery on desktop but open the email link on mobile.
-
-Use `crossEnvironmentTransactionID` to connect the `send` step with the later `post-response` step. The value can be chosen as needed: you can generate a new ID for the email-link transaction or reuse an existing transaction ID from your system. The only requirement is that the same value is available when sending the email and when verifying the link after it has been clicked.
-
-`crossEnvironmentTransactionID` does not replace `userId` or `identifier`. Use it to correlate the transaction across environments, and still provide `userId` via a user reference as soon as it is known.
+| 1 | `subflow_started` | | The user clicks the button. The helper is created with `passkey-known-identifier`. |
+| 2 | `subflow_step_started` | `get-options` | Assertion options are requested from your server. |
+| 3 | `subflow_step_finished` | `get-options` | The server returns them. |
+| 4 | `subflow_step_started` | `ceremony` | The browser WebAuthn ceremony begins. |
+| 5 | `subflow_step_finished` | `ceremony` | The user completes it. A cancellation is a `subflow_step_error` here instead. |
+| 6 | `subflow_step_started` | `post-response` | The assertion is sent to your server. |
+| 7 | `subflow_step_finished` | `post-response` | The server confirms the login. The attempt is complete. |
 
 ```typescript
 import { getTracker } from "@corbado/observe";
 
-const tracker = () => getTracker()!;
+const handlePasskeyLogin = async (email: string) => {
+  const op = getTracker().passkeyLoginFullOperation({ explicitSpecType: "passkey-known-identifier" });
 
-async function sendRecoveryLink(email: string) {
-  const crossEnvironmentTransactionID = crypto.randomUUID();
-  const emailLink = tracker().emailLinkOperationFull();
+  let options, response;
+  try {
+    op.getOptions.start({});
+    options = await fetchAssertionOptions(email);
+    op.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+  } catch (e) {
+    op.getOptions.error(e);
+    return;
+  }
 
-  emailLink.send.start(
-    { explicitSpecType: "email-link-login" },
-    { userReference: { crossEnvironmentTransactionID } },
-  );
+  try {
+    op.ceremony.start({});
+    response = await startWebAuthnAuthentication(options);
+    op.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+  } catch (e) {
+    op.ceremony.error(e); // also when the user cancels the prompt
+    return;
+  }
 
-  await sendPasswordResetEmail(email, {
-    callbackState: { crossEnvironmentTransactionID },
-  });
-
-  emailLink.send.finished({});
-
-  return crossEnvironmentTransactionID;
-}
-
-async function verifyRecoveryLink(
-  token: string,
-  crossEnvironmentTransactionID: string,
-) {
-  const emailLink = tracker().emailLinkOperationFull();
-
-  emailLink.postResponse.start(
-    { explicitSpecType: "email-link-login" },
-    { userReference: { crossEnvironmentTransactionID } },
-  );
-
-  await verifyPasswordResetToken(token);
-
-  emailLink.postResponse.finished({});
-}
+  try {
+    op.postResponse.start({});
+    const result = await verifyOnServer(response);
+    op.postResponse.finished({}, { userReference: { userId: result.userId } });
+  } catch (e) {
+    op.postResponse.error(e);
+  }
+};
 ```
 
----
+The passkey steps carry the WebAuthn payloads as JSON strings. For login, `getOptions.finished` takes `assertionOptions` and `ceremony.finished` takes `assertionResponse`. For enrollment, the same steps take `attestationOptions` and `attestationResponse`, and the enrollment `ceremony.start` additionally requires `mediation` (`"conditional"`, `"optional"` or `"required"`).
 
-### 8. Social login
+## 3. Subflow types
 
-**SDK class:** `socialLoginOperationFull()`
+<Note>
+  Helper signatures can move between releases. Read the installed package's type definitions before applying a recipe.
+</Note>
 
-Tracks authentication with social identity providers (e.g., Google, Apple, Facebook).
+| Helper on the tracker | Subflow type | Steps | Spec types |
+| --- | --- | --- | --- |
+| `provideIdentifierOperationFull(config?)` | `provide-identifier` (plus passkey Conditional UI) | `provideIdentifier.clientValidation`, `provideIdentifier.postResponse`; `cui.getOptions`, `cui.ceremony`, `cui.postResponse` | `email`, `phone`; CUI: `passkey-cui` |
+| `passkeyLoginFullOperation(config?)` | `passkey-login` | `getOptions`, `ceremony`, `postResponse` | `passkey-known-identifier`, `passkey-known-identifier-auto`, `passkey-no-identifier`, `passkey-no-identifier-auto`, `passkey-cui`, `passkey-immediate` |
+| `passkeyEnrollmentFullOperation(config?)` | `passkey-enrollment` | `getOptions`, `ceremony`, `postResponse` | `conditional-auto-manual`, `auto-manual`, `manual` |
+| `passwordLoginFullOperation(config?)` | `password-login` | `clientValidation`, `postResponse`; `cui.getOptions`, `cui.ceremony`, `cui.postResponse` | `password-known-identifier`, `password-with-identifier`; CUI: `passkey-cui` |
+| `passwordEnrollmentFullOperation(config?)` | `password-enrollment` | `clientValidation`, `postResponse` | `password-set`, `password-reset` |
+| `emailOtpOperationFull(config?)` | `email-otp` | `send`, `postResponse`, `resend` | `email-otp-login`, `email-otp-enrollment` |
+| `smsOtpOperationFull(config?)` | `sms-otp` | `postResponse`, `resend` | `sms-otp-login`, `sms-otp-enrollment` |
+| `emailLinkOperationFull(config?)` | `email-link` | `send`, `postResponse`, `resend` | `email-link-login`, `email-link-enrollment` |
+| `socialLoginOperationFull(config?)` | `social-login` | `getRedirectUrl`, `exchangeCode` | `pre-identifier`, `post-identifier` |
+| `provideDataOperationFull(config?)` | `provide-data` | `clientValidation`, `postResponse` | `signup`, `login`, `recovery`, `enrollment` |
+| `appConfirmationOperationFull(config?)` | `app-confirmation` | `ceremony`, `retry`, `postResponse` | `qr-code` |
+| `captchaOperationFull(config?)` | `captcha` | `ceremony`, `postResponse` | `visible`, `invisible` |
 
-#### Steps
+Every config accepts `explicitSpecType` and `autoStart` (default `true`). The input-bound helpers additionally accept `inputHtmlField`. For a subflow type without a helper, such as `totp`, use the low-level tracker methods `trackSubflowStarted()`, `trackSubflowStepStarted()`, `trackSubflowStepFinished()` and `trackSubflowStepError()` with the same shape.
+
+### 3.1 Provide identifier
+
+Tracks when users enter and submit their identifier, typically an email address. Bind the helper to the identifier input so the SDK captures interaction on it.
+
+Passkey **Conditional UI** (autofill) is bound to the same input field, so its events are tracked through this helper's `cui` steps. Conditional UI is not a passkey-login attempt: it resolves the same `identifier-email` option as a typed identifier, and a Conditional UI request torn down because the user submitted the identifier is neutral, not an error.
 
 | Step | Description |
 | --- | --- |
-| `get-redirect-url` | Application initiates the OAuth redirect to the social provider. |
-| `exchange-code` | Application exchanges the authorization code for tokens after the user returns from the provider. |
+| `provideIdentifier.clientValidation` | Optional client-side validation of the identifier. |
+| `provideIdentifier.postResponse` | Server-side identifier check: does the user exist, which methods are available. |
+| `cui.getOptions` | Assertion options for the Conditional UI request. |
+| `cui.ceremony` | The pending autofill ceremony. Finishes when the user picks a passkey. |
+| `cui.postResponse` | Server verification of the Conditional UI assertion. |
 
-#### Spec types
+```typescript
+import { getTracker } from "@corbado/observe";
 
-| `explicitSpecType` | Description |
+const identifierInput = document.getElementById("email") as HTMLInputElement;
+const op = getTracker().provideIdentifierOperationFull({
+  inputHtmlField: identifierInput,
+  explicitSpecType: "email",
+});
+
+// Conditional UI, started when the identifier surface renders.
+const startConditionalUI = async () => {
+  let options;
+  try {
+    op.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
+    options = await fetchConditionalUIOptions();
+    op.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+  } catch (e) {
+    op.cui.getOptions.error(e);
+    return;
+  }
+
+  op.cui.ceremony.start({});
+  try {
+    const response = await startWebAuthnAuthentication(options, { useBrowserAutofill: true });
+    op.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+
+    op.cui.postResponse.start({});
+    const result = await verifyOnServer(response);
+    op.cui.postResponse.finished({}, { userReference: { userId: result.userId } });
+  } catch (e) {
+    // Torn down because the user submitted the identifier or left: not an error.
+    if (!displacedByUser) op.cui.ceremony.error(e);
+  }
+};
+
+// Manual path: the user submits the form.
+const handleIdentifierSubmit = async (email: string) => {
+  op.provideIdentifier.postResponse.start({});
+  try {
+    const result = await checkUserOnServer(email);
+    op.provideIdentifier.postResponse.finished({}, { userReference: { userId: result.userId } });
+  } catch (e) {
+    op.provideIdentifier.postResponse.error(e);
+  }
+};
+
+// When the component unmounts.
+op.destroy();
+```
+
+### 3.2 Passkey login
+
+Tracks passkey sign-in attempts where the WebAuthn ceremony is started explicitly, by a button or by your code. Conditional UI on the identifier field belongs to [provide identifier](#3-1-provide-identifier) instead.
+
+| Spec type | Description |
 | --- | --- |
-| `pre-identifier` | Social login button is shown before the user enters any identifier (e.g., on the initial login screen). |
-| `post-identifier` | Social login is offered after the user has already provided an identifier. |
+| `passkey-known-identifier` | The identifier is known and the user clicks a passkey button. The server can scope the allowed credentials. |
+| `passkey-known-identifier-auto` | Same, but your code starts the ceremony automatically after the identifier is known. |
+| `passkey-no-identifier` | No identifier is known. The user clicks a discoverable passkey button. |
+| `passkey-no-identifier-auto` | Same, but started automatically by your code. |
+| `passkey-cui` | Conditional UI. Prefer the provide-identifier or password-login helper for this. |
+| `passkey-immediate` | Immediate mediation (`mediation: "immediate"`): the browser offers a passkey prompt right when the login page loads. Runs before any decision and resolves no option. |
 
----
+See [section 2](#2-example-passkey-login) for the button example. Immediate mediation looks the same with `explicitSpecType: "passkey-immediate"` and `mediation: "immediate"` on the WebAuthn call. If the ceremony fails, continue with your regular login and start Conditional UI on the identifier field.
 
-### 9. Coming soon
+### 3.3 Passkey enrollment
 
-The following subflow types are planned but not yet available:
+Tracks passkey registration, for example after login or during sign-up.
 
-| Subflow type | Description |
+| Spec type | Description |
 | --- | --- |
-| `sms-otp` | OTP verification sent via SMS. |
-| `provide-data` | Collecting additional user data during a flow (e.g., name, address). |
-| `totp` | Time-based one-time password (authenticator app). |
+| `conditional-auto-manual` | Your code first attempts conditional (auto-register) enrollment, falls back to a regular prompt and finally lets the user trigger it manually. |
+| `auto-manual` | Your code auto-triggers the enrollment prompt, with a manual fallback. |
+| `manual` | The user explicitly triggers enrollment, for example by clicking "Create passkey". |
+
+The `ceremony.start` data requires `mediation`, which tells Observe how the credential manager was invoked.
+
+```typescript
+import { getTracker } from "@corbado/observe";
+
+const handleManualEnrollment = async (userId: string) => {
+  const op = getTracker().passkeyEnrollmentFullOperation({ explicitSpecType: "manual" });
+
+  let options, response;
+  try {
+    op.getOptions.start({});
+    options = await fetchAttestationOptions(userId);
+    op.getOptions.finished({ attestationOptions: JSON.stringify(options) });
+  } catch (e) {
+    op.getOptions.error(e);
+    return;
+  }
+
+  try {
+    op.ceremony.start({ mediation: "required" });
+    response = await startWebAuthnRegistration(options);
+    op.ceremony.finished({ attestationResponse: JSON.stringify(response) });
+  } catch (e) {
+    op.ceremony.error(e);
+    return;
+  }
+
+  try {
+    op.postResponse.start({});
+    await verifyOnServer(response);
+    op.postResponse.finished({}, { userReference: { userId } });
+  } catch (e) {
+    op.postResponse.error(e);
+  }
+};
+```
+
+For `conditional-auto-manual`, run the same steps with `mediation: "conditional"` first. If the conditional ceremony errors, a regular prompt is a new sequence of step events on the same helper with `mediation: "required"`.
+
+### 3.4 Password login
+
+Tracks password-based login attempts. Bind the helper to the password input so the SDK captures interaction on it. Create it when the password field renders.
+
+| Spec type | Description |
+| --- | --- |
+| `password-known-identifier` | The identifier was submitted in a previous step. Only the password is entered on this screen. |
+| `password-with-identifier` | Identifier and password are entered together on one screen. |
+
+Typed error codes: `invalid_password`, `user_not_found`, `account_locked`.
+
+When identifier and password share one screen, Conditional UI is bound to that screen too. This helper therefore carries the same `cui` steps as provide identifier. Conditional UI fired through it resolves the `passkey-login-cui` option.
+
+```typescript
+import { getTracker, type PasswordLoginOperationFull } from "@corbado/observe";
+
+let passwordOp: PasswordLoginOperationFull;
+
+// When the login component mounts. Returns the cleanup for unmount.
+const handleOnLoad = () => {
+  const passwordInput = document.getElementById("password") as HTMLInputElement;
+  passwordOp = getTracker().passwordLoginFullOperation({
+    inputHtmlField: passwordInput,
+    explicitSpecType: "password-known-identifier",
+  });
+  return () => passwordOp.destroy();
+};
+
+const handlePasswordSubmit = async (email: string, password: string) => {
+  passwordOp.postResponse.start({});
+  const result = await verifyPasswordOnServer(email, password);
+  if (result.ok) {
+    passwordOp.postResponse.finished({}, { userReference: { userId: result.userId } });
+  } else {
+    passwordOp.postResponse.errorTyped({ code: "invalid_password" });
+  }
+};
+```
+
+### 3.5 Password enrollment
+
+Tracks password creation during sign-up (`password-set`) or a password reset during recovery (`password-reset`). Bind it to the new-password input. Typed error code: `requirements_not_fulfilled`.
+
+### 3.6 Email OTP and SMS OTP
+
+Track one-time-password verification. Steps: `send` (email only), `postResponse` for the code the user submitted, `resend` when a new code is requested. Spec types distinguish the login variant from the enrollment variant, for example email verification during sign-up.
+
+### 3.7 Email link
+
+Tracks sign-in or verification through a link sent by email. Steps: `send`, `postResponse` for the token from the clicked link, `resend`.
+
+Email links often continue in a different tab, browser or device. Pass the same `crossEnvironmentTransactionID` in the user reference of the `send` step and the later `postResponse` step so both sides are correlated. Generate one or reuse an existing transaction ID from your system. It does not replace `userId`, which you still provide as soon as it is known. See the [recovery example](/corbado-observe/tracking/flows#6-1-recovery-with-automatic-login).
+
+### 3.8 Social login
+
+Tracks authentication with social identity providers. Steps: `getRedirectUrl` when your app initiates the OAuth redirect, `exchangeCode` when the user returns and the code is exchanged. `exchangeCode` is the outcome-bearing step. Spec types: `pre-identifier` when the button is shown before any identifier, `post-identifier` when it is offered after one.
+
+### 3.9 Provide data
+
+Covers form fields that request user data but map to no deeper subflow concept, such as name, address, birth date or bank details. One screen, one provide-data subflow bound to the most important field. Pass `fieldName` on `postResponse.start` for the semantic name of what is collected. The spec type names the surrounding flow.
+
+### 3.10 App confirmation
+
+Tracks a login approved in another app, for example by scanning a QR code. `ceremony` is the approval and the outcome-bearing step, with typed error codes `declined` and `expired`. `retry` covers a re-issued code.
+
+### 3.11 Captcha
+
+Tracks a captcha challenge inside an authentication journey. Steps: `ceremony` for the challenge, `postResponse` for the server-side check. Spec types `visible` and `invisible`.
+
+## 4. Parallel subflows
+
+Parallel subflows are fine as long as only one can plausibly receive interaction at a time: a password field plus a passkey button on one screen is classifiable. A large form where several tracked fields are filled and submitted together is not. Model the simplified version and track only the most important field, for example the password field on a sign-up form.
+
+## 5. Next steps
+
+- Continue with [Users](/corbado-observe/tracking/user) to link attempts to your user entities.
+- Read [Modeling](/corbado-observe/tracking/modeling) for when to create helpers and a journey catalog.

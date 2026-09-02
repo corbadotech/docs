@@ -21,7 +21,7 @@ Before you consider an integration finished, confirm that events actually arrive
     Complete a login, a sign-up, a recovery and an enrollment, whichever exist in your product.
   </Step>
   <Step title="Confirm the events">
-    With debug mode or the Observe Debugger extension open, check that each journey produces a start event, the expected steps and a finish event.
+    With debug mode or the Observe Debugger extension open, check that each journey produces exactly one flow start, one decision per presented screen, the expected steps and a finish event. Duplicates from re-renders and a missing finish before a redirect are the two most common defects. Compare against the [journey catalog](/corbado-observe/tracking/modeling#6-journey-catalog).
   </Step>
   <Step title="Check one journey in the console">
     Find a test journey via user search and confirm the flow, subflows and decisions look the way you expect.
@@ -31,7 +31,11 @@ Before you consider an integration finished, confirm that events actually arrive
   </Step>
 </Steps>
 
-## 3. Common issues
+## 3. When data appears
+
+Data appears in stages. Raw events are visible in the console's events view right after ingestion. Flows, decisions and subflows appear after the next classification run, which happens about a minute later. Funnels and charts refresh with the next pre-calculation run, a few minutes after that. If a journey is missing from a chart but present in the events view, wait before debugging.
+
+## 4. Common issues
 
 | Symptom | Likely cause |
 | --- | --- |
@@ -39,8 +43,12 @@ Before you consider an integration finished, confirm that events actually arrive
 | Events arrive but no WebAuthn detail | A password manager with locked WebAuthn accessors, or the SDK is not running in the frame that performs the ceremony. See [Constraints](/corbado-observe/overview/constraints#5-autocapture-limitations) |
 | Journeys break in the middle | The SDK initializes too late, or a full page reload is not preserving session continuity |
 | Journeys from different environments mixed | Production and staging share a project. Use [separate projects per environment](/corbado-observe/overview/constraints#8-projects-environments-and-hosting) |
+| Events arrive, but the whole session has no flows | A `flowFinished()` or `flowDecided()` fired without an open flow. That invalidates the session's classification. See [ordering](/corbado-observe/tracking/flows#3-ordering) |
+| A nested sign-up or recovery shows as incomplete although the user finished it | The outer flow's `flowStarted()` fired again while the nested flow was open, for example from a remounted route. See [flows](/corbado-observe/tracking/flows#2-1-flowstarted) |
+| A decision is missing although both events fired | The `explicitDecisionValue` is not one of the declared `options`, or `finished` carried a different options array. See [decisions](/corbado-observe/tracking/decisions#3-decision-events) |
+| A passkey attempt is missing | No `explicitSpecType` arrived on any of its events. See [spec types](/corbado-observe/tracking/subflows#1-3-spec-types) |
 
-## 4. Next steps
+## 5. Next steps
 
 <CardGroup cols={2}>
   <Card title="Corbado Observe Debugger" icon="chrome" href="/corbado-observe/tools/devtools-extension">

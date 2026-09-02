@@ -1,0 +1,195 @@
+---
+title: "Model Your Authentication Journeys"
+description: "How to map your login, sign-up, recovery and enrollment journeys onto Corbado Observe flows, decisions and subflows before you write tracking code."
+sidebarTitle: "Modeling"
+---
+
+Custom events are only the transport. A backend classifier reads each session's event stream and produces the **flows**, **decisions** and **subflow attempts** that every dashboard is built on. Raw events remain visible in the console for debugging a single user, but the classified output is what carries the value.
+
+The classifier is not visible from your integration, so this page describes the rules it applies and a method for mapping your journeys onto them. Reason about every event you emit from the classifier's perspective, not from how the raw series looks.
+
+## 1. Three passes
+
+Work the mapping in three passes, global concerns first. Mistakes in early passes cost the most. Later passes are local problems with a small blast radius that you can solve pragmatically.
+
+<Steps>
+  <Step title="Flow boundaries">
+    For every flow, find the single best signal for when it starts, when it finishes successfully and, where your product has one, when it is skipped. Do this for all flows, top-level and nested, before anything else. The result of this pass is an exact definition of what is tracked. Precision matters most here: a `flowFinished()` without a matching open flow invalidates the whole session's classification.
+  </Step>
+  <Step title="Decision structure">
+    Assign every screen of the journey to a decision name, then find the simplest way to determine the selectable option set per screen. Look for one mechanism that yields options globally if your app offers it, for example a server response that already lists the rendered choices.
+  </Step>
+  <Step title="Subflows">
+    Fill in one auth method attempt at a time. What matters is creating the operation helper at the right moment, then mapping your app's signals onto the helper's steps.
+  </Step>
+</Steps>
+
+The taxonomy is not a to-do list. Not every detail must be modeled. Prefer a clean, documented lossy mapping over a contorted complete one.
+
+## 2. Flow boundaries
+
+**One declared opener per flow.** `flowStarted()` fires at the flow's own entry screens only. Every other handler drops its signals when no flow is open instead of opening one lazily. Never re-announce a parent flow from a nested page "to make sure it is open": the classifier reads a repeated start of an outer flow as a restart and closes everything nested under it as incomplete.
+
+**Finish only on success or explicit skip.** Do not model non-completion on the client. Incompleteness is classified from the absence of a `flowFinished()`. Skipping is the one exception, because it is semantically different from abandoning: send `flowFinished({ flowName, explicitOutcome: "skipped" })` for "continue as guest" or "not now", carrying the user reference whenever identity is already known.
+
+**Nesting versus chaining.** Only `login` and `signup` can contain nested flows. A flow that itself establishes the session, such as a sign-up or a recovery started from the login page, nests inside `login`. When the nested flow's own terminal fires, complete the parent with `flowAutoFinished()`. A flow that runs after the session already exists, typically a passkey enrollment prompted after login, is chained: a sibling flow started after the login finished, never nested.
+
+Events attribute to the innermost open flow. When the user leaves a nested flow without finishing it, close it explicitly with `explicitOutcome: "skipped"`, for example when entering sign-up abandons an open recovery. That records the right outcome and keeps the parent's subsequent events out of the nested flow.
+
+**Ambiguous entry.** On a combined login and sign-up form, start with `flowNames: ["login", "signup"]` and resolve with `flowDecided()` once your backend knows whether the identifier exists.
+
+See [Flows](/corbado-observe/tracking/flows) for the event reference.
+
+## 3. Decision structure
+
+A decision name is a **checkpoint** of the journey: a semantic unit that takes a successful auth method to pass and navigation to leave. Several screens usually map to one name (progressive disclosure, explanatory screens, switching between verification methods). Typical names are `pre-identifier` for everything before the identifier is submitted, `post-identifier` for the methods shown after it and `2fa`.
+
+A screen's option set mixes two kinds of options:
+
+| Kind | Examples | How it resolves |
+| --- | --- | --- |
+| **Method options** | password, passkey, email OTP, social | The subflow that follows resolves the decision in classification. Never finish these explicitly. |
+| **Navigational options** | back, change identifier, switch to sign-up, other methods, forgot password | Finish explicitly with `explicitDecisionValue` the moment the choice is made, then start the next screen's decision. |
+
+Realistic logins have many navigational options. They are the adaptive, per-application part of the model, not an edge case. Name them for reuse across decisions.
+
+A screen can lead into the **same subflow through several controls**: two buttons that run the same ceremony, a primary tile plus an "other methods" list, a prefilled versus a typed identifier. That is one option and one subflow, because only one option string can resolve. Express the difference through an explicit spec type where the taxonomy has one, otherwise carry it as a tag or accept the loss and document it.
+
+See [Decisions](/corbado-observe/tracking/decisions) for presentation rules and the option strings each subflow resolves.
+
+## 4. Subflows
+
+A subflow is one auth method attempt. Creating its operation helper emits the attempt's start, so **when** you create the helper is the modeling question:
+
+- **Input-bound methods** (password, OTP, identifier, provide-data) start when the input renders. The field itself is the attempt surface, and the helper captures interaction on it.
+- **Action-bound methods** (passkey button, social button, app confirmation) start on the action, not when the button becomes visible. A helper created for a button nobody pressed produces an attempt without interaction: not counted for most types, counted as an incomplete attempt for passkeys.
+
+Never finish a subflow. The classifier derives each attempt's outcome from its steps, and the outcome-bearing step is `postResponse` for almost every subflow. Track that step always. For passkeys, also track the `ceremony` step: it powers all passkey analytics and nothing in it is recoverable from the server response alone.
+
+Instrumentation is additive by default. It observes your app's existing lifecycle and adds no cancellation, timers or navigation rules of its own.
+
+See [Subflows](/corbado-observe/tracking/subflows) for the helper reference.
+
+## 5. Identity and tags
+
+Pass `userId` and `identifier` as soon as identity is known: on the step that resolved it, and at minimum on `flowFinished()`. A skip carries identity too when the user is already known.
+
+Tags ride flows. Configuration known at entry (product, variant, device class) goes on `flowStarted()`. Values only known on success go on `flowFinished()`. Do not re-fire the opener from reactive configuration such as store hydration or feature flags just to refresh its tags.
+
+## 6. Journey catalog
+
+The event series a correct integration produces for common journeys. Options are abbreviated and `spec` stands for `explicitSpecType`.
+
+### 6.1 Identifier-first login, back, then sign-up
+
+```text
+flow_started                  { flowName: login, touchpoint: account }
+auth_method_decision_started  { pre-identifier, options: [identifier-email, switch-to-signup, social-google] }
+subflow_started               { provide-identifier, spec: email }          identifier field rendered
+subflow_step_started          { provide-identifier, pi-post-response }     identifier submitted
+subflow_step_finished         { provide-identifier, pi-post-response }     resolves pre-identifier
+auth_method_decision_started  { post-identifier, options: [password-login-known-identifier,
+                                passkey-login-known-identifier, back] }
+subflow_started               { password-login, spec: password-known-identifier }   password field rendered
+auth_method_decision_finished { post-identifier, explicitDecisionValue: back }
+auth_method_decision_started  { pre-identifier, options: [...] }           same checkpoint, re-presented
+auth_method_decision_finished { pre-identifier, explicitDecisionValue: switch-to-signup }
+flow_started                  { flowName: signup }                         nested in login
+auth_method_decision_started  { signup-registration, options: [password-enrollment, back] }
+subflow_started               { password-enrollment, spec: password-set }
+subflow_step_started          { password-enrollment, post-response }
+subflow_step_finished         { password-enrollment, post-response }       resolves signup-registration
+flow_finished                 { flowName: signup, userId, identifier }
+flow_auto_finished            { flowName: login, finishedByFlowName: signup, userId }
+```
+
+Note what is absent: no decision `finished` for the method choices, no subflow finishes and no explicit abandon events. Had the user left mid-journey, the missing finishes would have classified it. The second `pre-identifier` decision is deliberately a second occurrence: the user genuinely revisited that checkpoint. The password attempt that rendered but was never submitted has no step and is not counted; the `back` finish resolves the `post-identifier` occurrence it was rendered in. The step names differ per helper (`pi-post-response` for the identifier, `post-response` elsewhere); the helpers emit them, you never type them.
+
+### 6.2 Direct sign-up, then a skipped enrollment prompt
+
+```text
+flow_started                  { flowName: signup, touchpoint: account }
+auth_method_decision_started  { signup-registration, options: [password-enrollment] }
+subflow_started               { password-enrollment, spec: password-set }
+subflow_step_started          { password-enrollment, post-response }
+subflow_step_finished         { password-enrollment, post-response, userReference }
+flow_finished                 { flowName: signup, userId, identifier }
+flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained, not nested
+auth_method_decision_started  { enrollment-passkey, options: [passkey-enrollment, skip] }
+auth_method_decision_finished { enrollment-passkey, explicitDecisionValue: skip }
+flow_finished                 { flowName: enrollment, explicitOutcome: skipped, userId }
+```
+
+The sign-up establishes the session on its own. There is no `login` flow to auto-finish here; `flowAutoFinished()` belongs only to a parent that was actually started (6.1, 6.4). The enrollment starts after the sign-up finished, so it is a sibling.
+
+### 6.3 Combined form resolved to login
+
+```text
+flow_started                  { flowNames: [login, signup], defaultFlowName: login, touchpoint: checkout }
+auth_method_decision_started  { pre-identifier, options: [identifier-email, social-google] }
+subflow_started               { provide-identifier, spec: email }
+subflow_step_started          { provide-identifier, pi-post-response }
+subflow_step_finished         { provide-identifier, pi-post-response, userReference }
+flow_decided                  { flowName: login }                          identifier exists
+auth_method_decision_started  { post-identifier, options: [passkey-login-known-identifier, other-methods] }
+subflow_started               { passkey-login, spec: passkey-known-identifier }   button clicked
+subflow_step_started/finished { passkey-login, get-options }
+subflow_step_started/finished { passkey-login, ceremony }
+subflow_step_started/finished { passkey-login, post-response }
+flow_finished                 { flowName: login, userId, identifier }
+```
+
+### 6.4 Recovery nested in login with automatic login
+
+```text
+flow_started                  { flowName: login, touchpoint: account }
+...                                                                        identifier and password screens
+auth_method_decision_finished { post-identifier, explicitDecisionValue: forgot-password }
+flow_started                  { flowName: recovery, touchpoint: login }    nested in login
+subflow_started               { email-link, spec: email-link-login }
+subflow_step_started/finished { email-link, send }
+flow_enriched                 { crossEnvironmentTransactionID }            setCrossEnvironmentTransactionId()
+                                                                           link opened in the same browser
+subflow_step_started/finished { email-link, post-response }
+auth_method_decision_started  { password-reset, options: [password-enrollment] }
+subflow_started               { password-enrollment, spec: password-reset }
+subflow_step_started/finished { password-enrollment, post-response }       resolves password-reset
+flow_finished                 { flowName: recovery, userId }
+flow_auto_finished            { flowName: login, finishedByFlowName: recovery, userId }
+```
+
+Two things this series shows. The email-link subflow runs without a decision of its own: no decision option resolves to it, so a decision rendered around it would only ever close incomplete. And the link opening on another device is a different session; that page starts its own `recovery` flow and calls `setCrossEnvironmentTransactionId()` with the same ID, which is what joins the two sessions. It has no open `login` to auto-finish.
+
+## 7. What the classifier merges, repairs or drops
+
+| Signal | Classifier behavior |
+| --- | --- |
+| Repeated `flow_started` for the innermost open flow | Merged. Latest touchpoint wins, tags accumulate. |
+| Repeated `flow_started` for an outer flow while a nested flow is open | Merged into the outer flow. Every flow nested under it closes as incomplete. |
+| `flow_finished` or `flow_decided` without an open flow | Fatal. The whole session scope fails classification. |
+| `flow_auto_finished` without an open flow of that name | Reconstructed as an already-closed flow of that name. Meant for the sibling the classifier closed on `flow_decided`; never send it for a flow that was not started. |
+| Consecutive `subflow_started` of the same type | Folded into one attempt. A different, known spec type starts a new attempt. |
+| Decision `started` re-emitted with the same or changed options | New occurrence. The open one closes as incomplete. |
+| Decision `started` re-emitted with the same `explicitTimestamp` | Replaces the open occurrence in place. |
+| Decision `finished` without an open decision of that name | A zero-duration completed occurrence. |
+| Decision `finished` whose value is not one of the declared options | Completed with that value, but invisible to option-level reports. Keep values inside the declared set. |
+| Subflow attempt with no step and no observed input interaction | Not counted. A passkey attempt is the exception: counted as incomplete, resolving no decision. |
+| Passkey, password-enrollment, provide-data, email-link, social or TOTP attempt without a spec type on any event | Dropped. Password login, identifier entry, OTP and app confirmation default instead. |
+| Events arriving out of order within a screen | Repaired. The backend orders by timestamp and emission sequence and tolerates known races. |
+
+## 8. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Flows" icon="diagram-project" href="/corbado-observe/tracking/flows">
+    Flow events, nesting and outcomes.
+  </Card>
+  <Card title="Decisions" icon="code-branch" href="/corbado-observe/tracking/decisions">
+    Presentation rules and option strings.
+  </Card>
+  <Card title="Subflows" icon="list-check" href="/corbado-observe/tracking/subflows">
+    Operation helpers, steps and spec types.
+  </Card>
+  <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
+    Let an agent apply this method to your codebase.
+  </Card>
+</CardGroup>
