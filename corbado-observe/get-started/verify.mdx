@@ -41,7 +41,7 @@ Data appears in stages. Raw events are visible in the console's events view righ
 | --- | --- |
 | No events at all | Script not loaded, wrong `Project ID` or `API Base URL` or a Content Security Policy blocking the script or the API endpoint |
 | Events arrive but no WebAuthn detail | A password manager with locked WebAuthn accessors, or the SDK is not running in the frame that performs the ceremony. See [Constraints](/corbado-observe/overview/constraints#5-autocapture-limitations) |
-| Journeys break in the middle | The SDK initializes too late, or a full page reload is not preserving session continuity |
+| Journeys break in the middle | The SDK initializes too late, pages use different project IDs, or a reload starts a new session after inactivity. Check [session lifetime](/corbado-observe/overview/constraints#7-storage-and-consent) and the project’s continuity configuration |
 | Journeys from different environments mixed | Production and staging share a project. Use [separate projects per environment](/corbado-observe/overview/constraints#8-projects-environments-and-hosting) |
 | Events arrive, but the whole session has no flows | A `flowFinished()` or `flowDecided()` fired without an open flow. That invalidates the session's classification. See [ordering](/corbado-observe/tracking/flows#3-ordering) |
 | A nested sign-up or recovery shows as incomplete although the user finished it | The outer flow's `flowStarted()` fired again while the nested flow was open, for example from a remounted route. See [flows](/corbado-observe/tracking/flows#2-1-flowstarted) |

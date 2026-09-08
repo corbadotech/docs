@@ -79,6 +79,36 @@ Initialize as early as possible in your app startup.
   </Tab>
 </Tabs>
 
+### Multiple projects on web
+
+With `@corbado/observe` 0.13.0 or later, persisted state and cross-tab locks are scoped by `projectId`. Keep a tracker for each project and send events through the intended instance:
+
+```typescript
+import { CorbadoTracker } from "@corbado/observe";
+
+const projectA = new CorbadoTracker({
+  projectId: "<Project A ID>",
+  apiBaseUrl: "<Project A API Base URL>",
+});
+const projectB = new CorbadoTracker({
+  projectId: "<Project B ID>",
+  apiBaseUrl: "<Project B API Base URL>",
+});
+
+projectA.flowStarted({ flowName: "login" });
+projectB.flowStarted({ flowName: "login" });
+```
+
+Each `init()` call also returns a tracker, but replaces the default used by package-level helpers such as `getTracker()`, `resetSession()` and `destroy()`. Constructing `CorbadoTracker` directly does not replace that default. Call methods on your retained instances and use `await projectA.destroy()` when that instance is no longer needed.
+
+With the CDN snippet, assign distinct names using `Corbado.init(options, "projectA")` and `Corbado.init(options, "projectB")`. Call `Corbado.get("projectA")` or `Corbado.get("projectB")` for each event. Instances with the same project ID share persisted state within the browser's storage boundaries; names alone do not isolate storage.
+
+### Upgrading to 0.13.0
+
+Initialize your existing project first. The SDK copies legacy global storage into that project's storage before loading configuration, resolving the session or recovering queued events. It preserves valid existing session IDs, sequence counters, experiment assignments, device identity and pending events; other projects start independently. Existing project-scoped state is preserved.
+
+Each tab migrates its own session storage when the original project initializes there. Migration is a one-time snapshot: legacy keys remain, but later writes from already-open pages running an older SDK are not imported again. Reload those pages to complete the upgrade. See [session lifetime and storage](/corbado-observe/overview/constraints#7-storage-and-consent) and verify that each project's events arrive separately.
+
 ## 4. Track your first event
 
 When your login UI is rendered and visible, send `flowStarted`:

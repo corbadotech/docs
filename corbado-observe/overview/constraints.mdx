@@ -48,9 +48,9 @@ See the guide on [relying party IDs](/corbado-connect/helpful-guides/rpid-config
 
 ## 4. Data handling
 
-Observe does not need PII to do its job. It collects no names, email addresses, phone numbers or other directly identifying attributes; the only identity-linked value is the user reference you choose to pass, and that can be pseudonymous.
+Observe does not require directly identifying attributes. Use pseudonymous user references and review the payloads your integration sends, including custom event data and Autocapture projections. WebAuthn payloads can also contain identifying values.
 
-**Never collected:** passwords or any other typed input, form field contents, session tokens or credentials for your own system.
+Do not include passwords, form field contents or your application’s session tokens in custom events or network body projections. Autocapture does not provide generic redaction of application payloads.
 
 **Collected:**
 
@@ -63,10 +63,10 @@ Observe does not need PII to do its job. It collects no names, email addresses, 
 | Tags you define | Your own dimensions such as country, channel or experiment variant. See [Tags](/corbado-observe/tracking/tags) |
 
 <Warning>
-  WebAuthn responses are inherently identifying: they contain credential IDs, user handles, challenges, signatures and authenticator data. Observe collects the fields it needs for authenticator and credential insight. If you must not send user handles or credential IDs to a processor, raise this before integration so the collection profile can be scoped accordingly.
+  In `@corbado/autocapture` 0.6.0, WebAuthn sanitization removes creation-option `user.name` and `user.displayName`, assertion `response.signature`, and `clientExtensionResults.prf.results` from credential responses. Other fields, including unknown fields and extensions, remain. Credential IDs, user handles, challenges, authenticator data and attestation material can still identify users. Encoded blobs are not decoded or redacted. Review the collection profile before upgrading; integrations pinned to older versions retain their previous behavior.
 </Warning>
 
-**You control identity.** The user reference is a value you pass. Pass a pseudonymous or hashed identifier and Observe never sees a real user ID.
+**You control identity.** The user reference is a value you pass. Pass a pseudonymous identifier and keep directly identifying values out of the other fields you send.
 
 ## 5. Autocapture limitations
 
@@ -92,12 +92,18 @@ Autocapture observes the browser surfaces listed under [what Autocapture actuall
 
 ## 7. Storage and consent
 
-The web SDK stores a session identifier client-side to correlate the events of one journey. You choose the mechanism at initialization:
+In `@corbado/observe` 0.13.0, SDK storage and cross-tab locks are scoped by project ID. The `storage` option selects storage for device identity; it does not move all SDK state into cookies:
 
 | Option | Behavior |
 | --- | --- |
-| `storage: "local"` | Browser storage on the current origin. |
-| `storage: "cookie"` | A cookie, with an optional `cookieDomain` for correlation across subdomains. |
+| `storage: "local"` | Device identity in local storage on the current origin (default). |
+| `storage: "cookie"` | Device identity in a cookie, with an optional `cookieDomain` for sharing that identity across subdomains. |
+
+Session storage holds the per-tab session. Local storage holds configuration, pending events and, when server-controlled session continuity is enabled, the shared session and sequence counter. Cookie mode still uses these browser stores and does not make sessions shared across origins.
+
+The SDK checks inactivity when it initializes. A dated per-tab session that has reached its inactivity window gets a new ID at that point; continuity sessions also expire at initialization. Tracking refreshes activity, but inactivity alone does not rotate the ID within a running page. A long-lived page can therefore outlive the inactivity window. With continuity enabled, a tab can adopt a shared session ID changed by another tab.
+
+The inactivity window is server-controlled, not an initialization option. An Observe session is a telemetry grouping, independent of your application's authenticated session. If a flow continues across page loads, its inactivity window must span that journey. On upgrade, a valid legacy bare session ID is preserved and dated when first read, rather than immediately split. Follow the [upgrade instructions](/corbado-observe/get-started/custom-events#upgrading-to-0-13-0) when introducing multiple projects.
 
 Observe stores no advertising identifiers and does no cross-site tracking. Whether your consent management platform needs to gate the SDK is your own legal assessment. If it does, initialize Observe after consent and journeys before that point are simply not recorded.
 

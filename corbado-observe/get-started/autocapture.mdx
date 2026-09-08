@@ -88,3 +88,11 @@ connect-src <your-api-base-url>;
     Add events for facts that never reach the browser.
   </Card>
 </CardGroup>
+
+## Upgrading the capture library to 0.6.0
+
+If you maintain an adapter using `@corbado/autocapture`, validate your payload parsers before upgrading to 0.6.0. Registration `started` events now include `creationOptionsJson`. Authentication starts use `requestOptionsJson`, and completed ceremonies use `credentialJson`.
+
+WebAuthn capture and network fallbacks can share `sanitizeCreationOptions`, `sanitizeCreationResponse`, `sanitizeRequestOptions` and `sanitizeAssertionResponse`. These exports accept native objects, JSON objects or JSON strings and return JSON text, or `undefined` when serialization fails. Pass the options' `publicKey` value or the credential itself, not your endpoint's request envelope.
+
+The new sanitizers retain fields unless explicitly removed, replacing the previous allowlist. Assertion signatures and response PRF results are removed; previously excluded fields can now be present. Review [data handling](/corbado-observe/overview/constraints#4-data-handling) for the exact exclusions. For a network fallback, extract the options or credential and sanitize it in your body projector. Endpoint mapping and duplicate-source handling remain the adapter's responsibility. A pinned adapter keeps its current behavior until you upgrade it.
