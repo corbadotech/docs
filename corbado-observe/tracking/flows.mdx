@@ -87,7 +87,7 @@ If the user is already known when the flow starts, which is normal for enrollmen
   Fire `flowStarted()` from one declared place per flow, never from a nested page "to make sure the parent is open". A repeated start of the innermost open flow is merged, but a repeated start of an **outer** flow while a nested flow is open is read as a restart: the nested flow closes as incomplete. Frameworks that mount route components twice per navigation make this an easy mistake.
 </Warning>
 
-From web SDK 0.13.0, `flowStarted(data, tags?, experiments?, contexts?)` accepts structured context as its fourth argument. Context is written to the event's `contexts` field without redaction; use it for non-sensitive technical metadata, and use [tags](/corbado-observe/tracking/tags) for analytical dimensions. Omit unused arguments with `undefined`.
+`flowStarted(data, tags?, experiments?, contexts?)` accepts structured context as its fourth argument. Context is written to the event's `contexts` field without redaction; use it for non-sensitive technical metadata, and use [tags](/corbado-observe/tracking/tags) for analytical dimensions. Omit unused arguments with `undefined`.
 
 ### 2.2 `flowDecided()`
 
@@ -136,7 +136,7 @@ Ordering requirements are causal, not temporal:
 
 Nothing else. The backend orders by timestamp and emission sequence and repairs known race patterns. Use `explicitTimestamp` on steps and decisions to back-date an event when the semantic moment precedes the tracking call.
 
-A flow carried across page loads also needs the same Observe session. SDK 0.13.0 checks inactivity at initialization, so an expired session can split a cross-load flow. Ensure the project's inactivity window spans the journey and initialize the same project on each page. See [session lifetime](/corbado-observe/overview/constraints#7-storage-and-consent).
+A flow carried across page loads also needs the same Observe session. The SDK checks inactivity at initialization, so an expired session can split a cross-load flow. Ensure the project's inactivity window spans the journey and initialize the same project on each page. See [session lifetime](/corbado-observe/overview/constraints#7-storage-and-consent).
 
 ## 4. Tags on flows
 

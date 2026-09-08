@@ -151,7 +151,7 @@ The passkey steps carry the WebAuthn payloads as JSON strings. For login, `getOp
 | --- | --- | --- | --- |
 | `provideIdentifierOperationFull(config?)` | `provide-identifier` (plus passkey Conditional UI) | `provideIdentifier.clientValidation`, `provideIdentifier.postResponse`; `cui.getOptions`, `cui.ceremony`, `cui.postResponse` | `email`, `phone`; CUI: `passkey-cui` |
 | `passkeyLoginFullOperation(config?)` | `passkey-login` | `getOptions`, `ceremony`, `postResponse` | `passkey-known-identifier`, `passkey-known-identifier-auto`, `passkey-no-identifier`, `passkey-no-identifier-auto`, `passkey-cui`, `passkey-immediate` |
-| `passkeyEnrollmentFullOperation(config?)` | `passkey-enrollment` | `getOptions`, `ceremony`, `postResponse` | `conditional`, `auto`, `manual` (0.13.0+); legacy `conditional-auto-manual`, `auto-manual` |
+| `passkeyEnrollmentFullOperation(config?)` | `passkey-enrollment` | `getOptions`, `ceremony`, `postResponse` | `conditional`, `auto`, `manual`; legacy `conditional-auto-manual`, `auto-manual` |
 | `passwordLoginFullOperation(config?)` | `password-login` | `clientValidation`, `postResponse`; `cui.getOptions`, `cui.ceremony`, `cui.postResponse` | `password-known-identifier`, `password-with-identifier`; CUI: `passkey-cui` |
 | `passwordEnrollmentFullOperation(config?)` | `password-enrollment` | `clientValidation`, `postResponse` | `password-set`, `password-reset` |
 | `emailOtpOperationFull(config?)` | `email-otp` | `send`, `postResponse`, `resend` | `email-otp-login`, `email-otp-enrollment` |
@@ -292,7 +292,7 @@ const handleManualEnrollment = async (userId: string) => {
 
 For `conditional-auto-manual`, run the same steps with `mediation: "conditional"` first. If the conditional ceremony errors, a regular prompt is a new sequence of step events on the same helper with `mediation: "required"`.
 
-In SDK 0.13.0, `explicitSpecType` also accepts `conditional` for a silent conditional-create attempt and `auto` for an automatically triggered regular prompt. Use a new operation for each attempt when using these values; keep `manual` for a user-triggered attempt. The combined values above remain supported for existing integrations that model one offer across its fallbacks.
+`explicitSpecType` also accepts `conditional` for a silent conditional-create attempt and `auto` for an automatically triggered regular prompt. Use a new operation for each attempt when using these values; keep `manual` for a user-triggered attempt. The combined values above remain supported for existing integrations that model one offer across its fallbacks.
 
 The enrollment helper's configuration also accepts `ignoreAsInteraction: true` for a programmatic start without a user gesture or visible surface, such as a conditional attempt. It marks the emitted start as non-interactive; it does not suppress the operation's later step events. `subflowStart()` and `trigger()` data also accept this flag. Do not apply it to a user-triggered start.
 
