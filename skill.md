@@ -491,7 +491,7 @@ Ordering requirements are causal, not temporal:
 3. Settle the previous screen before opening the next: a navigational choice's decision
    `finished` precedes the next screen's decision `started`.
 4. Call `setUser()` while its intended flow is active, before `flowFinished()` or
-   `flowAutoFinished()` closes it. 
+   `flowAutoFinished()` closes it.
 
 The backend orders by timestamp + emission sequence and repairs supported race patterns.
 Use `explicitTimestamp` (on steps and decision `started`) when the semantic moment precedes
