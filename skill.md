@@ -81,26 +81,26 @@ the taxonomy has one, and otherwise modeled simplified: carry what differed as a
 operation helper at the right moment (when the method appears or starts); then map the
 app's signals onto the helper's steps where applicable.
 
-The taxonomy is not a TODO list. Not every detail must be modeled: complexity trade-offs
-and genuine mismatches between the app and the taxonomy are legitimate — prefer a clean
+Not every taxonomy detail needs instrumentation. Complexity trade-offs and mismatches
+between the app and the taxonomy are legitimate — prefer a clean
 lossy mapping (documented) over a contorted complete one. Use subagents to verify the
 integration against real journeys.
 
 ## Event catalog
 
-| Event                                 | SDK call                                       | Sent when                                           |
-| ------------------------------------- | ---------------------------------------------- | --------------------------------------------------- |
-| `flow_started`                        | `flowStarted()`                                | journey entry (one declared opener per flow)        |
-| `flow_decided`                        | `flowDecided()`                                | ambiguous entry resolves to one flow                |
-| `flow_finished`                       | `flowFinished()`                               | success, or explicit skip via `explicitOutcome`     |
-| `flow_auto_finished`                  | `flowAutoFinished()`                           | nested flow's terminal completes the parent         |
-| `flow_reset`                          | `flowReset()`                                  | rarely — explicit restart                           |
-| `auth_method_decision_started`        | `authMethodsDecisionStarted()`                 | checkpoint rendered / options change                |
-| `auth_method_decision_finished`       | `authMethodsDecisionFinished()`                | navigational choice made (never for method choices) |
-| `subflow_started`                     | helper construction (or `op.subflowStart({})`) | auth method appears or starts                       |
-| `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()`       | around the step's app logic                         |
-| `flow_enriched`                       | `setCrossEnvironmentTransactionId()`           | cross-environment handoff                           |
-| `conversion`                          | `conversion()`                                 | business conversion outside auth                    |
+| Event                                 | SDK call                                 | Sent when                                           |
+| ------------------------------------- | ---------------------------------------- | --------------------------------------------------- |
+| `flow_started`                        | `flowStarted()`                          | journey entry (one declared opener per flow)        |
+| `flow_decided`                        | `flowDecided()`                          | ambiguous entry resolves to one flow                |
+| `flow_finished`                       | `flowFinished()`                         | success, or explicit skip via `explicitOutcome`     |
+| `flow_auto_finished`                  | `flowAutoFinished()`                     | nested flow's terminal completes the parent         |
+| `flow_reset`                          | `flowReset()`                            | rarely — explicit restart                           |
+| `auth_method_decision_started`        | `authMethodsDecisionStarted()`           | checkpoint rendered / options change                |
+| `auth_method_decision_finished`       | `authMethodsDecisionFinished()`          | navigational choice made (never for method choices) |
+| `subflow_started`                     | helper construction                      | auth method appears or starts                       |
+| `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()` | around the step's app logic                         |
+| `flow_enriched`                       | `setUser(user)`                          | identity observation or cross-environment handoff   |
+| `conversion`                          | `conversion()`                           | business conversion outside auth                    |
 
 ## Flows
 
@@ -111,17 +111,13 @@ freeform name (e.g. account renewal, reauthentication, transaction signing).
 skipped. Do not model non-completion on the client: incompleteness is classified from the
 absence of a `flow_finished`. Skipping is the one exception because it is semantically
 different from abandoning (e.g. "continue as guest", or entering signup abandons an open
-recovery): send `flowFinished({ flowName, explicitOutcome: "skipped" })`. A skip can also
-carry the user reference whenever identity is already known.
+recovery): send `flowFinished({ flowName, explicitOutcome: "skipped" })`. If identity is known, record it separately with `setUser()`; this also applies to skips.
 
 ```typescript
 tracker?.flowStarted({ flowName: "login", touchpoint: "account" });
 // ... success:
-tracker?.flowFinished({
-    flowName: "login",
-    userId: "usr_123",
-    identifier: "max@example.com"
-});
+tracker?.setUser({ userId: "usr_123", identifier: "max@example.com" });
+tracker?.flowFinished({ flowName: "login" });
 ```
 
 When entry is ambiguous (combined login/signup form), start with
@@ -131,7 +127,7 @@ When entry is ambiguous (combined login/signup form), start with
 **Nesting vs chaining.** Only `login` and `signup` can contain nested flows. A flow that
 itself establishes the session (signup, recovery inside the login journey) nests inside
 `login`; when the nested flow's own terminal fires, complete the parent with
-`flowAutoFinished({ flowName: "login", finishedByFlowName: "signup", userId })`. A flow
+`flowAutoFinished({ flowName: "login", finishedByFlowName: "signup" })`. A flow
 that runs after the session already exists (typically enrollment prompted post-login) is
 _chained_: a sibling flow started after the login finished, never nested.
 
@@ -156,6 +152,8 @@ feature flags) just to refresh its tags; late-known values go on `flow_finished`
 ## Decisions
 
 Use `authMethodsDecisionStarted` / `authMethodsDecisionFinished` for **all** decisions.
+Both accept method and freeform navigation options. The older `authDecisionStarted` /
+`authDecisionFinished` methods are deprecated.
 
 **Two kinds of options, one option set.** A screen's option set usually mixes both:
 
@@ -203,9 +201,27 @@ method options shown after it), `2fa`. Rules that make names aggregate well:
   checkpoints maps per surrounding context.
 - Keep names short, stable, descriptive of the checkpoint.
 
-Options ride `started`; an explicit `finished` needs only the decision name and the
-chosen value (which should be one of the declared options). Keep the options array's
-order stable across renders where possible.
+**Options on finish.** Send `decisionName` and `explicitDecisionValue` for a
+navigational choice. Omit `options` to reuse the offer already sent with `started`.
+The chosen value must belong to that offer.
+
+| `options` on `finished` | Meaning                                                                                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Omitted or `null`       | Reuse the retained offer when its `decisionName` matches, preserving its options, timing, and occurrence history. Omit the field in TypeScript; the SDK type does not accept literal `null`. |
+| Non-empty array         | Explicit offered choices. Use the same values and ordering as `started` to complete that occurrence. A different list can produce a separate decision occurrence.                            |
+| `[]`                    | An explicit offer with no choices. It does not inherit options and cannot describe a valid selection.                                                                                        |
+
+Keep option order stable: it distinguishes decision variants. Inheritance uses the
+retained decision. If no matching
+offer exists, classification reports `no_matching_offer`, ignores the finish, and keeps
+an unrelated retained decision available. An inherited selection outside the offer reports
+`result_not_offered` and creates no successful choice.
+
+A method may already have resolved the retained offer before the user navigates away.
+For example, an automatically started OTP attempt followed by “switch method” records
+both choices in that offer’s history. Finishing with the same value already resolved by
+the method adds no duplicate choice. Continue to let subflows resolve method choices;
+explicit finishes are for navigation.
 
 A decision occurrence is a _presentation to the user_, not a render. Re-send `started`
 whenever the checkpoint is re-presented or its options change — each presentation becomes
@@ -233,7 +249,7 @@ is present in `options`:
 | password-login (`password-with-identifier`)                               | `password-login-with-identifier`                                                                                                           |
 | passkey-login (`passkey-known-identifier[-auto]`, `passkey-cui`, no spec) | `passkey-login-known-identifier`                                                                                                           |
 | passkey-login (`passkey-no-identifier[-auto]`)                            | `passkey-login-no-identifier`                                                                                                              |
-| passkey-login (`passkey-immediate`)                                       | resolves no option (runs pre-decision)                                                                                                     |
+| passkey-login (`passkey-immediate`)                                       | resolves no option                                                                                                                         |
 | password-login, CUI steps fired (`cui.*`)                                 | `passkey-login-cui` (password-login helper only)                                                                                           |
 | passkey-enrollment                                                        | `passkey-enrollment`                                                                                                                       |
 | password-enrollment                                                       | `password-set` / `password-reset`, fallback `password-enrollment`                                                                          |
@@ -261,7 +277,7 @@ A subflow is one auth method attempt; creating the operation helper emits
   created for a button nobody pressed yields an attempt without interaction — not counted
   for most types.
 
-A helper starts its attempt exactly once: construction auto-starts by default, so never add
+Construction always emits `subflow_started`; there is no opt-out. Never add
 a manual `subflowStart()` on top of it. Repeated starts of the same subflow with nothing in
 between are merged; don't guard against them. Do not emit `subflow_trigger`; it is
 deprecated for the helpers used here and carries no classification value.
@@ -294,7 +310,8 @@ try {
 try {
     op?.postResponse.start({});
     const result = await verifyOnServer(response);
-    op?.postResponse.finished({}, { userReference: { userId: result.userId } });
+    tracker?.setUser({ userId: result.userId });
+    op?.postResponse.finished({});
 } catch (e) {
     op?.postResponse.error(e);
 }
@@ -325,10 +342,8 @@ try {
     op?.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
     op?.cui.postResponse.start({});
     const result = await verifyOnServer(response);
-    op?.cui.postResponse.finished(
-        {},
-        { userReference: { userId: result.userId } }
-    );
+    tracker?.setUser({ userId: result.userId });
+    op?.cui.postResponse.finished({});
 } catch (e) {
     // torn down because the user submitted the identifier or left: not an error
     if (!displacedByUser) op?.cui.ceremony.error(e);
@@ -382,8 +397,13 @@ classifier drops an attempt without one. The types don't enforce this; it's the
 integration's job to make sure one of these attempts never runs spec-less end to end. The others tolerate
 absence with a documented default (email/sms-otp assume the login variant, password-login
 `password-known-identifier`, provide-identifier `email`, app-confirmation `qr-code`).
-When a spec only becomes known mid-attempt, send it on a later step's `start` data — the
-last spec type wins in classification.
+When a spec only becomes known mid-attempt, supply it on a step whose SDK payload
+supports `explicitSpecType`.
+
+**Continuing an attempt.** Recreating an operation after a redirect or environment
+handoff emits another `subflow_started`. Supply the original matching spec type when
+continuing the same attempt; a different known spec can split it into a separate attempt.
+Start the destination flow before creating its operation.
 
 **Input binding.** Where the helper supports it, pass the input element
 (`inputHtmlField`) for input-related subflows — it enables interaction capture on the
@@ -470,21 +490,62 @@ Ordering requirements are causal, not temporal:
    before `subflow_started`).
 3. Settle the previous screen before opening the next: a navigational choice's decision
    `finished` precedes the next screen's decision `started`.
-4. Nothing else. The backend orders by timestamp + emission sequence, repairs known race
-   patterns and tolerates e.g. `subflow_started` arriving before
-   `flow_started`. Use `explicitTimestamp` (on steps and decision `started`) to back-date
-   when the semantic moment precedes the tracking call. Do not engineer ordering beyond
-   rules 1–3.
+4. Call `setUser()` while its intended flow is active, before `flowFinished()` or
+   `flowAutoFinished()` closes it. 
+
+The backend orders by timestamp + emission sequence and repairs supported race patterns.
+Use `explicitTimestamp` (on steps and decision `started`) when the semantic moment precedes
+the tracking call. Preserve the causal ordering above rather than adding arbitrary delays.
+
+## Identity observations
+
+Call `tracker.setUser(user: UserReference)` when a user reference becomes known, **after
+starting the intended flow and before finishing it**. The reference accepts `userId`,
+`identifier`, and/or `crossEnvironmentTransactionID`. Transaction-only references are valid.
+Use a stable `userId` to establish user identity; `identifier` alone does not reconcile
+observations into an identified user.
+
+Each call emits `flow_enriched` with
+`data: { match: { flowType: "*", at: "during" }, expFol: true }` and the reference in the
+`user` envelope. It matches the innermost active flow at emission time, regardless of flow
+type. Matching has **no grace period**: after a nested recovery finishes, a subsequent
+`setUser()` belongs to the still-open parent login, even if both calls share a timestamp.
+
+Identity attribution follows these rules:
+
+- The matched flow and its same-session subflows and decisions share the identified
+  user, including steps earlier in that flow. Identification in a nested flow also identifies its
+  enclosing flows in the same session. The latest identity observation belonging to a
+  flow wins.
+- Later flows can inherit the session’s identity when they have no identity observation
+  of their own. An observation in the parent after a child closes does not backfill
+  that finished child.
+- Calling outside an active flow reports `no_matching_flow` and cannot identify a
+  finished flow. The observation can still affect later flows, so use `setUser()` only
+  within the intended active flow.
+
+Passing `{}` does not clear identity.
+
+Legacy user-reference fields on flow finishes, conversions, and step options remain
+supported but are deprecated. For new instrumentation, record identity separately with
+`setUser()` within the active flow. When migrating a finish that carries identity, place
+`setUser()` **before** the finish.
 
 ## Cross-environment correlation
 
 Events are correlated by a session id in local storage: everything sharing the JavaScript
 process or local storage merges automatically — nothing to do. When a journey crosses a
 boundary where local storage doesn't follow (another device, an iframe, some webview
-setups), call `tracker.setCrossEnvironmentTransactionId(id)` **on both ends** with the
-same id; the sessions are then merged in classification. How the id travels is the app's
-choice — a magic link's query parameter, or an existing correlation id the system already
-propagates.
+setups), call `tracker.setUser({ crossEnvironmentTransactionID: id })` **on both ends** with the
+same UUID. Start or continue the destination flow with `flowStarted` before calling
+`setUser` there; correlation alone does not create an active flow. Continue the intended
+innermost flow rather than re-announcing an outer flow. When recreating a subflow helper,
+carry its original matching spec type as described under Continuing an attempt.
+
+An identity observed in the destination can identify the explicitly continued flow.
+The linked sessions are classified together. How the UUID travels is the app's choice —
+for example, a magic link's query parameter or an existing transaction UUID the system
+already propagates.
 
 ## Setup
 
@@ -514,9 +575,9 @@ export const observeTracker = (): CorbadoTracker | null => {
 
 Optional `init` options: `defaultTags` (stamped on every flow start and conversion),
 `applicationId` (channel
-like `"web"` when one project tracks several). Use `debug: true` while developing. Pass
-`userId` (stable internal id; a hash is fine) and `identifier` as soon as identity is
-known — at minimum on `flowFinished`, or per step via `{ userReference: {...} }`.
+like `"web"` when one project tracks several). Use `debug: true` while developing. Call
+`tracker.setUser({ userId, identifier })` as soon as identity is known within the active
+flow (`userId` is a stable internal id; a hash is fine), before that flow finishes.
 
 ## Validating the implementation
 
@@ -551,8 +612,9 @@ auth_method_decision_started  { signup-registration, options: [password-enrollme
 subflow_started         { password-enrollment, spec: password-set }
 subflow_step_started    { password-enrollment, post-response }          ← form submitted
 subflow_step_finished   { password-enrollment, post-response }          (resolves signup-registration)
-flow_finished           { flowName: signup, userId, identifier }
-flow_auto_finished      { flowName: login, finishedByFlowName: signup, userId }
+flow_enriched           data: { match: { flowType: "*", at: during }, expFol: true }, user: { userId, identifier }
+flow_finished           { flowName: signup }
+flow_auto_finished      { flowName: login, finishedByFlowName: signup }
 ```
 
 Note what is absent: no decision `finished` for the method choices (their subflows resolve
