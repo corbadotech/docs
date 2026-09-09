@@ -54,6 +54,7 @@
                         "group": "Custom events reference",
                         "pages": [
                             "corbado-observe/tracking/overview",
+                            "corbado-observe/tracking/modeling",
                             "corbado-observe/tracking/applications",
                             "corbado-observe/tracking/flows",
                             "corbado-observe/tracking/decisions",
