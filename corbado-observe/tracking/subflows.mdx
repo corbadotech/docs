@@ -27,7 +27,7 @@ On SDK level, every subflow type has an **operation helper** on the tracker, for
 
 ### 1.1 Start
 
-Creating the helper emits `subflow_started`: the attempt begins. A helper starts its attempt exactly once. Construction auto-starts by default, so do not add a manual `subflowStart()` on top of it. Repeated starts of the same subflow type with nothing in between are merged. A different, known spec type starts a new attempt.
+Creating the helper emits `subflow_started`: the attempt begins. Construction always emits the start, even without an input field or configuration. Do not add a manual `subflowStart()` on top of it. Repeated starts of the same subflow type with nothing in between are merged. A different, known spec type starts a new attempt.
 
 When to create the helper depends on how the method is engaged:
 
@@ -162,7 +162,7 @@ The passkey steps carry the WebAuthn payloads as JSON strings. For login, `getOp
 | `appConfirmationOperationFull(config?)` | `app-confirmation` | `ceremony`, `retry`, `postResponse` | `qr-code` |
 | `captchaOperationFull(config?)` | `captcha` | `ceremony`, `postResponse` | `visible`, `invisible` |
 
-Every config accepts `explicitSpecType` and `autoStart` (default `true`). The input-bound helpers additionally accept `inputHtmlField`. For a subflow type without a helper, such as `totp`, use the low-level tracker methods `trackSubflowStarted()`, `trackSubflowStepStarted()`, `trackSubflowStepFinished()` and `trackSubflowStepError()` with the same shape.
+Every config accepts `explicitSpecType`. There is no `autoStart` option: create the helper when the attempt should begin. The input-bound helpers additionally accept `inputHtmlField` for input tracking; it does not control whether the attempt starts. For a subflow type without a helper, such as `totp`, use the low-level tracker methods `trackSubflowStarted()`, `trackSubflowStepStarted()`, `trackSubflowStepFinished()` and `trackSubflowStepError()` with the same shape.
 
 ### 3.1 Provide identifier
 
