@@ -1,10 +1,10 @@
 ---
 title: "Get Started with the Observe Data Layer"
-description: "Push a few semantic events from your frontend into the Observe data layer and let one central mapping turn them into Corbado Observe events."
+description: "Tag your screens, push a few events into the Observe data layer, capture network and WebAuthn in your page, and let one central mapping turn it all into Corbado Observe events."
 sidebarTitle: "Data layer"
 ---
 
-The **Observe data layer** is the recommended way to integrate **Corbado Observe** from your own source code. Your frontend pushes a handful of semantic events into `window.CorbadoObserve`, a small in-page command stub with the mechanics of an analytics data layer. One central module, the **mapping**, takes the stub over and turns those events into Observe flows, decisions and subflows. No tracking calls are scattered through your components, the whole tracking model lives in one place, and that place can be updated without an app release.
+The **Observe data layer** is the recommended way to integrate **Corbado Observe** from your own source code. Your screens carry one data attribute per control, your code pushes a few events into `window.CorbadoObserve`, a small in-page command queue with the mechanics of an analytics data layer, and network calls and WebAuthn ceremonies are captured automatically in your page. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows. No tracking calls are scattered through your components, the whole tracking model lives in one place, and that place can be updated without an app release.
 
 <Info>
   The data layer is web only. On iOS and Android, use [custom events](/corbado-observe/get-started/custom-events) with the native SDKs. If you do not want to change your frontend at all, [Autocapture](/corbado-observe/get-started/autocapture) is the fully managed option.
@@ -16,39 +16,38 @@ The **Observe data layer** is the recommended way to integrate **Corbado Observe
 
 ## 1. Prerequisites
 
-- An active project in the [Corbado management console](https://app.corbado.com)
-- Your `Project ID` and `API Base URL` from [settings](https://app.corbado.com/observe/settings/general)
+- An active project in the [Corbado management console](https://app.corbado.com). No project yet: **Create a new project**, project type **Observe**.
+- Your `Project ID` and `API Base URL` from **Observe → Settings → General**, or from `corbado switch --list` after pairing the [Observe CLI](/corbado-observe/tools/cli).
+- Your authentication origins registered under **Observe → Settings → Origins**.
 
 ## 2. How it works
 
 ```mermaid
 flowchart LR
-    A["Your app<br />pushes screen, choice,<br />request, validation"] --> L["window.CorbadoObserve<br />command stub, queues until the mapping loads"]
+    A["Your screens and handlers<br />screen offers, outcomes,<br />validation errors"] --> L["window.CorbadoObserve<br />command queue, buffers until the mapping loads"]
+    C["@corbado/autocapture in your page<br />network exchanges, WebAuthn ceremonies"] --> L
     L --> M["Mapping<br />one central module"]
-    F["Fallback capture<br />WebAuthn, network"] --> M
     M --> O["Corbado Observe<br />flows, decisions, subflows"]
 ```
 
 | Part | What it is | Who owns it |
 | --- | --- | --- |
 | **Stub** | A few lines inlined first in `<head>` that create `window.CorbadoObserve` and record every command until the mapping loads. The same stub Corbado's loader snippets already use | Your app, copied verbatim from below |
-| **Emitters** | Pushes at the moments your app already knows about: a screen rendered, a control was used, a request settled, validation failed. Plus four lifecycle commands: `init` after consent, `setExperiments`, `setUser`, `destroy` | Your app, in your own vocabulary |
-| **Mapping** | One module that takes the stub over, replays its queue, and calls the Observe SDK. It holds every Observe name, every flow boundary, every subflow step | Corbado-shaped. Served from Corbado as a script tag (recommended) or self-hosted as your own package |
-| **Fallbacks** | `@corbado/autocapture` observers the mapping attaches for what your code cannot emit, above all WebAuthn ceremonies run by third-party libraries | The mapping |
+| **Markup and emitters** | A data attribute on every control that is a decision option, one on the primary input, and three small helpers: emit the screen offer on render, emit the outcome in the handler, emit validation errors from your validation pass | Your app, in your own screen names |
+| **Capture wiring** | `captureNetwork` and `captureWebAuthn` from [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture), wired once at page start with your endpoint match and allowlist projectors, pushing into the same queue | Your app |
+| **Mapping** | One module that takes the queue over, replays it and calls the Observe SDK. It holds every Observe name, every flow boundary, every subflow step, and imports nothing from your app | Corbado-shaped. Served from Corbado as a script tag (recommended) or self-hosted as your own package |
 
-The data layer speaks your app's vocabulary and the mapping speaks Observe's. That split is what lets Corbado review, test and correct the tracking model with you without touching your components. The emitters are your code and evolve with your screens; the mapping is the one place tracking logic lives.
+The mapping sees three families of events, `dom`, `network` and `webApi`, and two of them are the capture library's own objects. That is the same input an Autocapture adapter works from, which is what lets Corbado review, test and correct the tracking model with you without touching your components.
 
 ## 3. Add the stub
 
-Inline it as the first script in `<head>`, before any application code. It must not sit behind a feature flag or consent gate: it only records commands in memory. Nothing is sent before your code calls `init` after consent, and `destroy` on revocation tears everything down.
-
-The canonical source is `snippet/observe-stub.js` in [`@corbado/observe`](https://www.npmjs.com/package/@corbado/observe), rendered with `pnpm build:stub`. This is the rendered form for a mapping compiled into your app; with script-tag delivery Corbado issues the same stub with your loader URL rendered in.
+Inline it as the first script in `<head>`, before any application code, never behind a feature flag or consent gate. It only records commands in memory; nothing leaves the page before the mapping runs.
 
 ```html
 <script>
   (function (document, window) {
     var loaderUrl = "";
-    var commands = ["init", "setExperiments", "setUser", "push", "destroy"];
+    var commands = ["init", "setConsent", "setUser", "setExperiments", "setTags", "push", "destroy"];
     var stub, script, i;
     if (!window.CorbadoObserve) {
       stub = { q: [] };
@@ -69,31 +68,18 @@ The canonical source is `snippet/observe-stub.js` in [`@corbado/observe`](https:
 </script>
 ```
 
-<Note>
-  Whether recording into memory before consent is acceptable is your own legal assessment. If it is not, insert the stub after consent and accept that journeys before that point are not recorded. See [storage and consent](/corbado-observe/overview/constraints#7-storage-and-consent).
-</Note>
+The empty loader URL is the compiled-in case. With script-tag delivery Corbado issues the same stub with your loader URL rendered in.
 
-## 4. Push events and commands
+## 4. Tag your screens and emit
 
-Five commands. Four mirror the tracker lifecycle, and `push` carries your app's events:
+Every control that offers a decision option gets `data-observe-decision-option` with the Observe option string. The primary input gets `data-observe-input`. A screen offer is then a visibility scan, not a list you maintain in code:
 
-| Command | Call when |
-| --- | --- |
-| `init({ projectId, apiBaseUrl })` | Consent is granted and the project is known. The mapping creates the tracker here |
-| `setExperiments(map)` | Your A/B assignments resolve or change |
-| `setUser({ userId, identifier })` | Identity becomes known, before the final request settles |
-| `push(event)` | The fact happens |
-| `destroy()` | Consent is revoked |
-
-Five event kinds cover an authentication journey. Names are yours; the mapping translates them.
-
-| Event | Push when | Carries |
-| --- | --- | --- |
-| `screen` | A screen is presented to the user, synchronously on render, before any request the screen auto-starts | Screen name, the controls it offers in stable order, the render timestamp, the primary input element, on entry screens the touchpoint |
-| `choice` | A control is used | Screen name and control name |
-| `request` | From your API client: `started` when an auth call is sent, `finished` or `failed` when it settles | Request name, correlation id, projected result facts, error code and message |
-| `validation` | Your own validation pass rejects a field | Screen, field, reason code |
-| `ceremony` | Only if your code owns the `navigator.credentials` call and can attach the options and credential objects. Otherwise omit it: the mapping observes ceremonies itself | Kind, phase, mediation, options, credential |
+```html
+<button data-observe-decision-option="password-login-known-identifier">Log in</button>
+<button data-observe-decision-option="passkey-login-known-identifier">Use a passkey</button>
+<a data-observe-decision-option="recovery">Forgot password?</a>
+<input type="password" data-observe-input />
+```
 
 ```typescript
 const observe = (event: Record<string, unknown>) => {
@@ -104,52 +90,90 @@ const observe = (event: Record<string, unknown>) => {
   }
 };
 
-// consent granted, project known
-window.CorbadoObserve?.init({ projectId: "<ProjectID>", apiBaseUrl: "<APIBaseURL>" });
+// on render, from one place per screen, after the render settled
+emitScreen("password", rootElement);            // reads the visible tagged controls and input
+// in the handler, before the request the choice starts
+emitOutcome("password", "recovery");
+// from your own validation pass, one event per pass
+emitClientErrors("password", [{ field: "password", code: "valueMissing", message: "Enter your password" }]);
+```
 
-// the identifier screen renders; the email field is its primary input
-observe({ event: "screen", name: "identifier", options: ["email", "google", "signup-link"], timestamp: Date.now(), input: emailInput, touchpoint: "account" });
+Four rules keep the offers right:
 
-// the user clicks "Create account"
-observe({ event: "choice", screen: "identifier", option: "signup-link" });
+- **Emit per presentation, from one place per screen.** In a single-page app that is the screen component's mount, deferred by one microtask; in a multi-page app it is page load. Not on framework re-renders.
+- **Re-emit with the same timestamp** when a control appears later, such as a passkey button behind a capability check. The mapping discards an unchanged set and replaces the open decision in place when the set changed. Rather emit too much than too little.
+- **Emit after the previous screen's requests settled and before the new screen starts anything**, a ceremony or a request. Screens drive the mapping's state machine.
+- **Resolve outcomes explicitly in the handler**, for method choices and navigation alike, before the request they start.
 
-// your API client sends and settles the identifier lookup
-observe({ event: "request", name: "checkIdentifier", id, phase: "started", timestamp: Date.now() });
-observe({ event: "request", name: "checkIdentifier", id, phase: "finished", timestamp: Date.now(), result: { known: true } });
+Method option strings are fixed by Observe, for example `password-login-known-identifier` or `passkey-login-known-identifier`. Navigation options are names you choose, such as `back` or `recovery`. The [decisions reference](/corbado-observe/tracking/decisions) lists the strings each method resolves.
 
-// identity is known once the session exists
+## 5. Capture network and WebAuthn in your page
+
+Requests and ceremonies are the majority of an integration's signals and the source of its error detail. They are captured, not emitted. Wire the capture library once, in the first module your bundle evaluates, so it runs before your first authentication request:
+
+```typescript
+import { captureNetwork, captureWebAuthn } from "@corbado/autocapture";
+
+captureNetwork({
+  match: (url) => url.origin === location.origin && url.pathname.startsWith("/api/auth/"),
+  bodyCapture: { request: projectAuthRequest, response: projectAuthResponse },
+  onRequest: (request) => observe({ type: "network", kind: "request", timestamp: request.startedAt, ...request }),
+  onExchange: (exchange) => observe({ type: "network", kind: "exchange", timestamp: Date.now(), ...exchange }),
+});
+captureWebAuthn({
+  onEvent: (event) => observe({ type: "webApi", api: "webauthn", timestamp: Date.now(), ...event }),
+});
+```
+
+The projectors are your privacy boundary: without one, no body is read, and a projector returns only the fields the mapping needs, such as a status, a step name or an error code. Identifiers, passwords, one-time codes and raw bodies never enter the queue. WebAuthn payloads are sanitized by the capture library.
+
+<Note>
+  If your organization does not allow patching `fetch`, your API client can push `network` events itself, with the same shape. You then decide what the mapping gets to see, and only that reaches the error analytics. Do not run both.
+</Note>
+
+## 6. Lifecycle commands
+
+| Command | Call when |
+| --- | --- |
+| `init({ projectId, apiBaseUrl, applicationId })` | At page start, before consent is known. Observe runs; consent decides what is transmitted |
+| `setConsent(granted)` | Consent is known or changes. Identity is transmitted only while consent is granted |
+| `setUser({ userId, identifier })` | Identity becomes known, before the final request settles |
+| `setExperiments(map)` | Your A/B assignments resolve or change |
+| `setTags(map)` | A tag becomes known after `init`; the latest value per key rides on the next flow event |
+| `destroy()` | The surface is torn down for good |
+
+```typescript
+window.CorbadoObserve?.init({ projectId: "<ProjectID>", apiBaseUrl: "<APIBaseURL>", applicationId: "web" });
+window.CorbadoObserve?.setConsent(consentGranted);
+// later, once the session exists
 window.CorbadoObserve?.setUser({ userId: hashedUserId });
 ```
 
-Three rules keep the events useful:
+Whether recording into the in-page queue before consent is acceptable is your own legal assessment. The queue holds no identity until consent, and your projectors keep identifiers out of network events. See [storage and consent](/corbado-observe/overview/constraints#7-storage-and-consent).
 
-- **One push per fact, at the moment it happens.** No batching, no state in the emitters. A screen is pushed per presentation, not per framework re-render.
-- **Facts, never bodies.** A request's `result` names what the mapping needs, such as `{ known: true }` or `{ loggedIn: true }`. Request and response bodies, identifiers, passwords, one-time codes and credential JSON never enter the layer.
-- **Emit requests from your API client.** Most apps issue every auth call from one module. Emitting there, once, is more reliable than patching `fetch`, and a request that fired before the mapping loaded is still in the queue.
+The full contract, the emission rules and the mapping's tables are in the [Corbado Observe skill](https://docs.corbado.com/skill.md).
 
-The full contract, the emission rules and the app-side ordering guarantees are in the [Corbado Observe skill](https://docs.corbado.com/skill.md).
+## 7. The mapping
 
-## 5. The mapping
+The mapping is a self-contained module with a fixed layout: a contract file shared with your emitters, a taxonomy file holding the tables that translate your screen names and endpoints into Observe's flows, decisions and steps, a coordinator that derives flow starts, finishes and skips from those tables, and one state class per screen. It imports only its contract and `@corbado/observe`, never your app and never a browser API. Corbado provides a sample skeleton for your stack, and the agent skill writes it against your journeys.
 
-The mapping is a self-contained module with a fixed layout: a contract file shared with your emitters, a taxonomy file holding the three tables that translate your names into Observe's, a coordinator that derives flow starts, finishes and skips from those tables, one state class per screen, and the fallback wiring. It imports only its contract, `@corbado/observe` and `@corbado/autocapture`, never your app. Corbado provides a sample skeleton for your stack, and the agent skill writes it against your journeys.
+The maintenance split follows from that layout. The markup, the emitters and the capture wiring are your code and evolve with your screens. The mapping is the one place tracking logic lives, and it can be maintained by you or together with Corbado. If you want Corbado to own the whole thing, including reconciling the tracking after your releases, without any code changes on your side, that is [Autocapture](/corbado-observe/get-started/autocapture).
 
-The maintenance split follows from that layout. The emitters are your code and evolve with your screens and requests. The mapping is the one place tracking logic lives, and it can be maintained by you or together with Corbado. If you want Corbado to own the whole thing, including reconciling the tracking after your releases, without any code changes on your side, that is [Autocapture](/corbado-observe/get-started/autocapture).
-
-Delivery is a separate choice, made before go-live, and it does not change your emitters:
+Delivery is a separate choice, made before go-live, and it does not change your app code:
 
 | Delivery | How | Tracking corrections need |
 | --- | --- | --- |
 | **Corbado script tag** *(recommended)* | The stub is issued with your loader URL. The loader inserts an immutable, versioned mapping bundle from Corbado's CDN. Rolling back re-points the loader | Nothing on your side. A correction is live on the next page load |
 | **Self-hosted** | The mapping is your own npm package or a module in your repository, bundled and released with your app, or the same bundle on your own CDN behind your own loader | A dependency bump or an app release, or re-pointing your loader |
 
-**Start locally, switch later.** A new integration starts compiled in, because no Corbado-hosted bundle exists for your app yet, and the switch never touches your emitters:
+**Start locally, switch later.** A new integration starts compiled in, because no Corbado-hosted bundle exists for your app yet, and the switch never touches your markup, emitters or capture wiring:
 
 <Steps>
   <Step title="Compiled in">
-    Install `@corbado/observe` and `@corbado/autocapture`, inline the stub above, import the mapping module first thing in your app entry, and call `CorbadoObserve.init()` after consent.
+    Install `@corbado/observe` and `@corbado/autocapture`, inline the stub above, import the capture wiring and the mapping module first thing in your app entry, and call `CorbadoObserve.init()` right after.
   </Step>
   <Step title="Script tag">
-    The same mapping module is built as a self-contained bundle and hosted behind a loader. Remove the import and the two dependencies, and use the stub Corbado issues with your loader URL. Everything else stays as it is.
+    The same mapping module is built as a self-contained bundle and hosted behind a loader. Remove the import and the `@corbado/observe` dependency, and use the stub Corbado issues with your loader URL. Everything else stays as it is.
   </Step>
 </Steps>
 
@@ -157,23 +181,23 @@ Delivery is a separate choice, made before go-live, and it does not change your 
   Script-tag delivery is set up together with Corbado: we host the bundle, verify a new version by injecting it into your live page in a test browser and replaying recorded journeys, and only then point the loader at it. [Talk to us](mailto:support@corbado.com) when you approach go-live.
 </Note>
 
-## 6. Verify
+## 8. Verify
 
-Because the mapping's input is the stub's queue, a plain array, tracking logic is testable by replay. Dump `window.CorbadoObserve.q` for a journey once, store it with the Observe events it must produce, and run it against every mapping change. The skill describes the fixture format.
+Because the mapping's input is the stub's queue, a plain array that now carries screens, outcomes, exchanges and ceremonies alike, tracking logic is testable by replay. Dump `window.CorbadoObserve.q` for a journey once, store it with the Observe events it must produce, and run it against every mapping change. The skill describes the fixture format.
 
-Then walk the real app with `debug: true` and confirm the emitted series with the [Corbado Observe Debugger](/corbado-observe/tools/devtools-extension). See [Verify your integration](/corbado-observe/get-started/verify).
+Then walk the real app with `debug: true`, confirm the emitted series with the [Corbado Observe Debugger](/corbado-observe/tools/devtools-extension), and close the loop against the backend: with the [Observe CLI](/corbado-observe/tools/cli) through `events-feed`, `classify` and `classification-errors`, or in the console under **Observe → Debugging → Integration** with the **Process** button. See [Verify your integration](/corbado-observe/get-started/verify).
 
-## 7. Next steps
+## 9. Next steps
 
 <CardGroup cols={2}>
   <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
     Let the skill implement the data layer and the mapping.
   </Card>
   <Card title="Model your journeys" icon="sitemap" href="/corbado-observe/tracking/modeling">
-    The three tables the mapping is built from.
+    The tables the mapping is built from.
   </Card>
-  <Card title="Tracking reference" icon="diagram-project" href="/corbado-observe/tracking/overview">
-    Flows, decisions, subflows, users and tags.
+  <Card title="Observe CLI" icon="terminal" href="/corbado-observe/tools/cli">
+    Pair your project and verify classification from the terminal.
   </Card>
   <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
     Confirm events arrive before you ship.

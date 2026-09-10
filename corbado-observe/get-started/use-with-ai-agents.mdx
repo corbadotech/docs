@@ -44,6 +44,9 @@ The skill guides the agent through a safe, telemetry-only integration:
   <Step title="Decides the shape">
     Defaults to the [Observe data layer](/corbado-observe/get-started/data-layer) with one central mapping. It falls back to custom events only when you ask for precision tracking or when the app has no structurally sound central place, and it asks you first when in doubt, stating the trade-off.
   </Step>
+  <Step title="Sets up the project">
+    Walks you through installing the [Observe CLI](/corbado-observe/tools/cli) and pairing a project, creating one in the console if you have none, and takes the `Project ID` and `API Base URL` from there. Without the CLI it points you to the console pages instead.
+  </Step>
   <Step title="Discovers the auth surface">
     Finds your login, sign-up, recovery and enrollment entry points and the methods each offers.
   </Step>
@@ -51,10 +54,10 @@ The skill guides the agent through a safe, telemetry-only integration:
     Defines flow boundaries, assigns every screen to a decision and maps each method to a subflow, following the [modeling method](/corbado-observe/tracking/modeling). Where your app and the taxonomy do not match, it documents the lossy mapping instead of contorting the code.
   </Step>
   <Step title="Instruments">
-    Adds the shim and thin emitters to your app, in your own vocabulary, and writes the mapping module that holds every Observe name, flow boundary and subflow step. The mapping imports nothing from your app, so it can later ship as your package or from Corbado's CDN.
+    Adds the stub, tags your controls and inputs, adds the screen, outcome and validation emitters and the network and WebAuthn capture wiring, and writes the mapping module that holds every Observe name, flow boundary and subflow step. The mapping imports nothing from your app, so it can later ship as your package or from Corbado's CDN.
   </Step>
   <Step title="Validates">
-    Records the data layer for representative journeys as replay fixtures against the mapping, then asks you to walk the journeys with debug mode on and reads the console output against the rules. See [Verify your integration](/corbado-observe/get-started/verify).
+    Records the data layer for representative journeys as replay fixtures against the mapping, asks you to walk the journeys with debug mode on, and closes the loop against the backend with the CLI or the console's integration debugging page. See [Verify your integration](/corbado-observe/get-started/verify).
   </Step>
 </Steps>
 

@@ -8,9 +8,9 @@ There are three ways to get authentication data into **Corbado Observe**. They a
 
 | | **Autocapture** | **Data layer + mapping** | **Custom events** |
 | --- | --- | --- | --- |
-| Signals | Browser surfaces: network, WebAuthn, DOM | A few semantic events your app pushes, plus fallbacks | Tracker calls in your own code |
+| Signals | Browser surfaces: network, WebAuthn, DOM | Screen offers, outcomes and validation results your app pushes, plus network and WebAuthn captured in your page | Tracker calls in your own code |
 | Mapping | Built and maintained by Corbado, reconciled after your releases | One central module, Corbado-shaped | Spread across your components |
-| App changes | None, ever | A three-line shim plus thin emitters | Tracker calls at every semantic point |
+| App changes | None, ever | A stub, one data attribute per control, thin emitters and capture wiring | Tracker calls at every semantic point |
 | Delivery | Corbado script tag (recommended) or self-hosted | Corbado script tag (recommended) or self-hosted | Bundled with your app |
 | Recommended for | Web, fully managed, no source changes | Web, when you integrate from source | Native apps, and explicit precision requirements |
 
@@ -48,7 +48,7 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
   **Recommended when you integrate from source.** The same central mapping as Autocapture, fed by a few events your code pushes.
 </Info>
 
-Your frontend pushes a handful of semantic events into the **Observe data layer**, an in-page buffer with the mechanics of an analytics data layer: a screen was presented with these options, a control was used, an auth request started or settled, validation rejected a field, identity became known. One central module, the **mapping**, takes over that buffer and turns the events into Observe flows, decisions and subflows. It attaches Autocapture's observers as fallbacks for what your code cannot emit, above all WebAuthn ceremonies run by a third-party library that exposes no hooks.
+Your screens carry one data attribute per control, and your code pushes a few events into the **Observe data layer**, an in-page queue with the mechanics of an analytics data layer: a screen was presented with these options, an option was chosen, validation rejected a field. Network calls and WebAuthn ceremonies are captured automatically in your page by the same library Autocapture uses and pushed into the same queue. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows.
 
 Your app keeps the shim and the emitters, in its own vocabulary; they are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. That is what makes it replaceable: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
 
