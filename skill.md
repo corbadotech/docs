@@ -8,65 +8,65 @@ description: Integrate Corbado Observe into a frontend application to measure
 
 # Corbado Observe integration
 
-Corbado Observe is fire-and-forget telemetry for authentication journeys. The
-application's auth journeys are mapped onto Observe's taxonomy — flows, decisions,
-subflows — and a backend classifier turns the event stream into funnels and analytics.
+Corbado Observe is telemetry for authentication journeys. It never sits in the login path.
+The application's journeys are mapped onto Observe's taxonomy of flows, decisions and
+subflows, and a backend classifier turns the event stream into funnels and analytics.
 
 Every Observe integration has the same two halves, whatever its shape:
 
-- **Signal sources** — what the browser and the app reveal: screens and the controls on
-  them, network exchanges, WebAuthn ceremonies, validation results.
-- **One mapping** — the single place that turns those signals into Observe taxonomy calls
+- **Signal sources**: what the browser and the app reveal, that is screens and the controls
+  on them, network exchanges, WebAuthn ceremonies and validation results.
+- **One mapping**: the single place that turns those signals into Observe taxonomy calls
   through `@corbado/observe`.
 
-The shapes differ only in where the signals come from and who owns the mapping:
+The shapes differ in where the signals come from and who owns the mapping:
 
-| Shape                                   | Signals                                                                                                                                                       | Mapping                                                        | App changes                                                |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
-| Autocapture                             | Browser surfaces only, read by Corbado's bundle via `@corbado/autocapture` (network, WebAuthn, DOM, existing low events)                                        | Built and maintained by Corbado, reconciled after app releases | none — implemented and maintained by Corbado               |
-| **Data layer + mapping** (default here) | The app pushes screen offers, outcomes and validation results; `@corbado/autocapture` in the app's own page pushes network and WebAuthn signals into the same layer | One central module, Corbado-shaped, swappable                  | a stub, tagged controls, thin emitters, capture wiring     |
-| Custom events (precision)               | Tracker calls written into the app's own code at the semantic points                                                                                          | Spread across the app's components                             | tracker calls at every semantic point                      |
+| Shape                                   | Signals                                                                                                                                                       | Mapping                                                                                              | App changes                                                |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Autocapture                             | Browser surfaces only, read by Corbado's bundle via `@corbado/autocapture` (network, WebAuthn, DOM, existing low events)                                        | Built and maintained by Corbado, adjusted after app releases                                         | None. Corbado implements and maintains it                  |
+| **Data layer + mapping** (default here) | The app pushes screen offers, outcomes and validation results. `@corbado/autocapture` in the app's own page pushes network and WebAuthn signals into the same layer | One central module in the structure Corbado uses for its own adapters. It can be replaced without touching the app | A stub, tagged controls, thin emitters and capture wiring   |
+| Custom events (precision)               | Tracker calls written into the app's own code at the semantic points                                                                                          | Spread across the app's components                                                                   | Tracker calls at every semantic point                      |
 
-Delivery — self-hosted package or Corbado script tag (recommended) — is a separate
-dimension that applies to Autocapture and the data layer alike (section 6).
+Delivery, either a self-hosted package or a Corbado script tag (recommended), is a separate
+dimension. It applies to Autocapture and to the data layer alike (section 6).
 
 **Scope: this skill is for customers integrating from their own source. It implements the
 data layer + mapping shape by default and uses custom events only under the conditions in
 section 1.** Autocapture is implemented and maintained by Corbado and is not built with
 this skill. All three shapes write into the same project, session and data model.
-`@corbado/autocapture` is the capture library; `@corbado/observe` is the tracker SDK.
+`@corbado/autocapture` is the capture library, `@corbado/observe` is the tracker SDK.
 
 ## 1. Decide the integration shape
 
-First rule out Autocapture. A user who wants **no source changes at all** — a fully managed
-solution where Corbado derives everything from what is already there (API calls, WebAuthn,
-fields and low events, existing component events) and reconciles the tracking after larger
-releases — wants Autocapture. Corbado implements and maintains it; it is not built with
-this skill. Stop and point the user to Corbado (support@corbado.com).
+First rule out Autocapture. A user who wants no source changes at all wants Autocapture: a
+fully managed solution where Corbado derives everything from what is already there (API
+calls, WebAuthn, fields and low events, existing component events) and adjusts the tracking
+after larger releases. Corbado implements and maintains it. It is not built with this skill,
+so stop and point the user to Corbado (support@corbado.com).
 
-Otherwise default to the data layer + mapping. Use the precision path (section 9) only when
-one of these holds:
+Otherwise default to the data layer + mapping. Use the precision path (section 9) only in
+one of these cases:
 
 - The user explicitly asks for precision tracking, custom events or single events.
 - There is no structurally sound central place: the auth journey is spread over
-  independently deployed surfaces with no shared script scope, or the app is so complex
-  that funnelling its signals through one layer would be a larger change than
-  instrumenting it directly.
+  independently deployed surfaces without a shared script scope, or the app is so complex
+  that routing its signals through one layer would be a larger change than instrumenting
+  it directly.
 
 When in doubt, ask before writing code. State the trade-off like this:
 
 > Observe can be integrated three ways. **Data layer + mapping:** your screens get a data
 > attribute per control, your code pushes a few events (screen shown, option chosen,
 > validation failed) into a small in-page queue, network and WebAuthn are captured
-> automatically, and one central module maps everything onto Observe. Benefits: no
+> automatically, and one central module maps everything onto Observe. The benefits: no
 > tracking calls scattered through components, the whole tracking model is readable in one
-> place, Corbado can review and optimize that module together with you, and new tracking
-> logic is testable by replaying recorded journeys. Before go-live the module can ship as
-> your own package or from Corbado's CDN, so tracking corrections need no app release.
+> place, Corbado can review and improve that module together with you, and new tracking
+> logic can be tested by replaying recorded journeys. Before go-live the module can ship as
+> your own package or from Corbado's CDN, so a tracking correction needs no app release.
 > **Custom events:** tracker calls at every semantic point in your code. Every tracking
-> correction is an app release, and there is no central place Corbado can optimize with
+> correction is an app release, and there is no central place Corbado can improve with
 > you. **Autocapture:** no code changes at all, fully managed by Corbado, set up with
-> Corbado rather than here. Which do you want?
+> Corbado directly. Which do you want?
 
 What each side owns in the default shape:
 
@@ -74,15 +74,16 @@ What each side owns in the default shape:
 | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | The `CorbadoObserve` stub, inserted first in `<head>`                                                                      | Taking over the stub and replaying its queue                                                            |
 | Tagged controls and inputs, and emitters for screen offers, outcomes and client errors, keyed by the app's own screen names | Translation of screen names into decision names, the flow tables, subflow helpers and spec types        |
-| Capture wiring: `captureNetwork` with the app's endpoint match and allowlist projectors, `captureWebAuthn`                 | The step mapping of every network exchange and ceremony; every `@corbado/observe` call                  |
-| Lifecycle commands: `init` at document start, `setConsent`, `setUser`, `setExperiments`, `setTags`                          | Holding identity until consent, stamping tags and consent                                              |
+| Capture wiring: `captureNetwork` with the app's endpoint match and allowlist projectors, and `captureWebAuthn`             | The step mapping of every network exchange and ceremony, and every `@corbado/observe` call              |
+| Lifecycle commands: `init` at document start, `setConsent`, `setUser`, `setExperiments` and `setTags`                       | Holding identity until consent, stamping tags and the consent state                                     |
 
 **Hard rule:** the mapping module imports only its own contract types and `@corbado/observe`.
-Never app internals, never browser APIs. That is what makes it replaceable by an npm package,
-a CDN script or an injected build without touching the app, and testable by replay. Screen
-names are the app's own; option strings and everything downstream are Observe's.
+It never imports app internals and never touches browser APIs. This is what makes it
+replaceable by an npm package, a CDN script or an injected build without touching the app,
+and testable by replay. Screen names belong to the app. Option strings and everything
+downstream belong to Observe.
 
-## 2. System context: model for the classifier, not the event log
+## 2. System context: model for the classifier
 
 Raw events are only the transport. The classifier consumes each session's event stream and
 produces the flows, decisions and subflow attempts that every aggregating dashboard is
@@ -102,9 +103,9 @@ not. Know which is which before emitting:
   told apart from an accidental re-announce.
 - Consecutive `subflow_started` of the same subflow type fold into one attempt (a
   different, known spec type starts a new attempt).
-- Decisions: every presented decision surfaces as its own occurrence. A later re-emission —
-  same or changed options — closes the open occurrence as incomplete and starts a new one;
-  a revisited checkpoint is signal, not noise.
+- Decisions: every presented decision surfaces as its own occurrence. A later re-emission,
+  with the same or with changed options, closes the open occurrence as incomplete and starts
+  a new one. A revisited checkpoint is real information about the journey.
 
 So flow-level events are emitted from one declared place per flow and never repeated
 casually: the opener fires at the flow's own entry screens only, never from a nested
@@ -112,7 +113,7 @@ page "to make sure the parent is open". Subflow starts may repeat.
 Decisions are emitted per _presentation_ (see Decisions). Prefer correctness by invariant
 (proven execution order, one declared entry point per flow) over correctness by state.
 In the default shape all tracking state lives in the mapping, in one owned place; the
-app's emitters hold none — they report facts at the moment they happen.
+app's emitters hold none. They report facts at the moment they happen.
 
 ## 3. Modeling method
 
@@ -121,10 +122,10 @@ the most; later passes are local problems with small blast radius that may be so
 pragmatically. Each pass produces one table of the mapping's `taxonomy.ts` (section 5).
 
 **1. Flow boundaries.** For every flow, find the single best signal for when it starts,
-when it finishes successfully, and — where the app has one — when it is skipped. Do this
+when it finishes successfully and, where the app has one, when it is skipped. Do this
 for all flows (top-level and nested) before anything else. The verifiable result of this
 pass: the boundaries of what is tracked are exactly defined. This is where precision
-matters most — a `flow_finished` without a matching open flow invalidates the whole
+matters most: a `flow_finished` without a matching open flow invalidates the whole
 session's classification. Give each flow one declared opener; every other handler drops
 its signals when no flow is open. In the default shape the opener is a screen: the flow
 table names the entry screens of every flow, the request whose success finishes it, and
@@ -132,7 +133,7 @@ the screen transitions that mean a nested flow was skipped. Nothing about flows 
 by the app.
 
 **2. Decision structure.** Assign every screen of the journey to a decision name (see
-Decisions — usually fewer names than screens), then find the simplest way to determine the
+Decisions, usually fewer names than screens), then find the simplest way to determine the
 selectable option set per screen. Option sets are a local problem, but look for one
 mechanism that yields options globally if the app offers it (e.g. a server response that
 already lists the rendered choices, or determining actual visibility via tagged elements
@@ -152,7 +153,7 @@ endpoint (method and path) to a subflow step and names the projected body fields
 reads to settle it.
 
 Not every taxonomy detail needs instrumentation. Complexity trade-offs and mismatches
-between the app and the taxonomy are legitimate — prefer a clean
+between the app and the taxonomy are legitimate. Prefer a clean
 lossy mapping (documented) over a contorted complete one. Use subagents to verify the
 integration against real journeys.
 
@@ -160,9 +161,10 @@ integration against real journeys.
 
 ### 4.1 The `CorbadoObserve` stub
 
-The data layer is `window.CorbadoObserve`: a command stub with the mechanics of an analytics
-data layer and of Corbado's own loader snippets. Insert it verbatim, inline, as the first
-script in `<head>`, before any app code and never behind a feature flag or consent gate:
+The data layer is `window.CorbadoObserve`, a command stub that works like an analytics data
+layer and like Corbado's own loader snippets. Insert it verbatim, inline, as the first
+script in `<head>`. It must come before any app code and must not sit behind a feature flag
+or a consent gate:
 
 ```html
 <script>
@@ -190,20 +192,20 @@ script in `<head>`, before any app code and never behind a feature flag or conse
 ```
 
 Every command is recorded as `[name, args]` on `q` until the mapping loads, takes the stub
-over and replays the queue in arrival order. That buffer is what makes a late-loading
-mapping lossless. The stub only records; nothing leaves the page before the mapping runs.
+over and replays the queue in arrival order. This buffer is why a mapping that loads late
+loses nothing. The stub only records. Nothing leaves the page before the mapping runs.
 
 | Command          | Arguments                                                          | Call when                                                                                   |
 | ---------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `init`           | `{ projectId, apiBaseUrl, applicationId?, defaultTags?, debug? }`  | at document start, unconditionally — before consent is known (4.5)                          |
+| `init`           | `{ projectId, apiBaseUrl, applicationId?, defaultTags?, debug? }`  | at document start, unconditionally, before consent is known (4.5)                           |
 | `setConsent`     | `boolean`                                                          | consent is known or changes                                                                 |
-| `setUser`        | `{ userId?, identifier?, crossEnvironmentTransactionID? }`         | identity becomes known — before the terminal request settles                                |
+| `setUser`        | `{ userId?, identifier?, crossEnvironmentTransactionID? }`         | identity becomes known, before the terminal request settles                                 |
 | `setExperiments` | `Record<string, string>`                                           | A/B assignments resolve or change                                                           |
 | `setTags`        | `Record<string, string>`                                           | a tag becomes known after `init`; last value per key wins, stamped on the next flow event   |
 | `push`           | one data layer event (4.2)                                         | the signal happens                                                                          |
-| `destroy`        | —                                                                  | the surface is torn down for good; never for consent                                        |
+| `destroy`        | none                                                               | the surface is torn down for good. Consent changes do not call it                           |
 
-Wrap `push` in a tiny helper so emitters cannot throw (`contract.ts` declares the
+Wrap `push` in a small helper so that emitters cannot throw (`contract.ts` declares the
 `Window.CorbadoObserve` type):
 
 ```typescript
@@ -218,10 +220,10 @@ export const observe = (event: DataLayerEvent): void => {
 };
 ```
 
-### 4.2 Event contract — three families
+### 4.2 Event contract: three families
 
 Events are typed by their source. Two of the three families are the capture library's own
-objects, so the mapping sees exactly what an autocapture-only adapter sees.
+objects, so the mapping sees exactly what an Autocapture adapter sees.
 
 | Family    | Kinds                               | Produced by                                                                     |
 | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
@@ -233,16 +235,16 @@ objects, so the mapping sees exactly what an autocapture-only adapter sees.
 import type { HttpExchange, HttpRequestStarted, WebAuthnCeremonyEvent } from "@corbado/autocapture";
 
 export type DataLayerEvent =
-    // dom — what the app rendered and what the user did on it
+    // dom: what the app rendered and what the user did on it
     | { type: "dom"; kind: "screen"; screen: string; options: string[]; timestamp: number;
         input?: HTMLInputElement; decision?: string; touchpoint?: string; tags?: Record<string, string> }
     | { type: "dom"; kind: "outcome"; screen: string; option: string; timestamp: number }
     | { type: "dom"; kind: "client-error"; screen: string; timestamp: number;
         errors: Array<{ field: string; code?: string; message?: string }> }
-    // network — captureNetwork's objects, one event per phase
+    // network: captureNetwork's objects, one event per phase
     | ({ type: "network"; kind: "request"; timestamp: number } & HttpRequestStarted)
     | ({ type: "network"; kind: "exchange"; timestamp: number } & HttpExchange)
-    // webApi — captureWebAuthn's object; other web APIs may join this family later
+    // webApi: captureWebAuthn's object; other web APIs may join this family later
     | ({ type: "webApi"; api: "webauthn"; timestamp: number } & WebAuthnCeremonyEvent);
 
 declare global {
@@ -261,13 +263,14 @@ declare global {
 }
 ```
 
-`timestamp` is epoch milliseconds at the semantic moment: the render for a screen, the
-click for an outcome, `startedAt` for a request, settlement for an exchange. The mapping
-passes it on as `explicitTimestamp`, so the mapping may run later without skewing anything.
+`timestamp` is the epoch millisecond of the semantic moment: the render for a screen, the
+click for an outcome, `startedAt` for a request, the settlement for an exchange. The mapping
+passes it on as `explicitTimestamp`, so the mapping may run later without shifting anything.
 
-### 4.3 DOM emitters: tagged controls, one emit site per screen
+### 4.3 DOM emitters: tagged controls and one emit site per screen
 
-A screen offer is built from the markup, not enumerated in code. Two attributes:
+A screen offer is built from the markup. The app does not maintain a list of options in
+code. Two attributes do the work:
 
 ```html
 <button data-observe-decision-option="password-login-known-identifier">Log in</button>
@@ -277,15 +280,17 @@ A screen offer is built from the markup, not enumerated in code. Two attributes:
 <input type="password" data-observe-input />
 ```
 
-- `data-observe-decision-option="<option>"` on every control whose visibility means the
-  option is offered. The value is the Observe option string: method options are the exact
-  strings from the table in section 8 (the classifier resolves nothing else); navigational
-  options are free-form names chosen by the naming rules in section 8 and reused across
-  screens. Tag the element that proves visibility; the click target can differ.
-- `data-observe-input` on the screen's primary input. The first visible one becomes the
-  helper's input for interaction capture.
+- `data-observe-decision-option="<option>"` goes on every control whose visibility means
+  that the option is offered. The value is the Observe option string. Method options use
+  the exact strings from the table in section 8, because the classifier resolves nothing
+  else. Navigational options are free-form names chosen by the naming rules in section 8
+  and reused across screens. Tag the element that proves visibility; the click target can
+  be a different element.
+- `data-observe-input` goes on the screen's primary input. The first visible one becomes
+  the helper's input for interaction capture.
 
-One helper reads both and emits the offer; nothing to decide means no offer:
+One helper reads both and emits the offer. When there is nothing to decide, it emits
+nothing:
 
 ```typescript
 const isVisible = (el: Element) => {
@@ -314,23 +319,23 @@ export const emitClientErrors = (screen: string, errors: Array<{ field: string; 
 };
 ```
 
-**When to emit the screen.** The screen drives the state machine, so its timing is what
-keeps the mapping simple:
+**When to emit the screen.** The screen drives the state machine, so its timing keeps the
+mapping simple:
 
-- Emit from one place per screen, after the render is complete. In a SPA that is the
-  screen component's mount effect, deferred by one microtask so the finished screen is
-  visible; in a MPA it is page load plus one emit per script-driven re-render.
+- Emit from one place per screen, after the render is complete. In a SPA this is the
+  screen component's mount effect, delayed by one microtask so that the finished screen is
+  visible. In a MPA it is the page load plus one emit per script-driven re-render.
 - Emit after the previous screen's requests have settled and before the new screen starts
-  anything Observe cares about — a ceremony, a request.
-- Emit per presentation, not per framework re-render. When a control appears later
-  (a passkey button behind a capability check), emit again with the **same timestamp**;
-  the mapping discards an unchanged set and replaces the open occurrence in place when
-  the set changed. Rather emit too much than too little: a missed offer costs a decision,
-  a duplicate costs nothing.
-- Name screens so they read well in the mapping's screen table (`identifier`, `password`,
-  `otp`, `signup-form`). A screen reused across stages (one TAN screen for login, 2FA and
-  recovery) passes `decision` explicitly when the app knows the stage.
-- Entry screens carry `touchpoint` and entry tags.
+  anything Observe cares about, such as a ceremony or a request.
+- Emit per presentation. A framework re-render alone is no new presentation. When a
+  control appears later (a passkey button behind a capability check), emit again with the
+  **same timestamp**. The mapping discards an unchanged set and replaces the open
+  occurrence in place when the set changed. If unsure, emit. A missed offer costs a
+  decision, a duplicate costs nothing.
+- Name screens so that they read well in the mapping's screen table (`identifier`,
+  `password`, `otp`, `signup-form`). A screen that is reused across stages (one TAN screen
+  for login, 2FA and recovery) passes `decision` explicitly when the app knows the stage.
+- Entry screens carry `touchpoint` and the entry tags.
 
 ```tsx
 export function PasswordScreen() {
@@ -349,21 +354,20 @@ export function PasswordScreen() {
 
 **Outcomes are resolved explicitly in the handler**, before the request the choice starts,
 and for both kinds of option: a method (`emitOutcome("password", "passkey-login-known-identifier")`)
-and a navigation (`emitOutcome("password", "recovery")`). Resolution is not the same as
-clicking: a multi-step choice resolves when it takes effect, and a guarded handler that
+and a navigation (`emitOutcome("password", "recovery")`). Resolution follows what actually
+happened. A multi-step choice resolves when it takes effect, and a guarded handler that
 refuses resolves nothing.
 
-**Client errors are reported by the validation pass itself**, one event per pass, carrying
-every rejected field with the message the user saw and, where the browser produced one,
-the native `ValidityState` key as `code` (`valueMissing`, `typeMismatch`). Never a value.
-Server rejections need no event: they arrive on the wire.
+**Client errors are reported by the validation pass itself**, one event per pass. It
+carries every rejected field with the message the user saw and, where the browser produced
+one, the native `ValidityState` key as `code` (`valueMissing`, `typeMismatch`). It never
+carries a value. Server rejections need no event, they arrive on the wire.
 
 ### 4.4 Capture wiring: network and WebAuthn come from the browser
 
-Network exchanges and WebAuthn ceremonies are the majority of an integration's signals and
-the source of its error detail. They are captured, not emitted: `captureNetwork` and
-`captureWebAuthn` run in the app's page, at document start, and push their objects into
-the layer.
+Network exchanges and WebAuthn ceremonies make up the majority of an integration's signals
+and carry its error detail. They are captured. `captureNetwork` and `captureWebAuthn` run
+in the app's page at document start and push their objects into the layer.
 
 ```typescript
 import { captureNetwork, captureWebAuthn } from "@corbado/autocapture";
@@ -384,41 +388,42 @@ captureWebAuthn({
 
 Rules:
 
-- **Projectors are the privacy boundary.** `bodyCapture` never reads a body without one.
-  A projector returns only the fields the mapping's network table names — status codes,
-  outcome flags, error codes, a prompt or step name — and never identifiers, passwords,
-  one-time codes or raw bodies. WebAuthn payloads pass only through the package's
-  sanitizers (`sanitizeAssertionResponse`, `sanitizeCreationResponse`, and the options
-  counterparts) when a request carries them.
+- **The projectors are the privacy boundary.** `bodyCapture` never reads a body without a
+  projector. A projector returns only the fields the mapping's network table names: status
+  codes, outcome flags, error codes, a prompt or step name. It never returns identifiers,
+  passwords, one-time codes or raw bodies. WebAuthn payloads that ride on a request pass
+  only through the package's sanitizers (`sanitizeAssertionResponse`,
+  `sanitizeCreationResponse` and the options counterparts).
 - **One `captureNetwork` per page.** The package refuses to attach twice. Run the wiring in
   the first module the bundle evaluates, before bot managers or other scripts freeze
-  `fetch`; on a MPA inline it right after the stub.
-- **Do not replace the patch with app-emitted requests.** Only when the customer refuses
-  patching may the API client emit `network` events itself, with the same shape and all of
-  `requestId`, `method`, `path`, `startedAt`, `status`, `ok`, `outcome`, `durationMs` plus
-  projected bodies. Say in the mapping notes what was lost: only what the client chose to
-  project reaches the error analytics. Never run both.
+  `fetch`. On a MPA, inline it right after the stub.
+- **Keep the patch as the source of network events.** Only when the customer refuses
+  patching may the API client emit `network` events itself. They keep the same shape and
+  carry all of `requestId`, `method`, `path`, `startedAt`, `status`, `ok`, `outcome` and
+  `durationMs` plus the projected bodies. Write into the mapping notes what was lost: only
+  what the client chose to project reaches the error analytics. Never run both.
 - **WebAuthn has no app-side alternative.** Capture reports `mode: "unavailable"` only when
-  an extension holds `navigator.credentials` in a form it declines to patch; the mapping
-  then uses the fallback carrier rule in section 8. Push the handle's mode once as a
-  `setTags({ webauthnCapture: mode })` so the mapping can read it.
+  an extension holds `navigator.credentials` in a form it declines to patch. The mapping
+  then uses the fallback carrier rule in section 8. Push the handle's mode once as
+  `setTags({ webauthnCapture: mode })` so that the mapping can read it.
 
 ### 4.5 Lifecycle: always on, consent as a signal
 
 `init` runs at document start, unconditionally. Consent does not decide whether Observe
-runs; it decides what is transmitted and how the backend processes the session:
+runs. It decides what is transmitted and how the backend processes the session:
 
-- `setConsent(true)` as soon as consent is known. Until then the mapping transmits no
-  identity: `setUser` is held, and released into the open flow when consent arrives. The
-  mapping stamps the consent state as a tag on every flow start so the backend can treat
-  the session accordingly.
-- `setConsent(false)` on revocation. The mapping stops transmitting identity again.
-- `destroy` is teardown only — a surface removed for good — never a consent reaction.
+- Call `setConsent(true)` as soon as consent is known. Until then the mapping transmits no
+  identity: `setUser` is held and released into the open flow when consent arrives. The
+  mapping stamps the consent state as a tag on every flow start so that the backend can
+  treat the session accordingly.
+- Call `setConsent(false)` on revocation. The mapping stops transmitting identity again.
+- `destroy` is only for teardown, when a surface is removed for good. It is no consent
+  reaction.
 
 Whether recording into the in-page queue before consent is acceptable is the customer's
-privacy call; the queue holds no identity until consent, and the projectors keep
-identifiers out of network events by construction. If even that is not acceptable, insert
-the stub after consent and accept that earlier journeys are not recorded.
+privacy call. The queue holds no identity until consent, and the projectors keep
+identifiers out of network events. If even that is unacceptable, insert the stub after
+consent and accept that earlier journeys are not recorded.
 
 ### 4.6 Bridging to the analytics data layer
 
@@ -426,12 +431,11 @@ The Observe data layer has the same mechanics as an analytics data layer and the
 event shape (one object with a type key and a flat payload), on purpose:
 
 - **Mirror outward.** Where the customer wants auth events in their own analytics, push
-  the same `dom` objects into their data layer as well — from the emitter, never from the
-  mapping.
+  the same `dom` objects into their data layer as well. Do this from the emitter, never
+  from the mapping.
 - **Consume existing events.** Where the app already pushes auth facts into its analytics
-  data layer, an emitter may translate those into `dom` events instead of asking for new
-  ones. Treat them as declared, optional, and never trusted for ordering the app does not
-  guarantee.
+  data layer, an emitter may translate those into `dom` events. Treat them as declared,
+  optional signals whose ordering the app does not guarantee.
 - **Keep `CorbadoObserve` separate from the tag manager's array.** The screen event still
   carries an input element, which tag managers mangle, and tag managers load late and
   behind consent gates. Once low events move into the layer as well, the queue holds no
@@ -444,17 +448,16 @@ event shape (one object with a type key and a flat payload), on purpose:
 ```
 observe-mapping/
   index.ts        installObserveMapping(): take over the stub, create the tracker on init, replay the queue
-  contract.ts     DataLayerEvent, re-exported capture types, the Window.CorbadoObserve declaration — the app's only import
+  contract.ts     DataLayerEvent, re-exported capture types, the Window.CorbadoObserve declaration; the app's only import
   taxonomy.ts     the three tables: flows, screens, network; all Observe vocabulary lives here
   coordinator.ts  flow lifecycle from the flow table; consent, identity and tags; routes events to the active screen state
   states/         one class per app screen: decision, helpers, steps
   steps.ts        settle() for network exchanges, ceremony() for WebAuthn events
 ```
 
-Both of Corbado's production adapters have this shape; it is what keeps a mapping
-readable after a year of changes. Corbado can supply a sample skeleton for the customer's
-stack — ask before inventing one. The contract types live inline here for now; a shared
-package is planned.
+Both of Corbado's production adapters have this shape. It keeps a mapping readable after a
+year of changes. Corbado can supply a sample skeleton for the customer's stack, so ask
+before inventing one. The contract types live inline for now. A shared package is planned.
 
 ### 5.2 Taking over the stub
 
@@ -466,7 +469,7 @@ import { Coordinator } from "./coordinator";
 type Command = (...args: never[]) => unknown;
 type Api = Record<"init" | "setConsent" | "setUser" | "setExperiments" | "setTags" | "push" | "destroy", Command>;
 
-/** Runs when the module is evaluated — on import when compiled in, on load from the loader. */
+/** Runs when the module is evaluated: on import when compiled in, on load from the loader. */
 export function installObserveMapping(): void {
     if (typeof window === "undefined" || window.top !== window.self) return; // frames don't own the journey
     let tracker: CorbadoTracker | undefined;
@@ -511,9 +514,9 @@ export function installObserveMapping(): void {
 installObserveMapping();
 ```
 
-The stub is replaced and every queued command is replayed in arrival order, so emission
-order is preserved whenever the mapping loads. Events pushed before `init` wait in
-`pending`; no tracker exists until then.
+The stub is replaced and every queued command is replayed in arrival order, so the
+emission order is preserved whenever the mapping loads. Events pushed before `init` wait in
+`pending`. No tracker exists until then.
 
 ### 5.3 Coordinator: flow lifecycle from tables
 
@@ -540,24 +543,25 @@ export const FLOWS = {
 
 Rules the coordinator enforces (section 8 has the classifier reasons):
 
-- A `screen` with an entry mapping opens the flow if it is not already open — once, with
+- A `screen` with an entry mapping opens the flow if it is not already open, once, with
   the screen's `touchpoint`, the held tags and the consent tag. A repeated entry screen
-  inside an open flow does not re-open it; an entry screen after the flow finished opens a
+  inside an open flow does not re-open it. An entry screen after the flow finished opens a
   new one.
 - A screen in `skip` closes the listed nested flows with `explicitOutcome: "skipped"`
-  before the screen's own state is entered; an outcome in `skipOutcome` closes its own flow.
+  before the screen's own state is entered. An outcome in `skipOutcome` closes its own flow.
 - A terminal exchange (`ok` and `when` true) releases the held identity with `setUser()`
-  when consent is granted, then `flowFinished()`; a nested flow's terminal also completes
-  its parent with `flowAutoFinished({ flowName: parent, finishedByFlowName: nested })`.
-  Call `tracker.flushKeepalive()` right after a terminal: the app usually navigates away.
+  when consent is granted, then calls `flowFinished()`. A nested flow's terminal also
+  completes its parent with `flowAutoFinished({ flowName: parent, finishedByFlowName: nested })`.
+  Call `tracker.flushKeepalive()` right after a terminal, because the app usually navigates
+  away.
 - An exchange whose projected body resolves an ambiguous entry (`{ known: true }` on a
   combined form) emits `flowDecided()`.
 - Routing: a `screen` exits the current state, looks the screen up in the screen table,
   constructs its state and enters it. `outcome`, `client-error`, `network` and `webApi`
-  events go to the active state; `network` events are additionally checked against the
-  terminal table. A screen with no state maps to an `Unmapped` state that emits nothing and
-  reports the gap through `tracker.telemetry("info", ...)` — an interface the mapping
-  cannot name is a missing mapping, not an expected outcome.
+  events go to the active state, and `network` events are checked against the terminal
+  table as well. A screen without a state maps to an `Unmapped` state that emits nothing
+  and reports the gap through `tracker.telemetry("info", ...)`. An interface the mapping
+  cannot name is a missing mapping and should be visible as one.
 
 ### 5.4 Screen states
 
@@ -637,14 +641,14 @@ export class PasswordScreen {
 
 Write these once in `steps.ts`; every state uses them:
 
-- `settle(step, event, rules)` — a `request` event calls `step.start({}, { explicitTimestamp: startedAt })`.
+- `settle(step, event, rules)`: a `request` event calls `step.start({}, { explicitTimestamp: startedAt })`.
   An `exchange` with `outcome !== "load"` is `step.error({ code: "transport_failed" })`.
   An HTTP failure or a projected rejection is `step.errorTyped({ code })` when `rules.typed`
   maps the server's code to a helper-typed one, else `step.error({ code, message })` with
   the server's raw label. Success (`ok` and `rules.success`, default `ok`) is
   `step.finished(rules.finished?.(exchange) ?? {})`. A response the rules cannot classify
-  leaves the step open and goes to `tracker.telemetry` as a mapping gap — never a guessed code.
-- `ceremony(step, event)` — `started` calls `step.start({ assertionOptions: requestOptionsJson })`
+  leaves the step open and goes to `tracker.telemetry` as a mapping gap. Do not guess a code.
+- `ceremony(step, event)`: `started` calls `step.start({ assertionOptions: requestOptionsJson })`
   (enrollment: `attestationOptions` plus `mediation`), `completed` calls `step.finished`
   with `credentialJson`, `failed` calls `step.error(event.error ?? runtimeError(errorName))`
   unless the ceremony was aborted because the user proceeded another way. One credential is
@@ -657,23 +661,23 @@ Write these once in `steps.ts`; every state uses them:
 
 ### 5.6 Failure containment
 
-The mapping runs inside a page it does not own. Every entry point — the replay, `consume`,
-every state method — is wrapped so a fault is logged and reported through
-`tracker.telemetry` and never thrown into the app. Telemetry failure costs data, never a
-login.
+The mapping runs inside a page it does not own. Every entry point (the replay, `consume`,
+every state method) is wrapped, so a fault is logged and reported through
+`tracker.telemetry` and never thrown into the app. A telemetry failure costs data. It never
+costs a login.
 
 ## 6. Delivery
 
-Delivery is a dimension of its own, independent of the shape: it decides where the mapping
-bundle comes from, and it applies to Autocapture and the data layer alike. The stub, the
-tagged markup, the emitters and the capture wiring stay in the app either way, so
+Delivery is a dimension of its own, independent of the shape. It decides where the mapping
+bundle comes from, and it applies to Autocapture and to the data layer alike. The stub,
+the tagged markup, the emitters and the capture wiring stay in the app in both cases, so
 `@corbado/autocapture` is an app dependency in both modes and `@corbado/observe` only
 when the mapping is compiled in.
 
 | Delivery                             | How                                                                                                                                                         | Who can change the mapping without an app release                                       |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **Corbado script tag** (recommended) | The stub is issued with a loader URL; the loader inserts an immutable, versioned mapping bundle from Corbado's CDN; a rollback re-points the loader          | Corbado, live on the next page load — the customer never redeploys for a tracking change |
-| Self-hosted                          | The mapping is the customer's own npm package or a module in the app's repository, bundled and released with the app — or the same IIFE on the customer's own CDN behind their own loader | The customer, by bumping the dependency and releasing, or by re-pointing their loader   |
+| **Corbado script tag** (recommended) | The stub is issued with a loader URL; the loader inserts an immutable, versioned mapping bundle from Corbado's CDN; a rollback re-points the loader          | Corbado, live on the next page load. The customer does not redeploy for a tracking change |
+| Self-hosted                          | The mapping is the customer's own npm package or a module in the app's repository, bundled and released with the app. Or it is the same IIFE on the customer's own CDN behind their own loader | The customer, by bumping the dependency and releasing, or by re-pointing their loader   |
 
 **Start local, switch later.** A new integration starts compiled in, because no Corbado-hosted
 bundle exists for the app yet, and switches delivery without touching emitters:
@@ -687,14 +691,14 @@ bundle exists for the app yet, and switches delivery without touching emitters:
    dependency, and issue the stub with the loader URL. Markup, emitters, capture wiring
    and every command call stay as they are.
 
-Corbado verifies a new mapping build from the outside before it ships, by injecting it
-into the live page in a test browser and replaying recorded journeys against it. That
-external test is only possible because the mapping imports nothing from the app.
+Corbado verifies a new mapping build from outside before it ships: it injects the build
+into the live page in a test browser and replays recorded journeys against it. This works
+because the mapping imports nothing from the app.
 
 Timing rule for both: the stub and the capture wiring are at document start regardless of
-where the mapping loads, so a late mapping loses nothing — every request and ceremony is
+where the mapping loads, so a late mapping loses nothing. Every request and ceremony is
 already in the queue. Loading the mapping through a tag manager is acceptable where tag
-governance requires it; it is late by construction and that is fine.
+governance requires it. It is late by nature, and that is fine here.
 
 ## 7. Event catalog
 
@@ -704,9 +708,9 @@ governance requires it; it is late by construction and that is fine.
 | `flow_decided`                        | `flowDecided()`                          | an exchange's projected body resolves an ambiguous entry                                     |
 | `flow_finished`                       | `flowFinished()`                         | the terminal exchange succeeds, or a skip transition or skip outcome                         |
 | `flow_auto_finished`                  | `flowAutoFinished()`                     | a nested flow's terminal completes the parent                                                |
-| `flow_reset`                          | `flowReset()`                            | rarely — explicit restart                                                                    |
+| `flow_reset`                          | `flowReset()`                            | rarely, only for an explicit restart                                                         |
 | `auth_method_decision_started`        | `authMethodsDecisionStarted()`           | a `screen` offer (per presentation)                                                          |
-| `auth_method_decision_finished`       | `authMethodsDecisionFinished()`          | a navigational `outcome` (never for method outcomes)                                         |
+| `auth_method_decision_finished`       | `authMethodsDecisionFinished()`          | a navigational `outcome` (method outcomes are resolved by their subflows)                    |
 | `subflow_started`                     | helper construction                      | input-bound: on a `screen` offer with `input`; action-bound: on the method `outcome`         |
 | `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()` | `network` request and exchange phases, `webApi` ceremony phases, `client-error`              |
 | `flow_enriched`                       | `setUser(user)`                          | the `setUser` command, once consent is granted, inside the active flow                       |
@@ -719,7 +723,7 @@ governance requires it; it is late by construction and that is fine.
 Standard flow names: `login`, `signup`, `recovery`, `enrollment`. Custom flows take a
 freeform name (e.g. account renewal, reauthentication, transaction signing).
 
-**Finishing.** A flow is explicitly finished only on success — or when it is explicitly
+**Finishing.** A flow is explicitly finished only on success, or when it is explicitly
 skipped. Do not model non-completion on the client: incompleteness is classified from the
 absence of a `flow_finished`. Skipping is the one exception because it is semantically
 different from abandoning (e.g. "continue as guest", or entering signup abandons an open
@@ -744,13 +748,13 @@ that runs after the session already exists (typically enrollment prompted post-l
 _chained_: a sibling flow started after the login finished, never nested.
 
 Events always attribute to the innermost open flow. So when the user leaves a nested flow
-without finishing it, close it explicitly (`explicitOutcome: "skipped"` is the usual fit —
-e.g. entering signup skips an open recovery): it records the right outcome (skipped, not
-abandoned) and keeps the parent's subsequent events out of the nested flow. This is the
-one place where non-completion needs client help — in the default shape it is the flow
-table's `skip` entries. The reverse also holds: never re-emit
-the _outer_ flow's `flow_started` while a nested flow is open — the classifier reads it as
-a restart and closes the nested flow as incomplete (see System context).
+without finishing it, close it explicitly (`explicitOutcome: "skipped"` is the usual fit,
+e.g. entering signup skips an open recovery): it records the outcome as skipped and keeps
+the parent's subsequent events out of the nested flow. This is the one place where
+non-completion needs client help. In the default shape it is the flow table's `skip`
+entries. The reverse also holds: do not re-emit the _outer_ flow's `flow_started` while a
+nested flow is open. The classifier reads it as a restart and closes the nested flow as
+incomplete (see System context).
 
 **Resets.** `flowReset()` exists but is rarely needed: whether a user restarted is
 inferable later from revisited decisions and subflows. Don't emit it just to be tidy.
@@ -758,7 +762,7 @@ inferable later from revisited decisions and subflows. Don't emit it just to be 
 **Tags.** Flows are the natural carrier. Configuration tags (product, variant, device
 class) ride `flow_started`; values only known on success ride `flow_finished`.
 Tags are `Record<string, string>` passed as the second argument; last value per key wins
-across a flow's events. Never put identity into tags — `userId`/`identifier` belong in
+across a flow's events. Do not put identity into tags. `userId` and `identifier` belong in
 the user reference. Do not re-fire the opener from reactive config (store hydration,
 feature flags) just to refresh its tags; late-known values go on `flow_finished`. In the
 default shape tags arrive through `init` (`defaultTags`), `setTags` and `screen.tags`;
@@ -772,17 +776,17 @@ Both accept method and freeform navigation options. The older `authDecisionStart
 
 **Two kinds of options, one option set.** A screen's option set usually mixes both:
 
-- **Method options** — the user chooses to attempt an auth method: start typing a
+- **Method options.** The user chooses to attempt an auth method: start typing a
   password, click the passkey button. These use the predefined option strings (below) and
   are _never_ finished explicitly: the subflow that follows resolves the decision in
   classification.
-- **Navigational/routing options** — the user wants a different option set: switch
+- **Navigational/routing options.** The user wants a different option set: switch
   verification method, change identifier, back, create account, enter recovery. Freeform
   names; finish explicitly with `explicitDecisionValue` the moment the choice is made,
   typically followed by the next screen's decision `started`.
 
-Realistic logins have many navigational options — they are the adaptive, per-application
-part of the model, not an edge case. Name them for reuse across decisions
+Realistic logins have many navigational options. They are the adaptive, per-application
+part of the model and deserve the same care as the method options. Name them for reuse across decisions
 (`switch-to-signup`, `back`, `recovery`).
 
 ```typescript
@@ -804,7 +808,7 @@ tracker.authMethodsDecisionFinished({
 });
 ```
 
-**Decision names are checkpoints.** A decision name is a semantic unit of the journey —
+**Decision names are checkpoints.** A decision name is a semantic unit of the journey,
 usually a checkpoint that takes a successful auth method to pass and navigation to leave.
 Multiple screens map to one name (progressive disclosure, explanatory screens, switching
 between verification methods = still the same checkpoint). Typical names:
@@ -822,7 +826,7 @@ The chosen value must belong to that offer.
 
 | `options` on `finished` | Meaning                                                                                                                                                                                      |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Omitted or `null`       | Reuse the retained offer when its `decisionName` matches, preserving its options, timing, and occurrence history. Omit the field in TypeScript; the SDK type does not accept literal `null`. |
+| Omitted or `null`       | Reuse the retained offer when its `decisionName` matches, preserving its options, timing and occurrence history. Omit the field in TypeScript; the SDK type does not accept literal `null`. |
 | Non-empty array         | Explicit offered choices. Use the same values and ordering as `started` to complete that occurrence. A different list can produce a separate decision occurrence.                            |
 | `[]`                    | An explicit offer with no choices. It does not inherit options and cannot describe a valid selection.                                                                                        |
 
@@ -838,21 +842,22 @@ both choices in that offer's history. Finishing with the same value already reso
 the method adds no duplicate choice. Continue to let subflows resolve method choices;
 explicit finishes are for navigation.
 
-A decision occurrence is a _presentation to the user_, not a render. Re-send `started`
-whenever the checkpoint is re-presented or its options change — each presentation becomes
+A decision occurrence is a _presentation to the user_. A framework render on its own is
+no presentation. Re-send `started`
+whenever the checkpoint is re-presented or its options change. Each presentation becomes
 its own occurrence and the superseded one closes as incomplete, which is exactly what a
 revisited checkpoint should look like. An identical offer with no user action or
 navigation in between is the same presentation and must not be re-emitted (framework
 re-renders, route remounts, hydration); a click-driven decision is always a new
 presentation. Engaging a method resolves the decision regardless of how the attempt ends,
-so a failed attempt on an unchanged screen is a retry inside the same occurrence, not a
+so a failed attempt on an unchanged screen is a retry inside the same occurrence and no
 reason to re-emit `started`. When the option set depends on an async capability check
 (conditional mediation, platform authenticator availability), emit `started` synchronously
 on render with `explicitTimestamp` set to the render time, and re-emit with the final
 options and the _same_ timestamp once the check resolves: an identical timestamp replaces
 the open occurrence's options in place instead of opening a new one. Capture the render
-time once and reuse it — the `screen` event's `ts` is that time. An option whose subflow
-auto-starts on the screen still belongs in the option set — if a subflow can start on a
+time once and reuse it: the `screen` event's `timestamp` is that time. An option whose
+subflow auto-starts on the screen still belongs in the option set: if a subflow can start on a
 screen, its method option is part of that screen's options. Unresolved decisions classify
 as incomplete.
 
@@ -871,13 +876,13 @@ is present in `options`:
 | password-enrollment                                                       | `password-set` / `password-reset`, fallback `password-enrollment`                                                                          |
 | email-otp                                                                 | `email-otp-login` / `email-otp-enrollment`, fallback `email-otp`                                                                           |
 | sms-otp                                                                   | `sms-otp-login` / `sms-otp-enrollment`, fallback `sms-otp`                                                                                 |
-| provide-identifier                                                        | `identifier-email` (also when its CUI part completes; a CUI ceremony torn down by the identifier submit is neutral — no error, no abandon) |
+| provide-identifier                                                        | `identifier-email` (also when its CUI part completes; a CUI ceremony torn down by the identifier submit is neutral, no error and no abandon) |
 | provide-data                                                              | `provide-data`                                                                                                                             |
 | social-login                                                              | `social-google` / `social-apple` / `social-facebook` / `social-other`                                                                      |
 | app-confirmation                                                          | `qr-code` (dedicated QR screen) or `app-confirmation`                                                                                      |
 | totp (low-level)                                                          | `totp` / `totp-enrollment`                                                                                                                 |
 
-("fallback" = the subflow first tries the spec-typed string, then the generic one — put
+("fallback" = the subflow first tries the spec-typed string, then the generic one. Put
 whichever your option set naturally distinguishes.)
 
 ### Subflows
@@ -886,13 +891,12 @@ A subflow is one auth method attempt; creating the operation helper emits
 `subflow_started`. When to create it depends on how the method is engaged:
 
 - **Input-bound methods** (password, OTP, identifier, provide-data) start when the input
-  renders — the field itself is the attempt surface, and the helper captures interaction
+  renders: the field itself is the attempt surface and the helper captures interaction
   on it. In the default shape: on the `screen` event, with its `input`.
 - **Action-bound methods** (passkey button, social button, app confirmation) start on the
-  action, not when the button becomes visible. In the default shape: on the method
-  `outcome`. A visible option is not an attempt; a helper
-  created for a button nobody pressed yields an attempt without interaction — not counted
-  for most types.
+  action. A visible button is no attempt yet. In the default shape: on the method
+  `outcome`. A helper created for a button nobody pressed yields an attempt without
+  interaction, which is not counted for most types.
 
 Construction always emits `subflow_started`; there is no opt-out. Never add
 a manual `subflowStart()` on top of it. Repeated starts of the same subflow with nothing in
@@ -941,7 +945,7 @@ The passkey steps carry the WebAuthn payloads as JSON strings: for login,
 `mediation` (`"conditional" | "optional" | "required"`). When the options are only known
 at ceremony time (WebAuthn fallback), pass them on `ceremony.start` instead. When the
 ceremony itself could not be observed, the submitted credential goes on
-`postResponse.start` as the fallback carrier — never on both.
+`postResponse.start` as the fallback carrier. Do not put it on both.
 
 **Identifier-field Conditional UI** is not a passkey-login attempt. It belongs to the
 provide-identifier helper's `cui` steps, resolves the same `identifier-email` option, and
@@ -996,23 +1000,23 @@ Custom steps: `op.customStep("my-step")`.
 
 **Never finish a subflow.** There is no subflow-finished concept: the classifier derives
 each attempt's outcome from its steps. The outcome-bearing step is `postResponse` for
-almost every subflow (`exchangeCode` for social, `ceremony` for app-confirmation) — track
-it always; earlier/utility steps are enrichment you may skip when the effort outweighs
-the value — with one exception: the WebAuthn `ceremony` steps of the passkey subflows.
+almost every subflow (`exchangeCode` for social, `ceremony` for app-confirmation). Track
+it always. Earlier and utility steps are enrichment you may skip when the effort outweighs
+the value, with one exception: the WebAuthn `ceremony` steps of the passkey subflows.
 Track those whenever passkeys are in play; ceremony start/finished/error is what powers
 all passkey-related analytics (engagement, cancellation, ceremony errors and durations)
 and none of it is recoverable from `postResponse` alone. A completed ceremony without a
 `postResponse` still classifies as incomplete,
 because only the backend confirmation proves the method worked. (The low-level
-`trackSubflowError` carries no outcome semantics — step errors are the intended channel;
-don't use it.)
+`trackSubflowError` carries no outcome semantics. Step errors are the intended channel, so
+do not use it.)
 
 On failure, call `.error(e)` on the step that failed and stop; a retry is simply new step
 events. See Step errors below for what to put into them.
 
 **Spec types.** Supply `explicitSpecType` on the constructor whenever known. For
 passkey-login, passkey-enrollment, password-enrollment, provide-data, email-link and
-social-login a spec must eventually arrive on _some_ event of the attempt — the
+social-login a spec must eventually arrive on _some_ event of the attempt. The
 classifier drops an attempt without one. The types don't enforce this; it's the
 mapping's job to make sure one of these attempts never runs spec-less end to end. The others tolerate
 absence with a documented default (email/sms-otp assume the login variant, password-login
@@ -1026,9 +1030,9 @@ continuing the same attempt; a different known spec can split it into a separate
 Start the destination flow before creating its operation.
 
 **Input binding.** Where the helper supports it, pass the input element
-(`inputHtmlField`) for input-related subflows — it enables interaction capture on the
+(`inputHtmlField`) for input-related subflows. It enables interaction capture on the
 field. Call `op.destroy()` when the surface unmounts (input-bound helpers and the passkey
-helpers hold event listeners) — in the default shape, in the state's `exit()`.
+helpers hold event listeners), in the default shape in the state's `exit()`.
 
 **provide-data** covers form fields that request user data but map to no deeper subflow
 concept (bank details, birth date, address...). One screen, one provide-data subflow on
@@ -1036,35 +1040,36 @@ the most important field; pass `fieldName` for the semantic name of what is coll
 
 **Parallel subflows** are fine as long as only one can plausibly receive interaction at a
 time: a password field plus a passkey button on one screen is classifiable. A large form
-where several tracked fields are filled and submitted together is not — model the
+where several tracked fields are filled and submitted together is not. Model the
 simplified version and track only the most important field (e.g. the password field on a
 signup form).
 
 ### Step errors
 
-Error tracking is an optional investment tier — classification never depends on it. An
+Error tracking is an optional investment tier. Classification never depends on it. An
 attempt that just stops already classifies as incomplete; an explicit step error is a
 _different_ outcome (`<step>-error` vs `<step>-incomplete`), so errors add diagnostic
-depth, not correctness. Map them to the depth the customer wants error analytics.
+depth on top of a classification that is already correct. Map them to the depth the customer wants error analytics.
 
 What makes the investment pay: the backend groups every reported error by its exact
-signature — subflow type, step, code, message, spec type, latency bucket — into error
+signature (subflow type, step, code, message, spec type, latency bucket) into error
 "flavours", which are then curated into named errors with impact analysis. Nothing is
 dropped or bucketed as "other"; whatever the client sends is the raw material for
 grouping. That yields four rules:
 
-- **Platform errors go in raw.** For failures the platform produces — WebAuthn/browser
-  exceptions, OS credential sheets — `.error(e)` with the caught exception is the right
+- **Platform errors go in raw.** For failures the platform produces (WebAuthn and browser
+  exceptions, OS credential sheets), `.error(e)` with the caught exception is the right
   call: the platform's own vocabulary is already bounded (a cancelled or failed ceremony
   comes in only a handful of error names) and groups well as-is. Never withhold a real
   failure because it has no curated code.
 - **The application's own errors deserve a deliberate shape.** Where the failure comes
   from the app's API or the transport/wire layer, decide explicitly what to send: a code
-  naming what the client _observed_, not an interpretation (`invalid_password`,
+  naming what the client _observed_ (`invalid_password`,
   `invalid_otp`, `transport_failed`, `http_error`, `process_terminated`), reused where
   the same observation recurs across steps and platforms, with the server's raw error
-  label as the message. The shape is untyped, so get it exactly right: pass a plain
-  `{ code, message }` object to `.error()` — it nests both where classification reads
+  label as the message. Do not encode an interpretation of the failure. The shape is
+  untyped, so get it exactly right: pass a plain
+  `{ code, message }` object to `.error()`. It nests both where classification reads
   them. Where a helper predefines typed codes, prefer `errorTyped` for the compile-time
   check (password login `invalid_password` / `user_not_found` / `account_locked`;
   password enrollment `requirements_not_fulfilled`; app-confirmation `declined` /
@@ -1076,7 +1081,7 @@ grouping. That yields four rules:
     op.postResponse.start({});
     const body = await submitPassword(password);
     if (body.rejected) {
-        // app's API refused the password — no exception in hand, name the observation:
+        // app's API refused the password, no exception in hand, name the observation:
         op.postResponse.error({
             code: "invalid_password",
             message: body.errorLabel
@@ -1084,30 +1089,30 @@ grouping. That yields four rules:
         // ...or, where the helper types the code, compile-time checked:
         op.postResponse.errorTyped({ code: "invalid_password" });
     }
-    // caught platform exception (e.g. a WebAuthn ceremony) — pass it raw, don't rewrap:
+    // caught platform exception (e.g. a WebAuthn ceremony): pass it raw, do not rewrap:
     op.ceremony.error(e);
     ```
 
 - **Keep volatile tokens out of messages.** Request ids, timestamps and user data
-  fragment the flavour grouping — it's per-occurrence tokens that hurt, not the number of
-  distinct errors the app genuinely has.
+  fragment the flavour grouping. Per-occurrence tokens are the problem. The number of
+  distinct errors the app genuinely has is no problem.
 - **No fallback codes.** A response you cannot confidently classify is neither success
   nor failure: leave the step open (it classifies incomplete) and surface the mapping gap
-  through your own diagnostics instead. Not proving success is not failing — a guessed
-  code pollutes exactly the analytics errors exist to feed.
-- **User cancellation is an error on the step that observed it** — a dismissed passkey
+  through your own diagnostics instead. Not proving success is not the same as failing. A
+  guessed code pollutes exactly the analytics errors exist to feed.
+- **User cancellation is an error on the step that observed it.** A dismissed passkey
   prompt is a `ceremony` error; the raw browser error is fine. The exception: an
   auto-offered method torn down because the user proceeded with another (e.g. a CUI
   request aborted by a password submit) is not an error.
 
 ### Event ordering
 
-Ordering requirements are causal, not temporal:
+Ordering requirements follow cause and effect. They do not depend on wall-clock time:
 
 1. `flow_started` before any event of that flow. A `flow_finished` or `flow_decided`
-   without an open flow invalidates the session's classification — this is the unforgiving
-   one. `flow_auto_finished` without an open flow of that name is not fatal, but it
-   reconstructs a closed flow of that name — send it only for a parent that was started.
+   without an open flow invalidates the session's classification. This is the one rule
+   without any tolerance. `flow_auto_finished` without an open flow of that name is not fatal, but it
+   reconstructs a closed flow of that name. Send it only for a parent that was started.
 2. When a screen renders: decision `started` before creating operation helpers (decision
    before `subflow_started`).
 3. Settle the previous screen before opening the next: a navigational choice's decision
@@ -1117,8 +1122,8 @@ Ordering requirements are causal, not temporal:
 
 The backend orders by timestamp + emission sequence and repairs supported race patterns.
 Use `explicitTimestamp` (on steps and decision `started`) when the semantic moment precedes
-the tracking call — in the default shape, always: the data layer event's `timestamp` is
-the semantic moment and the mapping may run later. Preserve the causal ordering above rather
+the tracking call. In the default shape this is always the case: the data layer event's
+`timestamp` is the semantic moment and the mapping may run later. Preserve the causal ordering above rather
 than adding arbitrary delays; the app-side ordering invariants in 4.3 guarantee it.
 
 ### Identity observations
@@ -1150,7 +1155,7 @@ Identity attribution follows these rules:
 
 Passing `{}` does not clear identity.
 
-Legacy user-reference fields on flow finishes, conversions, and step options remain
+Legacy user-reference fields on flow finishes, conversions and step options remain
 supported but are deprecated. For new instrumentation, record identity separately with
 `setUser()` within the active flow. When migrating a finish that carries identity, place
 `setUser()` **before** the finish. In the default shape the coordinator holds the latest
@@ -1160,17 +1165,17 @@ open, and again right before that flow's terminal.
 ### Cross-environment correlation
 
 Events are correlated by a session id in local storage: everything sharing the JavaScript
-process or local storage merges automatically — nothing to do. When a journey crosses a
+process or local storage merges automatically, nothing to do. When a journey crosses a
 boundary where local storage doesn't follow (another device, an iframe, some webview
 setups), call `tracker.setUser({ crossEnvironmentTransactionID: id })` **on both ends** with the
 same UUID. Start or continue the destination flow with `flowStarted` before calling
 `setUser` there; correlation alone does not create an active flow. Continue the intended
-innermost flow rather than re-announcing an outer flow. When recreating a subflow helper,
+innermost flow. Do not re-announce an outer flow. When recreating a subflow helper,
 carry its original matching spec type as described under Continuing an attempt.
 
 An identity observed in the destination can identify the explicitly continued flow.
-The linked sessions are classified together. How the UUID travels is the app's choice —
-for example, a magic link's query parameter or an existing transaction UUID the system
+The linked sessions are classified together. How the UUID travels is the app's choice,
+for example a magic link's query parameter or an existing transaction UUID the system
 already propagates. In the default shape the destination page calls
 `CorbadoObserve.setUser({ crossEnvironmentTransactionID })` after its entry screen.
 
@@ -1184,7 +1189,7 @@ blast radius small:
   call site with `?.` so tracking cannot throw (see Setup).
 - One declared opener per flow, in the flow's own entry component; every other component
   drops its signals when no flow is open. Keep a single module for the flow lifecycle even
-  here — it is the one piece that must not be duplicated.
+  here. It is the one piece that must not be duplicated.
 - Decisions on render with `explicitTimestamp`, helpers created on render (input-bound) or
   on the action (action-bound), steps around the app logic exactly as in section 8's samples.
 - Document every lossy mapping in a short mapping note next to the wrapper module.
@@ -1194,24 +1199,25 @@ Every tracking correction on this path is an app release. Tell the user so when 
 ## 10. Setup: project, credentials and tools
 
 The mapping needs two public values, `projectId` and `apiBaseUrl`. Never ask for, handle
-or store an API key: the SDK does not use one, and the CLI keeps its own in the OS keychain.
+or store an API key. The SDK does not use one, and the CLI keeps its own in the OS keychain.
 
-**With the Corbado Observe CLI (macOS on Apple Silicon).** Prefer this: it pairs the project
+**With the Corbado Observe CLI (macOS on Apple Silicon).** Prefer this. It pairs the project
 without copying anything by hand and it is the verification loop in section 11.
 
 1. Install: `brew install --cask corbado/tap/corbado`.
 2. Pair: `corbado switch --add`. The CLI prints a pairing URL and a short confirmation code,
-   opens the browser, and waits. In the console the user signs in — or creates an account
-   and a project: **Create a new project**, project type **Observe**, any name — then
-   confirms the code on the CLI pairing page under **Observe → Settings → API keys**. The
-   key lands in the keychain; nothing is pasted.
+   opens the browser and waits. In the console the user signs in, or creates an account and
+   a project (**Create a new project**, project type **Observe**, any name), then confirms
+   the code on the CLI pairing page under **Observe → Settings → API keys**. The key lands
+   in the keychain. Nothing is pasted anywhere.
 3. Verify the pairing: `corbado switch --whoami` must report `match: true`.
 4. Read the two values: `corbado switch --list` prints `projectId` and `apiBaseUrl` for
-   every paired project and which one is active. Use `apiBaseUrl` as printed; the
-   `--print-api-base-url` variant is the CLI's own versioned prefix, not the SDK's.
-5. Run `corbado guide` once; it is the CLI's own playbook.
+   every paired project and marks the active one. Use `apiBaseUrl` as printed. The
+   `--print-api-base-url` variant prints the CLI's own versioned prefix, which is the wrong
+   value for the SDK.
+5. Run `corbado guide` once. It is the CLI's own playbook.
 
-**Without the CLI** (no macOS, no Homebrew, or the user prefers the console), everything is
+**Without the CLI** (no macOS, no Homebrew, or the user prefers the console) everything is
 in the management console:
 
 - Sign in at https://app.corbado.com. No project yet: **Create a new project**, project
@@ -1236,8 +1242,8 @@ npm install @corbado/observe @corbado/autocapture
 CorbadoObserve.init({ projectId: "pro-XXX", apiBaseUrl: "https://api.cloud.corbado.io", applicationId: "web", debug: true });
 ```
 
-Use `debug: true` while developing: the SDK logs every emitted event and the session id to
-the console. Keep environments in separate projects.
+Use `debug: true` while developing. The SDK then logs every emitted event and the session id
+to the console. Keep environments in separate projects.
 
 For the precision path, wrap `init()`/`getTracker()` in one module that lazily initializes
 and guard every call site with `?.`:
@@ -1260,16 +1266,16 @@ export const observeTracker = (): CorbadoTracker | null => {
 
 ## 11. Validating the implementation
 
-Tracking cannot be proven from the app's own tests; the raw event series is what the
-classifier sees. Validate in three loops, inner to outer.
+Tracking cannot be proven from the app's own tests. The raw event series is what the
+classifier sees. Validate in three loops, from the inside out.
 
 **Replay fixtures against the mapping.** The mapping's input is the stub's queue, a
-serializable array of `[command, args]` that now carries everything — commands, screens,
-outcomes, exchanges, ceremonies. Record it once by dumping `CorbadoObserve.q` before the
-mapping takes over (or by wrapping `push` in the test build), and replay it forever. A
-fixture is that queue plus the expected Observe series, in the assertion format Corbado's
-own scenario runners use: `ordered` is a subsequence, patterns match deeply and partially,
-`forbidden` and `counts` catch what a subsequence would let through.
+serializable array of `[command, args]` that carries everything: commands, screens,
+outcomes, exchanges and ceremonies. Record it once by dumping `CorbadoObserve.q` before the
+mapping takes over (or by wrapping `push` in the test build) and replay it as often as you
+like. A fixture is that queue plus the expected Observe series, in the assertion format
+Corbado's own scenario runners use: `ordered` is a subsequence, patterns match deeply and
+partially, and `forbidden` and `counts` catch what a subsequence would let through.
 
 ```json
 {
@@ -1305,22 +1311,22 @@ own scenario runners use: `ordered` is a subsequence, patterns match deeply and 
 ```
 
 Run the mapping in a DOM test runner with the SDK's transport stubbed, seed a stub whose
-`q` is the fixture's `queue`, install the mapping, and assert on the batches the SDK
+`q` is the fixture's `queue`, install the mapping and assert on the batches the SDK
 produces. Replace `input` element references in fixtures with elements created by the
-test. Write one fixture per representative journey before shipping, and one per bug
+test. Write one fixture per representative journey before shipping and one per bug
 afterwards.
 
 **Walk the app.** Pick a small set of journeys with decent coverage and write down the
-event series each should produce in the notation of the worked example below. Run them
-with `debug: true`: the SDK logs every emitted event with its data and the session id, and
+event series each should produce, in the notation of the worked example below. Run them
+with `debug: true`. The SDK logs every emitted event with its data and the session id, and
 the Corbado Observe Debugger extension shows the same stream as it leaves the browser.
 Check that each journey produces exactly one flow start, one decision per presented
-screen, the expected steps and a finish; cancel a passkey dialog once and confirm it
-appears as an incomplete journey rather than disappearing. Fix what deviates — in the
-mapping or the markup — before looking at dashboards.
+screen, the expected steps and a finish. Cancel a passkey dialog once and confirm that it
+shows up as an incomplete journey. Fix what deviates, in the mapping or in the markup,
+before looking at dashboards.
 
-**Close the loop against the backend.** Raw arrival is not classification. With the CLI,
-using the session id from the debug log:
+**Check against the backend.** Raw arrival is not classification yet. With the CLI, using
+the session id from the debug log:
 
 ```bash
 SINCE=$(( $(date +%s) * 1000 - 600000 ))                                   # last 10 minutes, epoch ms
@@ -1335,7 +1341,7 @@ Without the CLI, in the console under **Observe → Debugging → Integration**:
 session id, read the **Ingested events** tab and its **Classified** / **Pending** badges,
 press **Process** (it classifies the visible unclassified sessions, updates the integration
 status and precalculates the time series), then read the **Classification errors** tab.
-**Observe → Debugging → User Search** reconstructs the journey; **Observe → Analytics →
+**Observe → Debugging → User Search** reconstructs the journey, and **Observe → Analytics →
 Funnel** shows it once precalculation has run. Every classification error names the rule
 in section 8 that was broken.
 
@@ -1369,9 +1375,10 @@ flow_auto_finished      { flowName: login, finishedByFlowName: signup } ← nest
 ```
 
 Note what is absent: no decision `finished` for the method choices (their subflows resolve
-them), no subflow finishes (the `post-response` steps carry the outcomes), and no explicit
-incomplete/abandon events anywhere — had the user left mid-journey, the absence of the
-finishes would have classified it. The second `pre-identifier` decision is deliberately a
-second occurrence: the user genuinely revisited that checkpoint. And note what the app
-never said: nothing about flows, decisions, subflows or steps — screens and outcomes in its
-own words, requests as the browser saw them, and the mapping did the rest.
+them), no subflow finishes (the `post-response` steps carry the outcomes) and no explicit
+incomplete or abandon events anywhere. Had the user left mid-journey, the missing finishes
+would have classified it. The second `pre-identifier` decision is deliberately a second
+occurrence, because the user genuinely revisited that checkpoint. And note what the app
+never said: nothing about flows, decisions, subflows or steps. It reported screens and
+outcomes in its own words and requests as the browser saw them, and the mapping did the
+rest.

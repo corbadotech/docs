@@ -4,12 +4,12 @@ description: "Corbado Observe offers three ways to capture authentication data: 
 sidebarTitle: "Integration paths"
 ---
 
-There are three ways to get authentication data into **Corbado Observe**. They are three shapes of one architecture, not competing products: every integration has **signal sources** and **one mapping** that turns signals into Observe flows, decisions and subflows. The paths differ only in where the signals come from and who owns the mapping. All three feed the same project, the same session and the same data model.
+There are three ways to get authentication data into **Corbado Observe**. They are three shapes of one architecture: every integration has **signal sources** and **one mapping** that turns signals into Observe flows, decisions and subflows. The paths differ only in where the signals come from and who owns the mapping. All three feed the same project, the same session and the same data model.
 
 | | **Autocapture** | **Data layer + mapping** | **Custom events** |
 | --- | --- | --- | --- |
 | Signals | Browser surfaces: network, WebAuthn, DOM | Screen offers, outcomes and validation results your app pushes, plus network and WebAuthn captured in your page | Tracker calls in your own code |
-| Mapping | Built and maintained by Corbado, reconciled after your releases | One central module, Corbado-shaped | Spread across your components |
+| Mapping | Built and maintained by Corbado, adjusted after your releases | One central module in Corbado's adapter structure | Spread across your components |
 | App changes | None, ever | A stub, one data attribute per control, thin emitters and capture wiring | Tracker calls at every semantic point |
 | Delivery | Corbado script tag (recommended) or self-hosted | Corbado script tag (recommended) or self-hosted | Bundled with your app |
 | Recommended for | Web, fully managed, no source changes | Web, when you integrate from source | Native apps, and explicit precision requirements |
@@ -20,7 +20,7 @@ There are three ways to get authentication data into **Corbado Observe**. They a
   **Recommended when you do not want to change your code at all.** Fully managed by Corbado: one script, no event tagging, nothing to maintain.
 </Info>
 
-You deploy a single script and Corbado maps your authentication journey from signals your frontend already emits: API calls, WebAuthn ceremonies, fields and their low-level events, existing component events. No event tagging, no change to your login flows and no instrumentation to maintain as your login evolves. Corbado owns the complete mapping and, after larger releases of your login, reconciles the tracking; you never change code. That is what makes it the fully managed option for large enterprises.
+You deploy a single script and Corbado maps your authentication journey from signals your frontend already emits: API calls, WebAuthn ceremonies, fields and their low-level events, existing component events. No event tagging, no change to your login flows and no instrumentation to maintain as your login evolves. Corbado owns the complete mapping and adjusts the tracking after larger releases of your login. You do not change code. This is why it is the fully managed option for large enterprises.
 
 ### 1.1 What Autocapture actually does
 
@@ -50,13 +50,13 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
 
 Your screens carry one data attribute per control, and your code pushes a few events into the **Observe data layer**, an in-page queue with the mechanics of an analytics data layer: a screen was presented with these options, an option was chosen, validation rejected a field. Network calls and WebAuthn ceremonies are captured automatically in your page by the same library Autocapture uses and pushed into the same queue. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows.
 
-Your app keeps the shim and the emitters, in its own vocabulary; they are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. That is what makes it replaceable: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
+Your app keeps the shim and the emitters, in its own vocabulary; they are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. This is why it can be replaced: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so that a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
 
 See [Get started with the data layer](/corbado-observe/get-started/data-layer). The [agent skill](/corbado-observe/get-started/use-with-ai-agents) implements it.
 
 ## 3. Custom events
 
-Custom events are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define. This is the only path available on native platforms, and the right path when a step's semantics must be pinned in code rather than derived.
+Custom events are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define. This is the only path available on native platforms, and the right path when a step's meaning must be fixed in code.
 
 The cost is structural: every tracking correction is an app release, and there is no central place Corbado can review and optimize with you. On web, prefer the data layer unless you have an explicit reason for precision tracking.
 
@@ -68,7 +68,7 @@ The boundary is not "simple flows vs. complex flows". It is **observability in t
 
 Autocapture can work with anything that is visible in the browser or reported back to it: rendered UI states, user interactions, WebAuthn ceremonies, navigation and the shape of requests and responses. From those signals Corbado's mapping derives the product meaning, including which method a user chose, whether an identifier was already known, whether a ceremony was a login or an enrollment and whether the user or the system started a step.
 
-The data layer and custom events are for facts that never reach the browser, or that you want stated rather than inferred:
+The data layer and custom events are for facts that never reach the browser, or that you want your app to state explicitly:
 
 | Case | Example | Path |
 | --- | --- | --- |

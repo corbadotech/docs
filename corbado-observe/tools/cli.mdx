@@ -24,7 +24,7 @@ The **Corbado Observe CLI** gives you scripted access to your Observe data from 
 
 The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline and full schema introspection so an agent can drive it from `--help` alone.
 
-Projects are paired locally. Non-secret project metadata is stored in a config file and the API key is held in the operating system's secret store rather than in plain text. You never copy a key by hand: pairing creates it for you under **Observe → Settings → API keys**.
+Projects are paired locally. Non-secret project metadata is stored in a config file and the API key is held in the operating system's secret store. It is never written to a plain-text file. You never copy a key by hand: pairing creates it for you under **Observe → Settings → API keys**.
 
 ## 3. Install and pair
 
@@ -45,7 +45,7 @@ corbado guide                # the CLI's own playbook
 
 ## 4. Verify an integration
 
-Four commands close the loop after you walked a journey with `debug: true` and noted the session id from the console:
+Four commands check the backend side after you walked a journey with `debug: true` and noted the session id from the console:
 
 ```bash
 SINCE=$(( $(date +%s) * 1000 - 600000 ))                                   # last 10 minutes, epoch ms
