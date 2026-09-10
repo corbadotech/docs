@@ -114,7 +114,7 @@ subflow_started               { password-enrollment, spec: password-set }
 subflow_step_started          { password-enrollment, post-response }
 subflow_step_finished         { password-enrollment, post-response, userReference }
 flow_finished                 { flowName: signup, userId, identifier }
-flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained, not nested
+flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained as a sibling
 auth_method_decision_started  { enrollment-passkey, options: [passkey-enrollment, skip] }
 auth_method_decision_finished { enrollment-passkey, explicitDecisionValue: skip }
 flow_finished                 { flowName: enrollment, explicitOutcome: skipped, userId }
