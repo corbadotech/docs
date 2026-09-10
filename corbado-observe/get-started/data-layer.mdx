@@ -4,7 +4,7 @@ description: "Tag your screens, push a few events into the Observe data layer, c
 sidebarTitle: "Data layer"
 ---
 
-The **Observe data layer** is the recommended way to integrate **Corbado Observe** from your own source code. Your screens carry one data attribute per control, your code pushes a few events into `window.CorbadoObserve`, a small in-page command queue with the mechanics of an analytics data layer, and network calls and WebAuthn ceremonies are captured automatically in your page. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows. No tracking calls are scattered through your components, the whole tracking model lives in one place, and that place can be updated without an app release.
+The **Observe data layer** is the recommended way to integrate **Corbado Observe** from your own source code. Your screens carry one data attribute per control, your code pushes a few events into `window.CorbadoObserve`, a small in-page command queue with the mechanics of an analytics data layer, and network calls and WebAuthn ceremonies are captured automatically in your page. One central module, the **mapping**, takes the queue over and emits the Observe events for your flows, decisions and subflow steps. No tracking calls are scattered through your components, the whole tracking model lives in one place, and that place can be updated without an app release.
 
 <Info>
   The data layer is web only. On iOS and Android, the [native SDKs](/corbado-observe/get-started/native) follow the same split through typed hooks. If you do not want to change your frontend at all, [Autocapture](/corbado-observe/get-started/autocapture) is the fully managed option.
@@ -27,7 +27,7 @@ flowchart LR
     A["Your screens and handlers<br />screen offers, outcomes,<br />validation errors"] --> L["window.CorbadoObserve<br />command queue, buffers until the mapping loads"]
     C["@corbado/autocapture in your page<br />network exchanges, WebAuthn ceremonies"] --> L
     L --> M["Mapping<br />one central module"]
-    M --> O["Corbado Observe<br />flows, decisions, subflows"]
+    M --> O["Corbado Observe<br />flow, decision and<br />subflow step events"]
 ```
 
 | Part | What it is | Who owns it |

@@ -4,7 +4,7 @@ description: "Corbado Observe offers three ways to capture authentication data o
 sidebarTitle: "Integration paths"
 ---
 
-There are three ways to get authentication data into **Corbado Observe** from a web frontend, and the native SDKs for iOS and Android. The web shapes are three shapes of one architecture: every integration has **signal sources** and **one mapping** that turns signals into Observe flows, decisions and subflows. The paths differ only in where the signals come from and who owns the mapping. All three feed the same project, the same session and the same data model.
+There are three ways to get authentication data into **Corbado Observe** from a web frontend, and the native SDKs for iOS and Android. The web shapes are three shapes of one architecture: every integration has **signal sources** and **one mapping** that emits the Observe events for your flows, decisions and subflow steps. The paths differ only in where the signals come from and who owns the mapping. All three feed the same project, the same session and the same data model.
 
 | | **Autocapture** | **Data layer + mapping** | **Custom events** |
 | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
   **Recommended when you integrate from source.** Like Autocapture it runs on one central mapping module that turns signals into Observe events. The difference: your app pushes the screen events, network and WebAuthn are captured in your page, and the mapping can live in your codebase.
 </Info>
 
-Your screens carry one data attribute per control, and your code pushes a few events into the **Observe data layer**, an in-page queue with the mechanics of an analytics data layer: a screen was presented with these options, an option was chosen, validation rejected a field. Network calls and WebAuthn ceremonies are captured automatically in your page by the same library Autocapture uses and pushed into the same queue. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows.
+Your screens carry one data attribute per control, and your code pushes a few events into the **Observe data layer**, an in-page queue with the mechanics of an analytics data layer: a screen was presented with these options, an option was chosen, validation rejected a field. Network calls and WebAuthn ceremonies are captured automatically in your page by the same library Autocapture uses and pushed into the same queue. One central module, the **mapping**, takes the queue over and emits the Observe events for your flows, decisions and subflow steps.
 
 Your app keeps the stub, the tagged markup, the emitters and the capture wiring. They are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. This is why it can be replaced: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so that a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
 
@@ -64,7 +64,7 @@ See [Custom events](/corbado-observe/get-started/custom-events) to send your fir
 
 ## 4. Native apps: iOS and Android
 
-On iOS and Android the native SDKs take the role of the data layer and the capture together. The SDK captures what your code cannot see, such as the app's state churn around system sheets and biometrics, autofill and credential-manager evidence, device capability and delivery through a durable outbox. Your screens forward a few facts through typed hooks: the current screen, field lengths and focus, the ceremony result and the request result. One adapter module in your app turns those facts into flows, decisions and subflows, the same separation as the mapping on web.
+On iOS and Android the native SDKs take the role of the data layer and the capture together. The SDK captures what your code cannot see, such as the app's state churn around system sheets and biometrics, autofill and credential-manager evidence, device capability and delivery through a durable outbox. Your screens forward a few facts through typed hooks: the current screen, field lengths and focus, the ceremony result and the request result. One adapter module in your app emits the Observe events for your flows, decisions and subflow steps, the same separation as the mapping on web.
 
 Corbado calls this **Autocapture Light**: your app exposes facts, the mapping interprets them. The data layer on web is the same idea. On native there is no script-only mode, so the hooks are always part of the app and updates ship with your releases.
 

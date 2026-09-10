@@ -4,7 +4,7 @@ description: "Integrate Corbado Observe into a native app: the SDK captures syst
 sidebarTitle: "iOS and Android"
 ---
 
-On iOS and Android, **Corbado Observe** runs as a native SDK inside your app. It follows the same split as the [data layer](/corbado-observe/get-started/data-layer) on web, in process instead of through a queue: the SDK captures what your code cannot see, your screens forward a few facts through typed hooks, and one adapter module in your app turns those facts into Observe flows, decisions and subflows. Corbado calls this **Autocapture Light**: your app exposes facts, the mapping interprets them. There is no script-only mode on native, so the hooks are always part of the app and updates ship with your releases.
+On iOS and Android, **Corbado Observe** runs as a native SDK inside your app. It follows the same split as the [data layer](/corbado-observe/get-started/data-layer) on web, in process instead of through a queue: the SDK captures what your code cannot see, your screens forward a few facts through typed hooks, and one adapter module in your app emits the Observe events for your flows, decisions and subflow steps. Corbado calls this **Autocapture Light**: your app exposes facts, the mapping interprets them. There is no script-only mode on native, so the hooks are always part of the app and updates ship with your releases.
 
 <Info>
   Both SDKs send into the same data model as the web SDK, so app and web journeys land in the same project and the same funnels. Keep the channels apart with [applications](/corbado-observe/tracking/applications).
