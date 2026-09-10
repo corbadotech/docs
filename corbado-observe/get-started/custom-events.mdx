@@ -7,7 +7,7 @@ sidebarTitle: "Custom events"
 **Custom events** are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define. Budget **1 to 3 days** for a typical login flow, plus your own testing.
 
 <Info>
-  Custom events are hand-written tracker calls. They are not more accurate than the data layer: the same taxonomy rules apply, only that here they are enforced by hand at every call site, and that is where most integration defects come from. On web, integrate from source through the [Observe data layer](/corbado-observe/get-started/data-layer) unless you deliberately want tracker calls at single points in your code, and run [Autocapture](/corbado-observe/get-started/autocapture) when the frontend cannot change. On iOS and Android, custom events are the integration. See [Integration paths](/corbado-observe/overview/integration-paths).
+  Custom events are hand-written tracker calls. Every call site follows the taxonomy rules on its own, so the effort grows with the number of places you instrument. On web, integrate from source through the [Observe data layer](/corbado-observe/get-started/data-layer) unless you deliberately want tracker calls at single points in your code, and run [Autocapture](/corbado-observe/get-started/autocapture) when the frontend cannot change. On iOS and Android, custom events are the integration. See [Integration paths](/corbado-observe/overview/integration-paths).
 </Info>
 
 <Tip>

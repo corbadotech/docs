@@ -1200,11 +1200,9 @@ already propagates. In the default shape the destination page calls
 
 ## 9. Custom events: hand-written tracker calls
 
-Only when section 1 selected it. Custom events are not more accurate than the data layer.
-The same taxonomy rules apply, only that with custom events they are enforced by hand at
-every call site, and that is where most integration defects come from.
-The rules of sections 2, 3 and 8 apply unchanged, but at the call sites: every tracker call
-is written into the app at its semantic point. Keep the blast radius small:
+Only when section 1 selected it. The rules of sections 2, 3 and 8 apply unchanged, but at
+the call sites: every tracker call is written into the app at its semantic point, and every
+call site has to follow the taxonomy rules on its own. Keep the blast radius small:
 
 - Wrap `init()`/`getTracker()` in one module that lazily initializes, and guard every
   call site with `?.` so tracking cannot throw (see Setup).

@@ -58,7 +58,7 @@ See [Get started with the data layer](/corbado-observe/get-started/data-layer). 
 
 Custom events are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define. This is the only path available on native platforms, and the right path when a step's meaning must be fixed in code.
 
-Custom events are not more accurate than the data layer. The same taxonomy rules apply, only that with custom events they are enforced by hand at every call site, and that is where most integration defects come from. Every tracking correction is an app release, and there is no central place Corbado can review and improve with you. On web, prefer the data layer unless you deliberately want hand-written tracker calls.
+Every call site follows the taxonomy rules on its own, so the effort grows with the number of places you instrument. Every tracking correction is an app release, and there is no central place Corbado can review and improve with you. On web, prefer the data layer unless you deliberately want hand-written tracker calls.
 
 See [Custom events](/corbado-observe/get-started/custom-events) to send your first one, and the [tracking reference](/corbado-observe/tracking/overview) for the full data model.
 
