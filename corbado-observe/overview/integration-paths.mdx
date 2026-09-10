@@ -34,12 +34,12 @@ Autocapture is not a black box. Concretely, it does five things in the browser:
 | **Observes your auth network calls** | The start and outcome of requests to the endpoints Corbado is configured to watch, correlated by request ID. All other traffic is ignored. |
 | **Follows in-app navigation** | Same-document (SPA) route changes, so a journey stays intact across a client-side router. |
 
-Those raw signals are then mapped onto your actual flows, so which request means "identifier accepted" and which button means "user chose password over passkey". They arrive in Observe as a modeled journey rather than a stream of clicks.
+Those raw signals are then mapped onto your actual flows, so which request means "identifier accepted" and which button means "user chose password over passkey". They arrive in Observe as a modeled journey.
 
 Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@corbado/autocapture), a dependency-free capture library designed to run inside a page it does not own and to fail closed when a browser surface cannot be instrumented safely.
 
 <Note>
-  Autocapture pairs the capture library with a mapping for **your** flows, which Corbado builds and keeps current. It is therefore set up together with Corbado during onboarding rather than fully self-serve. [Talk to us](mailto:support@corbado.com) to get started.
+  Autocapture pairs the capture library with a mapping for **your** flows, which Corbado builds and keeps current. It is therefore set up together with Corbado during onboarding and is not self-serve. [Talk to us](mailto:support@corbado.com) to get started.
 </Note>
 
 ## 2. Data layer + mapping
@@ -50,7 +50,7 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
 
 Your screens carry one data attribute per control, and your code pushes a few events into the **Observe data layer**, an in-page queue with the mechanics of an analytics data layer: a screen was presented with these options, an option was chosen, validation rejected a field. Network calls and WebAuthn ceremonies are captured automatically in your page by the same library Autocapture uses and pushed into the same queue. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows.
 
-Your app keeps the shim and the emitters, in its own vocabulary; they are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. This is why it can be replaced: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so that a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
+Your app keeps the stub, the tagged markup, the emitters and the capture wiring. They are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. This is why it can be replaced: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so that a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
 
 See [Get started with the data layer](/corbado-observe/get-started/data-layer). The [agent skill](/corbado-observe/get-started/use-with-ai-agents) implements it.
 
@@ -86,14 +86,14 @@ The data layer and custom events are for facts that never reach the browser, or 
 
 Running paths together is a supported setup. Autocapture provides the baseline journey and you add data layer events or custom events only for the gaps that matter, including enrichment from your backend. Both web and native apps in one project is the normal enterprise setup: Autocapture or the data layer on web, custom events in the apps, and [applications](/corbado-observe/tracking/applications) to keep the channels comparable.
 
-All paths write into the same project, the same session and the same data model, so added events appear inside the same journey rather than beside it. Because the exact wiring depends on how the mapping is delivered, set a combined web setup up together with us rather than adding a second SDK instance to the page.
+All paths write into the same project, the same session and the same data model, so added events appear inside the same journey. Because the exact wiring depends on how the mapping is delivered, set a combined web setup up together with us. Do not add a second SDK instance to the page.
 
 ## 6. Choosing
 
 | | **Autocapture** | **Data layer + mapping** | **Custom events** |
 | --- | --- | --- | --- |
 | Platforms | Web | Web | Web, iOS, Android |
-| Integration effort | **One line of code.** Corbado prepares the script for your flows. | A shim plus thin emitters, typically **hours** with the agent skill | **1 to 3 days** for a typical login flow, plus your own testing |
+| Integration effort | **One line of code.** Corbado prepares the script for your flows. | A stub, tagged controls, thin emitters and capture wiring, typically **hours** with the agent skill | **1 to 3 days** for a typical login flow, plus your own testing |
 | Time to first insight | Same day | Same day | As soon as your first instrumented flow ships |
 | Semantics | Derived from observed signals | Stated by your app, translated centrally | Explicit: you define flow, touchpoint, spec type and decisions |
 | Maintenance | Corbado maintains everything, including reconciling the tracking after your larger releases | Your emitters evolve with your code; the mapping is updated in one place, by you or by Corbado | Your team maintains events as flows change |

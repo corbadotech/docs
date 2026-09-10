@@ -248,11 +248,25 @@ export type DataLayerEvent =
     // webApi: captureWebAuthn's object; other web APIs may join this family later
     | ({ type: "webApi"; api: "webauthn"; timestamp: number } & WebAuthnCeremonyEvent);
 
+// Narrowed views the mapping's states work with.
+export type DomScreen = Extract<DataLayerEvent, { kind: "screen" }>;
+export type DomOutcome = Extract<DataLayerEvent, { kind: "outcome" }>;
+export type DomClientError = Extract<DataLayerEvent, { kind: "client-error" }>;
+export type NetworkEvent = Extract<DataLayerEvent, { type: "network" }>;
+export type WebAuthnEvent = Extract<DataLayerEvent, { type: "webApi" }>;
+
+export type MappingOptions = {
+    projectId: string;
+    apiBaseUrl: string;
+    applicationId?: string;
+    defaultTags?: Record<string, string>;
+    debug?: boolean;
+};
+
 declare global {
     interface Window {
         CorbadoObserve?: {
-            init: (options: { projectId: string; apiBaseUrl: string; applicationId?: string;
-                defaultTags?: Record<string, string>; debug?: boolean }) => void;
+            init: (options: MappingOptions) => void;
             setConsent: (granted: boolean) => void;
             setUser: (user: { userId?: string; identifier?: string; crossEnvironmentTransactionID?: string }) => void;
             setExperiments: (assignments: Record<string, string>) => void;
@@ -346,6 +360,7 @@ export function PasswordScreen() {
         offeredAt.current = Date.now();
         queueMicrotask(() => emitScreen("password", root.current!, offeredAt.current, { touchpoint: "account" }));
     }, []);
+    // passkeyAvailable: the result of the app's own capability check, undefined until it resolved
     useEffect(() => {
         if (passkeyAvailable !== undefined) emitScreen("password", root.current!, offeredAt.current); // same timestamp
     }, [passkeyAvailable]);
@@ -377,14 +392,16 @@ import { projectAuthRequest, projectAuthResponse } from "./observe-projectors";
 
 // First module of the app bundle (or inline right after the stub on a MPA): before the first auth request.
 captureNetwork({
-    match: (url, method) => url.origin === location.origin && url.pathname.startsWith("/api/auth/"),
+    match: (url) => url.origin === location.origin && url.pathname.startsWith("/api/auth/"),
     bodyCapture: { request: projectAuthRequest, response: projectAuthResponse },
     onRequest: (request) => observe({ type: "network", kind: "request", timestamp: request.startedAt, ...request }),
     onExchange: (exchange) => observe({ type: "network", kind: "exchange", timestamp: Date.now(), ...exchange }),
 });
-captureWebAuthn({
+const webauthn = captureWebAuthn({
     onEvent: (event) => observe({ type: "webApi", api: "webauthn", timestamp: Date.now(), ...event }),
 });
+// "standard" or "unavailable"; the mapping reads it for the fallback carrier rule (section 5.5)
+window.CorbadoObserve?.setTags({ webauthnCapture: webauthn.mode });
 ```
 
 Rules:
@@ -392,8 +409,8 @@ Rules:
 - **The projectors are the privacy boundary.** `bodyCapture` never reads a body without a
   projector. A projector returns only the fields the mapping's network table names: status
   codes, outcome flags, error codes, a prompt or step name. It never returns identifiers,
-  passwords, one-time codes or raw bodies. WebAuthn payloads that ride on a request pass
-  only through the package's sanitizers (`sanitizeAssertionResponse`,
+  passwords, one-time codes or raw bodies. A request projector that forwards a WebAuthn
+  credential runs it through the package's sanitizers first (`sanitizeAssertionResponse`,
   `sanitizeCreationResponse` and the options counterparts).
 - **One `captureNetwork` per page.** The package refuses to attach twice. Run the wiring in
   the first module the bundle evaluates, before bot managers or other scripts freeze
@@ -616,7 +633,7 @@ export class PasswordScreen {
                     typed: { INVALID_CREDENTIALS: "invalid_password", LOCKED: "account_locked" },
                 });
             case "POST /api/auth/passkeys/options":
-                return settle(this.passkey?.getOptions, e, { finished: (x) => ({ assertionOptions: x.responseBody?.optionsJson }) });
+                return settle(this.passkey?.getOptions, e); // the options themselves arrive with the ceremony start
             case "POST /api/auth/passkeys/verify":
                 return settle(this.passkey?.postResponse, e);
         }
@@ -652,7 +669,8 @@ Write these once in `steps.ts`; every state uses them:
 - `ceremony(step, event)`: `started` calls `step.start({ assertionOptions: requestOptionsJson })`
   (enrollment: `attestationOptions` plus `mediation`), `completed` calls `step.finished`
   with `credentialJson`, `failed` calls `step.error(event.error ?? runtimeError(errorName))`
-  unless the ceremony was aborted because the user proceeded another way. One credential is
+  (`runtimeError` wraps the DOM exception name in an `Error`) unless the ceremony was
+  aborted because the user proceeded another way. One credential is
   reported once: keep the delivered credential keys per state and drop a duplicate that
   arrives from a second source.
 - **When WebAuthn capture is unavailable** (the `webauthnCapture` tag says so), a passkey
@@ -1360,7 +1378,7 @@ auth_method_decision_started  { pre-identifier, options: [identifier-email, swit
 subflow_started         { provide-identifier }                          ← the offer carried the input
 subflow_step_started    { provide-identifier, pi-post-response }        ← POST /api/auth/identifier request
 subflow_step_finished   { provide-identifier, pi-post-response }        ← exchange ok, { known: true }
-                                                                        (resolves pre-identifier; flow_decided login)
+                                                                        (resolves pre-identifier)
 auth_method_decision_started  { post-identifier, options: [password-login-known-identifier,
                                 passkey-login-known-identifier, back] } ← screen "password"
 subflow_started         { password-login }                              ← the offer carried the input
