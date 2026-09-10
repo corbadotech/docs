@@ -56,7 +56,7 @@ one of these holds:
 
 When in doubt, ask before writing code. State the trade-off like this:
 
-> Observe can be integrated two ways. **Data layer + mapping:** your code pushes a few
+> Observe can be integrated three ways. **Data layer + mapping:** your code pushes a few
 > semantic events (screen shown, option chosen, request settled, validation failed) into
 > a small in-page buffer, and one central module maps them onto Observe. Benefits: no
 > tracking calls scattered through components, the whole tracking model is readable in one
