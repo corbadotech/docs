@@ -28,8 +28,8 @@ There is **no backend integration**, no server-side SDK, no IdP configuration an
 | Web frameworks (React, Vue, Svelte, Angular, Next.js, Nuxt) | Yes | Yes | Yes | No framework-specific integration required. |
 | Web views inside native apps | Yes | Yes | Yes | The SDK runs in the web view. |
 | Cross-origin iframes | Yes | Yes | Yes | The SDK must run in the frame that performs the ceremony. See [Iframes and RP IDs](#3-iframes-and-rp-ids). |
-| iOS (Swift) | No | No | Yes | Native SDK. Autocapture and the data layer are browser techniques with no native equivalent. |
-| Android (Kotlin) | No | No | Yes | Native SDK, `com.corbado:observe`, minSdk 23. |
+| iOS (Swift) | No | No | Yes | [Native SDK](/corbado-observe/get-started/native), iOS 15 or newer. It captures system evidence on its own and takes facts from your screens through typed hooks, the native form of the data layer. |
+| Android (Kotlin) | No | No | Yes | [Native SDK](/corbado-observe/get-started/native), `com.corbado:observe`, minSdk 23. Same model as iOS, plus autofill evidence. |
 
 <Note>
   **JavaScript-based mobile frameworks** such as React Native with Expo, Ionic or Capacitor authenticate through a web surface and are covered by the web integration wherever the login runs in a web context. Where a framework routes passkeys through a native platform API instead, use the native SDK for that platform.
@@ -117,7 +117,7 @@ Observe runs on Corbado's public cloud by default. Dedicated instances in a spec
 
 <CardGroup cols={2}>
   <Card title="Integration paths" icon="route" href="/corbado-observe/overview/integration-paths">
-    Autocapture, data layer or custom events.
+    Autocapture, data layer, native SDKs or custom events.
   </Card>
   <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
     Confirm events are arriving before you ship.

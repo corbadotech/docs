@@ -1,0 +1,159 @@
+---
+title: "Get Started on iOS and Android"
+description: "Integrate Corbado Observe into a native app: the SDK captures system evidence on its own, your screens forward a few facts through typed hooks, and one adapter module in your app holds the mapping."
+sidebarTitle: "iOS and Android"
+---
+
+On iOS and Android, **Corbado Observe** runs as a native SDK inside your app. It follows the same split as the [data layer](/corbado-observe/get-started/data-layer) on web, in process instead of through a queue: the SDK captures what your code cannot see, your screens forward a few facts through typed hooks, and one adapter module in your app turns those facts into Observe flows, decisions and subflows. Corbado calls this **Autocapture Light**: your app exposes facts, the mapping interprets them. There is no script-only mode on native, so the hooks are always part of the app and updates ship with your releases.
+
+<Info>
+  Both SDKs send into the same data model as the web SDK, so app and web journeys land in the same project and the same funnels. Keep the channels apart with [applications](/corbado-observe/tracking/applications).
+</Info>
+
+## 1. Install
+
+<Tabs>
+  <Tab title="iOS (Swift)">
+    Swift Package Manager, iOS 15 or newer, Swift 6, no third-party dependencies. The package is public on [GitHub](https://github.com/corbado/observe-ios).
+
+    ```swift
+    dependencies: [
+        .package(url: "https://github.com/corbado/ios.git", from: "0.1.0")
+    ],
+    targets: [
+        .target(name: "YourApp", dependencies: [
+            .product(name: "CorbadoObserve", package: "ios")
+        ])
+    ]
+    ```
+  </Tab>
+  <Tab title="Android (Kotlin)">
+    Published to [Maven Central](https://central.sonatype.com/artifact/com.corbado/observe) as `com.corbado:observe`. minSdk 23, Kotlin-first API, dependencies limited to `kotlinx-coroutines` and `kotlinx-serialization`. Use the latest version listed there.
+
+    ```kotlin
+    dependencies {
+        implementation("com.corbado:observe:<latest>")
+    }
+    ```
+
+    The manifest merges two normal, auto-granted permissions: `INTERNET` for delivery and `USE_BIOMETRIC` for a capability probe that never shows a prompt. Nothing to configure for ProGuard or R8.
+  </Tab>
+</Tabs>
+
+## 2. What the SDK captures on its own
+
+- **System sheets and biometrics.** The app's active-state churn around passkey sheets, Face ID and Touch ID prompts and password fills, while a ceremony runs or a field is focused.
+- **Autofill and credential manager evidence.** On Android the optional autofill observer reports field types and value lengths. Values are never read.
+- **Device context.** OS version, device model, app version, locale, screen size and the device-owner authentication capability, probed without a prompt and throttled to about once a minute.
+- **Delivery.** Events are batched into a durable on-disk outbox that survives process death, sent with retries, flushed once more when the app leaves the foreground and recovered on the next launch.
+
+## 3. What your screens forward
+
+Your code forwards facts through typed hooks. It never forwards values.
+
+| Fact | Hook |
+| --- | --- |
+| Which screen is shown | `setScreen("password")` |
+| Field evidence: length and focus of the identifier, password or code field | `field.changed(newLength:)`, `field.focusChanged(...)`, `field.shown()`, `field.hidden()` |
+| A method attempt and its steps | Typed operations: `passwordLoginOperation()`, `passkeyLoginOperation()`, `passkeyEnrollmentOperation()`, `systemCredentialOperation()`, `provideIdentifierOperation()`, `emailOtpOperation()`, `smsOtpOperation()`, `socialLoginOperation()`, `provideDataOperation()`, `passwordEnrollmentOperation()` |
+| The ceremony result | `ceremonyFinished(...)`, `ceremonyFailed(error)` on the operation, with the platform error passed raw |
+| The request result | `postResponse.finished(...)`, `postResponse.errorTyped(...)` on the operation |
+| Flow boundaries and choices | `flowStarted`, `flowDecided`, `flowFinished`, `authMethodDecisionStarted`, `authMethodDecisionFinished` |
+
+The typed operations carry the exact vocabulary the classifier expects, so prefer them over hand-rolled events. Both SDKs also offer an untyped operation for anything the typed ones do not cover.
+
+<Tabs>
+  <Tab title="iOS (Swift)">
+    ```swift
+    import CorbadoObserve
+
+    // App startup. The SDK is inert until you call this.
+    let tracker = CorbadoObserve.initialize(
+        options: ObserveOptions(projectId: "pro-...", apiBaseUrl: "https://api.cloud.corbado.io"))
+
+    // Auth journey:
+    guard let tracker else { return }
+    tracker.flowStarted("login")
+    let op = tracker.passwordLoginOperation()
+    op.start(specType: .withIdentifier)
+    // Field evidence, lengths and focus only:
+    //   .onChange(of: password) { op.passwordField.changed(newLength: $0.count) }
+    //   .onChange(of: focus)    { op.passwordField.focusChanged($0 == .password) }
+    // UIKit: the same two calls from textDidChange and the editing delegates.
+    op.postResponse.start()
+    // ... call your backend ...
+    op.postResponse.finished(options: StepOptions(userReference: UserReference(userId: "usr-1")))
+    tracker.flowFinished("login")
+    ```
+  </Tab>
+  <Tab title="Android (Kotlin)">
+    ```kotlin
+    // Application.onCreate. Not calling init keeps the SDK inert.
+    val tracker = CorbadoObserve.init(
+        context,
+        ObserveOptions(projectId = "pro-XXXX", apiBaseUrl = "https://api.cloud.corbado.io"),
+    ) ?: return // null means disabled; the call never throws
+
+    tracker.flowStarted(flowName = "login", touchpoint = "account")
+
+    val op = tracker.passwordLoginOperation()
+    op.start(PasswordLoginOperation.SpecType.KnownIdentifier)
+    op.postResponse.start()
+    val result = yourBackend.login(email, password)
+    when (result) {
+        is Success -> {
+            val user = UserReference(userId = result.userId, identifier = email)
+            op.postResponse.finished(options = StepOptions(userReference = user))
+            tracker.flowFinished("login", options = StepOptions(userReference = user))
+        }
+        is WrongPassword -> with(op) { postResponse.errorTyped(PasswordLoginOperation.Error.InvalidPassword) }
+    }
+    ```
+
+    Every call is main-safe: no disk or network work happens on the calling thread.
+  </Tab>
+</Tabs>
+
+## 4. Keep the mapping in one module
+
+The hooks above are the facts. Where they become Observe vocabulary is a design choice, and it is the choice that decides how maintainable the integration stays. Keep it in one adapter module of your app:
+
+- Screens report what happened to the adapter: which screen is shown, which control was chosen, the field evidence, the ceremony and request results.
+- Only the adapter calls the SDK. It holds the decision names, the spec types, the flow boundaries and the rules from the [modeling method](/corbado-observe/tracking/modeling).
+- Screens carry no tracking state of their own.
+
+This is the same separation as the mapping on web. Corbado can review that module with you and supply concrete patches, and because it is one module, a tracking correction is one change in one place. Updates ship with your app releases.
+
+## 5. Consent and runtime controls
+
+Initialize the SDK at app start. Consent decides what is recorded and sent:
+
+```kotlin
+tracker.setCollectionEnabled(false) // stop recording anything new, for example when consent is revoked
+tracker.setTransportEnabled(false)  // keep collecting, send nothing
+tracker.flush()                     // push pending events now
+CorbadoObserve.destroy()            // stop collecting, drain with the configured retries, then shut down
+```
+
+The same controls exist in Swift. Undelivered events stay in the outbox for recovery on the next launch.
+
+## 6. Verify
+
+Run a journey with debug logging on and note the session id from `getSessionId()`. Then check the backend side with the [Observe CLI](/corbado-observe/tools/cli) through `events-feed`, `classify` and `classification-errors`, or in the console under **Observe → Debugging → Integration** with the **Process** button. See [Verify your integration](/corbado-observe/get-started/verify). The Chrome extension does not apply to native apps.
+
+## 7. Next steps
+
+<CardGroup cols={2}>
+  <Card title="Model your journeys" icon="sitemap" href="/corbado-observe/tracking/modeling">
+    The rules the adapter module implements.
+  </Card>
+  <Card title="Subflows" icon="list-check" href="/corbado-observe/tracking/subflows">
+    The operations and their steps.
+  </Card>
+  <Card title="Applications" icon="layer-group" href="/corbado-observe/tracking/applications">
+    Keep web, iOS and Android comparable in one project.
+  </Card>
+  <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
+    Confirm events arrive before you ship.
+  </Card>
+</CardGroup>

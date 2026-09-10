@@ -30,11 +30,17 @@ The shapes differ in where the signals come from and who owns the mapping:
 Delivery, either a self-hosted package or a Corbado script tag (recommended), is a separate
 dimension. It applies to Autocapture and to the data layer alike (section 6).
 
-**Scope: this skill is for customers integrating from their own source. It implements the
-data layer + mapping shape by default and uses custom events only under the conditions in
-section 1.** Autocapture is implemented and maintained by Corbado and is not built with
-this skill. All three shapes write into the same project, session and data model.
+**Scope: this skill is for customers integrating a web frontend from their own source. It
+implements the data layer + mapping shape by default and uses custom events only under the
+conditions in section 1.** Autocapture is implemented and maintained by Corbado and is not
+built with this skill. All three shapes write into the same project, session and data model.
 `@corbado/autocapture` is the capture library, `@corbado/observe` is the tracker SDK.
+
+Native apps are out of this skill's scope. On iOS and Android the native SDKs follow the same
+split, called Autocapture Light: the SDK captures system evidence on its own, the screens
+forward facts through typed hooks, one adapter module in the app holds the mapping. The
+taxonomy rules in section 8 apply there unchanged; the web sections do not. See
+https://docs.corbado.com/corbado-observe/get-started/native.
 
 ## 1. Decide the integration shape
 

@@ -39,6 +39,7 @@
                         "pages": [
                             "corbado-observe/get-started/autocapture",
                             "corbado-observe/get-started/data-layer",
+                            "corbado-observe/get-started/native",
                             "corbado-observe/get-started/custom-events",
                             "corbado-observe/get-started/use-with-ai-agents",
                             "corbado-observe/get-started/verify"
