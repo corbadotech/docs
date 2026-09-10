@@ -4,9 +4,9 @@ description: "How to map your login, sign-up, recovery and enrollment journeys o
 sidebarTitle: "Modeling"
 ---
 
-Custom events are only the transport. A backend classifier reads each session's event stream and produces the **flows**, **decisions** and **subflow attempts** that every dashboard is built on. Raw events remain visible in the console for debugging a single user, but the classified output is what carries the value.
+Events are only the transport. A backend classifier reads each session's event stream and produces the **flows**, **decisions** and **subflow attempts** that every dashboard is built on. Raw events remain visible in the console for debugging a single user, but the classified output is what carries the value.
 
-The classifier is not visible from your integration, so this page describes the rules it applies and a method for mapping your journeys onto them. Reason about every event you emit from the classifier's perspective, not from how the raw series looks.
+The classifier is not visible from your integration, so this page describes the rules it applies and a method for mapping your journeys onto them. Reason about every event you emit from the classifier's perspective, not from how the raw series looks. The method is the same whether the events come from the [data layer mapping](/corbado-observe/get-started/data-layer) or from [custom events](/corbado-observe/get-started/custom-events) in your code; with the data layer, each pass below fills one table of the mapping instead of placing calls in components.
 
 ## 1. Three passes
 

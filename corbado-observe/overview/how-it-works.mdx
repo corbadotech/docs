@@ -16,12 +16,13 @@ That gap is what **Corbado Observe** measures. For the wider argument, see [Why 
 
 ## 2. How data flows through Observe
 
-The two [integration paths](/corbado-observe/overview/integration-paths) differ only in step 1. From step 2 onwards they run through the same pipeline.
+The three [integration paths](/corbado-observe/overview/integration-paths) differ only in step 1. From step 2 onwards they run through the same pipeline.
 
 ```mermaid
 flowchart TD
     subgraph capture["1. Capture"]
         A["Autocapture<br />web"]
+        L["Data layer + mapping<br />web"]
         C["Custom events<br />web, iOS, Android"]
     end
     capture --> B["2. Send"]
@@ -33,7 +34,7 @@ flowchart TD
 
 <Steps>
   <Step title="Capture">
-    [Autocapture](/corbado-observe/get-started/autocapture) observes what your web frontend already does. [Custom events](/corbado-observe/get-started/custom-events) are events you emit yourself, from the web, iOS or Android SDK.
+    [Autocapture](/corbado-observe/get-started/autocapture) observes what your web frontend already does. The [data layer](/corbado-observe/get-started/data-layer) takes a few semantic events your web app pushes and maps them centrally. [Custom events](/corbado-observe/get-started/custom-events) are events you emit yourself, from the web, iOS or Android SDK.
   </Step>
   <Step title="Send">
     Events are batched and sent asynchronously to Corbado. Delivery never blocks your UI and never sits in the authentication path.
@@ -88,7 +89,7 @@ Observe complements these rather than replacing them. It is deliberately narrow:
 
 <CardGroup cols={2}>
   <Card title="Integration paths" icon="route" href="/corbado-observe/overview/integration-paths">
-    Autocapture vs. custom events.
+    Autocapture, data layer or custom events.
   </Card>
   <Card title="Compatibility & constraints" icon="list-check" href="/corbado-observe/overview/constraints">
     Platforms, requirements and limits.

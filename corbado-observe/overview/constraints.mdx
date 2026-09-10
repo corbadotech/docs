@@ -22,14 +22,14 @@ There is **no backend integration**, no server-side SDK, no IdP configuration an
 
 ## 2. Platform support
 
-| Platform | Autocapture | Custom events | Notes |
-| --- | --- | --- | --- |
-| Web apps (SSR, SPA, MPA) | Yes | Yes | Same-document route changes are observed, so a journey survives a client-side router. |
-| Web frameworks (React, Vue, Svelte, Angular, Next.js, Nuxt) | Yes | Yes | No framework-specific integration required. |
-| Web views inside native apps | Yes | Yes | The SDK runs in the web view. |
-| Cross-origin iframes | Yes | Yes | The SDK must run in the frame that performs the ceremony. See [Iframes and RP IDs](#3-iframes-and-rp-ids). |
-| iOS (Swift) | No | Yes | Native SDK. Autocapture is a browser technique and has no native equivalent. |
-| Android (Kotlin) | No | Yes | Native SDK, `com.corbado:observe`, minSdk 23. |
+| Platform | Autocapture | Data layer | Custom events | Notes |
+| --- | --- | --- | --- | --- |
+| Web apps (SSR, SPA, MPA) | Yes | Yes | Yes | Same-document route changes are observed, so a journey survives a client-side router. |
+| Web frameworks (React, Vue, Svelte, Angular, Next.js, Nuxt) | Yes | Yes | Yes | No framework-specific integration required. |
+| Web views inside native apps | Yes | Yes | Yes | The SDK runs in the web view. |
+| Cross-origin iframes | Yes | Yes | Yes | The SDK must run in the frame that performs the ceremony. See [Iframes and RP IDs](#3-iframes-and-rp-ids). |
+| iOS (Swift) | No | No | Yes | Native SDK. Autocapture and the data layer are browser techniques with no native equivalent. |
+| Android (Kotlin) | No | No | Yes | Native SDK, `com.corbado:observe`, minSdk 23. |
 
 <Note>
   **JavaScript-based mobile frameworks** such as React Native with Expo, Ionic or Capacitor authenticate through a web surface and are covered by the web integration wherever the login runs in a web context. Where a framework routes passkeys through a native platform API instead, use the native SDK for that platform.
@@ -117,7 +117,7 @@ Observe runs on Corbado's public cloud by default. Dedicated instances in a spec
 
 <CardGroup cols={2}>
   <Card title="Integration paths" icon="route" href="/corbado-observe/overview/integration-paths">
-    Autocapture vs. custom events.
+    Autocapture, data layer or custom events.
   </Card>
   <Card title="Verify your integration" icon="circle-check" href="/corbado-observe/get-started/verify">
     Confirm events are arriving before you ship.
