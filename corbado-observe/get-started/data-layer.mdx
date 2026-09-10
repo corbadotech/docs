@@ -1,6 +1,6 @@
 ---
 title: "Get Started with the Observe Data Layer"
-description: "Tag your screens, push a few events into the Observe data layer, capture network and WebAuthn in your page, and let one central mapping turn it all into Corbado Observe events."
+description: "Tag your screens, push a few events into the Observe data layer, capture network and WebAuthn in your page and let one central mapping turn it all into Corbado Observe events."
 sidebarTitle: "Data layer"
 ---
 
@@ -155,7 +155,7 @@ The full contract, the emission rules and the mapping's tables are in the [Corba
 
 ## 7. The mapping
 
-The mapping is a self-contained module with a fixed layout: a contract file shared with your emitters, a taxonomy file holding the tables that translate your screen names and endpoints into Observe's flows, decisions and steps, a coordinator that derives flow starts, finishes and skips from those tables, and one state class per screen. It imports only its contract and `@corbado/observe`. It does not import your app and does not touch browser APIs. Corbado provides a sample skeleton for your stack, and the agent skill writes it against your journeys.
+The mapping is a self-contained module with a fixed layout: a contract file shared with your emitters, a taxonomy file holding the tables that translate your screen names and endpoints into Observe's flow names, decision names and subflow steps, a coordinator that derives flow starts, finishes and skips from those tables, and one state class per screen. It imports only its contract and `@corbado/observe`. It does not import your app and does not touch browser APIs. Corbado provides a sample skeleton for your stack, and the agent skill writes it against your journeys.
 
 The maintenance split follows from that layout. The markup, the emitters and the capture wiring are your code and evolve with your screens. The mapping is the single place where tracking logic lives, and it can be maintained by you or together with Corbado. If you want Corbado to own the whole thing, including reconciling the tracking after your releases, without any code changes on your side, that is [Autocapture](/corbado-observe/get-started/autocapture).
 

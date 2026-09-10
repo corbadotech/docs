@@ -116,7 +116,7 @@ The typed operations carry the exact vocabulary the classifier expects, so prefe
 
 ## 4. Keep the mapping in one module
 
-The hooks above are the facts. Where they become Observe vocabulary is a design choice, and it is the choice that decides how maintainable the integration stays. Keep it in one adapter module of your app:
+The hooks above are the facts. Where they become Observe events is a design choice, and it is the choice that decides how maintainable the integration stays. Keep it in one adapter module of your app:
 
 - Screens report what happened to the adapter: which screen is shown, which control was chosen, the field evidence, the ceremony and request results.
 - Only the adapter calls the SDK. It holds the decision names, the spec types, the flow boundaries and the rules from the [modeling method](/corbado-observe/tracking/modeling).

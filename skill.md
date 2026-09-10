@@ -16,8 +16,8 @@ Every Observe integration has the same two halves, whatever its shape:
 
 - **Signal sources**: what the browser and the app reveal, that is screens and the controls
   on them, network exchanges, WebAuthn ceremonies and validation results.
-- **One mapping**: the single place that turns those signals into Observe taxonomy calls
-  through `@corbado/observe`.
+- **One mapping**: the single place that emits the Observe events for the flows, decisions
+  and subflow steps through `@corbado/observe`.
 
 The shapes differ in where the signals come from and who owns the mapping:
 
