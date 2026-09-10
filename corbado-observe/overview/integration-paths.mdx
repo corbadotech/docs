@@ -45,7 +45,7 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
 ## 2. Data layer + mapping
 
 <Info>
-  **Recommended when you integrate from source.** The same central mapping as Autocapture, fed by a few events your code pushes.
+  **Recommended when you integrate from source.** Like Autocapture it runs on one central mapping module that turns signals into Observe events. The difference: your app pushes the screen events, network and WebAuthn are captured in your page, and the mapping can live in your codebase.
 </Info>
 
 Your screens carry one data attribute per control, and your code pushes a few events into the **Observe data layer**, an in-page queue with the mechanics of an analytics data layer: a screen was presented with these options, an option was chosen, validation rejected a field. Network calls and WebAuthn ceremonies are captured automatically in your page by the same library Autocapture uses and pushed into the same queue. One central module, the **mapping**, takes the queue over and turns everything into Observe flows, decisions and subflows.
