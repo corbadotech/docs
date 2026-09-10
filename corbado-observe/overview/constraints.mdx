@@ -41,8 +41,8 @@ Native SDKs send into the same [data model](/corbado-observe/tracking/overview) 
 
 If your authentication runs inside an iframe, which is common for embedded login and embedded wallets, two things matter:
 
-- **The SDK must run in the frame that performs the ceremony.** `navigator.credentials` calls are observed in the document that makes them, not in the parent.
-- **The iframe must be permitted to perform WebAuthn.** A cross-origin iframe needs the `publickey-credentials-get` and `publickey-credentials-create` permissions policy for passkeys to work at all. That is a requirement of your own implementation, not of Observe, but it is the first thing to check when ceremonies appear to be missing.
+- **The SDK must run in the frame that performs the ceremony.** `navigator.credentials` calls are observed in the document that makes them. The parent document sees nothing.
+- **The iframe must be permitted to perform WebAuthn.** A cross-origin iframe needs the `publickey-credentials-get` and `publickey-credentials-create` permissions policy for passkeys to work at all. That is a requirement of your own implementation. Observe does not add it, but it is the first thing to check when ceremonies appear to be missing.
 
 See the guide on [relying party IDs](/corbado-connect/helpful-guides/rpid-configuration/overview) for background on RP ID scoping.
 
@@ -63,7 +63,7 @@ Observe does not need PII to do its job. It collects no names, email addresses, 
 | Tags you define | Your own dimensions such as country, channel or experiment variant. See [Tags](/corbado-observe/tracking/tags) |
 
 <Warning>
-  WebAuthn responses are inherently identifying: they contain credential IDs, user handles, challenges, signatures and authenticator data. Observe collects the fields it needs for authenticator and credential insight. If you must not send user handles or credential IDs to a processor, raise this before integration so the collection profile can be scoped accordingly.
+  WebAuthn responses are inherently identifying: they contain credential IDs, user handles, challenges, signatures and authenticator data. The capture library removes the user name and display name from creation options, the signature from assertion responses and PRF extension results from both; credential IDs, challenges and attestation material remain. Observe collects the fields it needs for authenticator and credential insight. If you must not send user handles or credential IDs to a processor, raise this before integration so the collection profile can be scoped accordingly.
 </Warning>
 
 **You control identity.** The user reference is a value you pass. Pass a pseudonymous or hashed identifier and Observe never sees a real user ID.
@@ -103,7 +103,7 @@ Session storage holds the per-tab session. Local storage holds configuration, pe
 
 The SDK checks inactivity when it initializes. A dated per-tab session that has reached its inactivity window gets a new ID at that point; continuity sessions also expire at initialization. Tracking refreshes activity, but inactivity alone does not rotate the ID within a running page. A long-lived page can therefore outlive the inactivity window. With continuity enabled, a tab can adopt a shared session ID changed by another tab.
 
-The inactivity window is server-controlled, not an initialization option. An Observe session is a telemetry grouping, independent of your application's authenticated session. If a flow continues across page loads, its inactivity window must span that journey. On upgrade, a valid legacy bare session ID is preserved and dated when first read, rather than immediately split. Follow the [upgrade instructions](/corbado-observe/get-started/custom-events#migrating-existing-project-storage) when introducing multiple projects.
+The inactivity window is server-controlled. There is no initialization option for it. An Observe session is a telemetry grouping, independent of your application's authenticated session. If a flow continues across page loads, its inactivity window must span that journey. On upgrade, a valid legacy bare session ID is preserved and dated when first read. It is not split immediately. Follow the [upgrade instructions](/corbado-observe/get-started/custom-events#migrating-existing-project-storage) when introducing multiple projects.
 
 Observe stores no advertising identifiers and does no cross-site tracking. Whether your consent management platform needs to gate the SDK is your own legal assessment. If it does, initialize Observe after consent and journeys before that point are simply not recorded. With the [data layer](/corbado-observe/get-started/data-layer), the stub and the capture start with the page and no identity is transmitted until your code signals consent, so the question becomes whether recording before consent is acceptable at all.
 

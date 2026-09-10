@@ -34,7 +34,7 @@ Every SDK method emits exactly one event. The wire name is what appears in debug
 | `flow_finished` | `flowFinished()` | Success, or an explicit skip via `explicitOutcome` |
 | `flow_auto_finished` | `flowAutoFinished()` | A nested flow's terminal completes the parent |
 | `flow_reset` | `flowReset()` | Rarely, an explicit restart |
-| `flow_enriched` | `setCrossEnvironmentTransactionId()` | A cross-environment handoff |
+| `flow_enriched` | `setUser()` | A user reference or a cross-environment handoff becomes known inside the active flow |
 | `conversion` | `conversion()` | A business conversion outside authentication |
 | `auth_method_decision_started` | `authMethodsDecisionStarted()` | A checkpoint is presented or its options change |
 | `auth_method_decision_finished` | `authMethodsDecisionFinished()` | A navigational choice is made |

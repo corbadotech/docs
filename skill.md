@@ -282,6 +282,46 @@ declare global {
 click for an outcome, `startedAt` for a request, the settlement for an exchange. The mapping
 passes it on as `explicitTimestamp`, so the mapping may run later without shifting anything.
 
+The three capture types, as `@corbado/autocapture` 0.6 defines them. The package's own
+`.d.ts` is authoritative when it moves:
+
+```typescript
+type HttpRequestStarted = {
+    requestId: string;            // shared with the exchange
+    transport: "xhr" | "fetch";
+    method: string;               // uppercase
+    url: string;                  // absolute, may contain query and fragment
+    path: string;
+    startedAt: number;
+    requestBody?: unknown;        // whatever the request projector returned
+};
+
+type HttpExchange = HttpRequestStarted & {
+    status: number;               // 0 when unavailable
+    ok: boolean;
+    outcome: "load" | "abort" | "timeout" | "error"; // "load" includes HTTP failures, read `ok`
+    durationMs?: number;
+    responseUrl?: string;
+    responseBody?: unknown;       // whatever the response projector returned
+};
+
+type WebAuthnCeremonyEvent = {
+    ceremonyId: string;
+    mediation: "silent" | "optional" | "conditional" | "required" | "unknown";
+} & (
+    | { kind: "authentication"; uiMode: "default" | "immediate" | "unknown"; credentialSet: "allowlisted" | "discoverable" }
+    | { kind: "registration" }
+) & (
+    | { phase: "started"; userActivation?: boolean; requestOptionsJson?: string; creationOptionsJson?: string }
+    | { phase: "completed"; credentialJson?: string; aborted?: true }
+    | { phase: "failed"; error: unknown; errorName: string; aborted?: true }
+);
+```
+
+The JSON strings are already sanitized by the package: creation options lose `user.name` and
+`user.displayName`, assertion responses lose the signature, both responses lose PRF extension
+results. Credential IDs, challenges and attestation material stay.
+
 ### 4.3 DOM emitters: tagged controls and one emit site per screen
 
 A screen offer is built from the markup. The app does not maintain a list of options in
@@ -425,6 +465,14 @@ Rules:
   then uses the fallback carrier rule in section 8. Push the handle's mode once as
   `setTags({ webauthnCapture: mode })` so that the mapping can read it.
 
+What a projector receives, in the `body` argument: a string for JSON, text and
+form-urlencoded bodies, the browser-parsed value for an XHR whose `responseType` is `json`,
+and nothing at all for form data, blobs and other non-text bodies. The projector parses
+the string itself (`JSON.parse`, `URLSearchParams`) and returns the projected object, or
+`undefined` to omit the body. Throwing or returning a promise omits the body as well and
+never reaches the app. Every transport the app uses must be listed in `transports`
+(default: both `xhr` and `fetch`).
+
 ### 4.5 Lifecycle: always on, consent as a signal
 
 `init` runs at document start, unconditionally. Consent does not decide whether Observe
@@ -432,8 +480,8 @@ runs. It decides what is transmitted and how the backend processes the session:
 
 - Call `setConsent(true)` as soon as consent is known. Until then the mapping transmits no
   identity: `setUser` is held and released into the open flow when consent arrives. The
-  mapping stamps the consent state as a tag on every flow start so that the backend can
-  treat the session accordingly.
+  mapping stamps the consent state as a tag on every flow start, so the consent state is
+  available on the Corbado side.
 - Call `setConsent(false)` on revocation. The mapping stops transmitting identity again.
 - `destroy` is only for teardown, when a surface is removed for good. It is no consent
   reaction.
@@ -458,6 +506,36 @@ event shape (one object with a type key and a flat payload), on purpose:
   carries an input element, which tag managers mangle, and tag managers load late and
   behind consent gates. Once low events move into the layer as well, the queue holds no
   DOM references and can live anywhere a serializable data layer can.
+
+### 4.7 Multi-page apps and full-page form posts
+
+A server-rendered app submits the password, the one-time code and the social callback as
+document navigations. The browser never sees a response object, and the mapping's memory
+is gone before the answer exists. The rules above still hold; four things are added:
+
+- **Every page carries the stub, the capture wiring and the mapping.** Inline the stub in
+  every layout, run the capture wiring and the mapping (or the loader) on every page.
+- **The Observe session survives same-tab navigations.** It lives in session storage per
+  tab. A link opened in a new tab, such as a recovery email, is a new session and uses the
+  cross-environment rule in section 8: start the destination flow first, then
+  `setUser({ crossEnvironmentTransactionID })` on both ends.
+- **Persist what the mapping needs across pages.** The coordinator keeps a small journey
+  record in session storage: the open flows, innermost first, and the pending step (subflow
+  type, spec type, step name, `requestId`, `startedAt`). On the next page it reads the
+  record, re-announces only the innermost open flow (the classifier merges a repeated
+  innermost `flow_started`, see section 2) and never the outer one, and recreates the
+  pending helper with the same spec type. The repeated `subflow_started` folds into the
+  attempt (section 8, Continuing an attempt).
+- **A form post is settled by the next page.** Before the submit leaves, the handler pushes
+  the outcome and a `network` request event with a client-generated `requestId` and
+  `startedAt`; the mapping starts the step and calls `tracker.flushKeepalive()`. The server
+  renders the result of that request into the next page, for example as a JSON script tag
+  with `requestId`, `path`, `status`, `ok` and the error code, and the page's emitter pushes
+  the matching `exchange` event. The mapping settles the step from it like any exchange.
+
+Delivery is covered by the SDK: it flushes synchronously on `pagehide` and when the
+document becomes hidden, keeps undelivered events in local storage and recovers them at
+the next load. Nothing pushed right before a navigation is lost.
 
 ## 5. The mapping (the central module)
 
@@ -581,6 +659,78 @@ Rules the coordinator enforces (section 8 has the classifier reasons):
   and reports the gap through `tracker.telemetry("info", ...)`. An interface the mapping
   cannot name is a missing mapping and should be visible as one.
 
+The routing itself, so that nothing is left to prose:
+
+```typescript
+import type { CorbadoTracker, FlowType, UserReference } from "@corbado/observe";
+import type { DataLayerEvent, DomScreen, NetworkEvent } from "./contract";
+import { FLOWS } from "./taxonomy";
+import { createState, Unmapped, type ScreenState } from "./states";
+
+type Exchange = Extract<NetworkEvent, { kind: "exchange" }>;
+
+export class Coordinator {
+    private state?: ScreenState;
+    private consent = false;
+    private user?: UserReference;
+    private tags: Record<string, string> = {};
+    private readonly open: FlowType[] = []; // innermost last
+    constructor(private readonly tracker: CorbadoTracker) {}
+
+    setConsent(granted: boolean) { this.consent = granted; if (granted && this.user && this.open.length) this.tracker.setUser(this.user); }
+    setUser(user: UserReference) { this.user = user; if (this.consent && this.open.length) this.tracker.setUser(user); }
+    setTags(tags: Record<string, string>) { Object.assign(this.tags, tags); }
+
+    handle(event: DataLayerEvent) {
+        if (event.type === "dom" && event.kind === "screen") return this.screen(event);
+        if (event.type === "dom" && event.kind === "outcome") {
+            this.state?.outcome(event);
+            for (const flow of FLOWS.skipOutcome[event.screen] ?? []) if (this.isOpen(flow)) this.finish(flow, "skipped");
+            return;
+        }
+        if (event.type === "dom") return this.state?.clientError(event);
+        if (event.type === "webApi") return this.state?.webApi(event);
+        this.state?.network(event);
+        if (event.kind === "exchange") this.terminal(event);
+    }
+
+    private screen(screen: DomScreen) {
+        for (const flow of FLOWS.skip[screen.screen] ?? []) if (this.isOpen(flow)) this.finish(flow, "skipped");
+        const entry = FLOWS.entry[screen.screen];
+        if (entry && !this.isOpen(entry)) {
+            this.tracker.flowStarted({ flowName: entry, touchpoint: screen.touchpoint }, { ...this.tags, ...screen.tags, consent: this.consent ? "granted" : "unknown" });
+            this.open.push(entry);
+            if (this.consent && this.user) this.tracker.setUser(this.user);
+        }
+        this.state?.exit();
+        this.state = createState(screen.screen, this.tracker) ?? new Unmapped(screen.screen, this.tracker); // the screen table
+        this.state.enter(screen);
+    }
+
+    private terminal(exchange: Exchange) {
+        const hit = FLOWS.terminal.find((t) => t.method === exchange.method && t.path === exchange.path);
+        if (!hit || !exchange.ok || (hit.when && !hit.when(exchange))) return;
+        if (!this.isOpen(hit.flow)) return;
+        if (this.consent && this.user) this.tracker.setUser(this.user);
+        const parent = this.open[this.open.indexOf(hit.flow) - 1];
+        this.finish(hit.flow);
+        if (parent) { this.tracker.flowAutoFinished({ flowName: parent, finishedByFlowName: hit.flow }); this.open.splice(this.open.indexOf(parent), 1); }
+        this.tracker.flushKeepalive();
+    }
+
+    private finish(flow: FlowType, explicitOutcome?: "skipped") {
+        this.tracker.flowFinished({ flowName: flow, ...(explicitOutcome ? { explicitOutcome } : {}) }, this.tags);
+        this.open.splice(this.open.indexOf(flow), 1);
+    }
+    private isOpen(flow: FlowType) { return this.open.includes(flow); }
+    destroy() { this.state?.exit(); this.state = undefined; }
+}
+```
+
+`createState` is the screen table in code: a switch from the app's screen name to the
+state class. `Unmapped` emits nothing and reports the screen once through
+`tracker.telemetry("info", ...)`.
+
 ### 5.4 Screen states
 
 One class per app screen. A state owns its decision, its operation helpers and the steps
@@ -629,7 +779,8 @@ export class PasswordScreen {
         switch (`${e.method} ${e.path}`) {
             case "POST /api/auth/password":
                 return settle(this.password?.postResponse, e, {
-                    success: (x) => x.responseBody?.status === "ok",
+                    success: (x) => (x.responseBody as { status?: string })?.status === "ok",
+                    code: (x) => (x.responseBody as { code?: string })?.code,
                     typed: { INVALID_CREDENTIALS: "invalid_password", LOCKED: "account_locked" },
                 });
             case "POST /api/auth/passkeys/options":
@@ -639,8 +790,9 @@ export class PasswordScreen {
         }
     }
 
+    private readonly delivered = new Set<string>();
     webApi(e: WebAuthnEvent) {
-        if (e.kind === "authentication" && e.mediation !== "conditional") ceremony(this.passkey?.ceremony, e);
+        if (e.kind === "authentication" && e.mediation !== "conditional") ceremony(this.passkey?.ceremony, e, this.delivered);
     }
 
     clientError(e: DomClientError) {
@@ -657,22 +809,106 @@ export class PasswordScreen {
 
 ### 5.5 Settling steps from exchanges and ceremonies
 
-Write these once in `steps.ts`; every state uses them:
+`steps.ts`, used by every state:
 
-- `settle(step, event, rules)`: a `request` event calls `step.start({}, { explicitTimestamp: startedAt })`.
-  An `exchange` with `outcome !== "load"` is `step.error({ code: "transport_failed" })`.
-  An HTTP failure or a projected rejection is `step.errorTyped({ code })` when `rules.typed`
-  maps the server's code to a helper-typed one, else `step.error({ code, message })` with
-  the server's raw label. Success (`ok` and `rules.success`, default `ok`) is
-  `step.finished(rules.finished?.(exchange) ?? {})`. A response the rules cannot classify
-  leaves the step open and goes to `tracker.telemetry` as a mapping gap. Do not guess a code.
-- `ceremony(step, event)`: `started` calls `step.start({ assertionOptions: requestOptionsJson })`
-  (enrollment: `attestationOptions` plus `mediation`), `completed` calls `step.finished`
-  with `credentialJson`, `failed` calls `step.error(event.error ?? runtimeError(errorName))`
-  (`runtimeError` wraps the DOM exception name in an `Error`) unless the ceremony was
-  aborted because the user proceeded another way. One credential is
-  reported once: keep the delivered credential keys per state and drop a duplicate that
-  arrives from a second source.
+```typescript
+import type { StepOptions } from "@corbado/observe";
+import type { NetworkEvent, WebAuthnEvent } from "./contract";
+
+type Exchange = Extract<NetworkEvent, { kind: "exchange" }>;
+/** The step surface every helper step shares; `errorTyped` exists only on steps with typed codes. */
+type AnyStep = {
+    start: (data: never, options?: StepOptions) => void;
+    finished: (data: never, options?: StepOptions) => void;
+    error: (error: unknown, options?: StepOptions) => void;
+    errorTyped?: (error: { code: string }, options?: StepOptions) => void;
+};
+type Loose = { start: (d: object, o?: StepOptions) => void; finished: (d: object, o?: StepOptions) => void };
+
+export type SettleRules = {
+    success?: (exchange: Exchange) => boolean;                   // default: exchange.ok
+    finished?: (exchange: Exchange) => object;                   // payload for step.finished, default {}
+    code?: (exchange: Exchange) => string | undefined;           // the server's code from the projected body
+    message?: (exchange: Exchange) => string | undefined;        // the server's raw label
+    typed?: Record<string, string>;                              // server code → helper-typed code
+};
+
+/** Request phase starts the step; exchange phase settles it. Never guesses a code. */
+export function settle(step: AnyStep | undefined, event: NetworkEvent, rules: SettleRules = {}, gap?: (text: string) => void): void {
+    if (!step) return;
+    const s = step as unknown as Loose;
+    if (event.kind === "request") {
+        s.start({}, { explicitTimestamp: event.startedAt });
+        return;
+    }
+    const at = { explicitTimestamp: event.timestamp };
+    if (event.outcome !== "load") {
+        step.error({ code: "transport_failed", message: event.outcome }, at);
+        return;
+    }
+    if (rules.success ? rules.success(event) : event.ok) {
+        s.finished(rules.finished?.(event) ?? {}, at);
+        return;
+    }
+    const code = rules.code?.(event) ?? (event.ok ? undefined : `http_${event.status}`);
+    if (code === undefined) {
+        gap?.(`unclassified response ${event.method} ${event.path}`); // leave the step open
+        return;
+    }
+    const typed = rules.typed?.[code];
+    if (typed && step.errorTyped) step.errorTyped({ code: typed }, at);
+    else step.error({ code, message: rules.message?.(event) }, at);
+}
+
+export const runtimeError = (name: string): Error => Object.assign(new Error(name), { name });
+
+/** One credential is reported once, whichever source delivers it first. */
+export const credentialKey = (json: string | undefined): string | undefined => {
+    if (!json) return undefined;
+    try {
+        const c = JSON.parse(json);
+        return `${c.rawId ?? c.id}:${c.response?.clientDataJSON}`;
+    } catch {
+        return json;
+    }
+};
+
+/** Maps a captured ceremony onto a passkey helper's `ceremony` step. */
+export function ceremony(step: AnyStep | undefined, event: WebAuthnEvent, delivered: Set<string>): void {
+    if (!step) return;
+    const s = step as unknown as Loose;
+    const at = { explicitTimestamp: event.timestamp };
+    if (event.phase === "started") {
+        if (event.kind === "registration") {
+            const mediation = event.mediation === "conditional" || event.mediation === "required" ? event.mediation : "optional";
+            s.start({ attestationOptions: event.creationOptionsJson, mediation }, at);
+        } else {
+            s.start({ assertionOptions: event.requestOptionsJson }, at);
+        }
+        return;
+    }
+    if (event.phase === "completed") {
+        const key = credentialKey(event.credentialJson);
+        if (key) {
+            if (delivered.has(key)) return;
+            delivered.add(key);
+        }
+        s.finished(event.kind === "registration"
+            ? { attestationResponse: event.credentialJson ?? "" }
+            : { assertionResponse: event.credentialJson ?? "" }, at);
+        return;
+    }
+    if (event.aborted) return; // torn down because the user proceeded another way: no error
+    step.error(event.error ?? runtimeError(event.errorName), at);
+}
+```
+
+Three rules sit behind the code:
+
+- A response the rules cannot classify leaves the step open and goes to `tracker.telemetry`
+  as a mapping gap. `settle` never guesses a code.
+- A credential is reported once. `delivered` is a per-state set; a second source that
+  carries the same credential is dropped.
 - **When WebAuthn capture is unavailable** (the `webauthnCapture` tag says so), a passkey
   attempt reports only what was observed: the sanitized credential from the submission
   request goes on `postResponse.start` as the fallback carrier, options observed on the
@@ -774,6 +1010,10 @@ non-completion needs client help. In the default shape it is the flow table's `s
 entries. The reverse also holds: do not re-emit the _outer_ flow's `flow_started` while a
 nested flow is open. The classifier reads it as a restart and closes the nested flow as
 incomplete (see System context).
+
+**Enrollment offers that were never shown** are not modeled in this version: the adoption
+denominator counts shown offers. The SDK outcomes `invisible` and `visible-auto-skip` exist
+for a later version; do not emit them yet.
 
 **Resets.** `flowReset()` exists but is rarely needed: whether a user restarted is
 inferable later from revisited decisions and subflows. Don't emit it just to be tidy.
@@ -1033,6 +1273,11 @@ do not use it.)
 On failure, call `.error(e)` on the step that failed and stop; a retry is simply new step
 events. See Step errors below for what to put into them.
 
+**Identifiers that are neither an email address nor a phone number** (a customer number, a
+username) use the spec `email` and resolve the option `identifier-email`, and carry the real
+type as a tag, for example `identifierType: "customer-number"`. A spec type of its own is a
+taxonomy change for later.
+
 **Spec types.** Supply `explicitSpecType` on the constructor whenever known. For
 passkey-login, passkey-enrollment, password-enrollment, provide-data, email-link and
 social-login a spec must eventually arrive on _some_ event of the attempt. The
@@ -1255,6 +1500,9 @@ Then install the packages and initialize through the stub:
 ```bash
 npm install @corbado/observe @corbado/autocapture
 ```
+
+This skill matches `@corbado/observe` 0.14 and `@corbado/autocapture` 0.6 or newer. When a
+signature in the installed package differs from a sample here, the package wins.
 
 ```typescript
 // right after the capture wiring and the mapping import, at document start
