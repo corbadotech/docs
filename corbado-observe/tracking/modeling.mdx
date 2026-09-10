@@ -14,7 +14,7 @@ Work the mapping in three passes, global concerns first. Mistakes in early passe
 
 <Steps>
   <Step title="Flow boundaries">
-    For every flow, find the single best signal for when it starts, when it finishes successfully and, where your product has one, when it is skipped. Do this for all flows, top-level and nested, before anything else. The result of this pass is an exact definition of what is tracked. Precision matters most here: a `flowFinished()` without a matching open flow invalidates the whole session's classification.
+    For every flow, find the single best signal for when it starts, when it finishes successfully and, where your product has one, when it is skipped. Do this for all flows, top-level and nested, before anything else. The result of this pass is an exact definition of what is tracked. This pass needs the most care: a `flowFinished()` without a matching open flow invalidates the whole session's classification.
   </Step>
   <Step title="Decision structure">
     Assign every screen of the journey to a decision name, then find the simplest way to determine the selectable option set per screen. Look for one mechanism that yields options globally if your app offers it, for example a server response that already lists the rendered choices.

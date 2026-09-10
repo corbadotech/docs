@@ -25,7 +25,7 @@ The shapes differ in where the signals come from and who owns the mapping:
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | Autocapture                             | Browser surfaces only, read by Corbado's bundle via `@corbado/autocapture` (network, WebAuthn, DOM, existing low events)                                        | Built and maintained by Corbado, adjusted after app releases                                         | None. Corbado implements and maintains it                  |
 | **Data layer + mapping** (default here) | The app pushes screen offers, outcomes and validation results. `@corbado/autocapture` in the app's own page pushes network and WebAuthn signals into the same layer | One central module in the structure Corbado uses for its own adapters. It can be replaced without touching the app | A stub, tagged controls, thin emitters and capture wiring   |
-| Custom events (precision)               | Tracker calls written into the app's own code at the semantic points                                                                                          | Spread across the app's components                                                                   | Tracker calls at every semantic point                      |
+| Custom events (hand-written tracker calls) | Tracker calls written into the app's own code at the semantic points                                                                                          | Spread across the app's components                                                                   | Tracker calls at every semantic point                      |
 
 Delivery, either a self-hosted package or a Corbado script tag (recommended), is a separate
 dimension. It applies to Autocapture and to the data layer alike (section 6).
@@ -44,10 +44,11 @@ calls, WebAuthn, fields and low events, existing component events) and adjusts t
 after larger releases. Corbado implements and maintains it. It is not built with this skill,
 so stop and point the user to Corbado (support@corbado.com).
 
-Otherwise default to the data layer + mapping. Use the precision path (section 9) only in
-one of these cases:
+Otherwise default to the data layer + mapping. Use custom events (section 9) only in one of
+these cases:
 
-- The user explicitly asks for precision tracking, custom events or single events.
+- The user explicitly asks for custom events or for individual hand-written tracker calls,
+  for example a single conversion event outside the authentication journey.
 - There is no structurally sound central place: the auth journey is spread over
   independently deployed surfaces without a shared script scope, or the app is so complex
   that routing its signals through one layer would be a larger change than instrumenting
@@ -124,8 +125,8 @@ pragmatically. Each pass produces one table of the mapping's `taxonomy.ts` (sect
 **1. Flow boundaries.** For every flow, find the single best signal for when it starts,
 when it finishes successfully and, where the app has one, when it is skipped. Do this
 for all flows (top-level and nested) before anything else. The verifiable result of this
-pass: the boundaries of what is tracked are exactly defined. This is where precision
-matters most: a `flow_finished` without a matching open flow invalidates the whole
+pass: the boundaries of what is tracked are exactly defined. This pass needs the most
+care: a `flow_finished` without a matching open flow invalidates the whole
 session's classification. Give each flow one declared opener; every other handler drops
 its signals when no flow is open. In the default shape the opener is a screen: the flow
 table names the entry screens of every flow, the request whose success finishes it, and
@@ -714,7 +715,7 @@ governance requires it. It is late by nature, and that is fine here.
 | `subflow_started`                     | helper construction                      | input-bound: on a `screen` offer with `input`; action-bound: on the method `outcome`         |
 | `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()` | `network` request and exchange phases, `webApi` ceremony phases, `client-error`              |
 | `flow_enriched`                       | `setUser(user)`                          | the `setUser` command, once consent is granted, inside the active flow                       |
-| `conversion`                          | `conversion()`                           | business conversion outside auth (precision path)                                            |
+| `conversion`                          | `conversion()`                           | business conversion outside auth (a hand-written tracker call)                               |
 
 ## 8. Taxonomy rules the mapping implements
 
@@ -1179,11 +1180,13 @@ for example a magic link's query parameter or an existing transaction UUID the s
 already propagates. In the default shape the destination page calls
 `CorbadoObserve.setUser({ crossEnvironmentTransactionID })` after its entry screen.
 
-## 9. Precision path (custom events)
+## 9. Custom events: hand-written tracker calls
 
-Only when section 1 selected it. The rules of sections 2, 3 and 8 apply unchanged, but at
-the call sites: every tracker call is written into the app at its semantic point. Keep the
-blast radius small:
+Only when section 1 selected it. Custom events are not more accurate than the data layer.
+The same taxonomy rules apply, only that with custom events they are enforced by hand at
+every call site, and that is where most integration defects come from.
+The rules of sections 2, 3 and 8 apply unchanged, but at the call sites: every tracker call
+is written into the app at its semantic point. Keep the blast radius small:
 
 - Wrap `init()`/`getTracker()` in one module that lazily initializes, and guard every
   call site with `?.` so tracking cannot throw (see Setup).
@@ -1245,7 +1248,7 @@ CorbadoObserve.init({ projectId: "pro-XXX", apiBaseUrl: "https://api.cloud.corba
 Use `debug: true` while developing. The SDK then logs every emitted event and the session id
 to the console. Keep environments in separate projects.
 
-For the precision path, wrap `init()`/`getTracker()` in one module that lazily initializes
+For custom events, wrap `init()`/`getTracker()` in one module that lazily initializes
 and guard every call site with `?.`:
 
 ```typescript

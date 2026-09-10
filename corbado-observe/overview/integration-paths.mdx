@@ -1,6 +1,6 @@
 ---
 title: "Integration Paths"
-description: "Corbado Observe offers three ways to capture authentication data: Autocapture without app changes, the Observe data layer with one central mapping, and custom events for precision tracking and native apps."
+description: "Corbado Observe offers three ways to capture authentication data: Autocapture without app changes, the Observe data layer with one central mapping, and custom events for native apps and hand-written instrumentation."
 sidebarTitle: "Integration paths"
 ---
 
@@ -12,7 +12,7 @@ There are three ways to get authentication data into **Corbado Observe**. They a
 | Mapping | Built and maintained by Corbado, adjusted after your releases | One central module in Corbado's adapter structure | Spread across your components |
 | App changes | None, ever | A stub, one data attribute per control, thin emitters and capture wiring | Tracker calls at every semantic point |
 | Delivery | Corbado script tag (recommended) or self-hosted | Corbado script tag (recommended) or self-hosted | Bundled with your app |
-| Recommended for | Web, fully managed, no source changes | Web, when you integrate from source | Native apps, and explicit precision requirements |
+| Recommended for | Web, fully managed, no source changes | Web, when you integrate from source | Native apps, and deliberate hand-written instrumentation |
 
 ## 1. Autocapture
 
@@ -58,7 +58,7 @@ See [Get started with the data layer](/corbado-observe/get-started/data-layer). 
 
 Custom events are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define. This is the only path available on native platforms, and the right path when a step's meaning must be fixed in code.
 
-The cost is structural: every tracking correction is an app release, and there is no central place Corbado can review and optimize with you. On web, prefer the data layer unless you have an explicit reason for precision tracking.
+Custom events are not more accurate than the data layer. The same taxonomy rules apply, only that with custom events they are enforced by hand at every call site, and that is where most integration defects come from. Every tracking correction is an app release, and there is no central place Corbado can review and improve with you. On web, prefer the data layer unless you deliberately want hand-written tracker calls.
 
 See [Custom events](/corbado-observe/get-started/custom-events) to send your first one, and the [tracking reference](/corbado-observe/tracking/overview) for the full data model.
 
@@ -104,7 +104,7 @@ All paths write into the same project, the same session and the same data model,
 **What we recommend:**
 
 - **Web, no code changes wanted:** Autocapture, fully managed by Corbado.
-- **Web, integrating from source:** the data layer. Use custom events only when you explicitly need precision tracking or single events.
+- **Web, integrating from source:** the data layer. Use custom events only when you deliberately want hand-written tracker calls or individual events.
 - **iOS and Android:** custom events, using the native SDKs.
 - **Both web and native apps:** Autocapture or the data layer on web **and** custom events in the apps. One project holds all channels, and [applications](/corbado-observe/tracking/applications) keep them comparable.
 
