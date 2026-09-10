@@ -72,11 +72,11 @@ What each side owns in the default shape:
 
 | The app keeps                                                    | The mapping owns                                                                          |
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| The shim, inserted first in `<head>`                             | Taking over the data layer and replaying its buffer                                       |
+| The `CorbadoObserve` stub, inserted first in `<head>`             | Taking over the stub and replaying its queue                                              |
 | Emitters using the app's own stable names for screens, controls and requests | Translation into Observe decision names, option strings, subflows and spec types |
 | Projected request results — named facts, never raw bodies         | Flow lifecycle: which screens open which flow, which request finishes it, what counts as skipped |
 | Validation results from its own validation pass                  | Every `@corbado/observe` call                                                             |
-| Context: user reference, experiments, tags, consent, touchpoint  | Fallback capture via `@corbado/autocapture` where the app cannot emit                     |
+| Lifecycle commands: `init` after consent, `setExperiments`, `setUser`, `destroy` | Fallback capture via `@corbado/autocapture` where the app cannot emit          |
 
 **Hard rule:** the mapping module imports only its own contract types, `@corbado/observe`
 and `@corbado/autocapture`. Never app internals. That is what makes it replaceable by an
@@ -158,67 +158,116 @@ integration against real journeys.
 
 ## 4. The Observe data layer (app side)
 
-### 4.1 The shim
+### 4.1 The `CorbadoObserve` stub
+
+The data layer is `window.CorbadoObserve`: a command stub with the mechanics of an analytics
+data layer and of Corbado's own loader snippets. Its canonical form ships in
+`@corbado/observe` as `snippet/observe-stub.js`, rendered with `pnpm build:stub`; the rendered
+copy is published on the docs' data-layer page — insert that copy verbatim, inline, as the
+first script in `<head>`, before any app code and never behind the app's own enablement or
+consent gate. This is what it does:
 
 ```html
 <script>
-    window.corbadoDataLayer = window.corbadoDataLayer || [];
+    (function (document, window) {
+        var loaderUrl = ""; // rendered in for script-tag delivery; empty when the mapping is compiled in
+        var commands = ["init", "setExperiments", "setUser", "push", "destroy"];
+        var stub, script, i;
+        if (!window.CorbadoObserve) {
+            stub = { q: [] };
+            for (i = 0; i < commands.length; i++) {
+                (function (name) {
+                    stub[name] = function () { stub.q.push([name, Array.prototype.slice.call(arguments, 0)]); };
+                })(commands[i]);
+            }
+            window.CorbadoObserve = stub;
+        }
+        if (!loaderUrl || window.__corbadoLoaderInjected) return;
+        window.__corbadoLoaderInjected = true;
+        script = document.createElement("script");
+        script.async = true;
+        script.src = loaderUrl;
+        (document.head || document.documentElement).appendChild(script);
+    })(document, window);
 </script>
 ```
 
-Inline, the first script in `<head>`, before any app code. It is a plain push array with
-the mechanics of an analytics data layer: pushes accumulate until the mapping loads and
-takes over `push`, then every buffered event is replayed in order. That buffer is what
-makes a late-loading mapping lossless — a request that fired before the mapping arrived
-still reaches it. Never put the shim behind the app's own enablement or consent gate.
-Whether collecting into the in-memory buffer before consent is acceptable is the
-customer's privacy call: the mapping starts _sending_ only after consent (see `context`).
-If collecting before consent is not allowed, insert the shim after consent and accept that
-earlier journeys are not recorded.
+Every command is recorded as `[name, args]` on `q` until the mapping loads, takes the stub
+over and replays the queue in arrival order. That buffer is what makes a late-loading
+mapping lossless — a request that fired before the mapping arrived still reaches it. The
+stub only records: nothing is sent before the app calls `init` after consent, and `destroy`
+on revocation tears the tracker down. Whether recording into memory before consent is
+acceptable is the customer's privacy call; if it is not, insert the stub after consent and
+accept that earlier journeys are not recorded.
 
-Push events with `window.corbadoDataLayer.push(...)` from app code; wrap it in a tiny
-typed helper so emitters cannot throw:
+Five commands; four mirror the tracker lifecycle and one carries the app's events:
+
+| Command          | Arguments                                                         | Call when                                                                    |
+| ---------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `init`           | `{ projectId, apiBaseUrl, debug?, defaultTags?, applicationId? }` | consent is granted and the project is known; the mapping creates the tracker here |
+| `setExperiments` | `Record<string, string>`                                          | A/B assignments resolve or change                                            |
+| `setUser`        | `{ userId?, identifier?, crossEnvironmentTransactionID? }`        | identity becomes known — before the terminal request settles                 |
+| `push`           | one data layer event (4.2)                                        | the fact happens                                                             |
+| `destroy`        | —                                                                 | consent is revoked                                                           |
+
+Wrap `push` in a tiny typed helper so emitters cannot throw (`contract.ts` declares the
+`Window.CorbadoObserve` type):
 
 ```typescript
 import type { DataLayerEvent } from "./observe-mapping/contract";
 
 export const observe = (event: DataLayerEvent): void => {
     try {
-        (window.corbadoDataLayer ||= []).push(event);
+        window.CorbadoObserve?.push(event);
     } catch {
         // telemetry never throws into the app
     }
 };
 ```
 
+For a compiled-in mapping the same stub is available as `ensureCorbadoObserve()` from
+`@corbado/observe`. Keep the inline copy anyway: it is what makes the later switch to
+script-tag delivery a change of one loader line.
+
 ### 4.2 Event contract
 
-Six event kinds. Names in the app's own vocabulary; timestamps in epoch milliseconds
-taken at the semantic moment.
+Five event kinds, pushed with `CorbadoObserve.push(event)`. Names in the app's own
+vocabulary; `timestamp` in epoch milliseconds taken at the semantic moment. Field names
+follow the decision contract CHECK24 already dispatches (`options`, `input`, `timestamp`).
 
-| Event        | Fields                                                                                                                   | Push when                                                                                              |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `screen`     | `name`, `options: string[]` (control names, stable order), `ts`, `input?` (the primary `HTMLInputElement`), `tags?`     | every _presentation_ of a screen, synchronously on render, before any request the screen auto-starts   |
-| `choice`     | `screen`, `option` (a control name from that screen's options), `ts?`                                                    | the moment a control is used, before the request it starts and before the next screen                  |
-| `request`    | `name`, `id`, `phase: "started" \| "finished" \| "failed"`, `ts`, on settle `result?` (projected facts), `code?`, `message?` | from the API client choke point: `started` at send, `finished`/`failed` at settle, before the next screen renders |
-| `validation` | `screen`, `field`, `code`, `message?`, `ts?`                                                                             | from the app's own validation pass, one per rejected field, before any request                          |
-| `context`    | `user?` (`userId`, `identifier`, `crossEnvironmentTransactionID`), `experiments?`, `tags?`, `application?`, `touchpoint?`, `consent?` | whenever a fact becomes known; `touchpoint` with or before the entry screen; `user` before the terminal request settles |
-| `ceremony`   | `kind: "authentication" \| "registration"`, `phase`, `id`, `mediation?`, `options?`, `credential?`, `error?`, `ts`     | only when the app owns the `navigator.credentials` call and can attach the live options and credential objects; otherwise omit — the mapping captures ceremonies itself |
+| Event        | Fields                                                                                                                                       | Push when                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `screen`     | `name`, `options: string[]` (control names, stable order), `timestamp`, `input?` (the primary `HTMLInputElement`), `touchpoint?` (entry screens), `tags?` | every _presentation_ of a screen, synchronously on render, before any request the screen auto-starts   |
+| `choice`     | `screen`, `option` (a control name from that screen's options), `timestamp?`                                                                 | the moment a control is used, before the request it starts and before the next screen                  |
+| `request`    | `name`, `id`, `phase: "started" \| "finished" \| "failed"`, `timestamp`, on settle `result?` (projected facts), `code?`, `message?`         | from the API client choke point: `started` at send, `finished`/`failed` at settle, before the next screen renders |
+| `validation` | `screen`, `field`, `code`, `message?`, `timestamp?`                                                                                          | from the app's own validation pass, one per rejected field, before any request                          |
+| `ceremony`   | `kind: "authentication" \| "registration"`, `phase`, `id`, `mediation?`, `options?`, `credential?`, `error?`, `timestamp`                   | only when the app owns the `navigator.credentials` call and can attach the live options and credential objects; otherwise omit — the mapping captures ceremonies itself |
 
 ```typescript
 export type DataLayerEvent =
-    | { event: "screen"; name: string; options: string[]; ts: number; input?: HTMLInputElement; tags?: Record<string, string> }
-    | { event: "choice"; screen: string; option: string; ts?: number }
-    | { event: "request"; name: string; id: string; phase: "started"; ts: number }
-    | { event: "request"; name: string; id: string; phase: "finished" | "failed"; ts: number;
+    | { event: "screen"; name: string; options: string[]; timestamp: number; input?: HTMLInputElement;
+        touchpoint?: string; tags?: Record<string, string> }
+    | { event: "choice"; screen: string; option: string; timestamp?: number }
+    | { event: "request"; name: string; id: string; phase: "started"; timestamp: number }
+    | { event: "request"; name: string; id: string; phase: "finished" | "failed"; timestamp: number;
         result?: Record<string, string | number | boolean>; code?: string; message?: string }
-    | { event: "validation"; screen: string; field: string; code: string; message?: string; ts?: number }
-    | { event: "context"; user?: { userId?: string; identifier?: string; crossEnvironmentTransactionID?: string };
-        experiments?: Record<string, string>; tags?: Record<string, string>;
-        application?: string; touchpoint?: string; consent?: boolean }
+    | { event: "validation"; screen: string; field: string; code: string; message?: string; timestamp?: number }
     | { event: "ceremony"; kind: "authentication" | "registration"; phase: "started" | "completed" | "failed";
         id: string; mediation?: "conditional" | "optional" | "required" | "silent";
-        options?: object; credential?: object; error?: unknown; ts: number };
+        options?: object; credential?: object; error?: unknown; timestamp: number };
+
+declare global {
+    interface Window {
+        CorbadoObserve?: {
+            init: (options: { projectId: string; apiBaseUrl: string; debug?: boolean;
+                defaultTags?: Record<string, string>; applicationId?: string }) => void;
+            setExperiments: (assignments: Record<string, string>) => void;
+            setUser: (user: { userId?: string; identifier?: string; crossEnvironmentTransactionID?: string }) => void;
+            push: (event: DataLayerEvent) => void;
+            destroy: () => void;
+        };
+    }
+}
 ```
 
 ### 4.3 Emission rules
@@ -228,10 +277,10 @@ export type DataLayerEvent =
 - **`screen` is per presentation, not per render.** Re-push when the checkpoint is
   re-presented or its options change; never for framework re-renders, route remounts or
   hydration. When the option set depends on an async capability check, push the screen on
-  render and push it again with the final options and the _same_ `ts` — the mapping turns
-  that into an in-place replacement (see Decisions). Include the option whose method
+  render and push it again with the final options and the _same_ `timestamp` — the mapping
+  turns that into an in-place replacement (see Decisions). Include the option whose method
   auto-starts on the screen. Pass the primary input element: it powers interaction capture
-  on input-bound methods.
+  on input-bound methods. Entry screens carry `touchpoint` and any entry tags.
 - **`choice` covers both kinds of options.** Method choices (typing a password, pressing
   the passkey button) and navigational choices (back, switch method, forgot password) are
   both pushed; the mapping decides which ones finish a decision explicitly.
@@ -246,29 +295,31 @@ export type DataLayerEvent =
   rejected and why; push that instead of letting anyone read error markup. `code` is the
   native `ValidityState` key where one applies (`valueMissing`, `typeMismatch`), else the
   app's own rule name.
-- **`context` is additive.** Push the user reference as soon as identity is known and
-  before the terminal request settles, so the mapping can call `setUser()` inside the flow
-  it belongs to. Push `consent: false` when consent is revoked; the mapping tears the
-  tracker down.
+- **Lifecycle goes through the commands, not through events.** `init` after consent,
+  `setExperiments` when assignments resolve, `setUser` as soon as identity is known and
+  before the terminal request settles — so the mapping can call `setUser()` inside the flow
+  it belongs to — and `destroy` on revocation.
 - **Ordering invariants the app guarantees:** `screen` before any request that screen
   auto-starts; `choice` before the request it starts and before the next `screen`;
   `request` settled before the next `screen` renders (natural when emitted from the API
-  client); `context.touchpoint` with or before the entry screen.
+  client); `setUser` before the terminal request settles.
 - **Stable names.** Screen, control and request names are the contract with the mapping.
   Change them deliberately and update the mapping's tables in the same change.
 
 ```typescript
+// consent granted, project known
+CorbadoObserve.init({ projectId: "pro-XXX", apiBaseUrl: "https://api.cloud.corbado.io", debug: true });
 // identifier screen renders (options in stable order; the email field is the primary input)
-observe({ event: "screen", name: "identifier", options: ["email", "google", "signup-link"], ts: Date.now(), input: emailInput });
+observe({ event: "screen", name: "identifier", options: ["email", "google", "signup-link"], timestamp: Date.now(), input: emailInput, touchpoint: "account" });
 // user clicks "Create account"
 observe({ event: "choice", screen: "identifier", option: "signup-link" });
 // API client: identifier lookup
-observe({ event: "request", name: "checkIdentifier", id, phase: "started", ts: Date.now() });
-observe({ event: "request", name: "checkIdentifier", id, phase: "finished", ts: Date.now(), result: { known: true } });
+observe({ event: "request", name: "checkIdentifier", id, phase: "started", timestamp: Date.now() });
+observe({ event: "request", name: "checkIdentifier", id, phase: "finished", timestamp: Date.now(), result: { known: true } });
 // app's own validation pass rejected the field
 observe({ event: "validation", screen: "identifier", field: "email", code: "typeMismatch" });
 // identity known after the session was established
-observe({ event: "context", user: { userId: hashedUserId } });
+CorbadoObserve.setUser({ userId: hashedUserId });
 ```
 
 ### 4.4 Bridging to the analytics data layer
@@ -284,7 +335,7 @@ event shape (one object with an `event` key and a flat payload), on purpose:
   for ordering the app does not guarantee.
 - **Do not push into the customer's tag manager array.** Other tags would see the events,
   tag managers merge pushed objects in ways that mangle DOM references, and they load late
-  and behind consent gates. Keep `corbadoDataLayer` separate.
+  and behind consent gates. Keep `CorbadoObserve` separate.
 
 ## 5. The mapping (the central module)
 
@@ -292,8 +343,8 @@ event shape (one object with an `event` key and a flat payload), on purpose:
 
 ```
 observe-mapping/
-  index.ts        install(): init the tracker, take over the data layer, replay the buffer, attach fallbacks
-  contract.ts     DataLayerEvent (shared with the app's emitters) — the only import the app makes from here
+  index.ts        installObserveMapping(): take over the stub, create the tracker on init, replay the queue, attach fallbacks
+  contract.ts     DataLayerEvent + the Window.CorbadoObserve declaration (shared with the app's emitters) — the only import the app makes from here
   taxonomy.ts     the three tables: flows, screens, requests; all Observe vocabulary lives here
   coordinator.ts  flow lifecycle from the flow table; routes events to the active screen state
   states/         one class per app screen: decision, helpers, steps
@@ -304,43 +355,61 @@ Both of Corbado's production adapters have exactly this shape; it is what keeps 
 readable after a year of changes. Corbado can supply a sample skeleton for the customer's
 stack — ask before inventing one.
 
-### 5.2 Taking over the layer
+### 5.2 Taking over the stub
 
 ```typescript
-import { init } from "@corbado/observe";
-import type { DataLayerEvent } from "./contract";
+import { ensureCorbadoObserve, init, takeOverCorbadoObserve, type CorbadoTracker } from "@corbado/observe";
+import type { DataLayerEvent, MappingOptions } from "./contract";
 import { Coordinator } from "./coordinator";
 import { attachFallbacks } from "./fallbacks";
 
-export function installObserveMapping(options: { projectId: string; apiBaseUrl: string; debug?: boolean }) {
-    if (typeof window === "undefined" || window.top !== window.self) return () => {}; // frames don't own the journey
-    const layer = (window.corbadoDataLayer ||= []);
-    const tracker = init(options);
-    const coordinator = new Coordinator(tracker);
+// Runs when the mapping module is evaluated — on import when compiled in, on load from the loader.
+export function installObserveMapping(): void {
+    if (typeof window === "undefined" || window.top !== window.self) return; // frames don't own the journey
+    ensureCorbadoObserve(); // no-op when the inline stub already exists
+    let tracker: CorbadoTracker | undefined;
+    let coordinator: Coordinator | undefined;
+    let fallbacks: { dispose(): void } | undefined;
+    const pending: DataLayerEvent[] = []; // pushed before init (consent): held, never sent
     const consume = (event: DataLayerEvent) => {
         try {
-            coordinator.handle(event);
-        } catch (error) {
-            tracker.telemetry("error", `mapping failed on ${event.event}`); // contain: never throw into the app
+            coordinator?.handle(event);
+        } catch {
+            tracker?.telemetry("error", `mapping failed on ${event.event}`); // contain: never throw into the app
         }
     };
-    const pending = layer.splice(0);
-    layer.push = (...events: DataLayerEvent[]) => {
-        events.forEach(consume);
-        return layer.length;
-    };
-    pending.forEach(consume);
-    const fallbacks = attachFallbacks(coordinator, tracker);
-    return () => {
-        fallbacks.dispose();
-        coordinator.destroy();
-        void tracker.destroy();
-    };
+    takeOverCorbadoObserve(
+        {
+            init: (options: MappingOptions) => {
+                if (tracker) return;
+                tracker = init({ projectId: options.projectId, apiBaseUrl: options.apiBaseUrl, debug: options.debug,
+                    defaultTags: options.defaultTags, applicationId: options.applicationId });
+                coordinator = new Coordinator(tracker);
+                fallbacks = attachFallbacks(coordinator, tracker);
+                pending.splice(0).forEach(consume);
+            },
+            setExperiments: (assignments: Record<string, string>) => tracker?.setExperiments(assignments),
+            setUser: (user: Parameters<CorbadoTracker["setUser"]>[0]) => coordinator?.setUser(user), // held until a flow it belongs to is open
+            push: (event: DataLayerEvent) => (tracker ? consume(event) : pending.push(event)),
+            destroy: () => {
+                fallbacks?.dispose();
+                coordinator?.destroy();
+                void tracker?.destroy();
+                tracker = coordinator = fallbacks = undefined;
+            },
+        },
+        window,
+        (command) => tracker?.telemetry("error", `replay of ${command} failed`),
+    );
 }
+
+installObserveMapping();
 ```
 
-Install as early as the delivery mode allows (section 6). Everything the app pushed
-before that moment is replayed in arrival order, so emission order is preserved.
+`takeOverCorbadoObserve` replaces the stub with this API and replays every queued command
+in arrival order, so emission order is preserved whenever the mapping loads. Consent is
+enforced by construction: until `init` runs, events are held in `pending` and no tracker
+exists.
 
 ### 5.3 Coordinator: flow lifecycle from tables
 
@@ -368,7 +437,7 @@ export const FLOWS = {
 Rules the coordinator enforces (see section 8 for the classifier reasons):
 
 - `screen` with an entry mapping opens the flow if it is not already open — once, with the
-  current `touchpoint` and tags from `context`. A repeated entry screen inside an open flow
+  entry screen's `touchpoint` and tags. A repeated entry screen inside an open flow
   does not re-open it; an entry screen after the flow finished opens a new one.
 - A screen in `skip` closes the listed nested flows with `explicitOutcome: "skipped"`
   before the screen's own state is entered.
@@ -405,7 +474,7 @@ export class PasswordScreen {
             { decisionName: "post-identifier", options: screen.options.map((o) => OPTIONS.password[o]) },
             undefined,
             undefined,
-            { explicitTimestamp: screen.ts },
+            { explicitTimestamp: screen.timestamp },
         );
         // input-bound method: the attempt surface is the field, so the helper is created on render
         if (screen.input) {
@@ -453,7 +522,7 @@ export class PasswordScreen {
 }
 ```
 
-`settle()` maps `started` to `step.start({}, { explicitTimestamp: e.ts })`, `finished` to
+`settle()` maps `started` to `step.start({}, { explicitTimestamp: e.timestamp })`, `finished` to
 `step.finished({}, ...)`, and `failed` to `step.errorTyped({ code })` when the code is in the
 helper's typed set and `step.error({ code, message })` otherwise. `ceremony()` maps a
 ceremony signal — from the app or from the WebAuthn fallback — onto the passkey helper's
@@ -498,23 +567,31 @@ reported once and the rest keeps working. Telemetry failure costs data, never a 
 ## 6. Delivery
 
 Delivery is a dimension of its own, independent of the shape: it decides where the mapping
-bundle comes from, and it applies to Autocapture and the data layer alike. The shim and
+bundle comes from, and it applies to Autocapture and the data layer alike. The stub and
 the emitters stay in the app either way.
 
 | Delivery                             | How                                                                                                                       | Who can change the mapping without an app release                                       |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **Corbado script tag** (recommended) | A tiny stable loader script inserts an immutable, versioned mapping bundle from Corbado's CDN; a rollback re-points the loader | Corbado, live on the next page load — the customer never redeploys for a tracking change |
-| Self-hosted                          | The mapping is the customer's own npm package (or a module in the app's repository), bundled and released with the app   | The customer, by bumping the dependency and releasing                                    |
+| **Corbado script tag** (recommended) | The stub is rendered with a loader URL; the loader inserts an immutable, versioned mapping bundle from Corbado's CDN; a rollback re-points the loader | Corbado, live on the next page load — the customer never redeploys for a tracking change |
+| Self-hosted                          | The mapping is the customer's own npm package or a module in the app's repository, bundled with the app — or the same IIFE on the customer's own CDN behind their own loader | The customer, by bumping the dependency and releasing, or by re-pointing their loader   |
 
-Build the mapping so both are possible from one source: a self-contained entry that
-exports `installObserveMapping()` for the self-hosted case and, for the script tag, a
-loader command queue the app calls `init` / `setExperiments` / `destroy` on — exactly like
-the analytics snippets it already runs; calls before the bundle arrives are replayed.
+**Start local, switch later.** A new integration starts compiled in, because no Corbado-hosted
+bundle exists for the app yet, and switches delivery without touching emitters:
+
+1. Compiled in: `npm install @corbado/observe @corbado/autocapture`, the stub inline in
+   `<head>` with an empty loader URL, `import "./observe-mapping"` first thing in the app's
+   entry, and `CorbadoObserve.init(...)` after consent.
+2. Script tag: build the same `observe-mapping/` entry as a self-contained IIFE with both
+   packages bundled, host it behind a loader (Corbado's CDN, set up together with Corbado,
+   or the customer's own), remove the import and the two dependencies, and render the stub
+   with the loader URL. The stub, the emitters and the `init` / `setExperiments` / `setUser`
+   / `destroy` calls do not change.
+
 Corbado verifies a new mapping build from the outside before it ships, by injecting it
 into the live page in a test browser and replaying recorded journeys against it. That
 external test is only possible because the mapping imports nothing from the app.
 
-Timing rule for both: the shim is at document start regardless of where the mapping
+Timing rule for both: the stub is at document start regardless of where the mapping
 loads, so late installation loses nothing except time-critical fallback capture. A
 WebAuthn ceremony that starts at page load (immediate mediation, auto-started conditional
 UI) is observable only if the WebAuthn fallback attached before it — insert the loader as
@@ -534,8 +611,8 @@ manager is acceptable where tag governance requires it; it is late by constructi
 | `auth_method_decision_finished`       | `authMethodsDecisionFinished()`          | a navigational `choice` (never for method choices)        |
 | `subflow_started`                     | helper construction                      | input-bound: on `screen` with `input`; action-bound: on the method `choice` |
 | `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()` | `request` phases, `ceremony` phases, `validation`         |
-| `flow_enriched`                       | `setUser(user)`                          | `context.user`, inside the active flow                    |
-| `conversion`                          | `conversion()`                           | business conversion outside auth (app emits a `context`-like custom event or calls the precision path) |
+| `flow_enriched`                       | `setUser(user)`                          | the `setUser` command, inside the active flow             |
+| `conversion`                          | `conversion()`                           | business conversion outside auth (a dedicated `push` event the mapping maps, or the precision path) |
 
 ## 8. Taxonomy rules the mapping implements
 
@@ -586,8 +663,8 @@ Tags are `Record<string, string>` passed as the second argument; last value per 
 across a flow's events. Never put identity into tags — `userId`/`identifier` belong in
 the user reference. Do not re-fire the opener from reactive config (store hydration,
 feature flags) just to refresh its tags; late-known values go on `flow_finished`. In the
-default shape tags arrive through `context.tags` and `screen.tags`; the coordinator holds
-the latest values and stamps them where they belong.
+default shape tags arrive through `init` (`defaultTags`) and `screen.tags`; the
+coordinator holds the latest values and stamps them where they belong.
 
 ### Decisions
 
@@ -942,8 +1019,8 @@ Ordering requirements are causal, not temporal:
 
 The backend orders by timestamp + emission sequence and repairs supported race patterns.
 Use `explicitTimestamp` (on steps and decision `started`) when the semantic moment precedes
-the tracking call — in the default shape, always: the data layer event's `ts` is the
-semantic moment and the mapping may run later. Preserve the causal ordering above rather
+the tracking call — in the default shape, always: the data layer event's `timestamp` is
+the semantic moment and the mapping may run later. Preserve the causal ordering above rather
 than adding arbitrary delays; the app-side ordering invariants in 4.3 guarantee it.
 
 ### Identity observations
@@ -979,7 +1056,7 @@ Legacy user-reference fields on flow finishes, conversions, and step options rem
 supported but are deprecated. For new instrumentation, record identity separately with
 `setUser()` within the active flow. When migrating a finish that carries identity, place
 `setUser()` **before** the finish. In the default shape the coordinator holds the latest
-`context.user` and calls `setUser()` when a flow it belongs to is open, and again right
+`setUser` command and calls `setUser()` when a flow it belongs to is open, and again right
 before that flow's terminal.
 
 ### Cross-environment correlation
@@ -996,8 +1073,8 @@ carry its original matching spec type as described under Continuing an attempt.
 An identity observed in the destination can identify the explicitly continued flow.
 The linked sessions are classified together. How the UUID travels is the app's choice —
 for example, a magic link's query parameter or an existing transaction UUID the system
-already propagates. In the default shape the destination page pushes
-`context.user.crossEnvironmentTransactionID` after its entry screen.
+already propagates. In the default shape the destination page calls
+`CorbadoObserve.setUser({ crossEnvironmentTransactionID })` after its entry screen.
 
 ## 9. Precision path (custom events)
 
@@ -1023,9 +1100,10 @@ npm install @corbado/observe @corbado/autocapture
 ```
 
 `projectId` and `apiBaseUrl` come from the Corbado console (https://app.corbado.com →
-Observe → Settings). In the default shape the mapping's `installObserveMapping()` calls
-`init()` once (section 5.2) after consent. For the precision path, wrap `init()`/`getTracker()`
-in one module that lazily initializes, and guard every call site with `?.`:
+Observe → Settings). In the default shape the app calls `CorbadoObserve.init(...)` after
+consent and the mapping creates the tracker then (section 5.2). For the precision path, wrap
+`init()`/`getTracker()` in one module that lazily initializes, and guard every call site with
+`?.`:
 
 ```typescript
 import { getTracker, init, type CorbadoTracker } from "@corbado/observe";
@@ -1046,7 +1124,7 @@ export const observeTracker = (): CorbadoTracker | null => {
 Optional `init` options: `defaultTags` (stamped on every flow start and conversion),
 `applicationId` (channel
 like `"web"` when one project tracks several). Use `debug: true` while developing.
-Experiments arrive through `context.experiments`; the mapping calls
+Experiments arrive through the `setExperiments` command; the mapping forwards them to
 `tracker.setExperiments(map)` so later events carry them.
 
 ## 11. Validating the implementation
@@ -1054,28 +1132,29 @@ Experiments arrive through `context.experiments`; the mapping calls
 Tracking cannot be proven from the app's own tests; the raw event series is what the
 classifier sees. Validate in two loops.
 
-**Inner loop — replay fixtures against the mapping.** The mapping's input is a
-serializable event array, so record it once and replay it forever. A fixture is the
-recorded data layer input plus the expected Observe series, in the same assertion format
-Corbado's own scenario runners use: `ordered` is a subsequence, patterns match deeply and
-partially, `forbidden` and `counts` catch what a subsequence would let through.
+**Inner loop — replay fixtures against the mapping.** The mapping's input is the stub's
+queue, a serializable array of `[command, args]` — so record it once by dumping
+`CorbadoObserve.q` before the mapping takes over, and replay it forever. A fixture is that
+queue plus the expected Observe series, in the same assertion format Corbado's own scenario
+runners use: `ordered` is a subsequence, patterns match deeply and partially, `forbidden`
+and `counts` catch what a subsequence would let through.
 
 ```json
 {
     "id": "login-back-then-signup",
-    "input": [
-        { "event": "context", "touchpoint": "account" },
-        { "event": "screen", "name": "identifier", "options": ["email", "signup-link", "google"], "ts": 1000 },
-        { "event": "request", "name": "checkIdentifier", "id": "r1", "phase": "started", "ts": 1500 },
-        { "event": "request", "name": "checkIdentifier", "id": "r1", "phase": "finished", "ts": 1700, "result": { "known": true } },
-        { "event": "screen", "name": "password", "options": ["password", "passkey-button", "back"], "ts": 1710 },
-        { "event": "choice", "screen": "password", "option": "back" },
-        { "event": "screen", "name": "identifier", "options": ["email", "signup-link", "google"], "ts": 2500 },
-        { "event": "choice", "screen": "identifier", "option": "signup-link" },
-        { "event": "screen", "name": "signup-form", "options": ["password", "back"], "ts": 2600 },
-        { "event": "request", "name": "completeSignup", "id": "r2", "phase": "started", "ts": 4000 },
-        { "event": "context", "user": { "userId": "u_1" } },
-        { "event": "request", "name": "completeSignup", "id": "r2", "phase": "finished", "ts": 4300 }
+    "queue": [
+        ["init", [{ "projectId": "pro-test", "apiBaseUrl": "https://api.cloud.corbado.io" }]],
+        ["push", [{ "event": "screen", "name": "identifier", "options": ["email", "signup-link", "google"], "timestamp": 1000, "touchpoint": "account" }]],
+        ["push", [{ "event": "request", "name": "checkIdentifier", "id": "r1", "phase": "started", "timestamp": 1500 }]],
+        ["push", [{ "event": "request", "name": "checkIdentifier", "id": "r1", "phase": "finished", "timestamp": 1700, "result": { "known": true } }]],
+        ["push", [{ "event": "screen", "name": "password", "options": ["password", "passkey-button", "back"], "timestamp": 1710 }]],
+        ["push", [{ "event": "choice", "screen": "password", "option": "back" }]],
+        ["push", [{ "event": "screen", "name": "identifier", "options": ["email", "signup-link", "google"], "timestamp": 2500 }]],
+        ["push", [{ "event": "choice", "screen": "identifier", "option": "signup-link" }]],
+        ["push", [{ "event": "screen", "name": "signup-form", "options": ["password", "back"], "timestamp": 2600 }]],
+        ["push", [{ "event": "request", "name": "completeSignup", "id": "r2", "phase": "started", "timestamp": 4000 }]],
+        ["setUser", [{ "userId": "u_1" }]],
+        ["push", [{ "event": "request", "name": "completeSignup", "id": "r2", "phase": "finished", "timestamp": 4300 }]]
     ],
     "expect": {
         "ordered": [
@@ -1092,11 +1171,11 @@ partially, `forbidden` and `counts` catch what a subsequence would let through.
 }
 ```
 
-Run the mapping in a DOM test runner with the SDK's transport stubbed, feed `input`
-through `window.corbadoDataLayer.push`, and assert on the batches the SDK produces.
-Replace `input` element references in fixtures with elements created by the test. Record
-new fixtures from real journeys by dumping the data layer array in the browser. Write one
-fixture per representative journey before shipping, and one per bug afterwards.
+Run the mapping in a DOM test runner with the SDK's transport stubbed, seed a stub whose
+`q` is the fixture's `queue`, install the mapping, and assert on the batches the SDK
+produces. Replace `input` element references in fixtures with elements created by the
+test. Write one fixture per representative journey before shipping, and one per bug
+afterwards.
 
 **Outer loop — walk the app.** Pick a small set of journeys with decent coverage, write
 down the event series each should produce in the notation of the worked example below,
@@ -1108,7 +1187,7 @@ fix what deviates — in the mapping — before looking at dashboards.
 ## 12. Worked example
 
 Identifier-first login where the user backs out of the password screen and then signs up
-instead. The data layer input is the fixture in section 11; this is the Observe series a
+instead. The stub queue is the fixture in section 11; this is the Observe series a
 correct mapping produces from it (`spec` = `explicitSpecType`):
 
 ```
@@ -1128,7 +1207,7 @@ flow_started            { flowName: signup }                            ← entr
 auth_method_decision_started  { signup-registration, options: [password-enrollment, back] }
 subflow_started         { password-enrollment, spec: password-set }
 subflow_step_started    { password-enrollment, post-response }          ← request completeSignup started
-flow_enriched           data: { match: { flowType: "*", at: during }, expFol: true }, user: { userId }   ← context.user
+flow_enriched           data: { match: { flowType: "*", at: during }, expFol: true }, user: { userId }   ← setUser command
 subflow_step_finished   { password-enrollment, post-response }          (resolves signup-registration)
 flow_finished           { flowName: signup }                            ← terminal request for signup
 flow_auto_finished      { flowName: login, finishedByFlowName: signup } ← nested terminal completes the parent
@@ -1139,5 +1218,5 @@ them), no subflow finishes (the `post-response` steps carry the outcomes), and n
 incomplete/abandon events anywhere — had the user left mid-journey, the absence of the
 finishes would have classified it. The second `pre-identifier` decision is deliberately a
 second occurrence: the user genuinely revisited that checkpoint. And note what the app
-never said: nothing about flows, decisions, subflows or Observe vocabulary — twelve pushes
-in its own words, and the mapping did the rest.
+never said: nothing about flows, decisions, subflows or Observe vocabulary — twelve
+commands in its own words, and the mapping did the rest.
