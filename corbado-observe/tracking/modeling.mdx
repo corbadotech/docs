@@ -4,9 +4,9 @@ description: "How to map your login, sign-up, recovery and enrollment journeys o
 sidebarTitle: "Modeling"
 ---
 
-Custom events are only the transport. A backend classifier reads each session's event stream and produces the **flows**, **decisions** and **subflow attempts** that every dashboard is built on. Raw events remain visible in the console for debugging a single user, but the classified output is what carries the value.
+Events are only the transport. A backend classifier reads each session's event stream and produces the **flows**, **decisions** and **subflow attempts** that every dashboard is built on. Raw events remain visible in the console for debugging a single user, but the classified output is what carries the value.
 
-The classifier is not visible from your integration, so this page describes the rules it applies and a method for mapping your journeys onto them. Reason about every event you emit from the classifier's perspective, not from how the raw series looks.
+The classifier is not visible from your integration, so this page describes the rules it applies and a method for mapping your journeys onto them. Reason about every event you emit from the classifier's perspective. How the raw series looks is secondary. The method is the same whether the events come from the [data layer mapping](/corbado-observe/get-started/data-layer) or from [custom events](/corbado-observe/get-started/custom-events) in your code; with the data layer, each pass below fills one table of the mapping instead of placing calls in components.
 
 ## 1. Three passes
 
@@ -14,7 +14,7 @@ Work the mapping in three passes, global concerns first. Mistakes in early passe
 
 <Steps>
   <Step title="Flow boundaries">
-    For every flow, find the single best signal for when it starts, when it finishes successfully and, where your product has one, when it is skipped. Do this for all flows, top-level and nested, before anything else. The result of this pass is an exact definition of what is tracked. Precision matters most here: a `flowFinished()` without a matching open flow invalidates the whole session's classification.
+    For every flow, find the single best signal for when it starts, when it finishes successfully and, where your product has one, when it is skipped. Do this for all flows, top-level and nested, before anything else. The result of this pass is an exact definition of what is tracked. This pass needs the most care: a `flowFinished()` without a matching open flow invalidates the whole session's classification.
   </Step>
   <Step title="Decision structure">
     Assign every screen of the journey to a decision name, then find the simplest way to determine the selectable option set per screen. Look for one mechanism that yields options globally if your app offers it, for example a server response that already lists the rendered choices.
@@ -51,7 +51,7 @@ A screen's option set mixes two kinds of options:
 | **Method options** | password, passkey, email OTP, social | The subflow that follows resolves the decision in classification. Never finish these explicitly. |
 | **Navigational options** | back, change identifier, switch to sign-up, other methods, forgot password | Finish explicitly with `explicitDecisionValue` the moment the choice is made, then start the next screen's decision. |
 
-Realistic logins have many navigational options. They are the adaptive, per-application part of the model, not an edge case. Name them for reuse across decisions.
+Realistic logins have many navigational options. They are the adaptive, per-application part of the model and deserve the same care as the method options. Name them for reuse across decisions.
 
 A screen can lead into the **same subflow through several controls**: two buttons that run the same ceremony, a primary tile plus an "other methods" list, a prefilled versus a typed identifier. That is one option and one subflow, because only one option string can resolve. Express the difference through an explicit spec type where the taxonomy has one, otherwise carry it as a tag or accept the loss and document it.
 
@@ -62,7 +62,7 @@ See [Decisions](/corbado-observe/tracking/decisions) for presentation rules and 
 A subflow is one auth method attempt. Creating its operation helper emits the attempt's start, so **when** you create the helper is the modeling question:
 
 - **Input-bound methods** (password, OTP, identifier, provide-data) start when the input renders. The field itself is the attempt surface, and the helper captures interaction on it.
-- **Action-bound methods** (passkey button, social button, app confirmation) start on the action, not when the button becomes visible. A helper created for a button nobody pressed produces an attempt without interaction: not counted for most types, counted as an incomplete attempt for passkeys.
+- **Action-bound methods** (passkey button, social button, app confirmation) start on the action. A visible button is no attempt yet. A helper created for a button nobody pressed produces an attempt without interaction: not counted for most types, counted as an incomplete attempt for passkeys.
 
 Never finish a subflow. The classifier derives each attempt's outcome from its steps, and the outcome-bearing step is `postResponse` for almost every subflow. Track that step always. For passkeys, also track the `ceremony` step: it powers all passkey analytics and nothing in it is recoverable from the server response alone.
 
@@ -114,7 +114,7 @@ subflow_started               { password-enrollment, spec: password-set }
 subflow_step_started          { password-enrollment, post-response }
 subflow_step_finished         { password-enrollment, post-response, userReference }
 flow_finished                 { flowName: signup, userId, identifier }
-flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained, not nested
+flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained as a sibling
 auth_method_decision_started  { enrollment-passkey, options: [passkey-enrollment, skip] }
 auth_method_decision_finished { enrollment-passkey, explicitDecisionValue: skip }
 flow_finished                 { flowName: enrollment, explicitOutcome: skipped, userId }

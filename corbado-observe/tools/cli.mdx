@@ -1,19 +1,20 @@
 ---
 title: "Corbado Observe CLI"
-description: "A command-line interface for the Corbado Observe API, designed for scripting and for AI coding agents. Currently in closed beta."
-sidebarTitle: "Observe CLI (beta)"
+description: "A command-line interface for the Corbado Observe API, designed for scripting and for AI coding agents. Available for Apple Silicon macOS through Homebrew."
+sidebarTitle: "Observe CLI"
 ---
 
-<Warning>
-  **Closed beta, not publicly available.** The Corbado Observe CLI is under active development and shared with selected customers only. Commands, output shapes and installation may change without notice. [Request access](mailto:support@corbado.com) to try it.
-</Warning>
+<Info>
+  The Corbado Observe CLI is available for **Apple Silicon macOS** through Homebrew. Other platforms are not supported yet.
+</Info>
 
-The **Corbado Observe CLI** gives you scripted access to your Observe data from the terminal, without going through the management console. It is designed to be driven by humans and by AI coding agents alike.
+The **Corbado Observe CLI** gives you scripted access to your Observe data from the terminal, without going through the management console. It is designed to be driven by humans and by AI coding agents alike, and it is the fastest way to verify an integration.
 
 ## 1. What it is for
 
 | Use case | Why the CLI |
 | --- | --- |
+| **Verifying an integration** | Tail ingested events, force classification and read why a session did not classify, from the same terminal the agent instruments in |
 | **Analysis with an AI agent** | Point an agent at your own Observe data so it can investigate a drop in login success rate or explain what an error cluster has in common |
 | **Scripted exports** | Pull daily tables and time series into your own warehouse or notebooks |
 | **Ad-hoc investigation** | Query catalogs and searches directly while debugging an incident |
@@ -23,23 +24,44 @@ The **Corbado Observe CLI** gives you scripted access to your Observe data from 
 
 The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline and full schema introspection so an agent can drive it from `--help` alone.
 
-Projects are paired locally. Non-secret project metadata is stored in a config file and the API key is held in the operating system's secret store rather than in plain text. API keys are managed in the console under **Observe → Settings → API keys**.
+Projects are paired locally. Non-secret project metadata is stored in a config file and the API key is held in the operating system's secret store. It is never written to a plain-text file. You never copy a key by hand: pairing creates it for you under **Observe → Settings → API keys**.
 
-## 3. Availability
+## 3. Install and pair
 
-| | Status |
-| --- | --- |
-| Distribution | Closed beta, by request |
-| Stability | Commands and output may change between versions |
-| Support | Best effort during the beta |
+```bash
+brew install --cask corbado/tap/corbado
+corbado switch --add
+```
 
-Install instructions and a full command reference will be published here once the CLI reaches general availability.
+`corbado switch --add` prints a pairing URL and a short confirmation code, opens your browser and waits. Sign in to the [management console](https://app.corbado.com), or create an account and a first project there (**Create a new project**, project type **Observe**), pick the project, and confirm the code. The CLI stores the key and the project becomes the active one.
 
-## 4. Available today
+```bash
+corbado switch --whoami      # the pairing checked against the server: match must be true
+corbado switch --list        # projectId and apiBaseUrl of every paired project, and which is active
+corbado guide                # the CLI's own playbook
+```
+
+`corbado switch --list` is where an integration takes its `Project ID` and `API Base URL` from. Switching between paired projects changes the tenant every following command targets, so the CLI asks for confirmation.
+
+## 4. Verify an integration
+
+Four commands check the backend side after you walked a journey with `debug: true` and noted the session id from the console:
+
+```bash
+SINCE=$(( $(date +%s) * 1000 - 600000 ))                                   # last 10 minutes, epoch ms
+corbado events-feed --ingested-after $SINCE --session-id <session-uuid>    # arrivals; watch `classified` flip
+corbado classify <session-uuid>                                            # classify now instead of waiting
+corbado classification-errors --created-after $SINCE --session-id <session-uuid>   # why something did not classify
+corbado session <session-uuid>                                             # flows, decisions and subflows as classified
+```
+
+`corbado integration-stats` followed by `corbado integration-status` shows per flow and subflow type whether it is enabled for analytics and how many classification errors it produced in the last 24 hours. The same checks exist in the console under **Observe → Debugging → Integration**, where **Process** classifies the visible sessions and precalculates the time series.
+
+## 5. Next steps
 
 <CardGroup cols={2}>
   <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
-    The Corbado Observe agent skill, publicly available.
+    The Corbado Observe agent skill uses the CLI as its verification loop.
   </Card>
   <Card title="Corbado Observe Debugger" icon="chrome" href="/corbado-observe/tools/devtools-extension">
     Inspect the live event stream in Chrome DevTools.

@@ -118,7 +118,7 @@ getTracker().flowFinished({ flowName: "signup", userId, identifier });
 getTracker().flowAutoFinished({ flowName: "login", finishedByFlowName: "signup", userId });
 ```
 
-A `flowAutoFinished()` without an open parent is dropped silently. A flow that runs after the session already exists, typically an enrollment prompted after login, is not nested. It is a sibling flow started after the login finished, with its own `flowStarted()` and `flowFinished()`.
+A `flowAutoFinished()` without an open parent is not fatal, but the classifier reconstructs a closed flow of that name, so send it only for a parent that was started. A flow that runs after the session already exists, typically an enrollment prompted after login, is not nested. It is a sibling flow started after the login finished, with its own `flowStarted()` and `flowFinished()`.
 
 When the user leaves a nested flow without finishing it, close it with `flowFinished({ flowName, explicitOutcome: "skipped" })`. That records the right outcome and keeps the parent's subsequent events out of the nested flow.
 
@@ -128,7 +128,7 @@ When the user leaves a nested flow without finishing it, close it with `flowFini
 
 ## 3. Ordering
 
-Ordering requirements are causal, not temporal:
+Ordering requirements follow cause and effect. They do not depend on wall-clock time:
 
 1. `flowStarted()` before any event of that flow. A `flowFinished()` or `flowDecided()` without an open flow invalidates the whole session's classification.
 2. When a screen renders, the decision `started` comes before the operation helpers are created.
