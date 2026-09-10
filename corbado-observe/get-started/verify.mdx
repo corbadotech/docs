@@ -13,7 +13,7 @@ Before you consider an integration finished, confirm that events actually arrive
 | **Debug mode** | Set `debug: true` at initialization and Observe logs every tracked event to the console. Fastest check that a call site fires at all. |
 | **[Corbado Observe Debugger](/corbado-observe/tools/devtools-extension)** | A Chrome DevTools extension with a filterable live stream of what actually leaves the browser, plus the current session ID and user references. Works for both Autocapture and custom events. |
 | **[Management console](https://app.corbado.com/observe/debugging/integration)** | Confirms events were accepted and modeled correctly. Use the events view for the raw stream and user search to reconstruct one journey end to end. **Process** on the integration page classifies the visible sessions and precalculates the time series without waiting. |
-| **[Observe CLI](/corbado-observe/tools/cli)** *(beta)* | The same checks from the terminal: `events-feed` for arrivals, `classify` to classify now, `classification-errors` for why a session did not classify, `session` for the classified journey. |
+| **[Observe CLI](/corbado-observe/tools/cli)** | The same checks from the terminal: `events-feed` for arrivals, `classify` to classify now, `classification-errors` for why a session did not classify, `session` for the classified journey. |
 
 ## 2. Walkthrough
 
