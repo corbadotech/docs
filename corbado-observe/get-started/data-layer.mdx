@@ -33,7 +33,7 @@ flowchart LR
 | --- | --- | --- |
 | **Shim** | Three lines in `<head>` that create the buffer before any app code runs | Your app |
 | **Emitters** | Pushes at the moments your app already knows about: a screen rendered, a control was used, a request settled, validation failed, identity became known | Your app, in your own vocabulary |
-| **Mapping** | One module that takes over the buffer, replays it, and calls the Observe SDK. It holds every Observe name, every flow boundary, every subflow step | Corbado-shaped. Compiled into your app, published as your package, or served from Corbado's CDN |
+| **Mapping** | One module that takes over the buffer, replays it, and calls the Observe SDK. It holds every Observe name, every flow boundary, every subflow step | Corbado-shaped. Served from Corbado as a script tag (recommended) or self-hosted as your own package |
 | **Fallbacks** | `@corbado/autocapture` observers the mapping attaches for what your code cannot emit, above all WebAuthn ceremonies run by third-party libraries | The mapping |
 
 The data layer speaks your app's vocabulary and the mapping speaks Observe's. That split is what lets Corbado review, test and correct the tracking model with you without touching your components.
@@ -100,16 +100,17 @@ The full contract, the emission rules and the app-side ordering guarantees are i
 
 The mapping is a self-contained module with a fixed layout: a contract file shared with your emitters, a taxonomy file holding the three tables that translate your names into Observe's, a coordinator that derives flow starts, finishes and skips from those tables, one state class per screen, and the fallback wiring. It imports only its contract, `@corbado/observe` and `@corbado/autocapture`, never your app. Corbado provides a sample skeleton for your stack, and the agent skill writes it against your journeys.
 
-Delivery is a choice you make before go-live, and it does not change your emitters:
+The maintenance split follows from that layout. The emitters are your code and evolve with your screens and requests. The mapping is the one place tracking logic lives, and it can be maintained by you or together with Corbado. If you want Corbado to own the whole thing, including reconciling the tracking after your releases, without any code changes on your side, that is [Autocapture](/corbado-observe/get-started/autocapture).
 
-| Mode | How | Tracking corrections need |
+Delivery is a separate choice, made before go-live, and it does not change your emitters:
+
+| Delivery | How | Tracking corrections need |
 | --- | --- | --- |
-| **Compiled in** | The module lives in your codebase and installs at startup after consent | An app release |
-| **Your own package** | The module is published as your npm package and versioned like any dependency | A dependency bump |
-| **Corbado CDN** | A tiny loader inserts an immutable, versioned mapping bundle. Rolling back re-points the loader | Nothing on your side. Corbado can ship a correction that is live on the next page load |
+| **Corbado script tag** *(recommended)* | A tiny loader inserts an immutable, versioned mapping bundle from Corbado's CDN. Rolling back re-points the loader | Nothing on your side. A correction is live on the next page load |
+| **Self-hosted** | The mapping is your own npm package, or a module in your repository, bundled and released with your app | A dependency bump or an app release |
 
 <Note>
-  CDN delivery is set up together with Corbado: we host the bundle, verify a new version by injecting it into your live page in a test browser and replaying recorded journeys, and only then point the loader at it. [Talk to us](mailto:support@corbado.com) when you approach go-live.
+  Script-tag delivery is set up together with Corbado: we host the bundle, verify a new version by injecting it into your live page in a test browser and replaying recorded journeys, and only then point the loader at it. [Talk to us](mailto:support@corbado.com) when you approach go-live.
 </Note>
 
 ## 6. Verify

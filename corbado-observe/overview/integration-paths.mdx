@@ -9,17 +9,18 @@ There are three ways to get authentication data into **Corbado Observe**. They a
 | | **Autocapture** | **Data layer + mapping** | **Custom events** |
 | --- | --- | --- | --- |
 | Signals | Browser surfaces: network, WebAuthn, DOM | A few semantic events your app pushes, plus fallbacks | Tracker calls in your own code |
-| Mapping | Built and hosted by Corbado | One central module, Corbado-shaped | Spread across your components |
-| App changes | None | A three-line shim plus thin emitters | Tracker calls at every semantic point |
-| Recommended for | Web, when the frontend cannot change | Web, when you integrate from source | Native apps, and explicit precision requirements |
+| Mapping | Built and maintained by Corbado, reconciled after your releases | One central module, Corbado-shaped | Spread across your components |
+| App changes | None, ever | A three-line shim plus thin emitters | Tracker calls at every semantic point |
+| Delivery | Corbado script tag (recommended) or self-hosted | Corbado script tag (recommended) or self-hosted | Bundled with your app |
+| Recommended for | Web, fully managed, no source changes | Web, when you integrate from source | Native apps, and explicit precision requirements |
 
 ## 1. Autocapture
 
 <Info>
-  **Recommended on web when your frontend cannot change.** One script, no event tagging.
+  **Recommended when you do not want to change your code at all.** Fully managed by Corbado: one script, no event tagging, nothing to maintain.
 </Info>
 
-You deploy a single script and Corbado maps your authentication journey from signals your frontend already emits. No event tagging, no change to your login flows and no instrumentation to maintain as your login evolves.
+You deploy a single script and Corbado maps your authentication journey from signals your frontend already emits: API calls, WebAuthn ceremonies, fields and their low-level events, existing component events. No event tagging, no change to your login flows and no instrumentation to maintain as your login evolves. Corbado owns the complete mapping and, after larger releases of your login, reconciles the tracking; you never change code. That is what makes it the fully managed option for large enterprises.
 
 ### 1.1 What Autocapture actually does
 
@@ -49,7 +50,7 @@ Autocapture is built on [`@corbado/autocapture`](https://www.npmjs.com/package/@
 
 Your frontend pushes a handful of semantic events into the **Observe data layer**, an in-page buffer with the mechanics of an analytics data layer: a screen was presented with these options, a control was used, an auth request started or settled, validation rejected a field, identity became known. One central module, the **mapping**, takes over that buffer and turns the events into Observe flows, decisions and subflows. It attaches Autocapture's observers as fallbacks for what your code cannot emit, above all WebAuthn ceremonies run by a third-party library that exposes no hooks.
 
-Your app keeps the shim and the emitters, in its own vocabulary. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. That is what makes it replaceable: compile it in, publish it as your own package, or let Corbado serve it from its CDN so a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
+Your app keeps the shim and the emitters, in its own vocabulary; they are your code and evolve with your screens. The mapping holds every Observe name, every flow boundary and every subflow step, and imports nothing from your app. That is what makes it replaceable: host it yourself as your own package, or let Corbado serve it as a script tag, the recommended delivery, so a tracking correction is live on the next page load without an app release. Because its input is a plain event array, tracking logic is testable by replaying recorded journeys.
 
 See [Get started with the data layer](/corbado-observe/get-started/data-layer). The [agent skill](/corbado-observe/get-started/use-with-ai-agents) implements it.
 
@@ -95,13 +96,14 @@ All paths write into the same project, the same session and the same data model,
 | Integration effort | **One line of code.** Corbado prepares the script for your flows. | A shim plus thin emitters, typically **hours** with the agent skill | **1 to 3 days** for a typical login flow, plus your own testing |
 | Time to first insight | Same day | Same day | As soon as your first instrumented flow ships |
 | Semantics | Derived from observed signals | Stated by your app, translated centrally | Explicit: you define flow, touchpoint, spec type and decisions |
-| Maintenance | Corbado keeps the mapping current | Central: the mapping is updated in one place, by you or by Corbado | Your team maintains events as flows change |
+| Maintenance | Corbado maintains everything, including reconciling the tracking after your larger releases | Your emitters evolve with your code; the mapping is updated in one place, by you or by Corbado | Your team maintains events as flows change |
+| Delivery | Corbado script tag (recommended) or self-hosted | Corbado script tag (recommended) or self-hosted | Bundled with your app |
 | Testability | Corbado's recorded scenarios | Replay recorded data layer events against the mapping | Your own end-to-end runs |
 | Coverage | Every flow the script sees | Every flow your app reports | Exactly the flows you instrument |
 
 **What we recommend:**
 
-- **Web, frontend cannot change:** Autocapture.
+- **Web, no code changes wanted:** Autocapture, fully managed by Corbado.
 - **Web, integrating from source:** the data layer. Use custom events only when you explicitly need precision tracking or single events.
 - **iOS and Android:** custom events, using the native SDKs.
 - **Both web and native apps:** Autocapture or the data layer on web **and** custom events in the apps. One project holds all channels, and [applications](/corbado-observe/tracking/applications) keep them comparable.

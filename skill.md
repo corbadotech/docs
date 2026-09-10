@@ -23,19 +23,30 @@ The shapes differ only in where the signals come from and who owns the mapping:
 
 | Shape                                    | Signals                                                                                | Mapping                                     | App changes                            |
 | ---------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------- | -------------------------------------- |
-| Autocapture                              | Browser surfaces via `@corbado/autocapture` (network, WebAuthn, DOM)                   | Built and hosted by Corbado                 | none; set up together with Corbado     |
+| Autocapture                              | Browser surfaces via `@corbado/autocapture` (network, WebAuthn, DOM, existing low events) | Built and maintained by Corbado, reconciled after app releases | none — implemented and maintained by Corbado |
 | **Data layer + mapping** (default here)  | A handful of semantic events the app pushes into a page-global data layer, plus fallbacks | One central module, Corbado-shaped, swappable | a three-line shim plus thin emitters   |
 | Custom events (precision)                | Tracker calls written into the app's own code at the semantic points                   | Spread across the app's components          | tracker calls at every semantic point  |
 
-**Scope: this skill implements the data layer + mapping shape by default and uses custom
-events only under the conditions in section 1.** All three shapes write into the same
-project, session and data model. `@corbado/autocapture` is the low-level capture library
-the mapping uses for fallbacks; it is not the tracker SDK.
+Delivery — self-hosted package or Corbado script tag (recommended) — is a separate
+dimension that applies to Autocapture and the data layer alike (section 6).
+
+**Scope: this skill is for customers integrating from their own source. It implements the
+data layer + mapping shape by default and uses custom events only under the conditions in
+section 1.** Autocapture is implemented and maintained by Corbado and is not built with
+this skill. All three shapes write into the same project, session and data model.
+`@corbado/autocapture` is the low-level capture library the mapping uses for fallbacks; it
+is not the tracker SDK.
 
 ## 1. Decide the integration shape
 
-Default to the data layer + mapping. Use the precision path (section 9) only when one of
-these holds:
+First rule out Autocapture. A user who wants **no source changes at all** — a fully managed
+solution where Corbado derives everything from what is already there (API calls, WebAuthn,
+fields and low events, existing component events) and reconciles the tracking after larger
+releases — wants Autocapture. Corbado implements and maintains it; it is not built with
+this skill. Stop and point the user to Corbado (support@corbado.com).
+
+Otherwise default to the data layer + mapping. Use the precision path (section 9) only when
+one of these holds:
 
 - The user explicitly asks for precision tracking, custom events or single events.
 - There is no structurally sound central place: the auth journey is spread over
@@ -54,7 +65,8 @@ When in doubt, ask before writing code. State the trade-off like this:
 > your own package or from Corbado's CDN, so tracking corrections need no app release.
 > **Custom events:** tracker calls at every semantic point in your code. Every tracking
 > correction is an app release, and there is no central place Corbado can optimize with
-> you. Which do you want?
+> you. **Autocapture:** no code changes at all, fully managed by Corbado, set up with
+> Corbado rather than here. Which do you want?
 
 What each side owns in the default shape:
 
@@ -485,26 +497,28 @@ reported once and the rest keeps working. Telemetry failure costs data, never a 
 
 ## 6. Delivery
 
-One source, three ways to run it. The shim and the emitters stay in the app in every mode.
+Delivery is a dimension of its own, independent of the shape: it decides where the mapping
+bundle comes from, and it applies to Autocapture and the data layer alike. The shim and
+the emitters stay in the app either way.
 
-| Mode                          | How                                                                                                     | Who can change the mapping without an app release |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Compiled in                   | `observe-mapping/` is a module of the app; `installObserveMapping()` runs at startup after consent      | nobody — every fix is a release                    |
-| Customer-scoped package       | The module is published as the customer's own npm package; the app depends on a version                 | the customer, by bumping the dependency            |
-| Corbado CDN loader            | A tiny stable loader script inserts an immutable, versioned mapping bundle; a rollback re-points the loader | Corbado, live on the next page load                |
+| Delivery                             | How                                                                                                                       | Who can change the mapping without an app release                                       |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Corbado script tag** (recommended) | A tiny stable loader script inserts an immutable, versioned mapping bundle from Corbado's CDN; a rollback re-points the loader | Corbado, live on the next page load — the customer never redeploys for a tracking change |
+| Self-hosted                          | The mapping is the customer's own npm package (or a module in the app's repository), bundled and released with the app   | The customer, by bumping the dependency and releasing                                    |
 
-For the loader mode the app inserts the loader and calls `init` / `setExperiments` /
-`destroy` on a command queue the loader creates, exactly like the analytics snippets it
-already runs; calls before the bundle arrives are replayed. Corbado can verify a new
-mapping build from the outside before it ships, by injecting it into the live page in a
-test browser and replaying recorded journeys against it. That external test is only
-possible because the mapping imports nothing from the app.
+Build the mapping so both are possible from one source: a self-contained entry that
+exports `installObserveMapping()` for the self-hosted case and, for the script tag, a
+loader command queue the app calls `init` / `setExperiments` / `destroy` on — exactly like
+the analytics snippets it already runs; calls before the bundle arrives are replayed.
+Corbado verifies a new mapping build from the outside before it ships, by injecting it
+into the live page in a test browser and replaying recorded journeys against it. That
+external test is only possible because the mapping imports nothing from the app.
 
-Timing rule for every mode: the shim is at document start regardless of where the mapping
+Timing rule for both: the shim is at document start regardless of where the mapping
 loads, so late installation loses nothing except time-critical fallback capture. A
 WebAuthn ceremony that starts at page load (immediate mediation, auto-started conditional
-UI) is observable only if the WebAuthn fallback attached before it — prefer the earliest
-delivery the app allows when such ceremonies exist. Loading the mapping through a tag
+UI) is observable only if the WebAuthn fallback attached before it — insert the loader as
+early as the app allows when such ceremonies exist. Loading the mapping through a tag
 manager is acceptable where tag governance requires it; it is late by construction.
 
 ## 7. Event catalog
