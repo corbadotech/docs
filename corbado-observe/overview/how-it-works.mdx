@@ -16,15 +16,13 @@ That gap is what **Corbado Observe** measures. For the wider argument, see [Why 
 
 ## 2. How data flows through Observe
 
-The [integration paths](/corbado-observe/overview/integration-paths) differ only in step 1. From step 2 onwards they run through the same pipeline.
+The two [integration paths](/corbado-observe/overview/integration-paths) differ only in step 1. From step 2 onwards they run through the same pipeline.
 
 ```mermaid
 flowchart TD
     subgraph capture["1. Capture"]
         A["Autocapture<br />web"]
-        L["Data layer + mapping<br />web"]
-        N["Native SDKs<br />iOS, Android"]
-        C["Custom events<br />web"]
+        C["Custom events<br />web, iOS, Android"]
     end
     capture --> B["2. Send"]
     B --> D["3. Classify"]
@@ -35,7 +33,7 @@ flowchart TD
 
 <Steps>
   <Step title="Capture">
-    [Autocapture](/corbado-observe/get-started/autocapture) observes what your web frontend already does. The [data layer](/corbado-observe/get-started/data-layer) takes a few semantic events your web app pushes and maps them centrally. The [native SDKs](/corbado-observe/get-started/native) capture system evidence in your iOS and Android apps and take facts from your screens through typed hooks. [Custom events](/corbado-observe/get-started/custom-events) are events you emit yourself on web.
+    [Autocapture](/corbado-observe/get-started/autocapture) observes what your web frontend already does. [Custom events](/corbado-observe/get-started/custom-events) are events you emit yourself, from the web, iOS or Android SDK.
   </Step>
   <Step title="Send">
     Events are batched and sent asynchronously to Corbado. Delivery never blocks your UI and never sits in the authentication path.
@@ -84,13 +82,13 @@ See [Corbado Connect](/corbado-connect/overview/welcome) if you want to add pass
 | Error and APM tooling (Sentry, Datadog, Splunk) | Exceptions, traces, backend performance | Passkey failures often throw no exception at all. A silent cancellation is a normal `NotAllowedError` or nothing, and reconstructing a journey from error events is manual work. |
 | Your own backend logs | Successful and failed authentication attempts | Everything before the request reaches you, which is where most passkey friction lives |
 
-Observe complements these tools and does not replace them. It is deliberately narrow: the client side of authentication, modeled properly. For a category-by-category comparison, see [Which tool reports the real authentication success rate?](https://www.corbado.com/blog/authentication-success-rate-analytics-vendors)
+Observe complements these rather than replacing them. It is deliberately narrow: the client side of authentication, modeled properly. For a category-by-category comparison, see [Which tool reports the real authentication success rate?](https://www.corbado.com/blog/authentication-success-rate-analytics-vendors)
 
 ## 6. Next steps
 
 <CardGroup cols={2}>
   <Card title="Integration paths" icon="route" href="/corbado-observe/overview/integration-paths">
-    Autocapture, data layer, native SDKs or custom events.
+    Autocapture vs. custom events.
   </Card>
   <Card title="Compatibility & constraints" icon="list-check" href="/corbado-observe/overview/constraints">
     Platforms, requirements and limits.

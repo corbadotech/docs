@@ -66,7 +66,7 @@ A screen's option set usually mixes both:
 | **Method options** | password, passkey, OTP, social login | Predefined option strings (see section 4). **Never finished explicitly.** The subflow that follows resolves the decision in classification, and a failed attempt resolves it just as well as a successful one. |
 | **Navigational options** | back, change identifier, switch to sign-up, other methods, forgot password, skip | Free-form names. Finish explicitly with `explicitDecisionValue` the moment the choice is made, typically followed by the next screen's decision `started`. |
 
-Realistic logins have many navigational options. They are the adaptive, per-application part of the model and deserve the same care as the method options. Name them for reuse across decisions, for example `back`, `switch-to-signup` or `recovery`.
+Realistic logins have many navigational options. They are the adaptive, per-application part of the model, not an edge case. Name them for reuse across decisions, for example `back`, `switch-to-signup` or `recovery`.
 
 A screen can lead into the same subflow through several controls, for example two buttons that run the same ceremony or a primary tile plus an "other methods" list. That is one option and one subflow, because only one option string can resolve it. Express the difference through a spec type where the taxonomy has one, otherwise carry it as a tag.
 
@@ -123,8 +123,7 @@ const presentedAt = Date.now();
 
 getTracker().authMethodsDecisionStarted(
   { decisionName: "pre-identifier", options: ["identifier-email", "social-google"] },
-  undefined, // tags
-  undefined, // experiments
+  {},
   { explicitTimestamp: presentedAt },
 );
 
@@ -132,8 +131,7 @@ const cuiAvailable = await PublicKeyCredential.isConditionalMediationAvailable?.
 if (cuiAvailable) {
   getTracker().authMethodsDecisionStarted(
     { decisionName: "pre-identifier", options: ["identifier-email", "passkey-login-cui", "social-google"] },
-    undefined,
-    undefined,
+    {},
     { explicitTimestamp: presentedAt },
   );
 }
@@ -215,7 +213,7 @@ getTracker().authMethodsDecisionStarted({
 ## 6. Best practices
 
 - Assign every screen to a decision name, even single-option screens.
-- Send `started` on presentation and whenever options change. A re-render alone is no presentation.
+- Send `started` on presentation and whenever options change, not on re-render.
 - Never finish a method choice by hand. Finish navigational choices immediately.
 - Keep the order of the `options` array stable across renders.
 - Keep `decisionName` values short, stable and independent of experiments or UI wording.

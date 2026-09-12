@@ -43,14 +43,12 @@ Administrators access these insights in the Management Console. Enterprise custo
 
 Observe is **client-side only** and never sits in the authentication path. See [How Observe works](/corbado-observe/overview/how-it-works) for the full pipeline and how Observe compares to the analytics and monitoring tools you already run.
 
-## 4. Ways to send data
+## 4. Two ways to send data
 
 | Path | Platforms | Effort | Summary |
 | --- | --- | --- | --- |
-| **[Autocapture](/corbado-observe/get-started/autocapture)** *(fully managed)* | Web | One line of code | Corbado prepares the script, maps your journey from signals your frontend already emits and keeps the tracking current after your releases. No code changes. |
-| **[Data layer](/corbado-observe/get-started/data-layer)** *(recommended from source)* | Web | Hours | Your app pushes a few semantic events into an in-page buffer; one central mapping turns them into Observe events and can be updated without an app release. |
-| **[Native SDKs](/corbado-observe/get-started/native)** *(iOS and Android)* | iOS, Android | Hooks in your screens plus one adapter module | The SDK captures system evidence on its own, your screens forward a few facts through typed hooks, one module in your app holds the mapping. |
-| **[Custom events](/corbado-observe/get-started/custom-events)** | Web | 1 to 3 days | Emit explicit events yourself when you deliberately want hand-written tracker calls. |
+| **[Autocapture](/corbado-observe/get-started/autocapture)** *(recommended)* | Web | One line of code | Corbado prepares the script and maps your journey from signals your frontend already emits. |
+| **[Custom events](/corbado-observe/get-started/custom-events)** | Web, iOS, Android | 1 to 3 days | Emit explicit events where you need guaranteed semantics, and on native platforms where Autocapture cannot run. |
 
 See [Integration paths](/corbado-observe/overview/integration-paths) to choose.
 

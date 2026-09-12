@@ -1,13 +1,13 @@
 ---
 title: "Get Started with Custom Events"
-description: "Instrument your web authentication flows with explicit, hand-written Corbado Observe events."
+description: "Instrument your authentication flows with explicit Corbado Observe events on web, iOS and Android."
 sidebarTitle: "Custom events"
 ---
 
 **Custom events** are explicit **Corbado Observe** events you emit from your own code, at the semantically correct points in your flows. You get exactly the granularity you define. Budget **1 to 3 days** for a typical login flow, plus your own testing.
 
 <Info>
-  Custom events are hand-written tracker calls. Every call site follows the taxonomy rules on its own, so the effort grows with the number of places you instrument. Integrate from source through the [Observe data layer](/corbado-observe/get-started/data-layer) unless you deliberately want tracker calls at single points in your code, and run [Autocapture](/corbado-observe/get-started/autocapture) when the frontend cannot change. On iOS and Android, use the [native SDKs](/corbado-observe/get-started/native). See [Integration paths](/corbado-observe/overview/integration-paths).
+  On web, most teams run [Autocapture](/corbado-observe/get-started/autocapture) as the foundation and add custom events only where a step needs guaranteed semantics. On iOS and Android, custom events are the integration. See [Integration paths](/corbado-observe/overview/integration-paths).
 </Info>
 
 <Tip>
@@ -43,11 +43,21 @@ sidebarTitle: "Custom events"
       ```
     </Accordion>
   </Tab>
-</Tabs>
+  <Tab title="iOS (Swift)">
+    Corbado Observe ships a native Swift SDK that sends into the same data model as the web SDK.
 
-<Note>
-  iOS and Android have their own page: [Get started on iOS and Android](/corbado-observe/get-started/native). The native SDKs capture system evidence on their own and take facts from your screens through typed hooks.
-</Note>
+    <Note>
+      [Contact us](mailto:support@corbado.com) for the package coordinates and the iOS integration guide.
+    </Note>
+  </Tab>
+  <Tab title="Android (Kotlin)">
+    Corbado Observe ships a native Kotlin SDK, published to Maven Central as `com.corbado:observe` (minSdk 23), that sends into the same data model as the web SDK.
+
+    <Note>
+      [Contact us](mailto:support@corbado.com) for the Android integration guide.
+    </Note>
+  </Tab>
+</Tabs>
 
 ## 3. Initialize the tracker
 
