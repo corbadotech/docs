@@ -236,9 +236,10 @@ reason to re-emit `started`. When the option set depends on an async capability 
 on render with `explicitTimestamp` set to the render time, and re-emit with the final
 options and the _same_ timestamp once the check resolves: an identical timestamp replaces
 the open occurrence's options in place instead of opening a new one. Capture the render
-time once and reuse it. An option whose subflow auto-starts on the screen still belongs in
+time once and reuse it. An option whose auth-method subflow auto-starts on the screen still belongs in
 the option set — if a subflow can start on a screen, its method option is part of that
-screen's options. Unresolved decisions classify as incomplete.
+screen's options. Silent trusted-device checks are the exception: they are system work,
+not offered methods, and never resolve a decision. Unresolved decisions classify as incomplete.
 
 **Option strings that subflows resolve.** The decision only resolves if the exact string
 is present in `options`:
@@ -369,6 +370,8 @@ releases.
 | `provideDataOperationFull(cfg?)`        | provide-data                       | `clientValidation`, `postResponse`                                                                       | `signup`, `login`, `recovery`, `enrollment`                                                           |
 | `appConfirmationOperationFull(cfg?)`    | app-confirmation                   | `ceremony`, `retry`, `postResponse`                                                                      | `qr-code`                                                                                             |
 | `captchaOperationFull(cfg?)`            | captcha                            | `ceremony`, `postResponse`                                                                               | `visible`, `invisible`                                                                                |
+| `trustedDeviceCheckOperationFull(cfg)` | trusted-device-check | `getOptions`, `ceremony`, `postResponse` | `token`, `key` |
+| `trustedDeviceEnrollmentOperationFull(cfg)` | trusted-device-enrollment | `getOptions`, `ceremony`, `postResponse` | `token`, `key` |
 
 For a subflow with no helper (e.g. TOTP), use the low-level tracker methods
 (`trackSubflowStarted`, `trackSubflowStepStarted/Finished/Error`) with the same shape.
@@ -377,7 +380,8 @@ Custom steps: `op.customStep("my-step")`.
 **Never finish a subflow.** There is no subflow-finished concept: the classifier derives
 each attempt's outcome from its steps. The outcome-bearing step is `postResponse` for
 almost every subflow (`exchangeCode` for social, `ceremony` for app-confirmation) — track
-it always; earlier/utility steps are enrichment you may skip when the effort outweighs
+it unless a trusted-device check settles an early negative result (see Trusted devices);
+earlier/utility steps are enrichment you may skip when the effort outweighs
 the value — with one exception: the WebAuthn `ceremony` steps of the passkey subflows.
 Track those whenever passkeys are in play; ceremony start/finished/error is what powers
 all passkey-related analytics (engagement, cancellation, ceremony errors and durations)
@@ -391,9 +395,10 @@ On failure, call `.error(e)` on the step that failed and stop; a retry is simply
 events. See Step errors below for what to put into them.
 
 **Spec types.** Supply `explicitSpecType` on the constructor whenever known. For
-passkey-login, passkey-enrollment, password-enrollment, provide-data, email-link and
-social-login a spec must eventually arrive on _some_ event of the attempt — the
-classifier drops an attempt without one. The types don't enforce this; it's the
+passkey-login, passkey-enrollment, password-enrollment, provide-data, email-link,
+social-login and both trusted-device subflows a spec must eventually arrive on _some_
+event of the attempt — the classifier drops an attempt without one. Most helper types
+do not enforce this (trusted-device configs do); it's the
 integration's job to make sure one of these attempts never runs spec-less end to end. The others tolerate
 absence with a documented default (email/sms-otp assume the login variant, password-login
 `password-known-identifier`, provide-identifier `email`, app-confirmation `qr-code`).
@@ -420,18 +425,66 @@ where several tracked fields are filled and submitted together is not — model 
 simplified version and track only the most important field (e.g. the password field on a
 signup form).
 
+## Trusted devices (when the app uses device trust)
+
+Instrument these subflows only when the app already checks or enrolls a device binding
+for additional verification or an MFA exemption. They observe the host's trust mechanism;
+Observe does not create keys, store trust tokens or decide whether a device is trusted.
+Use the active auth flow; enrollment performed after login completes belongs in a chained
+`enrollment` flow, following the existing flow-boundary rules.
+
+Both helpers require `explicitSpecType: "token" | "key"`,
+`purpose: "additional-verification" | "mfa-exemption"`, and
+`storage: "cookie" | "indexeddb" | "localstore" | "sessionstore"`.
+Optional `trustName` (max 128 characters) identifies the mechanism. Start the helper when
+its operation begins, and call `.start({})` on each observed step: the helper stamps
+purpose/storage/trustName on step starts and finishes so early exits retain that context.
+`getOptions` and `ceremony` are optional when the host has no corresponding operation.
+
+- **Check:** a silent system operation, with no decision option or user interaction.
+  Only `postResponse.finished({ result: "trusted" })` after host acceptance establishes
+  trust; local discovery or signing alone does not. Expected negatives are `not-trusted`
+  (either spec), `no-eligible-local-key` and `server-key-no-local-match` (`key` only).
+  Report a known negative with `.finished({ result })` on the step that establishes it,
+  including `getOptions` or `ceremony` when no server verification follows. If an actual
+  error supplies that observation, use `.errorTyped({ code, error? })` with the corresponding
+  underscore code: `not_trusted`, `no_eligible_local_key`, `server_key_no_local_match`.
+  These codes classify the negative outcome while retaining any error diagnostic; other
+  errors remain technical errors. Do not invent an error merely because a key is absent.
+- **Enrollment:** finish `postResponse` with `result: "created" | "renewed" | "unchanged"`
+  only after host acceptance. Explicit opt-out is `result: "skipped"`, not an error or a
+  completed binding; abandonment has no finish. This subflow result is separate from
+  `flowFinished({ explicitOutcome: "skipped" })`, which skips the whole flow.
+
+On an accepted binding, include `bindingReference` if known: a stable pseudonymous
+reference, max 255 characters, reused across enrollment and later checks. Never send
+cookie/token values, proofs or key material, and never fabricate unknown metadata.
+
+```typescript
+const check = tracker?.trustedDeviceCheckOperationFull({
+    explicitSpecType: "key",
+    purpose: "mfa-exemption",
+    storage: "indexeddb"
+});
+check?.ceremony.start({});
+// If discovery actually establishes that no eligible local key exists:
+check?.ceremony.finished({ result: "no-eligible-local-key" });
+// Continue the app's existing MFA fallback; this did not complete the login.
+```
+
 ## Step errors
 
-Error tracking is an optional investment tier — classification never depends on it. An
+Error diagnostics are an optional investment tier for most methods. Trusted-device
+checks are an exception when a typed error code supplies the negative result (see above). An
 attempt that just stops already classifies as incomplete; an explicit step error is a
 _different_ outcome (`<step>-error` vs `<step>-incomplete`), so errors add diagnostic
 depth, not correctness. Map them to the depth the customer wants error analytics.
 
 What makes the investment pay: the backend groups every reported error by its exact
-signature — subflow type, step, code, message, spec type, latency bucket — into error
+signature — subflow type, step, code, name, message, spec type, latency bucket — into error
 "flavours", which are then curated into named errors with impact analysis. Nothing is
 dropped or bucketed as "other"; whatever the client sends is the raw material for
-grouping. That yields four rules:
+grouping. Use these rules:
 
 - **Platform errors go in raw.** For failures the platform produces — WebAuthn/browser
   exceptions, OS credential sheets — `.error(e)` with the caught exception is the right
@@ -444,9 +497,11 @@ grouping. That yields four rules:
   `invalid_otp`, `transport_failed`, `http_error`, `process_terminated`), reused where
   the same observation recurs across steps and platforms, with the server's raw error
   label as the message. The shape is untyped, so get it exactly right: pass a plain
-  `{ code, message }` object to `.error()` — it nests both where classification reads
-  them. Where a helper predefines typed codes, prefer `errorTyped` for the compile-time
-  check (password login `invalid_password` / `user_not_found` / `account_locked`;
+  `{ code, name?, message? }` object to `.error()` — it normalizes those fields into
+  `stepData.error`. Omit unknown names/messages; code-only errors are valid. Where a
+  helper predefines typed codes, prefer `errorTyped` for the compile-time
+  check (password login `invalid_identifier_or_password` / `invalid_password` /
+  `user_not_found` / `account_locked`;
   password enrollment `requirements_not_fulfilled`; app-confirmation `declined` /
   `expired`; CUI ceremony `cancel_detected`).
 
@@ -466,6 +521,27 @@ grouping. That yields four rules:
     op?.ceremony.error(e);
     ```
 
+  Use `invalid_identifier_or_password` when the host does not disclose which credential
+  was rejected; do not infer `invalid_password` or `user_not_found` from that response.
+  `.errorTyped()` writes its domain `code` to `stepData.code`. A non-empty top-level code
+  wins over `stepData.error.code`; name/message still come from `stepData.error`.
+  Follow the helper's typed shape: password typed errors accept only `code`, while
+  trusted-device check typed errors also accept `error` for the original diagnostic.
+
+- **Extra diagnostics belong in the second argument.** Both helpers support
+  `.error(primaryError, { rawError: diagnostic })` and
+  `.errorTyped({ code: "invalid_password" }, { rawError: diagnostic })`.
+  Project stable code/name/message into the first argument; put useful additional
+  provider context (nested causes, diagnostic arrays, response status) into `rawError`.
+  It is serialized to a bounded `{ type, value }` envelope for raw-event inspection and
+  does not affect classification, outcomes, error groups or severity. It cannot fill
+  missing classified fields: a code-only typed error remains code-only even when
+  `rawError` has a name and message. Arrays passed directly to `.error()` become a string
+  message; use `rawError` to retain their structure. The default limit is 32 KiB UTF-8
+  with depth/collection limits; optional `rawErrorLimits` are clamped to SDK bounds,
+  stacks are omitted by default and binary contents are summarized. Supply deliberate
+  diagnostics without credentials, cookies or personal data, and preserve the original
+  error for the application's own handling.
 - **Keep volatile tokens out of messages.** Request ids, timestamps and user data
   fragment the flavour grouping — it's per-occurrence tokens that hurt, not the number of
   distinct errors the app genuinely has.
