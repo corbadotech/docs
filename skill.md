@@ -610,6 +610,22 @@ Identity attribution follows these rules:
 
 Passing `{}` does not clear identity.
 
+**When to call it.** As early as the reference is known, because only an identified flow
+explains a failed or abandoned attempt:
+
+- The `identifier` names the account the attempt targets, not the person at the
+  keyboard. When it comes from user input (username, email, client number), send it on
+  submit, after client-side validation and before the host answers. Attempts against
+  that account attribute to it whoever typed it.
+- A remembered identifier (cookie, saved client number) is a value a previous confirmed
+  login established. Send it at flow start.
+- Send the `userId` when the host confirms it, usually with the login result, and again
+  when a chained enrollment flow starts. The latest observation in the flow wins, so
+  the confirmed id supersedes an earlier identifier.
+- The value sent early goes out for every failed attempt too, including a stranger
+  typing someone else's identifier. Send only a value you accept in that case; otherwise
+  pseudonymize it in the client or wait for the host.
+
 Legacy user-reference fields on flow finishes, conversions, and step options remain
 supported but are deprecated. For new instrumentation, record identity separately with
 `setUser()` within the active flow. When migrating a finish that carries identity, place

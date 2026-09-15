@@ -49,11 +49,13 @@ Use at least one stable identifier (`userId` is recommended). Send both `userId`
 
 Call `setUser()` on the tracker as soon as the identity is known, while the flow is open. The SDK records it as a `flow_enriched` event on that flow, and the classifier attaches it to the flow and to every attempt inside it. Call it before `flowFinished()`. One call per identity observation is enough; the latest reference per flow wins.
 
-The most common points are:
+Call it as early as the reference is known, because only an identified flow explains a failed or abandoned attempt:
 
-- **When the identifier is resolved.** After the provide-identifier [subflow](/corbado-observe/tracking/subflows) step completes and your backend resolves the identifier to a user.
-- **When a login or signup flow completes.** The backend confirmation returns the user id.
+- **When the identifier is submitted.** The identifier names the account the attempt targets, not the person at the keyboard. Send it on submit, after client-side validation and before the host answers. A remembered identifier from a cookie or saved field is known at flow start and goes out there.
+- **When the host confirms the user.** Send the `userId` with the login result. The latest observation in the flow wins, so it supersedes the earlier identifier.
 - **When an enrollment flow starts.** The user is already logged in, so the reference is known at `flowStarted()`.
+
+A value sent early goes out for every failed attempt too, including a stranger typing someone else's identifier. Send only a value you accept in that case; otherwise pseudonymize it in the client or wait for the host.
 
 Passing `userId` or `identifier` inside `flowFinished()`, `flowAutoFinished()`, `conversion()` or the `userReference` step option still works and is deprecated. Use `setUser()` in new code.
 
