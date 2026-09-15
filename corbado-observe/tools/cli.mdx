@@ -25,7 +25,7 @@ On macOS, install it with [Homebrew](https://brew.sh) from the [Corbado tap](htt
 brew install --cask corbado/tap/corbado
 ```
 
-Homebrew puts `corbado` on your PATH and installs `jq` for JSON filtering. The CLI is a signed and notarized standalone executable, so it runs without a Node.js or Bun installation. Upgrade with `brew update` followed by `brew upgrade --cask corbado/tap/corbado`. Standalone downloads and release notes are on the [releases page](https://github.com/corbado/homebrew-tap/releases/latest).
+Homebrew puts `corbado` on your PATH. The CLI is a signed and notarized standalone executable, so it runs without a Node.js or Bun installation. Upgrade with `brew update` followed by `brew upgrade --cask corbado/tap/corbado`. Standalone downloads and release notes are on the [releases page](https://github.com/corbado/homebrew-tap/releases/latest).
 
 ## 3. Link a project
 
@@ -56,7 +56,7 @@ The CLI is optimized for every coding agent: Claude Code, Cursor, Codex, Copilot
 
 ## 6. Design
 
-The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline with `jq` and full schema introspection.
+The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline and full schema introspection.
 
 <CardGroup cols={2}>
   <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
