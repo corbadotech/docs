@@ -153,7 +153,8 @@ const handlePasskeyLogin = async (email: string) => {
   try {
     op.postResponse.start({});
     const result = await verifyOnServer(response);
-    op.postResponse.finished({}, { userReference: { userId: result.userId } });
+    op.postResponse.finished({});
+    getTracker().setUser({ userId: result.userId });
   } catch (e) {
     op.postResponse.error(e);
   }
@@ -229,7 +230,8 @@ const startConditionalUI = async () => {
 
     op.cui.postResponse.start({});
     const result = await verifyOnServer(response);
-    op.cui.postResponse.finished({}, { userReference: { userId: result.userId } });
+    op.cui.postResponse.finished({});
+    getTracker().setUser({ userId: result.userId });
   } catch (e) {
     // Torn down because the user submitted the identifier or left: not an error.
     if (!displacedByUser) op.cui.ceremony.error(e);
@@ -241,7 +243,8 @@ const handleIdentifierSubmit = async (email: string) => {
   op.provideIdentifier.postResponse.start({});
   try {
     const result = await checkUserOnServer(email);
-    op.provideIdentifier.postResponse.finished({}, { userReference: { userId: result.userId } });
+    op.provideIdentifier.postResponse.finished({});
+    getTracker().setUser({ userId: result.userId });
   } catch (e) {
     op.provideIdentifier.postResponse.error(e);
   }
@@ -306,7 +309,7 @@ const handleManualEnrollment = async (userId: string) => {
   try {
     op.postResponse.start({});
     await verifyOnServer(response);
-    op.postResponse.finished({}, { userReference: { userId } });
+    op.postResponse.finished({});
   } catch (e) {
     op.postResponse.error(e);
   }
@@ -351,7 +354,8 @@ const handlePasswordSubmit = async (email: string, password: string) => {
   passwordOp.postResponse.start({});
   const result = await verifyPasswordOnServer(email, password);
   if (result.ok) {
-    passwordOp.postResponse.finished({}, { userReference: { userId: result.userId } });
+    passwordOp.postResponse.finished({});
+    getTracker().setUser({ userId: result.userId });
   } else {
     passwordOp.postResponse.errorTyped({ code: "invalid_password" });
   }

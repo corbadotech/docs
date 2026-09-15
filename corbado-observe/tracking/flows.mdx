@@ -114,8 +114,9 @@ A skip carries the user reference whenever identity is already known.
 Only `login` and `signup` can contain nested flows. A flow that itself establishes the session, such as a sign-up or a recovery started from the login page, nests inside `login`. When the nested flow's terminal fires, finish it with `flowFinished()` and complete the parent with `flowAutoFinished()`:
 
 ```typescript
-getTracker().flowFinished({ flowName: "signup", userId, identifier });
-getTracker().flowAutoFinished({ flowName: "login", finishedByFlowName: "signup", userId });
+getTracker().setUser({ userId, identifier });
+getTracker().flowFinished({ flowName: "signup" });
+getTracker().flowAutoFinished({ flowName: "login", finishedByFlowName: "signup" });
 ```
 
 A `flowAutoFinished()` without an open parent is dropped silently. A flow that runs after the session already exists, typically an enrollment prompted after login, is not nested. It is a sibling flow started after the login finished, with its own `flowStarted()` and `flowFinished()`.
@@ -187,7 +188,8 @@ function showLoginPage(emailInput: HTMLInputElement) {
 async function submitIdentifier(email: string) {
   provideIdentifier.provideIdentifier.postResponse.start({});
   const result = await checkIdentifier(email);
-  provideIdentifier.provideIdentifier.postResponse.finished({}, { userReference: { userId: result.userId } });
+  provideIdentifier.provideIdentifier.postResponse.finished({});
+  tracker().setUser({ userId: result.userId });
 }
 
 // Step 3: The password screen renders.
@@ -224,7 +226,8 @@ async function startPasswordRecovery(email: string) {
   const crossEnvironmentTransactionID = crypto.randomUUID();
   const emailLink = tracker().emailLinkOperationFull({ explicitSpecType: "email-link-login" });
 
-  emailLink.send.start({}, { userReference: { crossEnvironmentTransactionID } });
+  tracker().setUser({ crossEnvironmentTransactionID });
+  emailLink.send.start({});
   await sendPasswordResetEmail(email, { crossEnvironmentTransactionID });
   emailLink.send.finished({});
 }
@@ -233,9 +236,11 @@ async function startPasswordRecovery(email: string) {
 async function verifyResetLink(token: string, crossEnvironmentTransactionID: string) {
   const emailLink = tracker().emailLinkOperationFull({ explicitSpecType: "email-link-login" });
 
-  emailLink.postResponse.start({}, { userReference: { crossEnvironmentTransactionID } });
+  tracker().setUser({ crossEnvironmentTransactionID });
+  emailLink.postResponse.start({});
   const result = await verifyPasswordResetToken(token);
-  emailLink.postResponse.finished({}, { userReference: { userId: result.userId, crossEnvironmentTransactionID } });
+  emailLink.postResponse.finished({});
+  tracker().setUser({ userId: result.userId, crossEnvironmentTransactionID });
 }
 
 // Step 7: The user sets a new password and is logged in automatically.
@@ -249,8 +254,9 @@ async function setNewPasswordAndLogin(token: string, newPassword: string, newPas
   const result = await completePasswordResetAndLogin(token, newPassword);
   passwordReset.postResponse.finished({});
 
-  tracker().flowFinished({ flowName: "recovery", userId: result.userId });
-  tracker().flowAutoFinished({ flowName: "login", finishedByFlowName: "recovery", userId: result.userId });
+  tracker().setUser({ userId: result.userId });
+  tracker().flowFinished({ flowName: "recovery" });
+  tracker().flowAutoFinished({ flowName: "login", finishedByFlowName: "recovery" });
 }
 ```
 
@@ -272,7 +278,8 @@ async function setNewPassword(token: string, newPassword: string, newPasswordInp
   const result = await completePasswordReset(token, newPassword);
   passwordReset.postResponse.finished({});
 
-  tracker().flowFinished({ flowName: "recovery", userId: result.userId });
+  tracker().setUser({ userId: result.userId });
+  tracker().flowFinished({ flowName: "recovery" });
 }
 
 // Step 8: The user is sent back to the login page. The login flow is still open,
@@ -287,7 +294,8 @@ async function loginWithNewPassword(password: string, userId: string) {
   await loginWithPassword(password);
   passwordLogin.postResponse.finished({});
 
-  tracker().flowFinished({ flowName: "login", userId });
+  tracker().setUser({ userId });
+  tracker().flowFinished({ flowName: "login" });
 }
 ```
 

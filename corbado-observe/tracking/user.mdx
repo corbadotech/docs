@@ -47,13 +47,15 @@ Use at least one stable identifier (`userId` is recommended). Send both `userId`
 
 ## 3. Send user references from the SDK
 
-In the **Corbado Observe SDK**, every event supports an optional user reference. You can pass user references with flow events, subflow step events and any other tracking call.
+Call `setUser()` on the tracker as soon as the identity is known, while the flow is open. The SDK records it as a `flow_enriched` event on that flow, and the classifier attaches it to the flow and to every attempt inside it. Call it before `flowFinished()`. One call per identity observation is enough; the latest reference per flow wins.
 
-The most common points to send user references are:
+The most common points are:
 
-- **When a login or signup flow completes.** This covers all successful authentication flows. Pass the user reference in `flowFinished()`.
-- **During a flow when the user identity becomes known.** Typically after the provide-identifier [subflow](/corbado-observe/tracking/subflows) step completes and your backend resolves the identifier to a user. Pass the user reference in the corresponding subflow step event.
-- **When an enrollment flow starts.** Before a user can enroll a new authentication method (for example a passkey), their identity must already be known. Pass the user reference in the first subflow step event of the enrollment.
+- **When the identifier is resolved.** After the provide-identifier [subflow](/corbado-observe/tracking/subflows) step completes and your backend resolves the identifier to a user.
+- **When a login or signup flow completes.** The backend confirmation returns the user id.
+- **When an enrollment flow starts.** The user is already logged in, so the reference is known at `flowStarted()`.
+
+Passing `userId` or `identifier` inside `flowFinished()`, `flowAutoFinished()`, `conversion()` or the `userReference` step option still works and is deprecated. Use `setUser()` in new code.
 
 <Tabs>
   <Tab title="NPM">
@@ -69,12 +71,11 @@ The most common points to send user references are:
       apiBaseUrl: "<APIBaseURL>",
     });
 
-    // Most common: pass user reference when a flow finishes
-    getTracker().flowFinished({
-      flowName: "login",
-      userId: "usr_12345",
-      identifier: "max@example.com",
-    });
+    getTracker().flowStarted({ flowName: "login" });
+    // ... the identifier step resolves the user
+    getTracker().setUser({ userId: "usr_12345", identifier: "max@example.com" });
+    // ... the login completes
+    getTracker().flowFinished({ flowName: "login" });
     ```
   </Tab>
 
@@ -90,12 +91,11 @@ The most common points to send user references are:
         apiBaseUrl: "<APIBaseURL>",
       });
 
-      // Most common: pass user reference when a flow finishes
-      Corbado.get().flowFinished({
-        flowName: "login",
-        userId: "usr_12345",
-        identifier: "max@example.com",
-      });
+      Corbado.get().flowStarted({ flowName: "login" });
+      // ... the identifier step resolves the user
+      Corbado.get().setUser({ userId: "usr_12345", identifier: "max@example.com" });
+      // ... the login completes
+      Corbado.get().flowFinished({ flowName: "login" });
     </script>
     ```
   </Tab>

@@ -72,7 +72,7 @@ See [Subflows](/corbado-observe/tracking/subflows) for the helper reference.
 
 ## 5. Identity and tags
 
-Pass `userId` and `identifier` as soon as identity is known: on the step that resolved it, and at minimum on `flowFinished()`. A skip carries identity too when the user is already known.
+Call `setUser({ userId, identifier })` as soon as identity is known and while the flow is open: right after the step that resolved it, and at the latest before `flowFinished()`. The SDK records a `flow_enriched` event on the open flow. A skipped enrollment carries identity too, because the user is already known when the flow starts.
 
 Tags ride flows. Configuration known at entry (product, variant, device class) goes on `flowStarted()`. Values only known on success go on `flowFinished()`. Do not re-fire the opener from reactive configuration such as store hydration or feature flags just to refresh its tags.
 
@@ -99,8 +99,9 @@ auth_method_decision_started  { signup-registration, options: [password-enrollme
 subflow_started               { password-enrollment, spec: password-set }
 subflow_step_started          { password-enrollment, post-response }
 subflow_step_finished         { password-enrollment, post-response }       resolves signup-registration
-flow_finished                 { flowName: signup, userId, identifier }
-flow_auto_finished            { flowName: login, finishedByFlowName: signup, userId }
+flow_enriched                 { userId, identifier }                    setUser()
+flow_finished                 { flowName: signup }
+flow_auto_finished            { flowName: login, finishedByFlowName: signup }
 ```
 
 Note what is absent: no decision `finished` for the method choices, no subflow finishes and no explicit abandon events. Had the user left mid-journey, the missing finishes would have classified it. The second `pre-identifier` decision is deliberately a second occurrence: the user genuinely revisited that checkpoint. The password attempt that rendered but was never submitted has no step and is not counted; the `back` finish resolves the `post-identifier` occurrence it was rendered in. The step names differ per helper (`pi-post-response` for the identifier, `post-response` elsewhere); the helpers emit them, you never type them.
@@ -112,12 +113,13 @@ flow_started                  { flowName: signup, touchpoint: account }
 auth_method_decision_started  { signup-registration, options: [password-enrollment] }
 subflow_started               { password-enrollment, spec: password-set }
 subflow_step_started          { password-enrollment, post-response }
-subflow_step_finished         { password-enrollment, post-response, userReference }
-flow_finished                 { flowName: signup, userId, identifier }
+subflow_step_finished         { password-enrollment, post-response }
+flow_enriched                 { userId, identifier }                    setUser()
+flow_finished                 { flowName: signup }
 flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained, not nested
 auth_method_decision_started  { enrollment-passkey, options: [passkey-enrollment, skip] }
 auth_method_decision_finished { enrollment-passkey, explicitDecisionValue: skip }
-flow_finished                 { flowName: enrollment, explicitOutcome: skipped, userId }
+flow_finished                 { flowName: enrollment, explicitOutcome: skipped }
 ```
 
 The sign-up establishes the session on its own. There is no `login` flow to auto-finish here; `flowAutoFinished()` belongs only to a parent that was actually started (6.1, 6.4). The enrollment starts after the sign-up finished, so it is a sibling.
@@ -129,7 +131,8 @@ flow_started                  { flowNames: [login, signup], defaultFlowName: log
 auth_method_decision_started  { pre-identifier, options: [identifier-email, social-google] }
 subflow_started               { provide-identifier, spec: email }
 subflow_step_started          { provide-identifier, pi-post-response }
-subflow_step_finished         { provide-identifier, pi-post-response, userReference }
+subflow_step_finished         { provide-identifier, pi-post-response }
+flow_enriched                 { userId }                                setUser()
 flow_decided                  { flowName: login }                          identifier exists
 auth_method_decision_started  { post-identifier, options: [passkey-login-known-identifier, other-methods] }
 subflow_started               { passkey-login, spec: passkey-known-identifier }   button clicked
@@ -154,11 +157,52 @@ subflow_step_started/finished { email-link, post-response }
 auth_method_decision_started  { password-reset, options: [password-enrollment] }
 subflow_started               { password-enrollment, spec: password-reset }
 subflow_step_started/finished { password-enrollment, post-response }       resolves password-reset
-flow_finished                 { flowName: recovery, userId }
-flow_auto_finished            { flowName: login, finishedByFlowName: recovery, userId }
+flow_enriched                 { userId }                                setUser()
+flow_finished                 { flowName: recovery }
+flow_auto_finished            { flowName: login, finishedByFlowName: recovery }
 ```
 
 Two things this series shows. The email-link subflow runs without a decision of its own: no decision option resolves to it, so a decision rendered around it would only ever close incomplete. And the link opening on another device is a different session; that page starts its own `recovery` flow and calls `setCrossEnvironmentTransactionId()` with the same ID, which is what joins the two sessions. It has no open `login` to auto-finish.
+
+### 6.5 Bank login with a second factor, a trusted browser and a chained enrollment
+
+A returning customer with a remembered client number. The identifier step is skipped, the password is required, the second factor is an approval in the bank's app, and the approval also registers the browser as trusted until midnight. After login the customer is offered a passkey.
+
+```text
+flow_started                  { flowName: login, touchpoint: netbank-logon, tags: { known_user: true } }
+flow_enriched                 { identifier }                            setUser(), the remembered client
+auth_method_decision_started  { post-identifier, options: [forget-client, password-login-known-identifier,
+                                switch-to-passkey, back] }
+subflow_started               { password-login, spec: password-known-identifier }   password field rendered
+subflow_step_started          { password-login, post-response }
+subflow_step_finished         { password-login, post-response }         resolves post-identifier
+subflow_started               { trusted-device-check, spec: token }     the host checked the cookie
+subflow_step_started          { trusted-device-check, post-response }
+subflow_step_finished         { trusted-device-check, post-response, result: not-trusted }
+auth_method_decision_started  { 2fa, options: [passkey-login-known-identifier, switch-to-app, back] }
+auth_method_decision_finished { 2fa, explicitDecisionValue: switch-to-app }
+auth_method_decision_started  { 2fa, options: [app-confirmation, try-another-way] }
+subflow_started               { app-confirmation }                      the request is shown
+subflow_step_started          { app-confirmation, ceremony }
+subflow_step_finished         { app-confirmation, ceremony }            the poll saw the approval
+subflow_step_started          { app-confirmation, post-response }       the continuation creates the session
+subflow_step_finished         { app-confirmation, post-response }       resolves 2fa
+subflow_started               { trusted-device-enrollment, spec: token }
+subflow_step_started          { trusted-device-enrollment, post-response }
+subflow_step_finished         { trusted-device-enrollment, post-response, result: created }
+flow_enriched                 { userId, identifier }                    setUser(), host-confirmed
+flow_finished                 { flowName: login, tags: { method: app, browser_trusted: true } }
+flow_started                  { flowName: enrollment, touchpoint: security-settings }   chained
+flow_enriched                 { userId }                                setUser()
+auth_method_decision_started  { enrollment-user, options: [passkey-enrollment, skip, dont-ask-again] }
+subflow_started               { passkey-enrollment, spec: manual }
+subflow_step_started/finished { passkey-enrollment, get-options }
+subflow_step_started/finished { passkey-enrollment, ceremony, mediation: required }
+subflow_step_started/finished { passkey-enrollment, post-response }     resolves enrollment-user
+flow_finished                 { flowName: enrollment }
+```
+
+Three things this series shows. The two trusted-device subflows are system work: they belong to no decision and resolve no option, and the negative check is a finished step with a result, not an error. The `2fa` checkpoint is presented twice because the customer navigated from the method choice to the app screen, and the second presentation is the one the app confirmation resolves. The enrollment is chained after the login finished, so it is a sibling with its own identity call, and a "don't ask again" would finish it with `explicitOutcome: skipped` exactly like a skip.
 
 ## 7. What the classifier merges, repairs or drops
 
