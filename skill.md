@@ -413,10 +413,13 @@ handoff emits another `subflow_started`. Supply the original matching spec type 
 continuing the same attempt; a different known spec can split it into a separate attempt.
 Start the destination flow before creating its operation.
 
-**Input binding.** Where the helper supports it, pass the input element
-(`inputHtmlField`) for input-related subflows — it enables interaction capture on the
-field. Call `op.destroy()` when the surface unmounts (input-bound helpers and the passkey
-helpers hold event listeners).
+**Input binding.** Pass the input element (`inputHtmlField`) to every helper that
+takes one: provide-identifier, password-login, password-enrollment, provide-data,
+email-otp and sms-otp. The OTP helpers also take `inputHtmlFields` for a row of digit
+boxes. The capture on the field is what tells typed, pasted, autofilled and prefilled
+values apart in the analysis, so a helper created without its field loses that
+distinction. Call `op.destroy()` when the surface unmounts (input-bound helpers and the
+passkey helpers hold event listeners).
 
 **provide-data** covers form fields that request user data but map to no deeper subflow
 concept (bank details, birth date, address...). One screen, one provide-data subflow on

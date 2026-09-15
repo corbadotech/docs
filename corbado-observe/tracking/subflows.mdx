@@ -33,7 +33,7 @@ When to create the helper depends on how the method is engaged:
 
 | Method kind | Examples | Create the helper when |
 | --- | --- | --- |
-| **Input-bound** | password, OTP, identifier, provide-data | The input renders. The field is the attempt surface, and the helper captures interaction on it when you pass `inputHtmlField`. |
+| **Input-bound** | password, OTP, identifier, provide-data | The input renders. The field is the attempt surface, and the helper captures interaction on it when you pass `inputHtmlField`. That capture is what tells typed, pasted, autofilled and prefilled values apart in the analysis, so bind the field wherever the helper accepts one. |
 | **System checks** | trusted-device check | The existing background check begins. It carries no user interaction and never resolves a method decision. |
 | **Action-bound** | passkey button, social button, app confirmation | The action happens. A visible button is not an attempt. A helper created for a button nobody pressed classifies as an attempt with no follow-up, which is an error. |
 
@@ -369,6 +369,15 @@ Tracks password creation during sign-up (`password-set`) or a password reset dur
 ### 3.6 Email OTP and SMS OTP
 
 Track one-time-password verification. Steps: `send` (email only), `postResponse` for the code the user submitted, `resend` when a new code is requested. Spec types distinguish the login variant from the enrollment variant, for example email verification during sign-up.
+
+Bind the code input: `inputHtmlField` for one field, `inputHtmlFields` for a row of digit boxes. This makes SMS autofill and paste visible to the analysis.
+
+```typescript
+const op = getTracker().smsOtpOperationFull({
+  explicitSpecType: "sms-otp-login",
+  inputHtmlField: codeInput,
+});
+```
 
 ### 3.7 Email link
 
