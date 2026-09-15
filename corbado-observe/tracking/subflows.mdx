@@ -373,9 +373,17 @@ Track one-time-password verification. Steps: `send` (email only), `postResponse`
 Bind the code input: `inputHtmlField` for one field, `inputHtmlFields` for a row of digit boxes. This makes SMS autofill and paste visible to the analysis.
 
 ```typescript
+// One input for the whole code.
 const op = getTracker().smsOtpOperationFull({
   explicitSpecType: "sms-otp-login",
   inputHtmlField: codeInput,
+});
+
+// One input per digit. Pass the boxes in reading order.
+const digits = Array.from(document.querySelectorAll<HTMLInputElement>(".otp-digit"));
+const op = getTracker().smsOtpOperationFull({
+  explicitSpecType: "sms-otp-login",
+  inputHtmlFields: digits,
 });
 ```
 
