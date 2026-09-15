@@ -1,14 +1,10 @@
 ---
 title: "Corbado Observe CLI"
-description: "A command-line interface for the Corbado Observe API, designed for scripting and for AI coding agents. Currently in closed beta."
-sidebarTitle: "Observe CLI (beta)"
+description: "A command-line interface for the Corbado Observe API, built for scripting and for AI coding agents."
+sidebarTitle: "Observe CLI"
 ---
 
-<Warning>
-  **Closed beta, not publicly available.** The Corbado Observe CLI is under active development and shared with selected customers only. Commands, output shapes and installation may change without notice. [Request access](mailto:support@corbado.com) to try it.
-</Warning>
-
-The **Corbado Observe CLI** gives you scripted access to your Observe data from the terminal, without going through the management console. It is designed to be driven by humans and by AI coding agents alike.
+The **Corbado Observe CLI** gives you scripted access to your Observe data from the terminal, without going through the management console. It is built for humans and for AI coding agents alike: every command explains itself through `--help`, output is JSON first and the full command schema is available for an agent to read.
 
 ## 1. What it is for
 
@@ -19,29 +15,54 @@ The **Corbado Observe CLI** gives you scripted access to your Observe data from 
 | **Ad-hoc investigation** | Query catalogs and searches directly while debugging an incident |
 | **Repeatable checks** | Wire an Observe query into CI or a scheduled job |
 
-## 2. Design
+## 2. Install
 
-The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline and full schema introspection so an agent can drive it from `--help` alone.
+The CLI is supported on macOS. Windows is available on request through [support](mailto:support@corbado.com).
 
-Projects are paired locally. Non-secret project metadata is stored in a config file and the API key is held in the operating system's secret store rather than in plain text. API keys are managed in the console under **Observe → Settings → API keys**.
+On macOS, install it with [Homebrew](https://brew.sh) from the [Corbado tap](https://github.com/corbado/homebrew-tap):
 
-## 3. Availability
+```sh
+brew install --cask corbado/tap/corbado
+```
 
-| | Status |
-| --- | --- |
-| Distribution | Closed beta, by request |
-| Stability | Commands and output may change between versions |
-| Support | Best effort during the beta |
+Homebrew puts `corbado` on your PATH and installs `jq` for JSON filtering. The CLI is a signed and notarized standalone executable, so it runs without a Node.js or Bun installation. Upgrade with `brew update` followed by `brew upgrade --cask corbado/tap/corbado`. Standalone downloads and release notes are on the [releases page](https://github.com/corbado/homebrew-tap/releases/latest).
 
-Install instructions and a full command reference will be published here once the CLI reaches general availability.
+## 3. Link a project
 
-## 4. Available today
+The CLI works per project. Add the first one with:
+
+```sh
+corbado switch --add
+```
+
+This opens the management console at [app.corbado.com](https://app.corbado.com), where you log in and pick the project to link. The CLI stores the project metadata in a config file and the API key in the operating system's secret store, never in plain text.
+
+When you are unsure which permissions the link needs, start with read permissions. Every analysis and export works with read access, and you can raise the permissions later under **Observe → Settings → API keys**.
+
+Switch between linked projects with `corbado switch`.
+
+## 4. First steps
+
+```sh
+corbado --help
+corbado guide
+```
+
+`corbado guide` walks through the common commands. `corbado schema` prints the machine-readable command documentation, which is what a coding agent reads to drive the CLI on its own.
+
+## 5. Use with coding agents
+
+The CLI is optimized for every coding agent: Claude Code, Cursor, Codex, Copilot and others. Give the agent the task in plain words, for example "find out why passkey logins dropped last Tuesday", and let it run the CLI. The [Observe agent skill](/corbado-observe/get-started/use-with-ai-agents) tells the agent how to read the data model.
+
+## 6. Design
+
+The CLI follows the `gh` model: typed commands for the common path, a raw API escape hatch for everything else, JSON-first output that can be filtered inline with `jq` and full schema introspection.
 
 <CardGroup cols={2}>
   <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
-    The Corbado Observe agent skill, publicly available.
+    The Corbado Observe agent skill.
   </Card>
-  <Card title="Corbado Observe Debugger" icon="chrome" href="/corbado-observe/tools/devtools-extension">
-    Inspect the live event stream in Chrome DevTools.
+  <Card title="MCP server" icon="server" href="/corbado-observe/tools/mcp-server">
+    Observe data for agents through the Model Context Protocol, in closed beta.
   </Card>
 </CardGroup>

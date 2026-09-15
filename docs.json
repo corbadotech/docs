@@ -47,7 +47,8 @@
                         "group": "Developer tools",
                         "pages": [
                             "corbado-observe/tools/devtools-extension",
-                            "corbado-observe/tools/cli"
+                            "corbado-observe/tools/cli",
+                            "corbado-observe/tools/mcp-server"
                         ]
                     },
                     {

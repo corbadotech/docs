@@ -1,0 +1,39 @@
+---
+title: "Corbado Observe MCP Server"
+description: "Observe data for AI agents through the Model Context Protocol. In closed beta for enterprise integrations."
+sidebarTitle: "MCP server (beta)"
+---
+
+<Warning>
+  **Closed beta.** The MCP server is shared with selected enterprise customers. [Request access](mailto:support@corbado.com) to try it.
+</Warning>
+
+The **Corbado Observe MCP server** exposes Observe data to AI agents through the [Model Context Protocol](https://modelcontextprotocol.io). It is the second way to connect an agent to Observe, next to the [CLI](/corbado-observe/tools/cli).
+
+## 1. When to use it
+
+The CLI is the default for developers and coding agents on a workstation. The MCP server is for enterprises that connect agents to internal tools through a central MCP setup, where a hosted protocol endpoint fits better than a locally installed executable.
+
+| | CLI | MCP server |
+| --- | --- | --- |
+| Runs | On the developer's machine | As a server the agent platform connects to |
+| Auth | Project linked with `corbado switch --add` | Configured on the server |
+| Best for | Individual developers, scripts, coding agents | Enterprise agent platforms, shared agent setups |
+| Availability | Generally available on macOS | Closed beta |
+
+## 2. What it offers
+
+The server presents the same Observe capabilities as the CLI as MCP tools: catalogs, searches, tables and time series for a project. An agent connected to the server can investigate login funnels, error clusters and adoption without any Observe-specific integration code on the agent side.
+
+## 3. Getting access
+
+Write to [support@corbado.com](mailto:support@corbado.com) with the agent platform you use. We set up the server for your project and share the connection details.
+
+<CardGroup cols={2}>
+  <Card title="Observe CLI" icon="terminal" href="/corbado-observe/tools/cli">
+    The generally available way to give agents access to Observe.
+  </Card>
+  <Card title="Use with AI agents" icon="robot" href="/corbado-observe/get-started/use-with-ai-agents">
+    The Corbado Observe agent skill.
+  </Card>
+</CardGroup>
