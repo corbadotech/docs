@@ -195,11 +195,7 @@ Multiple screens map to one name (progressive disclosure, explanatory screens, s
 between verification methods = still the same checkpoint). Typical names:
 `pre-identifier` (everything before the identifier is submitted), `post-identifier` (the
 method options shown after it), `2fa`, `enrollment-user` (a post-login prompt offering to
-enroll a passkey, with a skip). The classifier reads the journey from the name: the
-known names map to login, recovery or enrollment, and a segment under a non-login name is
-separated from the login funnel before decoding. An enrollment prompt under a name the
-classifier does not know is read as part of the login, so use `enrollment-user` for it.
-Rules that make names aggregate well:
+enroll a passkey, with a skip). Rules that make names aggregate well:
 
 - Every screen belongs to a decision, even with a single option.
 - The same semantic screen always maps to the same name; a screen reused across
