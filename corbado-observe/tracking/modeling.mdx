@@ -170,6 +170,7 @@ A returning customer with a remembered client number. The identifier step is ski
 
 ```text
 flow_started                  { flowName: login, touchpoint: netbank-logon, tags: { known_user: true } }
+flow_enriched                 { identifier }                            setUser(), the remembered client
 auth_method_decision_started  { post-identifier, options: [forget-client, password-login-known-identifier,
                                 switch-to-passkey, back] }
 subflow_started               { password-login, spec: password-known-identifier }   password field rendered
@@ -201,7 +202,7 @@ subflow_step_started/finished { passkey-enrollment, post-response }     resolves
 flow_finished                 { flowName: enrollment }
 ```
 
-Three things this series shows. The two trusted-device subflows are system work: they belong to no decision and resolve no option, and the negative check is a finished step with a result, not an error. Identity is attached once, after the host confirmed the login, so an abandoned attempt carries no user reference. The `2fa` checkpoint is presented twice because the customer navigated from the method choice to the app screen, and the second presentation is the one the app confirmation resolves. The enrollment is chained after the login finished, so it is a sibling with its own identity call, and a "don't ask again" would finish it with `explicitOutcome: skipped` exactly like a skip.
+Three things this series shows. The two trusted-device subflows are system work: they belong to no decision and resolve no option, and the negative check is a finished step with a result, not an error. The identifier is attached up front only because the browser remembered the client. A customer who types the client number gets the identity attached after the host confirmed the login, so an abandoned attempt carries no user reference. The `2fa` checkpoint is presented twice because the customer navigated from the method choice to the app screen, and the second presentation is the one the app confirmation resolves. The enrollment is chained after the login finished, so it is a sibling with its own identity call, and a "don't ask again" would finish it with `explicitOutcome: skipped` exactly like a skip.
 
 ## 7. What the classifier merges, repairs or drops
 
