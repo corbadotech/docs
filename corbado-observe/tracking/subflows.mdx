@@ -57,6 +57,8 @@ Every helper defines its steps (section 3). Custom steps beyond the predefined o
 
 On failure, call `.error()` on the step that failed and stop. A retry is simply a new sequence of step events.
 
+When the options for a ceremony arrived with an earlier response, for example a passkey request returned by a preceding server call, call `getOptions.start({})` and `getOptions.finished({ ... })` back to back with that payload. The attempt then carries the same three steps as one that fetched its options itself.
+
 ### 1.3 Spec types
 
 `explicitSpecType` distinguishes variants of one subflow type, for example a passkey login with a known identifier from one without. Supply it in the helper's config whenever it is known. If it only becomes known mid-attempt, send it on a later step's `start` data. The last spec type wins.
@@ -103,7 +105,7 @@ op.postResponse.errorTyped(
 );
 ```
 
-`rawError` is a bounded `{ type, value }` envelope for raw-event inspection. It does not affect classification, outcomes, error groups or severity, and does not fill missing classified fields: the typed example remains code-only. Arrays retain their structure in `rawError`; arrays passed directly to `.error()` become a string message. Diagnostics default to a 32 KiB UTF-8 limit with depth and collection limits, stacks omitted and binary contents summarized. Optional `rawErrorLimits` values are clamped to SDK bounds. Supply deliberate diagnostics without credentials, cookies or personal data; keep the original error for application handling.
+`rawError` is a bounded `{ type, value }` envelope for raw-event inspection. Pass the caught error as it is. The envelope keeps its name, message and code, its own properties such as a response status, and up to three `cause` hops, so wrapping the error into a plain object before the call adds nothing. It does not affect classification, outcomes, error groups or severity, and does not fill missing classified fields: the typed example remains code-only. Arrays retain their structure in `rawError`; arrays passed directly to `.error()` become a string message. Diagnostics default to a 32 KiB UTF-8 limit with depth and collection limits, stacks omitted and binary contents summarized. Optional `rawErrorLimits` values are clamped to SDK bounds. Supply deliberate diagnostics without credentials, cookies or personal data; keep the original error for application handling.
 
 ### 1.5 Cleanup
 
@@ -380,7 +382,7 @@ Covers form fields that request user data but map to no deeper subflow concept, 
 
 ### 3.10 App confirmation
 
-Tracks a login approved in another app, for example by scanning a QR code. `ceremony` is the approval and the outcome-bearing step, with typed error codes `declined` and `expired`. `retry` covers a re-issued code.
+Tracks a login approved in another app, for example by scanning a QR code. `ceremony` is the approval and the outcome-bearing step. Start it when the request is shown and report the terminal result only: `finished` on approval, `errorTyped` with `declined` or `expired`, `error` for any other final state. Pending poll responses stay untracked. `retry` covers a re-issued request and `postResponse` the call that turns the approval into a session.
 
 ### 3.11 Captcha
 

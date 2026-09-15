@@ -391,6 +391,8 @@ because only the backend confirmation proves the method worked. (The low-level
 `trackSubflowError` carries no outcome semantics — step errors are the intended channel;
 don't use it.)
 
+When the options for a ceremony arrived with an earlier response, call
+`getOptions.start({})` and `getOptions.finished({ ... })` back to back with that payload.
 On failure, call `.error(e)` on the step that failed and stop; a retry is simply new step
 events. See Step errors below for what to put into them.
 
@@ -534,7 +536,9 @@ grouping. Use these rules:
   Project stable code/name/message into the first argument; put useful additional
   provider context (nested causes, diagnostic arrays, response status) into `rawError`.
   It is serialized to a bounded `{ type, value }` envelope for raw-event inspection and
-  does not affect classification, outcomes, error groups or severity. It cannot fill
+  does not affect classification, outcomes, error groups or severity. Pass the caught
+  error as it is: the envelope keeps name, message and code, own properties such as a
+  response status, and up to three `cause` hops. It cannot fill
   missing classified fields: a code-only typed error remains code-only even when
   `rawError` has a name and message. Arrays passed directly to `.error()` become a string
   message; use `rawError` to retain their structure. The default limit is 32 KiB UTF-8
