@@ -113,7 +113,7 @@ Input-bound helpers and the passkey helpers hold event listeners. Call `op.destr
 
 ## 2. Example: passkey login
 
-A "Sign in with passkey" button after the identifier is known:
+A "Sign in with passkey" button after the identifier is known. These examples assume the tracker is initialized before the handlers run, as described in [Custom events](/corbado-observe/get-started/custom-events); `getTracker()!` expresses that prerequisite to TypeScript:
 
 | # | Event | Step | Description |
 | --- | --- | --- | --- |
@@ -126,16 +126,17 @@ A "Sign in with passkey" button after the identifier is known:
 | 7 | `subflow_step_finished` | `post-response` | The server confirms the login. The attempt is complete. |
 
 ```typescript
-import { getTracker } from "@corbado/observe";
+import { getTracker, sanitizeRequestOptions, sanitizeAssertionResponse } from "@corbado/observe";
 
 const handlePasskeyLogin = async (email: string) => {
-  const op = getTracker().passkeyLoginFullOperation({ explicitSpecType: "passkey-known-identifier" });
+  const op = getTracker()!.passkeyLoginFullOperation({ explicitSpecType: "passkey-known-identifier" });
 
   let options, response;
   try {
     op.getOptions.start({});
     options = await fetchAssertionOptions(email);
-    op.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+    const assertionOptions = sanitizeRequestOptions(options);
+    if (assertionOptions !== undefined) op.getOptions.finished({ assertionOptions });
   } catch (e) {
     op.getOptions.error(e);
     return;
@@ -144,7 +145,8 @@ const handlePasskeyLogin = async (email: string) => {
   try {
     op.ceremony.start({});
     response = await startWebAuthnAuthentication(options);
-    op.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+    const assertionResponse = sanitizeAssertionResponse(response);
+    if (assertionResponse !== undefined) op.ceremony.finished({ assertionResponse });
   } catch (e) {
     op.ceremony.error(e); // also when the user cancels the prompt
     return;
@@ -154,7 +156,7 @@ const handlePasskeyLogin = async (email: string) => {
     op.postResponse.start({});
     const result = await verifyOnServer(response);
     op.postResponse.finished({});
-    getTracker().setUser({ userId: result.userId });
+    getTracker()!.setUser({ userId: result.userId });
   } catch (e) {
     op.postResponse.error(e);
   }
@@ -162,6 +164,10 @@ const handlePasskeyLogin = async (email: string) => {
 ```
 
 The passkey steps carry the WebAuthn payloads as JSON strings. For login, `getOptions.finished` takes `assertionOptions` and `ceremony.finished` takes `assertionResponse`. For enrollment, the same steps take `attestationOptions` and `attestationResponse`, and the enrollment `ceremony.start` additionally requires `mediation` (`"conditional"`, `"optional"` or `"required"`).
+
+Use the SDK’s serialization helpers for these telemetry fields: `sanitizeRequestOptions` and `sanitizeAssertionResponse` for login, `sanitizeCreationOptions` and `sanitizeCreationResponse` for enrollment. Pass the WebAuthn `publicKey` options or credential itself, not your application’s response envelope. They accept native objects, JSON objects or JSON text and return JSON text with binary values encoded as base64url. They do not mutate the original objects; keep those originals for the ceremony and server verification. If a helper returns `undefined`, omit that telemetry finish as shown and continue the authentication flow. Never fall back to the raw payload.
+
+Creation options omit `user.name` and `user.displayName`; assertion responses omit `response.signature`; both credential response helpers omit `clientExtensionResults.prf.results`. Request options have no fields removed. These helpers are not general-purpose secret detection: IDs, user handles, challenges, attestation material and other extension data remain, and encoded blobs are not decoded for redaction. Review the retained data against your telemetry policy.
 
 ## 3. Subflow types
 
@@ -203,10 +209,10 @@ Passkey **Conditional UI** (autofill) is bound to the same input field, so its e
 | `cui.postResponse` | Server verification of the Conditional UI assertion. |
 
 ```typescript
-import { getTracker } from "@corbado/observe";
+import { getTracker, sanitizeRequestOptions, sanitizeAssertionResponse } from "@corbado/observe";
 
 const identifierInput = document.getElementById("email") as HTMLInputElement;
-const op = getTracker().provideIdentifierOperationFull({
+const op = getTracker()!.provideIdentifierOperationFull({
   inputHtmlField: identifierInput,
   explicitSpecType: "email",
 });
@@ -217,7 +223,8 @@ const startConditionalUI = async () => {
   try {
     op.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
     options = await fetchConditionalUIOptions();
-    op.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+    const assertionOptions = sanitizeRequestOptions(options);
+    if (assertionOptions !== undefined) op.cui.getOptions.finished({ assertionOptions });
   } catch (e) {
     op.cui.getOptions.error(e);
     return;
@@ -226,12 +233,13 @@ const startConditionalUI = async () => {
   op.cui.ceremony.start({});
   try {
     const response = await startWebAuthnAuthentication(options, { useBrowserAutofill: true });
-    op.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+    const assertionResponse = sanitizeAssertionResponse(response);
+    if (assertionResponse !== undefined) op.cui.ceremony.finished({ assertionResponse });
 
     op.cui.postResponse.start({});
     const result = await verifyOnServer(response);
     op.cui.postResponse.finished({});
-    getTracker().setUser({ userId: result.userId });
+    getTracker()!.setUser({ userId: result.userId });
   } catch (e) {
     // Torn down because the user submitted the identifier or left: not an error.
     if (!displacedByUser) op.cui.ceremony.error(e);
@@ -244,7 +252,7 @@ const handleIdentifierSubmit = async (email: string) => {
   try {
     const result = await checkUserOnServer(email);
     op.provideIdentifier.postResponse.finished({});
-    getTracker().setUser({ userId: result.userId });
+    getTracker()!.setUser({ userId: result.userId });
   } catch (e) {
     op.provideIdentifier.postResponse.error(e);
   }
@@ -282,16 +290,17 @@ Tracks passkey registration, for example after login or during sign-up.
 The `ceremony.start` data requires `mediation`, which tells Observe how the credential manager was invoked.
 
 ```typescript
-import { getTracker } from "@corbado/observe";
+import { getTracker, sanitizeCreationOptions, sanitizeCreationResponse } from "@corbado/observe";
 
 const handleManualEnrollment = async (userId: string) => {
-  const op = getTracker().passkeyEnrollmentFullOperation({ explicitSpecType: "manual" });
+  const op = getTracker()!.passkeyEnrollmentFullOperation({ explicitSpecType: "manual" });
 
   let options, response;
   try {
     op.getOptions.start({});
     options = await fetchAttestationOptions(userId);
-    op.getOptions.finished({ attestationOptions: JSON.stringify(options) });
+    const attestationOptions = sanitizeCreationOptions(options);
+    if (attestationOptions !== undefined) op.getOptions.finished({ attestationOptions });
   } catch (e) {
     op.getOptions.error(e);
     return;
@@ -300,7 +309,8 @@ const handleManualEnrollment = async (userId: string) => {
   try {
     op.ceremony.start({ mediation: "required" });
     response = await startWebAuthnRegistration(options);
-    op.ceremony.finished({ attestationResponse: JSON.stringify(response) });
+    const attestationResponse = sanitizeCreationResponse(response);
+    if (attestationResponse !== undefined) op.ceremony.finished({ attestationResponse });
   } catch (e) {
     op.ceremony.error(e);
     return;
