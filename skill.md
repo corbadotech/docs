@@ -290,21 +290,26 @@ attempt boundary genuinely needs a small restructuring (a single choke point for
 ceremony, a teardown hook), make it deliberately and call it out in the mapping notes.
 
 ```typescript
+import { sanitizeRequestOptions, sanitizeAssertionResponse } from "@corbado/observe";
+
+let options, response;
 const op = tracker?.passkeyLoginFullOperation({
     explicitSpecType: "passkey-known-identifier"
 });
 try {
     op?.getOptions.start({});
-    const options = await fetchAssertionOptions(email);
-    op?.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+    options = await fetchAssertionOptions(email);
+    const assertionOptions = sanitizeRequestOptions(options);
+    if (assertionOptions !== undefined) op?.getOptions.finished({ assertionOptions });
 } catch (e) {
     op?.getOptions.error(e);
     return;
 }
 try {
     op?.ceremony.start({});
-    const response = await startWebAuthnAuthentication(options);
-    op?.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+    response = await startWebAuthnAuthentication(options);
+    const assertionResponse = sanitizeAssertionResponse(response);
+    if (assertionResponse !== undefined) op?.ceremony.finished({ assertionResponse });
 } catch (e) {
     op?.ceremony.error(e); // also the user cancelling the prompt
     return;
@@ -325,11 +330,23 @@ The passkey steps carry the WebAuthn payloads as JSON strings: for login,
 `attestationResponse`, and the enrollment `ceremony.start` additionally requires
 `mediation` (`"conditional" | "optional" | "required"`).
 
+Serialize telemetry with the Observe exports `sanitizeRequestOptions` /
+`sanitizeAssertionResponse` for login and `sanitizeCreationOptions` /
+`sanitizeCreationResponse` for enrollment. Pass the WebAuthn publicKey options or
+credential, not an application envelope. The helpers return JSON text or `undefined`;
+on failure, omit that telemetry finish and continue authentication without a raw fallback.
+Keep the original payload for the browser and server. Creation options omit user names,
+assertions omit signatures, and credential responses omit PRF results. Other fields,
+including IDs, user handles, challenges and attestation material, remain; encoded blobs
+are not decoded for redaction. Review retained data against the integration’s telemetry policy.
+
 **Identifier-field Conditional UI** is not a passkey-login attempt. It belongs to the
 provide-identifier helper's `cui` steps, resolves the same `identifier-email` option, and
 runs alongside the manual identifier path:
 
 ```typescript
+import { sanitizeRequestOptions, sanitizeAssertionResponse } from "@corbado/observe";
+
 const op = tracker?.provideIdentifierOperationFull({
     inputHtmlField: emailInput,
     explicitSpecType: "email"
@@ -337,11 +354,13 @@ const op = tracker?.provideIdentifierOperationFull({
 // conditional request, started when the identifier surface renders:
 op?.cui.getOptions.start({ explicitSpecType: "passkey-cui" });
 const options = await fetchConditionalOptions();
-op?.cui.getOptions.finished({ assertionOptions: JSON.stringify(options) });
+const assertionOptions = sanitizeRequestOptions(options);
+if (assertionOptions !== undefined) op?.cui.getOptions.finished({ assertionOptions });
 op?.cui.ceremony.start({});
 try {
     const response = await startConditionalWebAuthn(options); // pending until picked or torn down
-    op?.cui.ceremony.finished({ assertionResponse: JSON.stringify(response) });
+    const assertionResponse = sanitizeAssertionResponse(response);
+    if (assertionResponse !== undefined) op?.cui.ceremony.finished({ assertionResponse });
     op?.cui.postResponse.start({});
     const result = await verifyOnServer(response);
     tracker?.setUser({ userId: result.userId });
