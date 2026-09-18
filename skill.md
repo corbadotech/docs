@@ -558,6 +558,11 @@ grouping. Use these rules:
   `.errorTyped({ code: "invalid_password" }, { rawError: diagnostic })`.
   Project stable code/name/message into the first argument; put useful additional
   provider context (nested causes, diagnostic arrays, response status) into `rawError`.
+  The browser SDK serializes supplied diagnostics only when
+  `tracker.getSdkConfig().rawErrors` is `true` (the built-in default). Set
+  `sdkConfig: { rawErrors: false }` at initialization to disable them; this override
+  takes precedence over fetched configuration. Policy changes affect subsequent errors,
+  not already queued diagnostics, and leave normalized errors unchanged.
   It is serialized to a bounded `{ type, value }` envelope for raw-event inspection and
   does not affect classification, outcomes, error groups or severity. Pass the caught
   error as it is: the envelope keeps name, message and code, own properties such as a
