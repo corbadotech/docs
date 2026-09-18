@@ -105,6 +105,8 @@ op.postResponse.errorTyped(
 );
 ```
 
+The browser SDK serializes explicitly supplied diagnostics when `tracker.getSdkConfig().rawErrors` is `true`, which is the built-in default. To disable this in your integration, set `sdkConfig: { rawErrors: false }` in the tracker initialization options. This override takes precedence over fetched configuration. A policy change affects subsequent errors; it does not remove diagnostics from events already queued. Normalized errors are still recorded when raw diagnostics are disabled, and stacks remain separately opt-in.
+
 `rawError` is a bounded `{ type, value }` envelope for raw-event inspection. Pass the caught error as it is. The envelope keeps its name, message and code, its own properties such as a response status, and up to three `cause` hops, so wrapping the error into a plain object before the call adds nothing. It does not affect classification, outcomes, error groups or severity, and does not fill missing classified fields: the typed example remains code-only. Arrays retain their structure in `rawError`; arrays passed directly to `.error()` become a string message. Diagnostics default to a 32 KiB UTF-8 limit with depth and collection limits, stacks omitted and binary contents summarized. Optional `rawErrorLimits` values are clamped to SDK bounds. Supply deliberate diagnostics without credentials, cookies or personal data; keep the original error for application handling.
 
 ### 1.5 Cleanup
