@@ -82,85 +82,83 @@ The event series a correct integration produces for common journeys. Options are
 
 ### 6.1 Identifier-first login, back, then sign-up
 
-```text
-flow_started                  { flowName: login, touchpoint: account }
-auth_method_decision_started  { pre-identifier, options: [identifier-email, switch-to-signup, social-google] }
-subflow_started               { provide-identifier, spec: email }          identifier field rendered
-subflow_step_started          { provide-identifier, pi-post-response }     identifier submitted
-subflow_step_finished         { provide-identifier, pi-post-response }     resolves pre-identifier
-auth_method_decision_started  { post-identifier, options: [password-login-known-identifier,
-                                passkey-login-known-identifier, back] }
-subflow_started               { password-login, spec: password-known-identifier }   password field rendered
-auth_method_decision_finished { post-identifier, explicitDecisionValue: back }
-auth_method_decision_started  { pre-identifier, options: [...] }           same checkpoint, re-presented
-auth_method_decision_finished { pre-identifier, explicitDecisionValue: switch-to-signup }
-flow_started                  { flowName: signup }                         nested in login
-auth_method_decision_started  { signup-registration, options: [password-enrollment, back] }
-subflow_started               { password-enrollment, spec: password-set }
-subflow_step_started          { password-enrollment, post-response }
-subflow_step_finished         { password-enrollment, post-response }       resolves signup-registration
-flow_enriched                 { userId, identifier }                    setUser()
-flow_finished                 { flowName: signup }
-flow_auto_finished            { flowName: login, finishedByFlowName: signup }
-```
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: account` | On page render. |
+| `auth_method_decision_started` | `pre-identifier`, options `identifier-email`, `switch-to-signup`, `social-google` | The first checkpoint. |
+| `subflow_started` | `provide-identifier`, spec `email` | Identifier field rendered. |
+| `subflow_step_started` | `provide-identifier`, `pi-post-response` | Identifier submitted. |
+| `subflow_step_finished` | `provide-identifier`, `pi-post-response` | Identifier accepted. Resolves `pre-identifier`. |
+| `auth_method_decision_started` | `post-identifier`, options `password-login-known-identifier`, `passkey-login-known-identifier`, `back` | The methods offered once the identifier is known. |
+| `subflow_started` | `password-login`, spec `password-known-identifier` | Password field rendered. Never submitted, so it has no step and is not counted. |
+| `auth_method_decision_finished` | `post-identifier`, `explicitDecisionValue: back` | A navigational choice, so it is finished explicitly. |
+| `auth_method_decision_started` | `pre-identifier`, same options as before | The same checkpoint, genuinely re-presented. A second occurrence, not a repeat. |
+| `auth_method_decision_finished` | `pre-identifier`, `explicitDecisionValue: switch-to-signup` | |
+| `flow_started` | `flowName: signup` | Nested in the open login flow. |
+| `auth_method_decision_started` | `signup-registration`, options `password-enrollment`, `back` | |
+| `subflow_started` | `password-enrollment`, spec `password-set` | |
+| `subflow_step_started` | `password-enrollment`, `post-response` | Form submitted. |
+| `subflow_step_finished` | `password-enrollment`, `post-response` | Resolves `signup-registration`. |
+| `flow_enriched` | `userId`, `identifier` | Through `setUser()`. |
+| `flow_finished` | `flowName: signup` | |
+| `flow_auto_finished` | `flowName: login`, `finishedByFlowName: signup` | The nested sign-up completes the parent login. |
 
 Note what is absent: no decision `finished` for the method choices, no subflow finishes and no explicit abandon events. Had the user left mid-journey, the missing finishes would have classified it. The second `pre-identifier` decision is deliberately a second occurrence: the user genuinely revisited that checkpoint. The password attempt that rendered but was never submitted has no step and is not counted; the `back` finish resolves the `post-identifier` occurrence it was rendered in. The step names differ per helper (`pi-post-response` for the identifier, `post-response` elsewhere); the helpers emit them, you never type them.
 
 ### 6.2 Direct sign-up, then a skipped enrollment prompt
 
-```text
-flow_started                  { flowName: signup, touchpoint: account }
-auth_method_decision_started  { signup-registration, options: [password-enrollment] }
-subflow_started               { password-enrollment, spec: password-set }
-subflow_step_started          { password-enrollment, post-response }
-subflow_step_finished         { password-enrollment, post-response }
-flow_enriched                 { userId, identifier }                    setUser()
-flow_finished                 { flowName: signup }
-flow_started                  { flowName: enrollment, touchpoint: post-signup }   chained, not nested
-auth_method_decision_started  { enrollment-passkey, options: [passkey-enrollment, skip] }
-auth_method_decision_finished { enrollment-passkey, explicitDecisionValue: skip }
-flow_finished                 { flowName: enrollment, explicitOutcome: skipped }
-```
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: signup`, `touchpoint: account` | On page render. |
+| `auth_method_decision_started` | `signup-registration`, options `password-enrollment` | A checkpoint with a single option still gets a decision. |
+| `subflow_started` | `password-enrollment`, spec `password-set` | |
+| `subflow_step_started` | `password-enrollment`, `post-response` | Form submitted. |
+| `subflow_step_finished` | `password-enrollment`, `post-response` | Resolves `signup-registration`. |
+| `flow_enriched` | `userId`, `identifier` | Through `setUser()`. |
+| `flow_finished` | `flowName: signup` | The sign-up established the session on its own. |
+| `flow_started` | `flowName: enrollment`, `touchpoint: post-signup` | Chained, not nested: the sign-up had already finished. |
+| `auth_method_decision_started` | `enrollment-passkey`, options `passkey-enrollment`, `skip` | |
+| `auth_method_decision_finished` | `enrollment-passkey`, `explicitDecisionValue: skip` | Skipping is navigational, so it is finished explicitly. |
+| `flow_finished` | `flowName: enrollment`, `explicitOutcome: skipped` | |
 
 The sign-up establishes the session on its own. There is no `login` flow to auto-finish here; `flowAutoFinished()` belongs only to a parent that was actually started (6.1, 6.4). The enrollment starts after the sign-up finished, so it is a sibling.
 
 ### 6.3 Combined form resolved to login
 
-```text
-flow_started                  { flowNames: [login, signup], defaultFlowName: login, touchpoint: checkout }
-auth_method_decision_started  { pre-identifier, options: [identifier-email, social-google] }
-subflow_started               { provide-identifier, spec: email }
-subflow_step_started          { provide-identifier, pi-post-response }
-subflow_step_finished         { provide-identifier, pi-post-response }
-flow_enriched                 { userId }                                setUser()
-flow_decided                  { flowName: login }                          identifier exists
-auth_method_decision_started  { post-identifier, options: [passkey-login-known-identifier, other-methods] }
-subflow_started               { passkey-login, spec: passkey-known-identifier }   button clicked
-subflow_step_started/finished { passkey-login, get-options }
-subflow_step_started/finished { passkey-login, ceremony }
-subflow_step_started/finished { passkey-login, post-response }
-flow_finished                 { flowName: login, userId, identifier }
-```
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowNames: [login, signup]`, `defaultFlowName: login`, `touchpoint: checkout` | The form serves both journeys, so the flow opens undecided. |
+| `auth_method_decision_started` | `pre-identifier`, options `identifier-email`, `social-google` | |
+| `subflow_started` | `provide-identifier`, spec `email` | |
+| `subflow_step_started` | `provide-identifier`, `pi-post-response` | Identifier submitted. |
+| `subflow_step_finished` | `provide-identifier`, `pi-post-response` | |
+| `flow_enriched` | `userId` | Through `setUser()`. |
+| `flow_decided` | `flowName: login` | The identifier exists, so the flow resolves to login. |
+| `auth_method_decision_started` | `post-identifier`, options `passkey-login-known-identifier`, `other-methods` | |
+| `subflow_started` | `passkey-login`, spec `passkey-known-identifier` | Button clicked. |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-login`, `get-options` | |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-login`, `ceremony` | |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-login`, `post-response` | Resolves `post-identifier`. |
+| `flow_finished` | `flowName: login`, `userId`, `identifier` | |
 
 ### 6.4 Recovery nested in login with automatic login
 
-```text
-flow_started                  { flowName: login, touchpoint: account }
-...                                                                        identifier and password screens
-auth_method_decision_finished { post-identifier, explicitDecisionValue: forgot-password }
-flow_started                  { flowName: recovery, touchpoint: login }    nested in login
-subflow_started               { email-link, spec: email-link-login }
-subflow_step_started/finished { email-link, send }
-flow_enriched                 { crossEnvironmentTransactionID }            setCrossEnvironmentTransactionId()
-                                                                           link opened in the same browser
-subflow_step_started/finished { email-link, post-response }
-auth_method_decision_started  { password-reset, options: [password-enrollment] }
-subflow_started               { password-enrollment, spec: password-reset }
-subflow_step_started/finished { password-enrollment, post-response }       resolves password-reset
-flow_enriched                 { userId }                                setUser()
-flow_finished                 { flowName: recovery }
-flow_auto_finished            { flowName: login, finishedByFlowName: recovery }
-```
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: account` | On page render. |
+| … | | The identifier and password screens, omitted here. |
+| `auth_method_decision_finished` | `post-identifier`, `explicitDecisionValue: forgot-password` | A navigational choice out of the checkpoint. |
+| `flow_started` | `flowName: recovery`, `touchpoint: login` | Nested in the open login flow. |
+| `subflow_started` | `email-link`, spec `email-link-login` | Runs without a decision of its own: no option resolves to it. |
+| `subflow_step_started` / `subflow_step_finished` | `email-link`, `send` | |
+| `flow_enriched` | `crossEnvironmentTransactionID` | Through `setCrossEnvironmentTransactionId()`. Joins the two sessions if the link opens elsewhere. |
+| `subflow_step_started` / `subflow_step_finished` | `email-link`, `post-response` | The link was opened in the same browser. |
+| `auth_method_decision_started` | `password-reset`, options `password-enrollment` | |
+| `subflow_started` | `password-enrollment`, spec `password-reset` | |
+| `subflow_step_started` / `subflow_step_finished` | `password-enrollment`, `post-response` | Resolves `password-reset`. |
+| `flow_enriched` | `userId` | Through `setUser()`. |
+| `flow_finished` | `flowName: recovery` | |
+| `flow_auto_finished` | `flowName: login`, `finishedByFlowName: recovery` | The automatic login completes the parent. |
 
 Two things this series shows. The email-link subflow runs without a decision of its own: no decision option resolves to it, so a decision rendered around it would only ever close incomplete. And the link opening on another device is a different session; that page starts its own `recovery` flow and calls `setCrossEnvironmentTransactionId()` with the same ID, which is what joins the two sessions. It has no open `login` to auto-finish.
 
@@ -168,41 +166,209 @@ Two things this series shows. The email-link subflow runs without a decision of 
 
 A returning customer with a remembered client number. The identifier step is skipped, the password is required, the second factor is an approval in the bank's app, and the approval also registers the browser as trusted until midnight. After login the customer is offered a passkey.
 
-```text
-flow_started                  { flowName: login, touchpoint: netbank-logon, tags: { known_user: true } }
-flow_enriched                 { identifier }                            setUser(), the remembered client
-auth_method_decision_started  { post-identifier, options: [forget-client, password-login-known-identifier,
-                                switch-to-passkey, back] }
-subflow_started               { password-login, spec: password-known-identifier }   password field rendered
-subflow_step_started          { password-login, post-response }
-subflow_step_finished         { password-login, post-response }         resolves post-identifier
-subflow_started               { trusted-device-check, spec: token }     the host checked the cookie
-subflow_step_started          { trusted-device-check, post-response }
-subflow_step_finished         { trusted-device-check, post-response, result: not-trusted }
-auth_method_decision_started  { 2fa, options: [passkey-login-known-identifier, switch-to-app, back] }
-auth_method_decision_finished { 2fa, explicitDecisionValue: switch-to-app }
-auth_method_decision_started  { 2fa, options: [app-confirmation, try-another-way] }
-subflow_started               { app-confirmation }                      the request is shown
-subflow_step_started          { app-confirmation, ceremony }
-subflow_step_finished         { app-confirmation, ceremony }            the poll saw the approval
-subflow_step_started          { app-confirmation, post-response }       the continuation creates the session
-subflow_step_finished         { app-confirmation, post-response }       resolves 2fa
-subflow_started               { trusted-device-enrollment, spec: token }
-subflow_step_started          { trusted-device-enrollment, post-response }
-subflow_step_finished         { trusted-device-enrollment, post-response, result: created }
-flow_enriched                 { userId, identifier }                    setUser(), host-confirmed
-flow_finished                 { flowName: login, tags: { method: app, browser_trusted: true } }
-flow_started                  { flowName: enrollment, touchpoint: security-settings }   chained
-flow_enriched                 { userId }                                setUser()
-auth_method_decision_started  { enrollment-user, options: [passkey-enrollment, skip, dont-ask-again] }
-subflow_started               { passkey-enrollment, spec: manual }
-subflow_step_started/finished { passkey-enrollment, get-options }
-subflow_step_started/finished { passkey-enrollment, ceremony, mediation: required }
-subflow_step_started/finished { passkey-enrollment, post-response }     resolves enrollment-user
-flow_finished                 { flowName: enrollment }
-```
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: netbank-logon`, `tags: { known_user: true }` | On page render. |
+| `flow_enriched` | `identifier` | Through `setUser()`, the remembered client number. |
+| `auth_method_decision_started` | `post-identifier`, options `forget-client`, `password-login-known-identifier`, `switch-to-passkey`, `back` | The identifier step is skipped, so the journey starts at this checkpoint. |
+| `subflow_started` | `password-login`, spec `password-known-identifier` | Password field rendered. |
+| `subflow_step_started` | `password-login`, `post-response` | Password submitted. |
+| `subflow_step_finished` | `password-login`, `post-response` | Resolves `post-identifier`. |
+| `subflow_started` | `trusted-device-check`, spec `token` | System work: the host checked the cookie. Belongs to no decision. |
+| `subflow_step_started` | `trusted-device-check`, `post-response` | |
+| `subflow_step_finished` | `trusted-device-check`, `post-response`, `result: not-trusted` | A negative check is a finished step with a result, never an error. |
+| `auth_method_decision_started` | `2fa`, options `passkey-login-known-identifier`, `switch-to-app`, `back` | The second-factor checkpoint. |
+| `auth_method_decision_finished` | `2fa`, `explicitDecisionValue: switch-to-app` | Navigational, so finished explicitly. |
+| `auth_method_decision_started` | `2fa`, options `app-confirmation`, `try-another-way` | The same checkpoint, presented again on the app screen. |
+| `subflow_started` | `app-confirmation` | The request is shown. |
+| `subflow_step_started` | `app-confirmation`, `ceremony` | |
+| `subflow_step_finished` | `app-confirmation`, `ceremony` | The poll saw the approval. |
+| `subflow_step_started` | `app-confirmation`, `post-response` | The continuation creates the session. |
+| `subflow_step_finished` | `app-confirmation`, `post-response` | Resolves the second `2fa` occurrence. |
+| `subflow_started` | `trusted-device-enrollment`, spec `token` | System work again, no decision. |
+| `subflow_step_started` | `trusted-device-enrollment`, `post-response` | |
+| `subflow_step_finished` | `trusted-device-enrollment`, `post-response`, `result: created` | The browser is trusted until midnight. |
+| `flow_enriched` | `userId`, `identifier` | Through `setUser()`, now host-confirmed. |
+| `flow_finished` | `flowName: login`, `tags: { method: app, browser_trusted: true }` | |
+| `flow_started` | `flowName: enrollment`, `touchpoint: security-settings` | Chained after the login finished, so a sibling. |
+| `flow_enriched` | `userId` | Through `setUser()`. Its own identity call. |
+| `auth_method_decision_started` | `enrollment-user`, options `passkey-enrollment`, `skip`, `dont-ask-again` | |
+| `subflow_started` | `passkey-enrollment`, spec `manual` | |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-enrollment`, `get-options` | |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-enrollment`, `ceremony`, `mediation: required` | |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-enrollment`, `post-response` | Resolves `enrollment-user`. |
+| `flow_finished` | `flowName: enrollment` | A `dont-ask-again` would finish with `explicitOutcome: skipped`, exactly like a skip. |
 
 Three things this series shows. The two trusted-device subflows are system work: they belong to no decision and resolve no option, and the negative check is a finished step with a result, not an error. The identifier is attached as soon as it is known, here at bootstrap because the browser remembered the client, otherwise right after the customer submits it. The confirmed user id follows with the login result. The `2fa` checkpoint is presented twice because the customer navigated from the method choice to the app screen, and the second presentation is the one the app confirmation resolves. The enrollment is chained after the login finished, so it is a sibling with its own identity call, and a "don't ask again" would finish it with `explicitOutcome: skipped` exactly like a skip.
+
+### 6.6 Combined login form, password used
+
+One screen offers everything: identifier and password together, a passkey button and a social button. Conditional UI is armed on the same screen, so autofill is offered too. The customer uses the form.
+
+```text Screen
+┌────────────────────────────────────────────┐
+│  Sign in                                   │
+├────────────────────────────────────────────┤
+│           ┌───────────────────────────┐    │
+│  Email    │                           │    │  <-- 1) types the email
+│           └───────────────────────────┘    │
+│           ┌───────────────────────────┐    │
+│  Password │                           │    │  <-- 2) types the password
+│           └───────────────────────────┘    │
+│       ┌────────────────────────────┐       │
+│       │          Sign in           │       │  <-- 3) presses Sign in
+│       └────────────────────────────┘       │
+├───────────────────  or  ───────────────────┤
+│       ┌────────────────────────────┐       │
+│       │   Sign in with a passkey   │       │
+│       └────────────────────────────┘       │
+│       ┌────────────────────────────┐       │
+│       │    Continue with Google    │       │
+│       └────────────────────────────┘       │
+└────────────────────────────────────────────┘
+```
+
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: account` | On page render. |
+| `auth_method_decision_started` | `pre-identifier`, options `password-login-with-identifier`, `passkey-login-cui`, `passkey-login-no-identifier`, `social-google` | On page render, once the screen knows what it offers. |
+| `subflow_started` | `password-login`, spec `password-with-identifier` | On page render, when the form appears. The helper is bound to the password input. |
+| `subflow_step_started` | `password-login`, `post-response` | After **3)**, when the request leaves the browser. |
+| `subflow_step_finished` | `password-login`, `post-response` | When the server accepts the credentials. Resolves `pre-identifier`. |
+| `flow_enriched` | `userId`, `identifier` | As soon as identity is known, through `setUser()`. |
+| `flow_finished` | `flowName: login` | On success. |
+
+Steps 1 and 2 produce no tracking events. The helper is bound to the password input, so typing is recorded as low-level interaction signals that ride along with the next batch, not as events you emit. The first event of the attempt is the submit.
+
+There is one subflow and it opened on render, before the customer touched anything. That is correct for an input-bound method: the field is the attempt surface. It becomes a real attempt when the step arrives, and the finished step resolves the checkpoint.
+
+### 6.7 Combined login form, passkey used from autofill
+
+The same screen. The customer never types: the browser offers a passkey in the email field and they pick it.
+
+```text Screen
+┌────────────────────────────────────────────┐
+│  Sign in                                   │
+├────────────────────────────────────────────┤
+│           ┌───────────────────────────┐    │
+│  Email    │                           │    │  <-- 1) focuses the field, sees a passkey
+│           └───────────────────────────┘    │
+│           ┌───────────────────────────┐    │
+│  Password │                           │    │
+│           └───────────────────────────┘    │
+│       ┌────────────────────────────┐       │
+│       │          Sign in           │       │
+│       └────────────────────────────┘       │
+├───────────────────  or  ───────────────────┤
+│       ┌────────────────────────────┐       │
+│       │   Sign in with a passkey   │       │
+│       └────────────────────────────┘       │
+│       ┌────────────────────────────┐       │
+│       │    Continue with Google    │       │
+│       └────────────────────────────┘       │
+└────────────────────────────────────────────┘
+```
+
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: account` | On page render. |
+| `auth_method_decision_started` | `pre-identifier`, options `password-login-with-identifier`, `passkey-login-cui`, `passkey-login-no-identifier`, `social-google` | On page render, once the screen knows what it offers. |
+| `subflow_started` | `password-login`, spec `password-with-identifier` | On page render, when the form appears. |
+| `subflow_step_started` / `subflow_step_finished` | `password-login`, `cui-get-options` | Armed on render, before any interaction. Mark it `ignoreAsInteraction` so an unused request does not count as engagement. |
+| `subflow_step_started` | `password-login`, `cui-ceremony` | After **1)**, when the browser shows the suggestion. |
+| `subflow_step_finished` | `password-login`, `cui-ceremony` | When the customer picks the passkey from the suggestion. |
+| `subflow_step_started` / `subflow_step_finished` | `password-login`, `cui-post-response` | Resolves `passkey-login-cui`. |
+| `flow_enriched` | `userId` | Through `setUser()`. |
+| `flow_finished` | `flowName: login` | On success. |
+
+No `passkey-login` subflow appears. Conditional UI on this screen belongs to the form helper, which carries it as `cui` steps, so the attempt stays one `password-login` subflow and resolves `passkey-login-cui` instead of `passkey-login-no-identifier`.
+
+`cui-get-options` fires on render, before any interaction. Mark it `ignoreAsInteraction` so an armed request that nobody used does not count as the customer engaging with the form.
+
+### 6.8 Combined login form, passkey button used
+
+The same screen. The customer ignores the form and presses the passkey button.
+
+```text Screen
+┌────────────────────────────────────────────┐
+│  Sign in                                   │
+├────────────────────────────────────────────┤
+│           ┌───────────────────────────┐    │
+│  Email    │                           │    │
+│           └───────────────────────────┘    │
+│           ┌───────────────────────────┐    │
+│  Password │                           │    │
+│           └───────────────────────────┘    │
+│       ┌────────────────────────────┐       │
+│       │          Sign in           │       │
+│       └────────────────────────────┘       │
+├───────────────────  or  ───────────────────┤
+│       ┌────────────────────────────┐       │
+│       │   Sign in with a passkey   │       │  <-- 1) presses the button
+│       └────────────────────────────┘       │
+│       ┌────────────────────────────┐       │
+│       │    Continue with Google    │       │
+│       └────────────────────────────┘       │
+└────────────────────────────────────────────┘
+```
+
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: account` | On page render. |
+| `auth_method_decision_started` | `pre-identifier`, options `password-login-with-identifier`, `passkey-login-cui`, `passkey-login-no-identifier`, `social-google` | On page render, once the screen knows what it offers. |
+| `subflow_started` | `password-login`, spec `password-with-identifier` | On page render, when the form appears. |
+| `subflow_started` | `passkey-login`, spec `passkey-no-identifier` | After **1)**, on the press. Not when the button becomes visible. |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-login`, `get-options` | |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-login`, `ceremony` | While the browser dialog is open and the customer picks a passkey. |
+| `subflow_step_started` / `subflow_step_finished` | `passkey-login`, `post-response` | Resolves `pre-identifier`. |
+| `flow_enriched` | `userId` | Through `setUser()`. |
+| `flow_finished` | `flowName: login` | On success. |
+
+Both subflows open, and only one is an attempt the customer made. The password helper is input-bound and opens on render; it produces no step, carries no interaction and resolves nothing, which is how an offered-but-untouched method is supposed to look.
+
+The passkey helper is action-bound and opens on the press, not when the button becomes visible. Creating it on render would book an attempt nobody made, and because the checkpoint is resolved by the subflow that completes under it, an untouched offer would capture `pre-identifier` on every visit.
+
+### 6.9 Combined login form, social login used
+
+The same screen. The customer presses the social button and returns from the provider.
+
+```text Screen
+┌────────────────────────────────────────────┐
+│  Sign in                                   │
+├────────────────────────────────────────────┤
+│           ┌───────────────────────────┐    │
+│  Email    │                           │    │
+│           └───────────────────────────┘    │
+│           ┌───────────────────────────┐    │
+│  Password │                           │    │
+│           └───────────────────────────┘    │
+│       ┌────────────────────────────┐       │
+│       │          Sign in           │       │
+│       └────────────────────────────┘       │
+├───────────────────  or  ───────────────────┤
+│       ┌────────────────────────────┐       │
+│       │   Sign in with a passkey   │       │
+│       └────────────────────────────┘       │
+│       ┌────────────────────────────┐       │
+│       │    Continue with Google    │       │  <-- 1) presses the button
+│       └────────────────────────────┘       │
+└────────────────────────────────────────────┘
+```
+
+| Event Name | Data | Description |
+| --- | --- | --- |
+| `flow_started` | `flowName: login`, `touchpoint: account` | On page render. |
+| `auth_method_decision_started` | `pre-identifier`, options `password-login-with-identifier`, `passkey-login-cui`, `passkey-login-no-identifier`, `social-google` | On page render, once the screen knows what it offers. |
+| `subflow_started` | `password-login`, spec `password-with-identifier` | On page render, when the form appears. |
+| `subflow_started` | `social-login`, spec `pre-identifier` | After **1)**, on the press. |
+| `subflow_step_started` / `subflow_step_finished` | `social-login`, `get-redirect-url` | Only when your backend builds the authorization URL. Omit it when the provider SDK builds it in the browser. |
+| `subflow_step_started` / `subflow_step_finished` | `social-login`, `exchange-code` | The outcome-bearing step. Resolves `social-google`. |
+| `flow_enriched` | `userId`, `identifier` | Through `setUser()`. |
+| `flow_finished` | `flowName: login` | On success. |
+
+`get-redirect-url` only belongs here when your backend builds the authorization URL. Providers whose SDK builds it in the browser never produce that step, and inventing one would report work that did not happen. `exchange-code` is the outcome-bearing step either way.
+
+The subflow opens on the press. A social button that merely rendered is an offer, already carried by `social-google` in the option set, and opening a subflow for it would resolve the checkpoint to the provider on every visit.
 
 ## 7. What the classifier merges, repairs or drops
 

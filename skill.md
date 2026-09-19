@@ -97,7 +97,7 @@ integration against real journeys.
 | `flow_reset`                          | `flowReset()`                            | rarely — explicit restart                           |
 | `auth_method_decision_started`        | `authMethodsDecisionStarted()`           | checkpoint rendered / options change                |
 | `auth_method_decision_finished`       | `authMethodsDecisionFinished()`          | navigational choice made (never for method choices) |
-| `subflow_started`                     | helper construction                      | auth method appears or starts                       |
+| `subflow_started`                     | helper construction                      | an attempt opens: input renders, or action fired    |
 | `subflow_step_started/finished/error` | `op.<step>.start()/.finished()/.error()` | around the step's app logic                         |
 | `flow_enriched`                       | `setUser(user)`                          | identity observation or cross-environment handoff   |
 | `conversion`                          | `conversion()`                           | business conversion outside auth                    |
@@ -281,8 +281,31 @@ A subflow is one auth method attempt; creating the operation helper emits
 
 Construction always emits `subflow_started`; there is no opt-out. Never add
 a manual `subflowStart()` on top of it. Repeated starts of the same subflow with nothing in
-between are merged; don't guard against them. Do not emit `subflow_trigger`; it is
-deprecated for the helpers used here and carries no classification value.
+between are merged; don't guard against them. Do not emit `subflow_trigger`: the SDK marks
+`trigger()` `@deprecated` on the passkey-login, password-login and provide-identifier
+helpers and removes it in the next major. The classifier still honours it as interaction
+evidence, so older integrations that emit it are not broken — but new code must not.
+
+Three questions, three answers — do not collapse them:
+
+| Question                     | Answered by                                              |
+| ---------------------------- | -------------------------------------------------------- |
+| What was **offered**?        | `auth_method_decision_started.options`                    |
+| Was there an **attempt**?    | `subflow_started`                                         |
+| Did the user **interact**?   | a `subflow_step_*` whose `ignoreAsInteraction` is not true |
+
+`subflow_started` always opens an attempt — that is what it means. What it does not assert
+is that anyone engaged with that attempt: a subflow whose only events are `subflow_started`
+and `ignoreAsInteraction` steps carries no interaction, and the classifier reads the two
+properties separately (it will not let a decision split a subflow that has not yet recorded
+one). That is why an action-bound helper created on render is wrong — it records an attempt
+nobody made, and because a decision is resolved by the subflow that follows it, an untouched
+offer can capture the decision outright.
+
+Set `ignoreAsInteraction: true` on anything the user did not drive — a conditional-mediation
+ceremony the browser armed by itself is the standard case. It is accepted on the helper
+config (stamping `subflow_started`) as well as on step data, and it suppresses the
+no-followup error flavour instead of inventing a user action.
 
 Instrumentation is additive by default: it observes the app's existing lifecycle and does
 not add cancellation, timers, navigation rules or request signals of its own. Where a clean
@@ -713,36 +736,14 @@ Then have the developer run those journeys with `debug: true` and hand back the 
 output: the SDK logs every emitted event with its data. Read the series against the rules
 in this skill and fix what deviates before looking at dashboards.
 
-## Worked example
+## Worked journeys
 
-Identifier-first login where the user backs out of the password screen and then signs up
-instead — the event series a correct integration produces (`spec` = `explicitSpecType`):
+The docs carry a catalog of worked journeys: identifier-first login with a back and a switch
+to sign-up, the combined login form resolved four different ways (password, autofill
+passkey, passkey button, social), a direct sign-up with a skipped enrollment prompt,
+recovery nested in login, and a bank login with a second factor, a trusted browser and a
+chained enrollment. Each journey lists every event with its data and when it fires, and the
+combined-form entries draw the screen so you can see which control produced which event.
+Fetch it when you are mapping a screen or a journey shape you have not instrumented before:
 
-```
-flow_started            { flowName: login, touchpoint: account }        + config tags
-auth_method_decision_started  { pre-identifier, options: [identifier-email, switch-to-signup, social-google] }
-subflow_started         { provide-identifier }                          ← helper created on render
-subflow_step_started    { provide-identifier, pi-post-response }        ← identifier submitted
-subflow_step_finished   { provide-identifier, pi-post-response }        ← identifier accepted
-                                                                        (resolves pre-identifier)
-auth_method_decision_started  { post-identifier, options: [password-login-known-identifier,
-                                passkey-login-known-identifier, back] }
-subflow_started         { password-login }                              ← password field rendered
-auth_method_decision_finished { post-identifier, explicitDecisionValue: back }   ← user clicks back
-auth_method_decision_started  { pre-identifier, options: [...] }        ← same checkpoint, re-offered
-auth_method_decision_finished { pre-identifier, explicitDecisionValue: switch-to-signup }
-flow_started            { flowName: signup }                            ← nested in login
-auth_method_decision_started  { signup-registration, options: [password-enrollment, back] }
-subflow_started         { password-enrollment, spec: password-set }
-subflow_step_started    { password-enrollment, post-response }          ← form submitted
-subflow_step_finished   { password-enrollment, post-response }          (resolves signup-registration)
-flow_enriched           data: { match: { flowType: "*", at: during }, expFol: true }, user: { userId, identifier }
-flow_finished           { flowName: signup }
-flow_auto_finished      { flowName: login, finishedByFlowName: signup }
-```
-
-Note what is absent: no decision `finished` for the method choices (their subflows resolve
-them), no subflow finishes (the `post-response` steps carry the outcomes), and no explicit
-incomplete/abandon events anywhere — had the user left mid-journey, the absence of the
-finishes would have classified it. The second `pre-identifier` decision is deliberately a
-second occurrence: the user genuinely revisited that checkpoint.
+https://docs.corbado.com/corbado-observe/tracking/modeling.md
